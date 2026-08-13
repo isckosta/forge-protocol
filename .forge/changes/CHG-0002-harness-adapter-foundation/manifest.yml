@@ -11,7 +11,7 @@ flow:
   escalations: []
 
 state:
-  current: implementation
+  current: verification
 
 artifacts:
   intent: complete
@@ -24,11 +24,11 @@ artifacts:
   plan: approved
   tasks: approved
   traceability: complete
-  tdd_evidence: active
+  tdd_evidence: complete
   implementation: complete
-  verification: pending
+  verification: active
   review: pending
-  documentation: pending
+  documentation: complete
   knowledge_capture: pending
 
 requirements:
@@ -37,11 +37,11 @@ requirements:
   verified: 0
 
 tdd:
-  status: active
+  status: complete
   cycles: 10
 
 verification:
-  status: pending
+  status: active
 
 review:
   status: pending
@@ -55,5 +55,4 @@ documentation:
   impact_evaluated: true
   update_required: true
   reason: >
-    Harness Adapter semantics become part of the public Forge Protocol and
-    require canonical documentation, schema, architecture, ADR, and RFC updates.
+    Harness Adapter semantics are documented in canonical public documentation.
