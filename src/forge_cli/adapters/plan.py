@@ -33,6 +33,7 @@ class AdapterOperation:
     intent: OperationIntent
     content_digest: str
     content: str | None = None
+    expected_current_digest: str | None = None
 
     @classmethod
     def from_content(
@@ -42,6 +43,7 @@ class AdapterOperation:
         ownership: OwnershipMode,
         intent: OperationIntent,
         content: str,
+        expected_current_digest: str | None = None,
     ) -> "AdapterOperation":
         return cls(
             path=path,
@@ -49,6 +51,7 @@ class AdapterOperation:
             intent=intent,
             content_digest=digest_content(content),
             content=content,
+            expected_current_digest=expected_current_digest,
         )
 
 
