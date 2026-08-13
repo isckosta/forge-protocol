@@ -34,6 +34,8 @@ Generic capability booleans describe available representation primitives. Codex-
 
 A skill that communicates an invariant is only `represented` unless a technical enforcement primitive is proven. Missing enforcement is persisted through generic Adapter limitations rather than hidden or converted into a false capability claim.
 
+Already-assessed invariant limitations enter Codex planning separately from generic capability requirements. The generic planner combines both limitation sources, and installation records preserve the combined, human-reviewable evidence. A supported representation primitive therefore cannot erase the fact that an invariant lacks technical enforcement.
+
 ### Codex integration reuses the generic Adapter Core
 
 Codex-specific code owns descriptor/evidence loading, projection rendering, invariant assessment, and publication-target resolution. Compatibility, deterministic planning, ownership classification, collision protection, installation records, drift detection, path safety, and mutation remain generic Core responsibilities.

@@ -1,7 +1,7 @@
 schema: forge/change@1
 change: {id: CHG-0004, title: Codex Harness Adapter, kind: feature}
 flow: {initial: full, current: full, escalations: []}
-state: {current: tdd_implementation}
+state: {current: complete}
 artifacts:
   intent: complete
   discovery: complete
@@ -13,16 +13,16 @@ artifacts:
   plan: approved
   tasks: approved
   traceability: complete
-  tdd_evidence: active
-  implementation: active
-  verification: pending
-  review: active
+  tdd_evidence: complete
+  implementation: complete
+  verification: passed
+  review: complete
   documentation: complete
-  knowledge_capture: pending
-requirements: {total: 33, implemented: 31, verified: 31}
-tdd: {status: active, cycles: 10}
-verification: {status: pending}
-review: {status: active, iteration: 3, blockers: 0, majors: 1, minors: 1, observations: 0}
+  knowledge_capture: complete
+requirements: {total: 33, implemented: 33, verified: 33}
+tdd: {status: compliant, cycles: 11}
+verification: {status: passed}
+review: {status: passed, iteration: 4, blockers: 0, majors: 0, minors: 1, observations: 0}
 documentation:
   impact_evaluated: true
   update_required: true

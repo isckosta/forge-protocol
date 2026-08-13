@@ -3,8 +3,8 @@ forge:
   artifact: strict_review
   schema: 1
 change: CHG-0004
-iteration: 3
-status: failed
+iteration: 4
+status: passed
 ---
 
 # Strict Review — CHG-0004
@@ -108,12 +108,46 @@ Result: FAILED
 
 Severity: MAJOR
 
-Status: OPEN
+Status: RESOLVED
 
 The unresolved P1 thread on PR #5 identifies a real integration gap. `assessment.to_generic_limitation()` can classify a represented but technically unenforced Forge invariant, but `plan_codex_projection()` accepts only generic capability requirements. Because the Codex descriptor advertises `skills` as supported, generic capability evaluation emits no limitation for an invariant represented through that skill. The resulting plan and installation record therefore omit required non-enforcement evidence, violating FR-024 and FR-031.
 
 Resolution requires regression-first TDD proving that a generic `CapabilityLimitation` created from Codex invariant assessment survives both planning and installation-record construction independently of the supported capability boolean.
 
-## Current review gate
+Resolution: TDD-010 adds a separate `invariant_limitations` input at the Codex integration boundary and forwards those already-assessed limitations to the generic planner independently of capability support evaluation. The regression was RED at commit `5b2d8cc4fcf09d456474561e9c77d5e89fd350e8` (Tests run `31718814345`, job `94510276284`: `1 failed, 134 passed`) and GREEN at commit `5b6a53e5bf98e5bbb4650c20a78fd71bf85ee96d` (Tests run `31719038475`, job `94511020787`: `135 passed`; Distribution Verification run `31719038459`, job `94511020449`). The test follows the real assessment-to-plan path and proves the limitation survives installation-record construction.
 
-FAILED pending resolution and re-review of REV-005.
+## Iteration 3 review gate
+
+FAILED at Iteration 3, requiring remediation and a new adversarial re-review.
+
+## Iteration 4 — Adversarial Re-review
+
+Result: PASSED
+
+Re-review examined:
+
+- the unresolved P1 GitHub thread against FR-024 and FR-031;
+- the real Codex invariant-assessment to generic-limitation conversion path;
+- separation between supported capability evaluation and represented-but-unenforced invariant limitations;
+- persistence of both limitation sources through `AdapterPlan` and `AdapterInstallationRecord`;
+- temporal validity of the TDD-010 RED and GREEN commits;
+- regression safety through the full automated suite and isolated wheel verification;
+- the previously reported packaged-resource authority concern, already resolved by TDD-008.
+
+No unresolved BLOCKER or MAJOR findings remain.
+
+Fresh post-remediation evidence at code commit `5b6a53e5bf98e5bbb4650c20a78fd71bf85ee96d`:
+
+- Tests workflow run `31719038475`, job `94511020787`: SUCCESS (`135 passed`);
+- Distribution Verification run `31719038459`, job `94511020449`: SUCCESS;
+- isolated wheel build/install and packaged Codex resource probe: SUCCESS;
+- offline `forge version`, `init`, `validate`, and `doctor`: SUCCESS;
+- runtime dependency audit: SUCCESS;
+- focused local Codex integration suite: `16 passed`;
+- independent local full suite: `135 passed`.
+
+## Final review gate
+
+PASSED.
+
+Remaining accepted risk: REV-003 only.

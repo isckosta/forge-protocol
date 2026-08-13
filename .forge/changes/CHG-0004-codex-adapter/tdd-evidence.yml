@@ -1,7 +1,7 @@
 schema: forge/tdd-evidence@1
 change: CHG-0004
-status: active
-cycle_count: 10
+status: complete
+cycle_count: 11
 cycles:
   - id: TDD-001
     title: Codex Adapter Descriptor and Capability Evidence
@@ -61,3 +61,9 @@ cycles:
     red: {commit: 02256742b57787a10fbb34d3ce528c9b2202c418, run_id: 31715085289, valid: true}
     green: {commit: d4930792fe8756aab571d1bb5ddec28db87bf6d1, run_id: 31715325950, valid: true}
     notes: [Strict Review REV-002 regression; distribution_run_id=31715325961; stable workflow framing comes from the packaged resource while stages and gates remain derived from canonical Flow input]
+  - id: TDD-010
+    title: Represented Invariant Limitation Persistence
+    requirements: [FR-024, FR-031]
+    red: {commit: 5b2d8cc4fcf09d456474561e9c77d5e89fd350e8, run_id: 31718814345, valid: true}
+    green: {commit: 5b6a53e5bf98e5bbb4650c20a78fd71bf85ee96d, run_id: 31719038475, valid: true}
+    notes: [Strict Review REV-005 regression; RED was 1 failed and 134 passed because plan_codex_projection rejected invariant limitations; GREEN was 135 passed; distribution_run_id=31719038459]
