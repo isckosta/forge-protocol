@@ -1,0 +1,15 @@
+schema: forge/adapter@1
+adapter:
+  id: codex
+  version: 0.1.0
+  harness: codex
+protocol:
+  min: 1
+  max_exclusive: 2
+capabilities:
+  persistent_instructions: false
+  commands: false
+  skills: true
+  hooks: false
+  agent_roles: false
+  generated_files: true

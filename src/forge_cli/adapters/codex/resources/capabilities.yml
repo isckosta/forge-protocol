@@ -1,0 +1,25 @@
+evidence:
+  - capability: agent_roles
+    status: unsupported
+    source: https://developers.openai.com/codex/use-cases
+    observed_on: 2026-08-13
+  - capability: commands
+    status: unsupported
+    source: https://developers.openai.com/codex/use-cases
+    observed_on: 2026-08-13
+  - capability: generated_files
+    status: supported
+    source: forge://CHG-0004/generated-files
+    observed_on: 2026-08-13
+  - capability: hooks
+    status: unsupported
+    source: https://developers.openai.com/codex/use-cases
+    observed_on: 2026-08-13
+  - capability: persistent_instructions
+    status: unsupported
+    source: https://developers.openai.com/codex/use-cases
+    observed_on: 2026-08-13
+  - capability: skills
+    status: supported
+    source: https://developers.openai.com/codex/use-cases
+    observed_on: 2026-08-13
