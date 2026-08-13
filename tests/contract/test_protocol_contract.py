@@ -245,6 +245,28 @@ def test_flow_schema_rejects_full_flow_missing_full_planning_stages() -> None:
         Draft202012Validator(_catalog_schemas()["forge/flow@1"]).validate(instance)
 
 
+@pytest.mark.parametrize("flow_name", ["fast", "standard", "full"])
+def test_flow_schema_rejects_mandatory_stage_marked_optional(flow_name: str) -> None:
+    """Catch a canonical mandatory stage whose required flag is weakened."""
+    instance = _load_yaml(ROOT / f"protocol/flows/{flow_name}.yml")
+    completion = next(stage for stage in instance["stages"] if stage["id"] == "completion")
+    completion["required"] = False
+
+    with pytest.raises(ValidationError):
+        Draft202012Validator(_catalog_schemas()["forge/flow@1"]).validate(instance)
+
+
+@pytest.mark.parametrize("flow_name", ["fast", "standard", "full"])
+def test_flow_schema_rejects_wrong_tdd_stage_condition(flow_name: str) -> None:
+    """Catch a canonical TDD stage whose applicability condition is changed."""
+    instance = _load_yaml(ROOT / f"protocol/flows/{flow_name}.yml")
+    tdd = next(stage for stage in instance["stages"] if stage["id"] == "tdd_implementation")
+    tdd["required_when"] = "never"
+
+    with pytest.raises(ValidationError):
+        Draft202012Validator(_catalog_schemas()["forge/flow@1"]).validate(instance)
+
+
 def test_change_schema_requires_reason_for_tdd_exception() -> None:
     """Catch a Change manifest that exempts TDD without an explicit reason."""
     instance = _load_yaml(
