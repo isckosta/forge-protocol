@@ -11,7 +11,7 @@ flow:
   escalations: []
 
 state:
-  current: completion_gate
+  current: complete
 
 artifacts:
   intent: complete
