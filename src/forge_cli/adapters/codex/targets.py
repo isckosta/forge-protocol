@@ -27,7 +27,7 @@ class PublicationTarget:
 
 
 def _checked(path: str) -> str:
-    if not path or "\\" in path or ":" in path or "\0" in path:
+    if not path or path.startswith("~") or "\\" in path or ":" in path or "\0" in path:
         raise ValueError()
     item = PurePosixPath(path)
     if item.is_absolute() or ".." in item.parts:

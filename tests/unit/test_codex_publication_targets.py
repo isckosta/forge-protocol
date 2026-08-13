@@ -69,7 +69,7 @@ def test_codex_driver_exposes_the_packaged_repository_skill_target() -> None:
 
 def test_unsafe_target_shape_is_rejected_before_generic_planning() -> None:
     _require_behavior()
-    for path in ("", "/absolute.md", "../escape.md", "a/../escape.md", r"a\b.md"):
+    for path in ("", "/absolute.md", "../escape.md", "a/../escape.md", r"a\b.md", "~/forge"):
         try:
             resolve_publication_target(explicit_target=path)
         except ValueError:

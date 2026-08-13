@@ -1,7 +1,7 @@
 schema: forge/tdd-evidence@1
 change: CHG-0008
 status: active
-cycle_count: 9
+cycle_count: 12
 cycles:
   - id: TDD-001A
     title: Registry stable ordering
@@ -111,7 +111,43 @@ cycles:
     green:
       command: .venv/bin/python -m pytest tests/contract/test_protocol_contract.py::test_adapter_configuration_schema_rejects_unsafe_target_shapes -v
       result: 8 passed
+  - id: TDD-002C
+    title: Project-root-confined configuration API and tilde target safety
+    requirements: [FR-005, FR-007, FR-023, AC-011]
+    behavior: configuration writes derive the sole Adapter path from the project root, reject arbitrary project files and unsafe Adapter ids, and reject tilde targets in configuration and Codex resolution
+    red:
+      valid: true
+      command: .venv/bin/python -m pytest tests/unit/test_adapter_configuration.py::test_write_derives_the_only_configuration_path_from_the_project_root tests/unit/test_adapter_configuration.py::test_write_does_not_treat_a_project_file_as_an_arbitrary_configuration_destination tests/unit/test_adapter_configuration.py::test_unsafe_adapter_id_is_rejected tests/unit/test_adapter_configuration.py::test_invalid_or_forbidden_target_is_rejected tests/unit/test_codex_publication_targets.py::test_unsafe_target_shape_is_rejected_before_generic_planning -v
+      result: 9 failed, 7 passed
+      reason: The direct-path API treated a repository directory as a destination, overwrote `.forge/forge.yml`, accepted unsafe Adapter ids and `~/forge` configuration targets, and Codex target resolution accepted `~/forge`.
+    green:
+      command: .venv/bin/python -m pytest tests/unit/test_adapter_configuration.py tests/unit/test_codex_publication_targets.py tests/contract/test_protocol_contract.py -v
+      result: 63 passed
+  - id: TDD-002D
+    title: Ancestor symlink confinement
+    requirements: [FR-005, FR-007, AC-011]
+    behavior: configuration writing rejects a symlink in an existing ancestor and leaves the outside referent untouched
+    red:
+      valid: true
+      command: .venv/bin/python -m pytest tests/unit/test_adapter_configuration.py::test_write_rejects_an_ancestor_symlink_without_escaping_the_project_root -v
+      result: 1 failed
+      reason: The prior direct-path writer followed `.forge` into the outside directory and created the configuration without raising.
+    green:
+      command: .venv/bin/python -m pytest tests/unit/test_adapter_configuration.py tests/unit/test_codex_publication_targets.py tests/contract/test_protocol_contract.py -v
+      result: 63 passed
+  - id: TDD-002E
+    title: Schema rejects tilde target
+    requirements: [FR-005, FR-007, AC-011]
+    behavior: the configuration schema rejects a tilde-prefixed target before runtime configuration construction
+    red:
+      valid: true
+      command: .venv/bin/python -m pytest tests/contract/test_protocol_contract.py::test_adapter_configuration_schema_rejects_unsafe_target_shapes -v
+      result: 1 failed, 8 passed
+      reason: The initial JSON Schema accepted `~/forge`, although it is outside the repository-relative target grammar.
+    green:
+      command: .venv/bin/python -m pytest tests/contract/test_protocol_contract.py::test_adapter_configuration_schema_rejects_unsafe_target_shapes -v
+      result: 9 passed
 notes:
   - Focused regression command `.venv/bin/python -m pytest tests/unit/test_adapter_registry.py tests/unit/test_codex_adapter_descriptor.py -v` passed 11 tests.
   - 'rg -n "codex" src/forge_cli/adapters/driver.py src/forge_cli/adapters/registry.py returned no matches.'
-  - TDD-002 full suite command `.venv/bin/python -m pytest` passed 190 tests.
+  - Fix round 1 full suite command `.venv/bin/python -m pytest` passed 202 tests.

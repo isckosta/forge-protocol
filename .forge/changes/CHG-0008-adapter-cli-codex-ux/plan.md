@@ -149,7 +149,12 @@ git commit -m "feat(adapter): add packaged driver registry"
 **Interfaces:**
 
 - Produces immutable `AdapterConfiguration(adapter_id: str, target: str | None)`.
-- Produces `load_adapter_configuration(path, adapter_id)`, `write_adapter_configuration(path, config)`, and `resolve_configured_target(explicit, config, evidence)`.
+- Produces `adapter_configuration_path(project_root, adapter_id)`,
+  `load_adapter_configuration(project_root, adapter_id)`,
+  `write_adapter_configuration(project_root, config)`, and
+  `resolve_configured_target(explicit, config, evidence)`. Configuration APIs
+  derive the exact `.forge/adapters/<adapter-id>/config.yml` path internally;
+  callers cannot supply an arbitrary destination.
 
 - [ ] **Step 1: Write configuration and precedence RED tests**
 
@@ -166,7 +171,9 @@ def test_invalid_or_forbidden_target_is_rejected(target: str) -> None:
         AdapterConfiguration(adapter_id="codex", target=target)
 ```
 
-Also assert malformed YAML, unknown keys, wrong Adapter identity, and a symlinked configuration path do not mutate existing bytes.
+Also assert malformed YAML, unknown keys, wrong Adapter identity, `~` targets,
+unsafe Adapter ids, and a symlink at the configuration file or any ancestor
+under the repository root do not mutate existing bytes or escape the project.
 
 - [ ] **Step 2: Create importable scaffolding and execute behavioral RED**
 
@@ -179,7 +186,13 @@ collection errors do not count as RED.
 
 - [ ] **Step 3: Implement schema-backed atomic configuration**
 
-Use schema identity `forge/adapter-configuration@1`, `additionalProperties: false`, exact Adapter id, and optional safe target. Serialize via a sibling temporary file plus `os.replace`; never rewrite `.forge/forge.yml`. Load `publication.yml` with target, source URL, and `observed_on` date, and expose `.agents/skills/forge` from the Codex driver.
+Use schema identity `forge/adapter-configuration@1`, `additionalProperties:
+false`, exact safe Adapter id, and optional safe target. Derive the only allowed
+path from the resolved project root, reject symlinks at every existing path
+component, and serialize via a sibling temporary file plus `os.replace`; never
+accept an arbitrary configuration destination or rewrite `.forge/forge.yml`.
+Load `publication.yml` with target, source URL, and `observed_on` date, and
+expose `.agents/skills/forge` from the Codex driver.
 
 - [ ] **Step 4: Execute GREEN and contract closure**
 

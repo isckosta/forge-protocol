@@ -65,7 +65,7 @@ def test_adapter_configuration_schema_has_one_catalog_mapping() -> None:
 
 @pytest.mark.parametrize(
     "target",
-    [".", "./target", "target//child", "/tmp/target", "a/../target", r"a\\target", "C:/target", ".codex/forge"],
+    [".", "./target", "target//child", "/tmp/target", "a/../target", r"a\\target", "C:/target", ".codex/forge", "~/forge"],
 )
 def test_adapter_configuration_schema_rejects_unsafe_target_shapes(target: str) -> None:
     """Catch a schema that admits a target the configuration boundary cannot safely publish."""
