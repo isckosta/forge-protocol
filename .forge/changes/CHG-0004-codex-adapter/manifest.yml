@@ -1,7 +1,7 @@
 schema: forge/change@1
 change: {id: CHG-0004, title: Codex Harness Adapter, kind: feature}
 flow: {initial: full, current: full, escalations: []}
-state: {current: completion}
+state: {current: complete}
 artifacts:
   intent: complete
   discovery: complete
