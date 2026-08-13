@@ -1,0 +1,56 @@
+schema: forge/change@1
+
+change:
+  id: CHG-0002
+  title: Harness Adapter Foundation
+  kind: feature
+
+flow:
+  initial: full
+  current: full
+  escalations: []
+
+state:
+  current: specification
+
+artifacts:
+  intent: complete
+  discovery: complete
+  specification: active
+  specification_review: pending
+  architecture: draft
+  test_strategy: draft
+  plan: pending
+  tasks: pending
+  implementation: pending
+  verification: pending
+  review: pending
+  documentation: pending
+  knowledge_capture: pending
+
+requirements:
+  total: 0
+  implemented: 0
+  verified: 0
+
+tdd:
+  status: pending
+  cycles: 0
+
+verification:
+  status: pending
+
+review:
+  status: pending
+  iteration: 0
+  blockers: 0
+  majors: 0
+  minors: 0
+  observations: 0
+
+documentation:
+  impact_evaluated: true
+  update_required: true
+  reason: >
+    Harness Adapter semantics become part of the public Forge Protocol and
+    require canonical documentation, schema, and architecture updates.
