@@ -27,7 +27,7 @@ artifacts:
   tdd_evidence: complete
   implementation: complete
   verification: complete
-  review: active
+  review: complete
   documentation: complete
   knowledge_capture: complete
 
@@ -37,14 +37,14 @@ requirements:
   verified: 35
 
 tdd:
-  status: complete
+  status: compliant
   cycles: 11
 
 verification:
   status: passed
 
 review:
-  status: active
+  status: passed
   iteration: 2
   blockers: 0
   majors: 0
@@ -54,5 +54,6 @@ review:
 documentation:
   impact_evaluated: true
   update_required: true
+  status: complete
   reason: >
     Harness Adapter semantics are documented in canonical public documentation.
