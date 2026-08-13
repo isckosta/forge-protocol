@@ -25,6 +25,14 @@ Added:
 - configuration-resolution model;
 - foundational RFC and ADRs;
 - Forge dogfooding workspace;
-- CHG-0001 Bootstrap Forge CLI Specification and Test Strategy.
+- CHG-0001 Bootstrap Forge CLI Specification and Test Strategy;
+- Python 3.12+ bootstrap CLI with `version`, `init`, `validate`, and `doctor`;
+- Git repository root resolution;
+- atomic staged workspace publication with exclusive initialization locking;
+- canonical Project Schema validation and Protocol compatibility checks;
+- canonical Flow and Engineering Contract resolution;
+- structured validation findings and read-only Doctor diagnostics;
+- packaged canonical Protocol resources for isolated wheel execution;
+- offline distribution verification and runtime dependency audit.
 
-No production CLI implementation exists yet.
+The bootstrap CLI remains pre-release software.
