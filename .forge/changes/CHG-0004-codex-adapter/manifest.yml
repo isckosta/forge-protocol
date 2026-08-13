@@ -20,6 +20,6 @@ artifacts:
   documentation: pending
   knowledge_capture: pending
 requirements: {total: 33, implemented: 17, verified: 0}
-tdd: {status: active, cycles: 4}
+tdd: {status: active, cycles: 7}
 verification: {status: pending}
 review: {status: pending, iteration: 0, blockers: 0, majors: 0, minors: 0, observations: 0}
