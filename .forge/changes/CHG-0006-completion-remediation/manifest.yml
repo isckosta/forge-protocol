@@ -1,7 +1,7 @@
 schema: forge/change@1
 change: {id: CHG-0006, title: Completion Remediation, kind: bugfix}
 flow: {initial: full, current: full, escalations: []}
-state: {current: tdd_implementation}
+state: {current: review}
 artifacts:
   intent: complete
   discovery: complete
@@ -13,16 +13,16 @@ artifacts:
   plan: approved
   tasks: approved
   traceability: complete
-  tdd_evidence: active
-  implementation: active
-  verification: pending
-  review: pending
+  tdd_evidence: complete
+  implementation: complete
+  verification: passed
+  review: active
   documentation: pending
   knowledge_capture: pending
-requirements: {total: 4, implemented: 0, verified: 0}
-tdd: {status: active, cycles: 1}
-verification: {status: pending}
-review: {status: pending, iteration: 0, blockers: 0, majors: 0, minors: 0, observations: 0}
+requirements: {total: 4, implemented: 3, verified: 3}
+tdd: {status: compliant, cycles: 1}
+verification: {status: passed}
+review: {status: active, iteration: 1, blockers: 0, majors: 0, minors: 0, observations: 0}
 documentation:
   impact_evaluated: true
   update_required: true
