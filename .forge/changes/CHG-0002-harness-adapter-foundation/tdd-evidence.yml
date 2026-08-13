@@ -1,0 +1,25 @@
+schema: forge/tdd-evidence@1
+
+change: CHG-0002
+status: active
+cycle_count: 1
+
+cycles:
+  - id: TDD-001
+    requirements: [FR-001, FR-002, FR-003, FR-004, FR-006, FR-007, FR-034, FR-035]
+    behavior: load and deterministically validate the canonical Harness Adapter manifest structure
+    red:
+      valid: true
+      workflow_run_id: 31672870281
+      job_id: 94361056235
+      commit: bc05f00c8f0964edfffff987cecfe0ecc7dd92e4
+      reason: Adapter manifest package, canonical schema, loader, and validation error did not exist; 4 new tests failed while 39 existing tests passed.
+    green:
+      workflow_run_id: 31672941619
+      job_id: 94361272375
+      commit: ad8408c901173d4d1b85dfc13927bd7dabe83b88
+      result: Canonical adapter.schema.json and immutable AdapterManifest loading/validation were introduced; full test suite passed.
+
+notes:
+  - Protocol interval semantics are intentionally deferred to TDD-002; TDD-001 validates only the manifest's integer compatibility-bound structure.
+  - No Harness-specific SDK or implementation was introduced.
