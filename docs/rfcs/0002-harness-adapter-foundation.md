@@ -1,6 +1,6 @@
 # RFC-0002 — Harness Adapter Foundation
 
-Status: Proposed
+Status: Accepted
 
 ## Summary
 
