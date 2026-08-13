@@ -1,20 +1,21 @@
 schema: forge/tdd-evidence@1
 change: CHG-0004
 status: active
-cycle_count: 1
+cycle_count: 3
 cycles:
   - id: TDD-001
     title: Codex Adapter Descriptor and Capability Evidence
     requirements: [FR-001, FR-002, FR-003, FR-004, FR-005, FR-006, FR-007, FR-008]
-    red:
-      commit: 3978e4c45249b57db45219aea411b96bc59626b7
-      run_id: 31703338693
-      valid: true
-      summary: 4 failed, 93 passed; descriptor behavior absent.
-    green:
-      commit: 84067d6c15fdccf5404663a7a0867488cd77a8f5
-      run_id: 31703409359
-      valid: true
-      summary: full suite passed with minimal Codex descriptor and evidence model.
-    refactor:
-      required: false
+    red: {commit: 3978e4c45249b57db45219aea411b96bc59626b7, run_id: 31703338693, valid: true}
+    green: {commit: 84067d6c15fdccf5404663a7a0867488cd77a8f5, run_id: 31703409359, valid: true}
+  - id: TDD-002
+    title: Deterministic Codex Projection Bundle
+    requirements: [FR-009, FR-010, FR-013, FR-018]
+    red: {commit: d96afc8aa62b68783e052ce54cb5b4a52ef891de, run_id: 31703800579, valid: true}
+    green: {commit: 4a42576d16cc7b528264269691982e69ee3e633c, run_id: 31703873806, valid: true}
+    notes: [mapped requirements remain partially credited until later end-to-end cycles]
+  - id: TDD-003
+    title: Gate-Preserving Codex Projection
+    requirements: [FR-013, FR-014, FR-015, FR-016, FR-017]
+    red: {commit: 76000ce2aef30f27c203b7a770294274b68b6994, run_id: 31704166201, valid: true}
+    green: {commit: 52ec32c2c84a36ddbdaf961f31540f5d8b810f01, run_id: 31704306892, valid: true}
