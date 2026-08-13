@@ -2,7 +2,7 @@ schema: forge/tdd-evidence@1
 
 change: CHG-0002
 status: active
-cycle_count: 2
+cycle_count: 3
 
 cycles:
   - id: TDD-001
@@ -35,6 +35,22 @@ cycles:
       commit: 874b925bafc32172358574889d3eae5e14186eb1
       result: Compatibility is exactly min <= project_protocol < max_exclusive, incompatible Protocols raise a structured domain error, invalid intervals are rejected, and the full test suite passed.
 
+  - id: TDD-003
+    requirements: [FR-006, FR-007, FR-008, FR-009, FR-030]
+    behavior: distinguish Forge representation requirements from Adapter-internal requirements and surface unsupported Forge requirements as explicit non-enforcement limitations
+    red:
+      valid: true
+      workflow_run_id: 31694116523
+      job_id: 94427821901
+      commit: bd2dcdf09164c873097c0b704e41c0ff2c85df20
+      reason: The capability requirement model and explicit limitation evaluation did not exist; 4 behavior tests failed while 47 existing tests passed. The prior collection error in run 31694060330 was rejected as invalid RED and is not used as evidence.
+    green:
+      workflow_run_id: 31694172063
+      job_id: 94427997280
+      commit: 447d676bacf108789f042b6830339748e0d917db
+      result: Forge and Adapter-internal requirement sources are distinct, supported Forge requirements produce no limitation, unsupported Forge requirements produce explicit enforced=false limitations, ordering is deterministic, and the full test suite passed.
+
 notes:
   - TDD-001 validates manifest structure; TDD-002 owns compatibility semantics.
+  - TDD-003 does not define semantic mappings such as Strict Review -> hooks; callers provide resolved representation requirements so Core remains Harness-agnostic.
   - No Harness-specific SDK or implementation has been introduced.
