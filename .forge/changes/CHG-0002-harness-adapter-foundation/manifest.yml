@@ -29,7 +29,7 @@ artifacts:
   verification: complete
   review: active
   documentation: complete
-  knowledge_capture: pending
+  knowledge_capture: complete
 
 requirements:
   total: 35
@@ -38,14 +38,14 @@ requirements:
 
 tdd:
   status: complete
-  cycles: 10
+  cycles: 11
 
 verification:
   status: passed
 
 review:
   status: active
-  iteration: 1
+  iteration: 2
   blockers: 0
   majors: 0
   minors: 0
