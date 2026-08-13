@@ -170,16 +170,6 @@ def test_adapter_schema_rejects_non_protocol_bounds() -> None:
     ("identifier", "instance"),
     [
         (
-            "forge/flow@1",
-            {
-                "schema": "forge/flow@1",
-                "flow": {"id": "fast", "name": "FULL", "description": "wrong"},
-                "stages": [{"id": "completion", "required": True}],
-                "gates": {"unrelated": {"require": ["anything"]}},
-                "review": {"required": True, "strict": True, "adversarial": True},
-            },
-        ),
-        (
             "forge/policy/architecture@1",
             {"schema": "forge/policy/architecture@1", "architecture": {"invented": True}},
         ),
@@ -208,5 +198,82 @@ def test_stable_schemas_reject_semantically_empty_or_contradictory_artifacts(
     instance: dict,
 ) -> None:
     """Catch stable schemas that validate artifacts with no promised semantics."""
+    with pytest.raises(ValidationError):
+        Draft202012Validator(_catalog_schemas()[identifier]).validate(instance)
+
+
+def _canonical_full_flow() -> dict:
+    return _load_yaml(ROOT / "protocol/flows/full.yml")
+
+
+def test_flow_schema_rejects_mismatched_identity() -> None:
+    """Catch a Flow whose machine ID and human name contradict each other."""
+    instance = _canonical_full_flow()
+    instance["flow"]["name"] = "FAST"
+
+    with pytest.raises(ValidationError):
+        Draft202012Validator(_catalog_schemas()["forge/flow@1"]).validate(instance)
+
+
+def test_flow_schema_rejects_behavioral_gate_without_red_checks() -> None:
+    """Catch a behavioral Gate that substitutes unrelated requirements for RED."""
+    instance = _canonical_full_flow()
+    instance["gates"]["before_behavioral_implementation"] = {
+        "require": ["not_red"]
+    }
+
+    with pytest.raises(ValidationError):
+        Draft202012Validator(_catalog_schemas()["forge/flow@1"]).validate(instance)
+
+
+def test_flow_schema_rejects_completion_gate_without_completion_requirements() -> None:
+    """Catch a Completion Gate that substitutes unrelated checks."""
+    instance = _canonical_full_flow()
+    instance["gates"]["before_completion"] = {"checks": ["not_completion"]}
+
+    with pytest.raises(ValidationError):
+        Draft202012Validator(_catalog_schemas()["forge/flow@1"]).validate(instance)
+
+
+def test_flow_schema_rejects_full_flow_missing_full_planning_stages() -> None:
+    """Catch FULL that omits its discovery, design, planning, or knowledge stages."""
+    instance = _canonical_full_flow()
+    retained = {"intent", "tdd_implementation", "verification", "strict_review", "completion"}
+    instance["stages"] = [stage for stage in instance["stages"] if stage["id"] in retained]
+
+    with pytest.raises(ValidationError):
+        Draft202012Validator(_catalog_schemas()["forge/flow@1"]).validate(instance)
+
+
+def test_change_schema_requires_reason_for_tdd_exception() -> None:
+    """Catch a Change manifest that exempts TDD without an explicit reason."""
+    instance = _load_yaml(
+        ROOT / ".forge/changes/CHG-0007-protocol-v1-contract-freeze/manifest.yml"
+    )
+    instance["tdd"] = {"status": "exception", "cycles": 0}
+
+    with pytest.raises(ValidationError):
+        Draft202012Validator(_catalog_schemas()["forge/change@1"]).validate(instance)
+
+
+@pytest.mark.parametrize(
+    ("identifier", "path", "section", "field"),
+    [
+        ("forge/policy/architecture@1", "protocol/policies/architecture.yml", "architecture", "evaluate"),
+        ("forge/policy/documentation@1", "protocol/policies/documentation.yml", "documentation", "update_required_when_change_affects"),
+        ("forge/policy/review@1", "protocol/policies/review.yml", "review", "dimensions"),
+        ("forge/policy/security@1", "protocol/policies/security.yml", "security", "review_dimensions"),
+    ],
+)
+def test_policy_schemas_reject_loss_of_canonical_semantic_dimensions(
+    identifier: str,
+    path: str,
+    section: str,
+    field: str,
+) -> None:
+    """Catch a Policy list that remains nonempty after losing its core semantics."""
+    instance = _load_yaml(ROOT / path)
+    instance[section][field] = ["nothing"]
+
     with pytest.raises(ValidationError):
         Draft202012Validator(_catalog_schemas()[identifier]).validate(instance)
