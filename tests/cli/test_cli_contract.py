@@ -2,6 +2,7 @@ from pathlib import Path
 import subprocess
 
 from typer.testing import CliRunner
+import yaml
 
 import forge_cli.app as app_module
 
@@ -41,6 +42,22 @@ def test_init_creates_a_valid_forge_project_from_nested_directory(tmp_path: Path
     validate_result = runner.invoke(app_module.app, ["validate"])
     assert validate_result.exit_code == 0
     assert "Forge project is valid" in validate_result.stdout
+
+
+def test_init_preserves_yaml_significant_repository_name_as_string(tmp_path: Path, monkeypatch) -> None:
+    project_root = tmp_path / "null"
+    project_root.mkdir()
+    _init_git_repository(project_root)
+    monkeypatch.chdir(project_root)
+
+    init_result = runner.invoke(app_module.app, ["init"])
+
+    assert init_result.exit_code == 0
+    configuration = yaml.safe_load((project_root / ".forge" / "forge.yml").read_text(encoding="utf-8"))
+    assert configuration["project"]["name"] == "null"
+
+    validate_result = runner.invoke(app_module.app, ["validate"])
+    assert validate_result.exit_code == 0
 
 
 def test_environment_failure_uses_exit_code_three(tmp_path: Path, monkeypatch) -> None:
