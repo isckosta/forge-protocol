@@ -33,12 +33,12 @@ artifacts:
 
 requirements:
   total: 35
-  implemented: 21
+  implemented: 23
   verified: 0
 
 tdd:
   status: active
-  cycles: 6
+  cycles: 7
 
 verification:
   status: pending
