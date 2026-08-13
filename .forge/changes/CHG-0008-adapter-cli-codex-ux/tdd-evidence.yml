@@ -1,0 +1,92 @@
+schema: forge/tdd-evidence@1
+change: CHG-0008
+status: active
+cycle_count: 7
+cycles:
+  - id: TDD-001A
+    title: Registry stable ordering
+    requirements: [FR-002, NFR-003]
+    behavior: list returns the registered Harness Drivers in ascending Adapter id order
+    red:
+      valid: true
+      command: .venv/bin/python -m pytest tests/unit/test_adapter_registry.py::test_registry_orders_drivers_by_adapter_id -v
+      result: 1 failed
+      reason: The temporary unsorted registry returned ['zeta', 'alpha'] rather than ['alpha', 'zeta'] after successful collection.
+    green:
+      command: .venv/bin/python -m pytest tests/unit/test_adapter_registry.py::test_registry_orders_drivers_by_adapter_id -v
+      result: 1 passed
+  - id: TDD-001B
+    title: Registry unknown Adapter error
+    requirements: [FR-002]
+    behavior: exact-id lookup rejects a missing Adapter with the stable domain error code
+    red:
+      valid: true
+      command: .venv/bin/python -m pytest tests/unit/test_adapter_registry.py::test_registry_rejects_unknown_adapter_with_stable_code -v
+      result: 1 failed
+      reason: The temporary lookup returned None for a missing Adapter, so the expected UnknownAdapterError was not raised after successful collection.
+    green:
+      command: .venv/bin/python -m pytest tests/unit/test_adapter_registry.py::test_registry_rejects_unknown_adapter_with_stable_code -v
+      result: 1 passed
+  - id: TDD-001C
+    title: Registry duplicate Adapter rejection
+    requirements: [FR-002]
+    behavior: construction rejects duplicate Adapter ids
+    red:
+      valid: true
+      command: .venv/bin/python -m pytest tests/unit/test_adapter_registry.py::test_registry_rejects_duplicate_adapter_ids -v
+      result: 1 failed
+      reason: The temporary constructor overwrote the first duplicate and did not raise DuplicateAdapterError after successful collection.
+    green:
+      command: .venv/bin/python -m pytest tests/unit/test_adapter_registry.py::test_registry_rejects_duplicate_adapter_ids -v
+      result: 1 passed
+  - id: TDD-001D
+    title: Static packaged Codex composition
+    requirements: [FR-003, INV-005]
+    behavior: the packaged registry exposes Codex without a network call
+    red:
+      valid: true
+      command: .venv/bin/python -m pytest tests/unit/test_adapter_registry.py::test_packaged_registry_contains_codex_without_network -v
+      result: 1 failed
+      reason: The temporary empty packaged registry raised UnknownAdapterError for codex after successful collection; socket.create_connection remained guarded by the test.
+    green:
+      command: .venv/bin/python -m pytest tests/unit/test_adapter_registry.py::test_packaged_registry_contains_codex_without_network -v
+      result: 1 passed
+  - id: TDD-001E
+    title: Codex driver packaged manifest scaffold
+    requirements: [FR-003, INV-005]
+    behavior: CodexDriver exposes the packaged Codex identity to the generic registry
+    red:
+      valid: true
+      command: .venv/bin/python -m pytest tests/unit/test_adapter_registry.py::test_codex_driver_exposes_packaged_manifest -v
+      result: 1 failed
+      reason: The temporary placeholder manifest returned adapter_id missing instead of codex after successful collection.
+    green:
+      command: .venv/bin/python -m pytest tests/unit/test_adapter_registry.py::test_codex_driver_exposes_packaged_manifest -v
+      result: 1 passed
+  - id: TDD-001F
+    title: Codex driver no-target scaffold
+    requirements: [FR-003]
+    behavior: CodexDriver has no default target before T-002 target evidence
+    red:
+      valid: true
+      command: .venv/bin/python -m pytest tests/unit/test_adapter_registry.py::test_codex_driver_has_no_default_target_before_target_evidence -v
+      result: 1 failed
+      reason: The temporary driver returned .agents/skills/forge instead of None after successful collection.
+    green:
+      command: .venv/bin/python -m pytest tests/unit/test_adapter_registry.py::test_codex_driver_has_no_default_target_before_target_evidence -v
+      result: 1 passed
+  - id: TDD-001G
+    title: Codex driver projection scaffold
+    requirements: [FR-003]
+    behavior: CodexDriver deliberately rejects projection before T-003 implements it
+    red:
+      valid: true
+      command: .venv/bin/python -m pytest tests/unit/test_adapter_registry.py::test_codex_driver_project_is_explicitly_unimplemented -v
+      result: 1 failed
+      reason: The temporary project method returned None, so the expected NotImplementedError was not raised after successful collection.
+    green:
+      command: .venv/bin/python -m pytest tests/unit/test_adapter_registry.py::test_codex_driver_project_is_explicitly_unimplemented -v
+      result: 1 passed
+notes:
+  - Focused regression command `.venv/bin/python -m pytest tests/unit/test_adapter_registry.py tests/unit/test_codex_adapter_descriptor.py -v` passed 11 tests.
+  - 'rg -n "codex" src/forge_cli/adapters/driver.py src/forge_cli/adapters/registry.py returned no matches.'

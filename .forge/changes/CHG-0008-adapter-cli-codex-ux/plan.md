@@ -49,6 +49,8 @@
 - Create: `src/forge_cli/adapters/driver.py`
 - Create: `src/forge_cli/adapters/registry.py`
 - Create: `src/forge_cli/adapters/packaged.py`
+- Create: `src/forge_cli/adapters/codex/driver.py` as an identity-only
+  scaffold; projection remains unimplemented until Task 3's behavioral RED.
 - Create: `tests/unit/test_adapter_registry.py`
 
 **Interfaces:**
@@ -111,7 +113,10 @@ class HarnessDriver(Protocol):
     def project(self, context: AdapterProjectionContext) -> AdapterProjection: ...
 ```
 
-Reject duplicate Adapter ids during construction and sort once. Keep the Codex import only in `packaged.py`.
+Reject duplicate Adapter ids during construction and sort once. Keep the Codex
+import only in `packaged.py`. The initial `CodexDriver` exposes its packaged
+manifest, has no target yet, and raises `NotImplementedError` from `project`;
+Task 3 adds projection behavior test-first.
 
 - [ ] **Step 4: Execute GREEN and regression tests**
 
@@ -122,7 +127,7 @@ Expected: all pass; inspect `rg -n "codex" src/forge_cli/adapters/{driver,regist
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/forge_cli/adapters/driver.py src/forge_cli/adapters/registry.py src/forge_cli/adapters/packaged.py tests/unit/test_adapter_registry.py .forge/changes/CHG-0008-adapter-cli-codex-ux/tdd-evidence.yml
+git add src/forge_cli/adapters/driver.py src/forge_cli/adapters/registry.py src/forge_cli/adapters/packaged.py src/forge_cli/adapters/codex/driver.py tests/unit/test_adapter_registry.py .forge/changes/CHG-0008-adapter-cli-codex-ux/tdd-evidence.yml
 git commit -m "feat(adapter): add packaged driver registry"
 ```
 
@@ -195,7 +200,7 @@ git commit -m "feat(adapter): add schema-backed target configuration"
 
 **Files:**
 
-- Create: `src/forge_cli/adapters/codex/driver.py`
+- Modify: `src/forge_cli/adapters/codex/driver.py`
 - Modify: `src/forge_cli/adapters/codex/projection.py`
 - Modify: `src/forge_cli/adapters/codex/resources/skills/workflow.md`
 - Modify: `src/forge_cli/adapters/codex/__init__.py`
