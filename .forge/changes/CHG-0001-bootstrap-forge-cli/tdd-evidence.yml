@@ -1,0 +1,28 @@
+schema: forge/tdd-evidence@1
+
+change: CHG-0001
+
+cycles:
+  - id: TDD-001
+    requirement: FR-003
+    behavior: forge version reports CLI and supported Protocol versions
+
+    red:
+      status: observed
+      workflow_run_id: 31667898431
+      job_id: 94346320217
+      commit: 9b68d9ada980ef14fd62db858dcd31d7cd1fc3d9
+      test: tests/cli/test_version.py::test_version_reports_cli_and_supported_protocol_versions
+      expected_failure: >
+        The public CLI does not yet provide the version command required by FR-003.
+      observed_failure: >
+        Typer raised RuntimeError: Could not get a command for this Typer instance.
+        The package and test dependencies installed successfully, and the test reached
+        the CLI invocation before failing because no command was registered.
+      valid: true
+
+    green:
+      status: pending
+
+    refactor:
+      status: pending
