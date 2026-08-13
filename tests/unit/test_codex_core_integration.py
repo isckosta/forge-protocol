@@ -48,7 +48,9 @@ def test_bundle_resources_become_forge_owned_generic_operations() -> None:
         capability_requirements=(), repository_state=(),
     )
     assert [item.path for item in plan.operations] == [
-        "tools/codex/forge-contract.md", "tools/codex/forge-flow.md",
+        "tools/codex/SKILL.md",
+        "tools/codex/references/engineering-contract.md",
+        "tools/codex/references/flows/full.yml",
     ]
     assert all(item.ownership is OwnershipMode.FORGE_OWNED for item in plan.operations)
     assert all(item.intent is OperationIntent.CREATE for item in plan.operations)
@@ -63,12 +65,12 @@ def test_existing_unowned_target_is_classified_as_conflict() -> None:
         capability_requirements=(),
         repository_state=(
             RepositoryArtifactState(
-                path="tools/codex/forge-flow.md", exists=True,
+                path="tools/codex/references/flows/full.yml", exists=True,
                 current_digest="user-state", expected_digest=None,
             ),
         ),
     )
-    operation = next(item for item in plan.operations if item.path.endswith("forge-flow.md"))
+    operation = next(item for item in plan.operations if item.path.endswith("references/flows/full.yml"))
     assert operation.intent is OperationIntent.CONFLICT
     assert plan.conflicts
 
@@ -131,7 +133,9 @@ def test_installation_record_uses_forge_owned_planned_artifacts() -> None:
     record = build_codex_installation_record(descriptor=descriptor, plan=plan)
     assert record.adapter_id == "codex"
     assert [item.path for item in record.generated_artifacts] == [
-        "tools/codex/forge-contract.md", "tools/codex/forge-flow.md",
+        "tools/codex/SKILL.md",
+        "tools/codex/references/engineering-contract.md",
+        "tools/codex/references/flows/full.yml",
     ]
     assert [item.digest for item in record.generated_artifacts] == [
         item.content_digest for item in plan.operations

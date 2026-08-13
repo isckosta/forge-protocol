@@ -16,7 +16,7 @@ def test_projection_uses_packaged_workflow_template() -> None:
             contract_content="canonical contract",
         )
     )
-    flow = next(item for item in bundle.resources if item.name == "forge-flow.md")
+    skill = next(item for item in bundle.resources if item.name == "SKILL.md")
 
     assert template
-    assert template in flow.content
+    assert template in skill.content

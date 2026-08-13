@@ -74,7 +74,7 @@ def test_codex_driver_exposes_packaged_manifest() -> None:
     assert driver.manifest.harness == "codex"
 
 
-def test_codex_driver_project_is_explicitly_unimplemented() -> None:
+def test_codex_driver_projects_empty_effective_flow_set_as_a_skill() -> None:
     context = AdapterProjectionContext(
         project_protocol=1,
         flows=(),
@@ -82,5 +82,9 @@ def test_codex_driver_project_is_explicitly_unimplemented() -> None:
         target=".agents/skills/forge",
     )
 
-    with pytest.raises(NotImplementedError):
-        CodexDriver().project(context)
+    projection = CodexDriver().project(context)
+
+    assert [artifact.path for artifact in projection.artifacts] == [
+        ".agents/skills/forge/SKILL.md",
+        ".agents/skills/forge/references/engineering-contract.md",
+    ]

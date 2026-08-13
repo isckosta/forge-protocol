@@ -45,7 +45,7 @@ def test_projection_bundle_is_human_reviewable() -> None:
 
     combined = "\n".join(resource.content for resource in bundle.resources)
     assert "Forge" in combined
-    assert "full" in combined
+    assert "references/flows/full.yml" in {resource.name for resource in bundle.resources}
     assert "Repository-native Forge state is authoritative" in combined
 
 

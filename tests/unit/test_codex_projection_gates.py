@@ -16,30 +16,31 @@ def _content(flow_content: str = FLOW) -> str:
     return "\n".join(item.content for item in bundle.resources)
 
 
-def test_projection_presents_required_stage_order() -> None:
+def test_projection_keeps_required_stage_order_in_the_effective_flow_reference() -> None:
     content = _content()
-    labels = ["Specification Review", "TDD Implementation", "Verification", "Strict Review", "Completion"]
-    for label in labels:
-        assert label in content
-    positions = [content.index(label) for label in labels]
+    stages = ["specification_review", "tdd_implementation", "verification", "strict_review", "completion"]
+    for stage in stages:
+        assert stage in content
+    positions = [content.index(stage) for stage in stages]
     assert positions == sorted(positions)
 
 
 def test_projection_presents_red_gate() -> None:
     content = _content()
-    assert "RED must be executed" in content
-    assert "RED must fail for the expected reason" in content
-    assert "Behavioral implementation requires valid RED" in content
+    assert "red_executed" in content
+    assert "red_failed_for_expected_reason" in content
+    assert "TDD RED-before-behavior" in content
 
 
 def test_projection_presents_completion_gate() -> None:
     content = _content()
-    assert "Completion requires Verification to pass" in content
-    assert "Completion requires Strict Review to pass" in content
+    assert "verification_passed" in content
+    assert "review_passed" in content
+    assert "Strict Review requirements" in content
 
 
 def test_projection_presents_blocking_review_thread_gate() -> None:
-    assert BLOCKING_THREAD_INSTRUCTION in _content()
+    assert "blocking_review_threads_resolved" in _content()
 
 
 def test_projection_does_not_invent_blocking_review_thread_gate() -> None:
@@ -48,7 +49,7 @@ def test_projection_does_not_invent_blocking_review_thread_gate() -> None:
         "",
     )
 
-    assert BLOCKING_THREAD_INSTRUCTION not in _content(flow_without_gate)
+    assert "blocking_review_threads_resolved" not in _content(flow_without_gate)
 
 
 def test_projection_marks_instructions_as_representation_not_enforcement() -> None:
