@@ -4,6 +4,7 @@ import typer
 
 from forge_cli.doctor import diagnose
 from forge_cli.git import NotGitRepositoryError, resolve_project_root
+from forge_cli.protocol_resources import resolve_protocol_root
 from forge_cli.validation import validate_project
 from forge_cli.workspace import WorkspaceAlreadyInitializedError, initialize_workspace
 
@@ -16,7 +17,7 @@ app = typer.Typer()
 
 
 def _protocol_root() -> Path:
-    return Path(__file__).resolve().parents[2] / "protocol"
+    return resolve_protocol_root()
 
 
 def _workspace_files(project_root: Path) -> dict[str, str]:
