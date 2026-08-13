@@ -3,8 +3,8 @@ forge:
   artifact: strict_review
   schema: 1
 change: CHG-0002
-iteration: 1
-status: failed
+iteration: 2
+status: passed
 ---
 
 # Strict Review — CHG-0002
@@ -26,21 +26,42 @@ Project policy treats MAJOR findings as blocking.
 
 Severity: MAJOR
 
-Status: OPEN
+Status: RESOLVED
 
-The publisher checks that a `CREATE` target is absent during global preflight, but does not revalidate absence immediately before publication. `_replace_file` ultimately uses `os.replace`, so a file created after preflight and before the write can be silently replaced.
+The initial publisher checked that a `CREATE` target was absent during global preflight but did not protect the interval before publication. `_replace_file` used replacement semantics, so a file created after preflight could be silently replaced.
 
-This violates the no-silent-overwrite contract expressed by FR-017 and INV-004. The defect is especially material because the publisher explicitly narrows the analogous TOCTOU window for `UPDATE`, making the missing `CREATE` precondition inconsistent with the intended safe-publication boundary.
+Regression-first resolution:
 
-Required resolution:
+- RED: workflow run `31698420717`, job `94441436355`, commit `de6ed5cd004be06e3aa061ae1a3ff8c9a5dbb8d2` — the new regression failed while 92 existing tests passed;
+- GREEN: workflow run `31698601674`, job `94442009987`, commit `924f7b5ba9a086f5de6744a6426b05ef5c71bb29` — 93 tests passed;
+- Distribution Verification: workflow run `31698601685`, job `94442010635` — SUCCESS on the same GREEN commit.
 
-1. establish a regression test that creates the target after preflight but before the CREATE write;
-2. reach valid RED for silent replacement;
-3. change publication so CREATE revalidates target absence immediately before mutation and reports conflict instead of overwriting;
-4. preserve any externally-created file during rollback/conflict handling;
-5. rerun the full automated and isolated-distribution Verification;
-6. perform adversarial re-review.
+The publisher now reserves every `CREATE` target using exclusive filesystem creation before replacement. If the target appears after preflight, reservation fails with `AdapterPublicationConflictError`; the externally-created file is not added to rollback state and remains untouched.
+
+## Iteration 2 — Adversarial Re-review
+
+Result: PASSED
+
+Re-review examined:
+
+- Adapter manifest identity and Protocol compatibility semantics;
+- capability limitations and no-false-enforcement behavior;
+- deterministic plan ordering and shared merge provenance;
+- user-owned, Forge-owned, and shared ownership classification;
+- generated-state drift detection;
+- installation metadata as derived state rather than lifecycle authority;
+- Harness conformance checks for TDD RED and Strict Review preservation;
+- repository path confinement, traversal, backslash, and symlink handling;
+- stale UPDATE preconditions immediately before mutation;
+- exclusive CREATE reservation after global preflight;
+- rollback behavior and installation-record-last semantics;
+- CLI infrastructure-only boundary and absence of Adapter activation lifecycle;
+- isolated wheel, offline runtime, packaged Schemas/loaders, and dependency audit.
+
+No unresolved BLOCKER or MAJOR findings remain.
+
+The Foundation does not claim crash-atomic multi-file transactions against hard process termination or hostile concurrent mutation of parent directories. Such a failure cannot intentionally publish the installation record as a success marker, and stronger transactional filesystem semantics remain outside Protocol v1 Foundation scope.
 
 ## Review gate
 
-FAILED until REV-001 is resolved and re-reviewed.
+PASSED.
