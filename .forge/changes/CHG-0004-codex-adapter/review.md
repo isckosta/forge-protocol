@@ -3,8 +3,8 @@ forge:
   artifact: strict_review
   schema: 1
 change: CHG-0004
-iteration: 2
-status: passed
+iteration: 3
+status: failed
 ---
 
 # Strict Review — CHG-0004
@@ -99,3 +99,21 @@ Fresh post-remediation evidence at code commit `b24630f0a4b2a0930504008a43ab5168
 PASSED.
 
 Remaining accepted risk: REV-003 only.
+
+## Iteration 3 — GitHub Review Reconciliation
+
+Result: FAILED
+
+### REV-005 — Represented-invariant limitations do not reach the plan
+
+Severity: MAJOR
+
+Status: OPEN
+
+The unresolved P1 thread on PR #5 identifies a real integration gap. `assessment.to_generic_limitation()` can classify a represented but technically unenforced Forge invariant, but `plan_codex_projection()` accepts only generic capability requirements. Because the Codex descriptor advertises `skills` as supported, generic capability evaluation emits no limitation for an invariant represented through that skill. The resulting plan and installation record therefore omit required non-enforcement evidence, violating FR-024 and FR-031.
+
+Resolution requires regression-first TDD proving that a generic `CapabilityLimitation` created from Codex invariant assessment survives both planning and installation-record construction independently of the supported capability boolean.
+
+## Current review gate
+
+FAILED pending resolution and re-review of REV-005.

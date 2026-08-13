@@ -1,6 +1,6 @@
 schema: forge/tdd-evidence@1
 change: CHG-0004
-status: complete
+status: active
 cycle_count: 10
 cycles:
   - id: TDD-001

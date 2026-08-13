@@ -7,6 +7,7 @@ from forge_cli.adapters.ownership import DriftKind
 from forge_cli.adapters.plan import OperationIntent, OwnershipMode
 from forge_cli.adapters.planner import RepositoryArtifactState
 from forge_cli.adapters.codex import load_codex_adapter_descriptor
+from forge_cli.adapters.codex.assessment import assess_invariant, to_generic_limitation
 from forge_cli.adapters.codex.projection import CodexProjectionInput, generate_codex_projection_bundle
 from forge_cli.adapters.codex.targets import resolve_publication_target
 
@@ -85,6 +86,37 @@ def test_generic_capability_limitation_survives_codex_planning() -> None:
         capability_requirements=(requirement,), repository_state=(),
     )
     assert any("requires-hooks" in item for item in plan.limitations)
+
+
+def test_represented_invariant_limitation_survives_plan_and_installation_record() -> None:
+    _require_behavior()
+    assessment = assess_invariant(
+        invariant_id="INV-TDD",
+        source_reference="FR-016",
+        represented=True,
+        technical_enforcement=False,
+    )
+    limitation = to_generic_limitation(assessment, capability="skills")
+    assert limitation is not None
+    target = resolve_publication_target(explicit_target="tools/codex")
+    assert target is not None
+
+    plan = plan_codex_projection(
+        bundle=_bundle(),
+        target=target,
+        project_protocol=1,
+        capability_requirements=(),
+        invariant_limitations=(limitation,),
+        repository_state=(),
+    )
+    record = build_codex_installation_record(
+        descriptor=load_codex_adapter_descriptor(),
+        plan=plan,
+    )
+    expected = ("INV-TDD: capability skills cannot be enforced (FR-016)",)
+
+    assert plan.limitations == expected
+    assert record.limitations == expected
 
 
 def test_installation_record_uses_forge_owned_planned_artifacts() -> None:
