@@ -2,7 +2,7 @@ schema: forge/tdd-evidence@1
 
 change: CHG-0002
 status: active
-cycle_count: 7
+cycle_count: 8
 
 cycles:
   - id: TDD-001
@@ -110,6 +110,21 @@ cycles:
       commit: 69b5707cdf2f8cb2865fc82fe4b458ccae1a7840
       result: Drift detection now compares installation-record expected digests with already-observed digests, distinguishes modified and missing generated artifacts, returns deterministic findings, and routes divergent Forge-owned state to conflict before update; the full test suite passed.
 
+  - id: TDD-008
+    requirements: [FR-026, FR-027, FR-028, FR-029, FR-030, INV-001, INV-002, INV-003]
+    behavior: validate that a Harness representation preserves canonical stages, Gates, invariants, TDD RED, Strict Review, explicit enforcement limitations, and repository semantic authority
+    red:
+      valid: true
+      workflow_run_id: 31695617477
+      job_id: 94432605221
+      commit: 623d49305103e70c3fb7460f8ba52a1ba4963fca
+      reason: Harness-agnostic conformance validation did not exist; after rejecting the prior uncontrolled ImportError run 31695550901 as invalid RED, 6 behavior tests failed explicitly while 70 existing tests passed.
+    green:
+      workflow_run_id: 31695751227
+      job_id: 94433029347
+      commit: 7492fcd17869ea3dfd3f933fbd039b81cc4294fe
+      result: Conformance validation now rejects removed required stages/Gates/invariants, TDD RED bypass, Strict Review bypass, and semantic-authority shifts. Required invariants may be represented but unenforced only when an explicit enforced=false limitation exists; limitations never excuse removing canonical representation. The full test suite passed.
+
 notes:
   - TDD-001 validates manifest structure; TDD-002 owns compatibility semantics.
   - TDD-003 does not define semantic mappings such as Strict Review -> hooks; callers provide resolved representation requirements so Core remains Harness-agnostic.
@@ -118,4 +133,6 @@ notes:
   - FR-019 is not counted as fully implemented yet because deterministic merge-strategy provenance is not proven by the classifier alone.
   - TDD-006 validates installation-state semantics in the source tree; isolated wheel packaging of the new schema remains explicitly deferred to T-011 and is not claimed here.
   - TDD-007 consumes observed digests supplied by callers; it does not read filesystem state or publish mutations. Filesystem observation/application remain later responsibilities.
+  - The initial TDD-008 run 31695550901 failed through an uncontrolled ImportError and is explicitly rejected as RED evidence. The valid RED is run 31695617477.
+  - TDD-008 validates preservation against already-resolved Forge requirements. It does not infer Harness capability semantics and introduces no Harness SDK dependency.
   - No Harness-specific SDK or implementation has been introduced.
