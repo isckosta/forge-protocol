@@ -5,6 +5,7 @@ from typer.testing import CliRunner
 import yaml
 
 import forge_cli.app as app_module
+import forge_cli.git as git_module
 
 
 runner = CliRunner()
@@ -67,6 +68,23 @@ def test_environment_failure_uses_exit_code_three(tmp_path: Path, monkeypatch) -
 
     assert result.exit_code == 3
     assert "E_FORGE_NOT_GIT_REPOSITORY" in result.stdout
+
+
+def test_missing_git_executable_uses_environment_exit_code(tmp_path: Path, monkeypatch) -> None:
+    monkeypatch.chdir(tmp_path)
+
+    def missing_git(*args, **kwargs):
+        raise FileNotFoundError("git")
+
+    monkeypatch.setattr(git_module.subprocess, "run", missing_git)
+
+    init_result = runner.invoke(app_module.app, ["init"])
+    validate_result = runner.invoke(app_module.app, ["validate"])
+
+    assert init_result.exit_code == 3
+    assert "E_FORGE_GIT_UNAVAILABLE" in init_result.stdout
+    assert validate_result.exit_code == 3
+    assert "E_FORGE_GIT_UNAVAILABLE" in validate_result.stdout
 
 
 def test_unexpected_internal_failure_uses_distinct_exit_code(monkeypatch, tmp_path: Path) -> None:
