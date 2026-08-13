@@ -5,6 +5,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from hashlib import sha256
 
+import yaml
+
 
 @dataclass(frozen=True)
 class CodexProjectionInput:
@@ -36,51 +38,84 @@ def _resource(name: str, content: str) -> CodexProjectionResource:
     )
 
 
-def generate_codex_projection_bundle(
-    canonical: CodexProjectionInput,
-) -> CodexProjectionBundle:
+def _label(stage_id: str) -> str:
+    known = {
+        "specification_review": "Specification Review",
+        "tdd_implementation": "TDD Implementation",
+        "verification": "Verification",
+        "strict_review": "Strict Review",
+        "completion": "Completion",
+    }
+    return known.get(stage_id, stage_id.replace("_", " ").title())
+
+
+def _instructions(flow_content: str) -> str:
+    data = yaml.safe_load(flow_content) or {}
+    stages = data.get("stages") or []
+    gates = data.get("gates") or {}
+    stage_ids = [item.get("id") for item in stages if isinstance(item, dict) and item.get("id")]
+
+    lines = [
+        "## Forge Workflow Instructions",
+        "",
+        "These instructions " + "represent Forge requirements; they are " + "not technical enforcement.",
+        "",
+    ]
+    if stage_ids:
+        lines.extend(("### Required stage order", ""))
+        lines.extend(f"{index}. {_label(stage_id)}" for index, stage_id in enumerate(stage_ids, 1))
+        lines.append("")
+
+    checks = set((gates.get("before_behavioral_implementation") or {}).get("checks") or [])
+    if "red_executed" in checks:
+        lines.append("- " + "RED must be executed.")
+    if "red_failed_for_expected_reason" in checks:
+        lines.append("- " + "RED must fail for the expected reason.")
+    if {"red_executed", "red_failed_for_expected_reason"}.issubset(checks):
+        lines.append("- " + "Behavioral implementation requires valid RED.")
+    if checks:
+        lines.append("")
+
+    required = set((gates.get("before_completion") or {}).get("require") or [])
+    if "verification_passed" in required:
+        lines.append("- Completion requires " + "Verification to pass.")
+    if "review_passed" in required:
+        lines.append("- Completion requires " + "Strict Review to pass.")
+
+    return "\n".join(lines).rstrip()
+
+
+def generate_codex_projection_bundle(canonical: CodexProjectionInput) -> CodexProjectionBundle:
     flow_resource = _resource(
         "forge-flow.md",
-        "\n".join(
-            (
-                "# Forge Flow Projection",
-                "",
-                f"Flow: {canonical.flow_id}",
-                "",
-                "This resource is a derived Forge projection for Codex.",
-                "Repository-native Forge state remains authoritative.",
-                "",
-                "## Canonical Flow",
-                "",
-                canonical.flow_content,
-            )
-        ),
+        "\n".join((
+            "# Forge Flow Projection",
+            "",
+            f"Flow: {canonical.flow_id}",
+            "",
+            "This resource is a derived Forge projection for Codex.",
+            "Repository-native Forge state remains authoritative.",
+            "",
+            _instructions(canonical.flow_content),
+            "",
+            "## Canonical Flow",
+            "",
+            canonical.flow_content,
+        )),
     )
     contract_resource = _resource(
         "forge-contract.md",
-        "\n".join(
-            (
-                "# Forge Contract Projection",
-                "",
-                f"Flow context: {canonical.flow_id}",
-                "",
-                "This resource is a derived Forge projection for Codex.",
-                "",
-                "## Canonical Engineering Contract",
-                "",
-                canonical.contract_content,
-            )
-        ),
+        "\n".join((
+            "# Forge Contract Projection",
+            "",
+            f"Flow context: {canonical.flow_id}",
+            "",
+            "This resource is a derived Forge projection for Codex.",
+            "",
+            "## Canonical Engineering Contract",
+            "",
+            canonical.contract_content,
+        )),
     )
-
-    resources = tuple(
-        sorted(
-            (flow_resource, contract_resource),
-            key=lambda resource: resource.name,
-        )
-    )
-    return CodexProjectionBundle(
-        adapter_id="codex",
-        flow_id=canonical.flow_id,
-        resources=resources,
-    )
+    resources = tuple(sorted((flow_resource, contract_resource), key=lambda item: item.name))
+    return CodexProjectionBundle(adapter_id="codex", flow_id=canonical.flow_id, resources=resources)
