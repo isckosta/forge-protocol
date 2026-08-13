@@ -39,9 +39,9 @@ def _manifest() -> AdapterManifest:
     )
 
 
-def _record(*artifacts: tuple[str, str]) -> AdapterInstallationRecord:
+def _record(*artifacts: tuple[str, str], adapter_id: str = "example") -> AdapterInstallationRecord:
     return AdapterInstallationRecord(
-        adapter_id="example",
+        adapter_id=adapter_id,
         adapter_version="1.0.0",
         harness="example-harness",
         protocol_min=1,
@@ -136,6 +136,21 @@ def test_repository_escape_path_is_rejected_without_writing_outside_root(tmp_pat
     assert not outside.exists()
 
 
+def test_backslash_path_is_rejected_as_cross_platform_ambiguous(tmp_path: Path) -> None:
+    publisher = publisher_module()
+    plan = plan_adapter(
+        manifest=_manifest(),
+        effective_configuration=EffectiveAdapterConfiguration(1, ()),
+        projections=(ProjectedArtifact(path=r"tool\generated.md", ownership=OwnershipMode.FORGE_OWNED, content="ambiguous"),),
+        repository_state=(),
+    )
+
+    with pytest.raises(publisher.UnsafeAdapterPathError):
+        publisher.publish_adapter_plan(tmp_path, plan, _record())
+
+    assert not (tmp_path / r"tool\generated.md").exists()
+
+
 def test_symlink_escape_is_rejected(tmp_path: Path) -> None:
     publisher = publisher_module()
     outside = tmp_path.parent / "forge-outside-dir"
@@ -157,6 +172,36 @@ def test_symlink_escape_is_rejected(tmp_path: Path) -> None:
         publisher.publish_adapter_plan(tmp_path, plan, _record())
 
     assert not (outside / "generated.md").exists()
+
+
+def test_adapter_id_cannot_escape_installation_state_directory(tmp_path: Path) -> None:
+    publisher = publisher_module()
+    plan = AdapterPlan(adapter_id="../escape", operations=())
+
+    with pytest.raises(publisher.UnsafeAdapterPathError):
+        publisher.publish_adapter_plan(tmp_path, plan, _record(adapter_id="../escape"))
+
+    assert not (tmp_path / ".forge/escape/installation.yml").exists()
+
+
+def test_installation_record_digest_must_match_planned_forge_owned_content(tmp_path: Path) -> None:
+    publisher = publisher_module()
+    plan = plan_adapter(
+        manifest=_manifest(),
+        effective_configuration=EffectiveAdapterConfiguration(1, ()),
+        projections=(ProjectedArtifact(path="generated.md", ownership=OwnershipMode.FORGE_OWNED, content="new"),),
+        repository_state=(),
+    )
+
+    with pytest.raises(publisher.AdapterPublicationError):
+        publisher.publish_adapter_plan(
+            tmp_path,
+            plan,
+            _record(("generated.md", digest_content("different"))),
+        )
+
+    assert not (tmp_path / "generated.md").exists()
+    assert not (tmp_path / ".forge/adapters/example/installation.yml").exists()
 
 
 def test_publication_failure_rolls_back_files_and_never_publishes_installation_record(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
