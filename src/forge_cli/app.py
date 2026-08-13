@@ -7,6 +7,11 @@ PROTOCOL_VERSION = "1-draft"
 app = typer.Typer()
 
 
+@app.callback()
+def main() -> None:
+    """Forge CLI infrastructure commands."""
+
+
 @app.command()
 def version() -> None:
     """Report Forge CLI and supported Protocol versions."""
