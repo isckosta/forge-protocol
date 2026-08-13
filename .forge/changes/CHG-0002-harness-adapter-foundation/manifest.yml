@@ -11,7 +11,7 @@ flow:
   escalations: []
 
 state:
-  current: verification
+  current: review
 
 artifacts:
   intent: complete
@@ -26,26 +26,26 @@ artifacts:
   traceability: complete
   tdd_evidence: complete
   implementation: complete
-  verification: active
-  review: pending
+  verification: complete
+  review: active
   documentation: complete
   knowledge_capture: pending
 
 requirements:
   total: 35
   implemented: 35
-  verified: 0
+  verified: 35
 
 tdd:
   status: complete
   cycles: 10
 
 verification:
-  status: active
+  status: passed
 
 review:
-  status: pending
-  iteration: 0
+  status: active
+  iteration: 1
   blockers: 0
   majors: 0
   minors: 0
