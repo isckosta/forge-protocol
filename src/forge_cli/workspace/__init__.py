@@ -30,11 +30,13 @@ def initialize_workspace(project_root: Path, files: Mapping[str, str]) -> Path:
     normalized = _validate_workspace_plan(files)
     lock_path = project_root / ".forge.init.lock"
     lock_fd: int | None = None
+    lock_acquired = False
     staging: Path | None = None
 
     try:
         try:
             lock_fd = os.open(lock_path, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600)
+            lock_acquired = True
         except FileExistsError as error:
             raise WorkspaceInitializationInProgressError(str(lock_path)) from error
 
@@ -64,7 +66,7 @@ def initialize_workspace(project_root: Path, files: Mapping[str, str]) -> Path:
             os.close(lock_fd)
         if staging is not None and staging.exists():
             shutil.rmtree(staging)
-        if lock_path.exists() and lock_fd is None:
+        if lock_acquired:
             try:
                 lock_path.unlink()
             except FileNotFoundError:
