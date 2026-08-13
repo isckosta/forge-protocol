@@ -109,10 +109,11 @@ def plan_adapter(
             merge_result=merge_result,
         )
 
-        operation_content = (
-            decision.content
-            if decision.content is not None
-            else projection.content
+        operation_content = decision.content if decision.content is not None else projection.content
+        expected_current_digest = (
+            state.current_digest
+            if decision.intent is OperationIntent.UPDATE and state.exists
+            else None
         )
         operations.append(
             AdapterOperation.from_content(
@@ -120,6 +121,7 @@ def plan_adapter(
                 ownership=projection.ownership,
                 intent=decision.intent,
                 content=operation_content,
+                expected_current_digest=expected_current_digest,
             )
         )
 
