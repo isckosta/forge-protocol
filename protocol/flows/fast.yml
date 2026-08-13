@@ -57,6 +57,7 @@ gates:
     require:
       - verification_passed
       - review_passed
+      - blocking_review_threads_resolved
       - documentation_impact_evaluated
       - tdd_compliant_or_explicitly_excepted
 
