@@ -128,3 +128,31 @@ cycles:
     refactor:
       status: not_performed
       reason: The layer-preserving resolver is intentionally small and avoids premature semantic merging of Markdown Contracts.
+
+  - id: TDD-006
+    requirements: [FR-016, FR-017, FR-020, FR-021, FR-022, FR-029, FR-030]
+    behavior: validate a Forge project through structured findings and expose the result through forge validate
+    red:
+      status: observed
+      workflow_run_id: 31669614311
+      job_id: 94351355295
+      commit: 673734d35e9f50c33b0ff6553c2aea6a1e8aa287
+      tests:
+        - tests/unit/test_validation.py::test_valid_project_returns_passed_result
+        - tests/unit/test_validation.py::test_missing_workspace_returns_actionable_not_initialized_finding
+        - tests/unit/test_validation.py::test_unknown_project_flow_returns_actionable_finding
+        - tests/unit/test_validation.py::test_missing_canonical_contract_returns_actionable_finding
+        - tests/cli/test_validate.py::test_validate_reports_success_for_valid_forge_project
+        - tests/cli/test_validate.py::test_validate_reports_not_initialized_with_exit_code_two
+      expected_failure: Forge has no validation application boundary or public validate command.
+      observed_failure: Six new tests failed while seventeen prior tests passed. Validation functions were absent and the CLI had no validate command.
+      valid: true
+    green:
+      status: observed
+      workflow_run_id: 31669667157
+      job_id: 94351504760
+      commit: c3f3b9e60106bac112099d848b78b11b32a82d1a
+      result: GitHub Actions passed. Forge validates workspace presence, project configuration, project Flow references, canonical Contract availability, renders structured actionable findings, and returns exit code 0 for valid state or 2 for invalid Forge state.
+    refactor:
+      status: not_performed
+      reason: The validation pipeline is intentionally explicit and composes existing boundaries without adding another abstraction layer.
