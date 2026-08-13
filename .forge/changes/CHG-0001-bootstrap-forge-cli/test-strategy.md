@@ -3,7 +3,7 @@ forge:
   artifact: test_strategy
   schema: 1
 change: CHG-0001
-status: active
+status: approved
 ---
 
 # Test Strategy — Bootstrap Forge CLI
