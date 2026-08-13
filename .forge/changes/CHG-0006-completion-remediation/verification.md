@@ -28,10 +28,14 @@ Verification passed for the behavioral remediation at code commit `c0ba501cedf27
 - **AC-001 — PASSED.** A Flow containing `blocking_review_threads_resolved` produces an explicit instruction requiring all blocking review threads on any active external review surface to be resolved before Completion.
 - **AC-002 — PASSED.** A Flow without the token does not receive the instruction.
 - **AC-004 — PASSED for remediation evidence.** CHG-0006 owns its distinct RED/GREEN commits and runs; CHG-0005 evidence is not reused as a CHG-0006 cycle.
-- **AC-003 — PENDING Documentation.** Engineering Contract and Architecture alignment occurs after Strict Review under the FULL Flow.
+- **AC-003 — PASSED.** The Engineering Contract and Architecture now describe the same active-external-review reconciliation rule and preserve repository/process authority boundaries.
 
 ## CHG-0005 historical reconciliation
 
 CHG-0005's behavioral regression remains valid historical context: RED run `31723140301` at `929b6c4f1bfe88ca5ef3ab25e797b66e12a1433b`, GREEN run `31723428304` at `a1898f3b39ee4121610491eff947aa5ef1d57839`, and green refactor run `31723460470` at `f96cfead579b2a3f031f8bc828e4815091c318b8`. These values explain the remediation but are not recorded as CHG-0006 TDD evidence.
 
-Verification status: PASSED for implementation and evidence requirements. Documentation remains a later required FULL stage.
+## Documentation verification
+
+The Engineering Contract now makes active external blocking threads a Completion blocker alongside unresolved BLOCKER findings. Architecture explains reconciliation before `review_passed`, the trivially satisfied no-external-surface case, and the separation between external process evidence and repository-native canonical Change state. Knowledge Capture preserves the Adapter/CLI non-enforcement boundary and immutable CHG-0005 history.
+
+Verification status: PASSED for all four requirements. Completion remains pending the final repository and GitHub reality audit.
