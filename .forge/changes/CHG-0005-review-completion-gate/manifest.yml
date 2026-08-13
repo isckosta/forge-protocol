@@ -1,0 +1,23 @@
+schema: forge/change@1
+change: {id: CHG-0005, title: Review Completion Gate, kind: bugfix}
+flow: {initial: fast, current: fast, escalations: []}
+state: {current: verification}
+artifacts:
+  intent: complete
+  inspection: complete
+  test_design: complete
+  tdd_evidence: complete
+  implementation: complete
+  verification: active
+  review: complete
+  documentation: complete
+  knowledge_capture: not_required
+requirements: {total: 2, implemented: 2, verified: 1}
+tdd: {status: compliant, cycles: 1}
+verification: {status: active}
+review: {status: passed, iteration: 1, blockers: 0, majors: 0, minors: 0, observations: 0}
+documentation:
+  impact_evaluated: true
+  update_required: true
+  status: complete
+  reason: Canonical completion gates and Core Protocol wording changed.
