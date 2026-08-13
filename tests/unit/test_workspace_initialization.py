@@ -42,3 +42,27 @@ def test_failed_initialization_does_not_publish_partial_workspace(tmp_path: Path
 
     assert not (tmp_path / ".forge").exists()
     assert not any(tmp_path.glob(".forge.tmp-*"))
+
+
+def test_rejects_backslash_ambiguous_workspace_path(tmp_path: Path) -> None:
+    with pytest.raises(workspace.InvalidWorkspacePlanError):
+        workspace.initialize_workspace(
+            tmp_path,
+            {"..\\outside.txt": "must not escape staging\n"},
+        )
+
+    assert not (tmp_path / ".forge").exists()
+    assert not (tmp_path.parent / "outside.txt").exists()
+
+
+def test_concurrent_initialization_lock_prevents_publication(tmp_path: Path) -> None:
+    lock_path = tmp_path / ".forge.init.lock"
+    lock_path.write_text("held\n", encoding="utf-8")
+    expected_error = getattr(workspace, "WorkspaceInitializationInProgressError", RuntimeError)
+
+    with pytest.raises(expected_error):
+        workspace.initialize_workspace(tmp_path, {"forge.yml": "new\n"})
+
+    assert lock_path.is_file()
+    assert not (tmp_path / ".forge").exists()
+    assert not any(tmp_path.glob(".forge.tmp-*"))
