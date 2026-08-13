@@ -184,3 +184,29 @@ cycles:
     refactor:
       status: not_performed
       reason: The explicit check pipeline is small and keeps diagnostic dependencies visible.
+
+  - id: TDD-008
+    requirements: [FR-004, FR-028, FR-031, FR-032]
+    behavior: expose the complete infrastructure-only CLI surface and stable environment/internal failure exit codes
+    red:
+      status: observed
+      workflow_run_id: 31670329489
+      job_id: 94353427371
+      commit: a1353a1c2364f7127c6790a191b12f47ec3d5485
+      tests:
+        - tests/cli/test_cli_contract.py::test_cli_exposes_only_infrastructure_commands
+        - tests/cli/test_cli_contract.py::test_init_creates_a_valid_forge_project_from_nested_directory
+        - tests/cli/test_cli_contract.py::test_environment_failure_uses_exit_code_three
+        - tests/cli/test_cli_contract.py::test_unexpected_internal_failure_uses_distinct_exit_code
+      expected_failure: The public CLI is missing forge init and has no explicit internal-error exit contract.
+      observed_failure: Three new assertions failed while thirty prior tests passed. init was absent from the command surface, invoking it exited 2, and an unexpected RuntimeError escaped with exit code 1. The existing non-Git environment path already satisfied exit code 3.
+      valid: true
+    green:
+      status: observed
+      workflow_run_id: 31670370440
+      job_id: 94353547913
+      commit: 86cc8472fbc9b8e032d1f26651aa6764ad34be0f
+      result: GitHub Actions passed. Forge exposes exactly the intended infrastructure command family, init creates a valid project from a nested Git path, environment failure uses 3, and unexpected internal failure uses 70.
+    refactor:
+      status: not_performed
+      reason: The CLI boundary remains intentionally explicit; extracting a command execution framework would be premature.
