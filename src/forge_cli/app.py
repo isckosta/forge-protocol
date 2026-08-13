@@ -2,6 +2,7 @@ from pathlib import Path
 
 import typer
 
+from forge_cli.doctor import diagnose
 from forge_cli.git import NotGitRepositoryError, resolve_project_root
 from forge_cli.validation import validate_project
 
@@ -46,3 +47,20 @@ def validate() -> None:
         typer.echo(f"{finding.code} [{finding.artifact}] {finding.message}")
 
     raise typer.Exit(code=2)
+
+
+@app.command()
+def doctor() -> None:
+    """Run read-only Forge environment and project diagnostics."""
+    result = diagnose(Path.cwd(), _protocol_root())
+
+    labels = {
+        "passed": "PASS",
+        "failed": "FAIL",
+        "skipped": "SKIP",
+    }
+    for check in result.checks:
+        typer.echo(f"{labels[check.status]} {check.id}: {check.message}")
+
+    if not result.passed:
+        raise typer.Exit(code=2)
