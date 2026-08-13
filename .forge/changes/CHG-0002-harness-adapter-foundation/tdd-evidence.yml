@@ -2,7 +2,7 @@ schema: forge/tdd-evidence@1
 
 change: CHG-0002
 status: active
-cycle_count: 1
+cycle_count: 2
 
 cycles:
   - id: TDD-001
@@ -20,6 +20,21 @@ cycles:
       commit: ad8408c901173d4d1b85dfc13927bd7dabe83b88
       result: Canonical adapter.schema.json and immutable AdapterManifest loading/validation were introduced; full test suite passed.
 
+  - id: TDD-002
+    requirements: [FR-004, FR-005]
+    behavior: enforce the exact half-open integer Protocol compatibility interval
+    red:
+      valid: true
+      workflow_run_id: 31672994908
+      job_id: 94361432990
+      commit: 746e9e5302c8e6b820f6c7719b3240f7c864abbf
+      reason: Compatibility functions/error did not exist and invalid empty intervals were accepted; 4 new tests failed while 43 existing tests passed.
+    green:
+      workflow_run_id: 31673042787
+      job_id: 94361571980
+      commit: 874b925bafc32172358574889d3eae5e14186eb1
+      result: Compatibility is exactly min <= project_protocol < max_exclusive, incompatible Protocols raise a structured domain error, invalid intervals are rejected, and the full test suite passed.
+
 notes:
-  - Protocol interval semantics are intentionally deferred to TDD-002; TDD-001 validates only the manifest's integer compatibility-bound structure.
-  - No Harness-specific SDK or implementation was introduced.
+  - TDD-001 validates manifest structure; TDD-002 owns compatibility semantics.
+  - No Harness-specific SDK or implementation has been introduced.
