@@ -1,7 +1,7 @@
 schema: forge/tdd-evidence@1
 change: CHG-0008
 status: active
-cycle_count: 12
+cycle_count: 14
 cycles:
   - id: TDD-001A
     title: Registry stable ordering
@@ -147,7 +147,32 @@ cycles:
     green:
       command: .venv/bin/python -m pytest tests/contract/test_protocol_contract.py::test_adapter_configuration_schema_rejects_unsafe_target_shapes -v
       result: 9 passed
+  - id: TDD-002F
+    title: Descriptor-anchored configuration replacement
+    requirements: [FR-005, FR-007, AC-011]
+    behavior: configuration publication stays anchored to the Adapter directory opened beneath the project root when a concurrent directory-name swap introduces a symlink, and cleans its temporary file if replacement fails
+    red:
+      valid: true
+      command: .venv/bin/python -m pytest tests/unit/test_adapter_configuration.py::test_write_stays_anchored_when_the_adapter_directory_is_swapped_before_replace -v
+      result: 1 failed
+      reason: The Path-based replacement followed the injected replacement symlink and created `outside/config.yml`.
+    green:
+      command: .venv/bin/python -m pytest tests/unit/test_adapter_configuration.py::test_write_stays_anchored_when_the_adapter_directory_is_swapped_before_replace tests/unit/test_adapter_configuration.py::test_write_cleans_its_anchored_temporary_file_when_replace_fails -v
+      result: 2 passed
+  - id: TDD-002G
+    title: Descriptor primitive fail-closed boundary
+    requirements: [FR-005, FR-007, FR-023, AC-011]
+    behavior: an unavailable descriptor-relative replacement remains an invalid configuration failure and leaves no temporary file
+    red:
+      valid: true
+      command: .venv/bin/python -m pytest tests/unit/test_adapter_configuration.py::test_write_fails_closed_when_descriptor_relative_replace_is_unavailable -v
+      result: 1 failed
+      reason: An injected unsupported `dir_fd` replacement raised TypeError through the public writer instead of the stable InvalidAdapterConfigurationError boundary.
+    green:
+      command: .venv/bin/python -m pytest tests/unit/test_adapter_configuration.py::test_write_fails_closed_when_descriptor_relative_replace_is_unavailable -v
+      result: 1 passed
 notes:
   - Focused regression command `.venv/bin/python -m pytest tests/unit/test_adapter_registry.py tests/unit/test_codex_adapter_descriptor.py -v` passed 11 tests.
   - 'rg -n "codex" src/forge_cli/adapters/driver.py src/forge_cli/adapters/registry.py returned no matches.'
   - Fix round 1 full suite command `.venv/bin/python -m pytest` passed 202 tests.
+  - Fix round 2 focused configuration/target/contract command passed 66 tests; full suite command `.venv/bin/python -m pytest` passed 205 tests.

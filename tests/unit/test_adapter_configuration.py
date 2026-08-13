@@ -4,6 +4,7 @@ from pathlib import Path
 
 import pytest
 
+import forge_cli.adapters.configuration as configuration_module
 from forge_cli.adapters.configuration import (
     AdapterConfiguration,
     InvalidAdapterConfigurationError,
@@ -80,6 +81,76 @@ def test_write_rejects_an_ancestor_symlink_without_escaping_the_project_root(tmp
         write_adapter_configuration(project_root, AdapterConfiguration(adapter_id="codex", target="safe/path"))
 
     assert not (outside / "adapters" / "codex" / "config.yml").exists()
+
+
+def test_write_stays_anchored_when_the_adapter_directory_is_swapped_before_replace(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Catch a tempfile replacement that follows a raced Adapter-directory symlink."""
+    project_root = tmp_path / "repository"
+    adapter_directory = project_root / ".forge" / "adapters" / "codex"
+    adapter_directory.mkdir(parents=True)
+    forge_config = project_root / ".forge" / "forge.yml"
+    forge_config.write_bytes(b"project-owned\n")
+    installation = project_root / ".forge" / "adapters" / "codex" / "installation.yml"
+    installation.write_bytes(b"forge-owned\n")
+    outside = tmp_path / "outside"
+    outside.mkdir()
+    original_replace = configuration_module.os.replace
+
+    def replace_after_directory_swap(source: object, destination: object, **kwargs: object) -> None:
+        moved_directory = adapter_directory.with_name("codex-original")
+        adapter_directory.rename(moved_directory)
+        adapter_directory.symlink_to(outside, target_is_directory=True)
+        if not kwargs:
+            source = moved_directory / Path(source).name
+        original_replace(source, destination, **kwargs)
+
+    monkeypatch.setattr(configuration_module.os, "replace", replace_after_directory_swap)
+
+    write_adapter_configuration(project_root, AdapterConfiguration(adapter_id="codex", target="safe/path"))
+
+    assert not (outside / "config.yml").exists()
+    assert forge_config.read_bytes() == b"project-owned\n"
+    assert adapter_directory.with_name("codex-original").joinpath("installation.yml").read_bytes() == b"forge-owned\n"
+
+
+def test_write_cleans_its_anchored_temporary_file_when_replace_fails(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Catch a failed replacement that leaves a configuration temporary file behind."""
+    project_root = tmp_path / "repository"
+    adapter_directory = project_root / ".forge" / "adapters" / "codex"
+    adapter_directory.mkdir(parents=True)
+
+    def fail_replace(*args: object, **kwargs: object) -> None:
+        raise OSError("simulated replacement failure")
+
+    monkeypatch.setattr(configuration_module.os, "replace", fail_replace)
+
+    with pytest.raises(InvalidAdapterConfigurationError):
+        write_adapter_configuration(project_root, AdapterConfiguration(adapter_id="codex", target="safe/path"))
+
+    assert not list(adapter_directory.glob(".config.yml.*.tmp"))
+
+
+def test_write_fails_closed_when_descriptor_relative_replace_is_unavailable(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Catch unsupported directory-descriptor replacement escaping the domain error boundary."""
+    project_root = tmp_path / "repository"
+    adapter_directory = project_root / ".forge" / "adapters" / "codex"
+    adapter_directory.mkdir(parents=True)
+
+    def reject_descriptor_relative_replace(*args: object, **kwargs: object) -> None:
+        raise TypeError("dir_fd is unsupported")
+
+    monkeypatch.setattr(configuration_module.os, "replace", reject_descriptor_relative_replace)
+
+    with pytest.raises(InvalidAdapterConfigurationError):
+        write_adapter_configuration(project_root, AdapterConfiguration(adapter_id="codex", target="safe/path"))
+
+    assert not list(adapter_directory.glob(".config.yml.*.tmp"))
 
 
 @pytest.mark.parametrize("adapter_id", ["", ".", "..", "a/b", r"a\\b", "a:b", "a\0b"])
