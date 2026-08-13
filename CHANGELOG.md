@@ -33,6 +33,17 @@ Added:
 - canonical Flow and Engineering Contract resolution;
 - structured validation findings and read-only Doctor diagnostics;
 - packaged canonical Protocol resources for isolated wheel execution;
-- offline distribution verification and runtime dependency audit.
+- offline distribution verification and runtime dependency audit;
+- Harness Adapter manifest and installation-record Schemas;
+- independent Adapter identity/versioning and half-open Protocol compatibility intervals;
+- Harness capability requirement and explicit limitation model;
+- immutable deterministic Adapter plans with ownership and operation vocabularies;
+- deterministic shared-artifact merge provenance requirements;
+- repository-native Adapter installation records with generated content digests;
+- generated artifact drift detection and stale-state conflict protection;
+- Harness-agnostic conformance validation for canonical Flow, TDD RED, Strict Review, and repository authority;
+- deterministic Harness-agnostic Adapter planner;
+- safe Adapter publisher with repository path confinement, symlink/traversal protection, update preconditions, rollback, and installation-record-last semantics;
+- isolated-wheel regression coverage proving Adapter Schemas resolve without a source checkout.
 
-The bootstrap CLI remains pre-release software.
+The bootstrap CLI remains pre-release software. Harness Adapter Foundation defines the contract only; concrete Harness integrations are separate Changes.
