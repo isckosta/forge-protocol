@@ -1,7 +1,7 @@
 schema: forge/tdd-evidence@1
 change: CHG-0004
 status: active
-cycle_count: 5
+cycle_count: 7
 cycles:
   - id: TDD-001
     title: Codex Adapter Descriptor and Capability Evidence
@@ -31,3 +31,15 @@ cycles:
     red: {commit: 79934977cdd639eb8cb2557775d5fa889fc0a429, run_id: 31706541563, valid: true}
     green: {commit: 003a810e39afdab53a81562d6a6b5465c32bf29e, run_id: 31707225745, valid: true}
     notes: [no default destination is invented; explicit configuration takes precedence over packaged evidence]
+  - id: TDD-005B
+    title: Codex Publication Root Layout
+    requirements: [FR-018, FR-020]
+    red: {commit: 9631d11c79e02c4cc70cc64dea579a02ee12487c, run_id: 31707523398, valid: true}
+    green: {commit: f3d3b78ba149ea9fdb95c8ceb115d290a801a211, run_id: 31707941561, valid: true}
+    notes: [publication target is a root; logical resources resolve beneath it without escaping the root]
+  - id: TDD-006
+    title: Generic Planner Ownership Drift and Installation State Integration
+    requirements: [FR-011, FR-019, FR-020, FR-021, FR-022, FR-024, FR-032]
+    red: {commit: c0d279d85282fb8891922ae9d5bee1ba0f4349b9, run_id: 31708314365, valid: true}
+    green: {commit: 2859906dee71bf7f3c5add16356345ade86cfd46, run_id: 31708994504, valid: true}
+    notes: [Codex integration delegates planning ownership installation state and drift detection to the generic Adapter Core]
