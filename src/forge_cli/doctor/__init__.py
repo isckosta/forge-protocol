@@ -1,1 +1,125 @@
 """Forge Doctor diagnostics boundary."""
+
+from __future__ import annotations
+
+from dataclasses import dataclass
+from pathlib import Path
+import shutil
+
+from forge_cli.configuration import (
+    InvalidProjectConfigurationError,
+    UnsupportedProtocolVersionError,
+    load_project_configuration,
+)
+from forge_cli.git import NotGitRepositoryError, resolve_project_root
+from forge_cli.protocol_resolution import (
+    CanonicalContractUnavailableError,
+    resolve_effective_contract,
+)
+
+
+@dataclass(frozen=True)
+class DoctorCheck:
+    id: str
+    status: str
+    message: str
+
+
+@dataclass(frozen=True)
+class DoctorResult:
+    checks: tuple[DoctorCheck, ...]
+
+    @property
+    def passed(self) -> bool:
+        return all(check.status != "failed" for check in self.checks)
+
+
+def _check(check_id: str, status: str, message: str) -> DoctorCheck:
+    return DoctorCheck(id=check_id, status=status, message=message)
+
+
+def diagnose(start: Path, protocol_root: Path) -> DoctorResult:
+    """Run read-only Forge environment and project diagnostics."""
+
+    checks: list[DoctorCheck] = []
+
+    if shutil.which("git") is None:
+        checks.append(_check("git_available", "failed", "Git executable is unavailable."))
+        repository_root: Path | None = None
+        checks.append(_check("git_repository", "skipped", "Git repository detection requires Git."))
+    else:
+        checks.append(_check("git_available", "passed", "Git executable is available."))
+        try:
+            repository_root = resolve_project_root(start)
+        except NotGitRepositoryError:
+            repository_root = None
+            checks.append(_check("git_repository", "failed", "Current path is not inside a Git repository."))
+        else:
+            checks.append(_check("git_repository", "passed", f"Git repository detected at {repository_root}."))
+
+    forge_dir = repository_root / ".forge" if repository_root is not None else None
+    initialized = forge_dir is not None and forge_dir.is_dir()
+
+    if repository_root is None:
+        checks.append(_check("forge_initialized", "skipped", "Forge initialization requires a Git repository."))
+    elif not initialized:
+        checks.append(_check("forge_initialized", "failed", "Forge is not initialized in this repository."))
+    else:
+        checks.append(_check("forge_initialized", "passed", "Forge workspace is present."))
+
+    config_valid = False
+    protocol_compatible = False
+    if not initialized:
+        checks.append(_check("project_configuration", "skipped", "Project configuration requires an initialized Forge workspace."))
+        checks.append(_check("protocol_compatibility", "skipped", "Protocol compatibility requires valid project configuration."))
+        checks.append(_check("canonical_flows", "skipped", "Canonical Flow checks require an initialized Forge workspace."))
+    else:
+        config_path = forge_dir / "forge.yml"
+        try:
+            load_project_configuration(config_path)
+        except UnsupportedProtocolVersionError as error:
+            config_valid = True
+            checks.append(_check("project_configuration", "passed", "Project configuration conforms to the Forge Project Schema."))
+            checks.append(_check("protocol_compatibility", "failed", str(error)))
+        except InvalidProjectConfigurationError as error:
+            checks.append(_check("project_configuration", "failed", str(error)))
+            checks.append(_check("protocol_compatibility", "skipped", "Protocol compatibility requires valid project configuration."))
+        else:
+            config_valid = True
+            protocol_compatible = True
+            checks.append(_check("project_configuration", "passed", "Project configuration conforms to the Forge Project Schema."))
+            checks.append(_check("protocol_compatibility", "passed", "Configured Forge Protocol version is supported."))
+
+        canonical_flow_ids = ("fast", "standard", "full")
+        if config_valid and protocol_compatible:
+            missing = [
+                flow_id
+                for flow_id in canonical_flow_ids
+                if not (protocol_root / "flows" / f"{flow_id}.yml").is_file()
+            ]
+            if missing:
+                checks.append(
+                    _check(
+                        "canonical_flows",
+                        "failed",
+                        f"Canonical Forge Flows are unavailable: {', '.join(missing)}.",
+                    )
+                )
+            else:
+                checks.append(_check("canonical_flows", "passed", "FAST, STANDARD, and FULL canonical Flows are available."))
+        else:
+            checks.append(_check("canonical_flows", "skipped", "Canonical Flow checks require compatible project configuration."))
+
+    if repository_root is None:
+        contract_project_root = start
+    else:
+        contract_project_root = repository_root
+
+    try:
+        resolve_effective_contract(protocol_root, contract_project_root)
+    except CanonicalContractUnavailableError as error:
+        checks.append(_check("canonical_contract", "failed", str(error)))
+    else:
+        checks.append(_check("canonical_contract", "passed", "Canonical Engineering Contract is available."))
+
+    return DoctorResult(checks=tuple(checks))
