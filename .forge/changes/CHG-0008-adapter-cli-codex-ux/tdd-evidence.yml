@@ -1,7 +1,7 @@
 schema: forge/tdd-evidence@1
 change: CHG-0008
 status: active
-cycle_count: 17
+cycle_count: 18
 cycles:
   - id: TDD-001A
     title: Registry stable ordering
@@ -209,6 +209,18 @@ cycles:
     green:
       command: .venv/bin/python -m pytest tests/unit/test_codex_skill_projection.py tests/unit/test_codex_projection_bundle.py tests/unit/test_codex_projection_gates.py tests/unit/test_codex_distribution_resources.py -v
       result: 17 passed
+  - id: TDD-003B
+    title: Codex Flow-scoped gate rendering
+    requirements: [FR-009, FR-022, AC-010]
+    behavior: Codex keeps every rendered gate obligation attributable to one effective Flow and never composes checks or completion requirements from different Flows
+    red:
+      valid: true
+      command: .venv/bin/python -m pytest tests/unit/test_codex_projection_gates.py -v
+      result: 1 failed, 6 passed
+      reason: The renderer ORed checks and completion requirements over all Flows, producing unscoped composite RED and completion instructions for split Flow inputs.
+    green:
+      command: .venv/bin/python -m pytest tests/unit/test_codex_skill_projection.py tests/unit/test_codex_projection_bundle.py tests/unit/test_codex_projection_gates.py tests/unit/test_codex_distribution_resources.py -v
+      result: 18 passed
 notes:
   - Focused regression command `.venv/bin/python -m pytest tests/unit/test_adapter_registry.py tests/unit/test_codex_adapter_descriptor.py -v` passed 11 tests.
   - 'rg -n "codex" src/forge_cli/adapters/driver.py src/forge_cli/adapters/registry.py returned no matches.'
@@ -217,4 +229,5 @@ notes:
   - Fix round 3 focused configuration/target/contract command passed 67 tests; sandbox full suite covered 205 tests and only wheel build isolation failed due unavailable Hatchling download; approved-network full suite passed 206 tests.
   - TDD-003 full suite command `.venv/bin/python -m pytest -q` passed 210 tests.
   - TDD-003A focused suite passed 17 tests; approved-network full suite command `.venv/bin/python -m pytest -q` passed 210 tests.
+  - TDD-003B focused suite passed 18 tests; full suite command `.venv/bin/python -m pytest -q` passed 211 tests.
   - AC-012 is deferred from the pure TDD-003 projection boundary to TDD-004 publisher cleanup and TDD-008 distribution verification.

@@ -1,4 +1,8 @@
-from forge_cli.adapters.codex.projection import CodexProjectionInput, generate_codex_projection_bundle
+from forge_cli.adapters.codex.projection import (
+    CodexProjectionInput,
+    generate_codex_projection_bundle,
+    generate_codex_skill_bundle,
+)
 
 FLOW = """flow:\n  id: full\nstages:\n  - id: specification_review\n  - id: tdd_implementation\n  - id: verification\n  - id: strict_review\n  - id: completion\ngates:\n  before_behavioral_implementation:\n    checks: [red_executed, red_failed_for_expected_reason]\n  before_completion:\n    require: [verification_passed, review_passed, blocking_review_threads_resolved]\n"""
 BLOCKING_THREAD_INSTRUCTION = (
@@ -48,6 +52,44 @@ def test_projection_does_not_invent_blocking_review_thread_gate() -> None:
     )
 
     assert BLOCKING_THREAD_INSTRUCTION not in _content(flow_without_gate)
+
+
+def test_projection_keeps_mixed_flow_gate_obligations_scoped_to_each_flow() -> None:
+    """Checks split across Flows must not be rendered as one composite gate."""
+    bundle = generate_codex_skill_bundle(
+        contract_content="contract",
+        flows=(
+            ("zeta", """gates:
+  before_behavioral_implementation:
+    checks: [red_failed_for_expected_reason]
+  before_completion:
+    require: [review_passed]
+"""),
+            ("alpha", """gates:
+  before_behavioral_implementation:
+    checks: [red_executed]
+  before_completion:
+    require: [verification_passed]
+"""),
+    ),
+    )
+    skill = next(resource.content for resource in bundle.resources if resource.name == "SKILL.md")
+    assert "### Flow `alpha` gate obligations" in skill
+    assert "### Flow `zeta` gate obligations" in skill
+    alpha = skill.index("### Flow `alpha` gate obligations")
+    zeta = skill.index("### Flow `zeta` gate obligations")
+
+    assert alpha < zeta
+    alpha_section = skill[alpha:zeta]
+    zeta_section = skill[zeta:]
+    assert "RED must be executed." in alpha_section
+    assert "RED must fail for the expected reason." not in alpha_section
+    assert "Completion requires Verification to pass." in alpha_section
+    assert "Completion requires Strict Review to pass." not in alpha_section
+    assert "RED must fail for the expected reason." in zeta_section
+    assert "RED must be executed." not in zeta_section
+    assert "Completion requires Strict Review to pass." in zeta_section
+    assert "Completion requires Verification to pass." not in zeta_section
 
 
 def test_projection_marks_instructions_as_representation_not_enforcement() -> None:
