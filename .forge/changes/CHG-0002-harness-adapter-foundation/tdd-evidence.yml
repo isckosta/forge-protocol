@@ -2,7 +2,7 @@ schema: forge/tdd-evidence@1
 
 change: CHG-0002
 status: active
-cycle_count: 3
+cycle_count: 4
 
 cycles:
   - id: TDD-001
@@ -50,7 +50,23 @@ cycles:
       commit: 447d676bacf108789f042b6830339748e0d917db
       result: Forge and Adapter-internal requirement sources are distinct, supported Forge requirements produce no limitation, unsupported Forge requirements produce explicit enforced=false limitations, ordering is deterministic, and the full test suite passed.
 
+  - id: TDD-004
+    requirements: [FR-013, FR-014, FR-015, FR-016, FR-023, NFR-003]
+    behavior: represent deterministic immutable Adapter plans and planned artifact operations before any repository mutation
+    red:
+      valid: true
+      workflow_run_id: 31694260046
+      job_id: 94428286406
+      commit: 19c7b9ca4b189257fa2702039152e1ee21589002
+      reason: The canonical AdapterPlan, AdapterOperation, ownership/intent vocabularies, content digest helper, and stable operation ordering did not exist; 4 behavior tests failed while 51 existing tests passed.
+    green:
+      workflow_run_id: 31694300140
+      job_id: 94428417586
+      commit: ddbafcd5a8258ab1181f745776565269bc06641e
+      result: Immutable plan and operation models now expose canonical ownership and intent vocabularies, deterministic SHA-256 content digests, immutable limitation/conflict collections, and stable path-first operation ordering; the full test suite passed.
+
 notes:
   - TDD-001 validates manifest structure; TDD-002 owns compatibility semantics.
   - TDD-003 does not define semantic mappings such as Strict Review -> hooks; callers provide resolved representation requirements so Core remains Harness-agnostic.
+  - TDD-004 defines only the plan data model; planner behavior, collision semantics, and filesystem mutation remain intentionally absent.
   - No Harness-specific SDK or implementation has been introduced.
