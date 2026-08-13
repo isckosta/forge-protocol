@@ -1,7 +1,7 @@
 schema: forge/tdd-evidence@1
 change: CHG-0004
-status: active
-cycle_count: 7
+status: complete
+cycle_count: 8
 cycles:
   - id: TDD-001
     title: Codex Adapter Descriptor and Capability Evidence
@@ -24,7 +24,7 @@ cycles:
     requirements: [FR-016, FR-024, FR-025, FR-026, FR-031]
     red: {commit: 7711a7c0023da355edfda74dfbfc7dccb36489f2, run_id: 31705584052, valid: true}
     green: {commit: eac3c74748de75ea7e7cb7e9be2ce279e0806f48, run_id: 31706168268, valid: true}
-    notes: [FR-027 remains pending for conformance and planning evidence]
+    notes: [FR-027 remains pending for acceptance verification]
   - id: TDD-005
     title: Codex Publication Target Resolution
     requirements: [FR-018]
@@ -43,3 +43,9 @@ cycles:
     red: {commit: c0d279d85282fb8891922ae9d5bee1ba0f4349b9, run_id: 31708314365, valid: true}
     green: {commit: 2859906dee71bf7f3c5add16356345ade86cfd46, run_id: 31708994504, valid: true}
     notes: [Codex integration delegates planning ownership installation state and drift detection to the generic Adapter Core]
+  - id: TDD-007
+    title: Packaged Codex Resources and Offline Wheel Validation
+    requirements: [FR-028, FR-029, FR-030, FR-033]
+    red: {commit: 7ad9807ae22a49a97596b6d3777ee69fcf7ca6f9, run_id: 31709528462, valid: true}
+    green: {commit: 002bd8463717abf6a0ac86569cb34a6129dd0bb6, run_id: 31710178232, valid: true}
+    notes: [distribution_run_id=31710178187; isolated wheel loads Codex resources projection planning installation state and drift with network disabled; runtime dependency audit passed]
