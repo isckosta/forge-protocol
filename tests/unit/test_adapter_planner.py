@@ -1,8 +1,17 @@
+import importlib
+
 import pytest
 
 from forge_cli.adapters.capabilities import CapabilityRequirement, RequirementSource
 from forge_cli.adapters.manifest import AdapterManifest, IncompatibleAdapterProtocolError
 from forge_cli.adapters.plan import OperationIntent, OwnershipMode, digest_content
+
+
+def planner_module():
+    try:
+        return importlib.import_module("forge_cli.adapters.planner")
+    except ModuleNotFoundError:
+        pytest.fail("Adapter planner is not implemented yet")
 
 
 def _manifest(*, hooks: bool = True) -> AdapterManifest:
@@ -24,25 +33,15 @@ def _manifest(*, hooks: bool = True) -> AdapterManifest:
 
 
 def test_planner_rejects_incompatible_protocol_before_producing_plan() -> None:
-    from forge_cli.adapters import planner
-
-    config = planner.EffectiveAdapterConfiguration(
-        project_protocol=2,
-        capability_requirements=(),
-    )
+    planner = planner_module()
+    config = planner.EffectiveAdapterConfiguration(project_protocol=2, capability_requirements=())
 
     with pytest.raises(IncompatibleAdapterProtocolError):
-        planner.plan_adapter(
-            manifest=_manifest(),
-            effective_configuration=config,
-            projections=(),
-            repository_state=(),
-        )
+        planner.plan_adapter(manifest=_manifest(), effective_configuration=config, projections=(), repository_state=())
 
 
 def test_planner_surfaces_capability_limitations_from_effective_configuration() -> None:
-    from forge_cli.adapters import planner
-
+    planner = planner_module()
     config = planner.EffectiveAdapterConfiguration(
         project_protocol=1,
         capability_requirements=(
@@ -67,8 +66,7 @@ def test_planner_surfaces_capability_limitations_from_effective_configuration() 
 
 
 def test_planner_classifies_repository_state_without_mutating_it() -> None:
-    from forge_cli.adapters import planner
-
+    planner = planner_module()
     user_state = planner.RepositoryArtifactState(
         path=".tool/user.md",
         exists=True,
@@ -82,16 +80,8 @@ def test_planner_classifies_repository_state_without_mutating_it() -> None:
         expected_digest=digest_content("old generated"),
     )
     projections = (
-        planner.ProjectedArtifact(
-            path=".tool/user.md",
-            ownership=OwnershipMode.USER_OWNED,
-            content="new generated suggestion",
-        ),
-        planner.ProjectedArtifact(
-            path=".tool/generated.md",
-            ownership=OwnershipMode.FORGE_OWNED,
-            content="new generated",
-        ),
+        planner.ProjectedArtifact(path=".tool/user.md", ownership=OwnershipMode.USER_OWNED, content="new generated suggestion"),
+        planner.ProjectedArtifact(path=".tool/generated.md", ownership=OwnershipMode.FORGE_OWNED, content="new generated"),
     )
 
     plan = planner.plan_adapter(
@@ -109,8 +99,7 @@ def test_planner_classifies_repository_state_without_mutating_it() -> None:
 
 
 def test_shared_projection_requires_named_deterministic_merge_provenance() -> None:
-    from forge_cli.adapters import planner
-
+    planner = planner_module()
     state = planner.RepositoryArtifactState(
         path=".tool/shared.json",
         exists=True,
@@ -154,34 +143,15 @@ def test_shared_projection_requires_named_deterministic_merge_provenance() -> No
 
 
 def test_repeated_planning_with_identical_inputs_is_semantically_identical() -> None:
-    from forge_cli.adapters import planner
-
+    planner = planner_module()
     projections = (
-        planner.ProjectedArtifact(
-            path="z.md",
-            ownership=OwnershipMode.FORGE_OWNED,
-            content="z",
-        ),
-        planner.ProjectedArtifact(
-            path="a.md",
-            ownership=OwnershipMode.FORGE_OWNED,
-            content="a",
-        ),
+        planner.ProjectedArtifact(path="z.md", ownership=OwnershipMode.FORGE_OWNED, content="z"),
+        planner.ProjectedArtifact(path="a.md", ownership=OwnershipMode.FORGE_OWNED, content="a"),
     )
     config = planner.EffectiveAdapterConfiguration(1, ())
 
-    first = planner.plan_adapter(
-        manifest=_manifest(),
-        effective_configuration=config,
-        projections=projections,
-        repository_state=(),
-    )
-    second = planner.plan_adapter(
-        manifest=_manifest(),
-        effective_configuration=config,
-        projections=reversed(projections),
-        repository_state=(),
-    )
+    first = planner.plan_adapter(manifest=_manifest(), effective_configuration=config, projections=projections, repository_state=())
+    second = planner.plan_adapter(manifest=_manifest(), effective_configuration=config, projections=reversed(projections), repository_state=())
 
     assert first == second
     assert [operation.path for operation in first.operations] == ["a.md", "z.md"]
