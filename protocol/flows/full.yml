@@ -64,6 +64,7 @@ gates:
     require:
       - verification_passed
       - review_passed
+      - blocking_review_threads_resolved
       - documentation_impact_evaluated
       - required_documentation_updated
       - required_knowledge_capture_complete
