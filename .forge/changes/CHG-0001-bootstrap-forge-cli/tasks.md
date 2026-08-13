@@ -3,7 +3,7 @@ forge:
   artifact: tasks
   schema: 1
 change: CHG-0001
-status: draft
+status: approved
 ---
 
 # Tasks — Bootstrap Forge CLI
