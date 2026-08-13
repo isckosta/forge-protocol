@@ -10,27 +10,30 @@ status: passed
 
 ## Result
 
-Verification passed for CHG-0004 at commit `bd680102fc6b170f468622139a53773683c2e6aa`.
+Verification passed for CHG-0004 after Strict Review remediation at code commit `b24630f0a4b2a0930504008a43ab516894779005`.
 
-Evidence combines eight valid TDD cycles, acceptance-invariant tests, generic Core integration tests, isolated-wheel execution with network disabled, packaged Codex resource checks, and runtime dependency audit.
+Evidence combines ten valid TDD cycles, acceptance-invariant tests, generic Core integration tests, isolated-wheel execution with network disabled, packaged Codex resource checks, and runtime dependency audit.
 
 ## Final automated suite
 
-- workflow run: `31710769318`;
-- job: `94482835911`;
-- verified commit: `bd680102fc6b170f468622139a53773683c2e6aa`;
+- workflow run: `31716161391`;
+- job: `94501326877`;
+- verified code commit: `b24630f0a4b2a0930504008a43ab516894779005`;
+- pytest result: `134 passed`;
 - result: SUCCESS.
 
 The final suite includes explicit acceptance checks that repository-native canonical input survives projection generation/discard, Codex projection never requests `shared` ownership, publication-root changes cannot alter projected semantic content/digests, and repeated projection is stable without live vendor input.
 
 ## Final isolated distribution and offline operation
 
-- workflow run: `31710769332`;
-- job: `94482835862`;
-- verified commit: `bd680102fc6b170f468622139a53773683c2e6aa`;
+- workflow run: `31716161380`;
+- job: `94501326662`;
+- verified code commit: `b24630f0a4b2a0930504008a43ab516894779005`;
 - result: SUCCESS.
 
-The distribution job proves wheel build, wheel-only installation into a clean Python 3.12 environment, installed CLI operation with unreachable HTTP/HTTPS/ALL proxies, packaged generic Adapter schemas, packaged Codex `adapter.yml`, `capabilities.yml`, and workflow skill resource availability, Codex descriptor loading, deterministic projection generation, generic planning, installation-record construction, generic drift detection, and runtime dependency audit. No OpenAI/Codex SDK dependency is introduced into the generic Core.
+The distribution job proves wheel build, wheel-only installation into a clean Python 3.12 environment, installed CLI operation with unreachable HTTP/HTTPS/ALL proxies, packaged generic Adapter schemas, packaged Codex `adapter.yml`, `capabilities.yml`, and workflow skill resource availability, Codex descriptor loading from packaged metadata, deterministic projection generation using packaged workflow framing, generic planning, installation-record construction, generic drift detection, and runtime dependency audit. No OpenAI/Codex SDK dependency is introduced into the generic Core.
+
+Invariant assessment and generic conformance behavior are covered by the automated unit suite. The isolated probe does not claim a Codex-specific conversion into `AdapterRepresentation` followed by `validate_conformance`.
 
 ## Acceptance scenarios
 
@@ -44,8 +47,8 @@ The distribution job proves wheel build, wheel-only installation into a clean Py
 - **AC-008 Unsupported capability limitation — PASSED.** TDD-004/TDD-006 retain generic non-enforcement limitations through planning.
 - **AC-009 User collision — PASSED.** TDD-006 classifies an existing unowned publication artifact as conflict rather than overwrite.
 - **AC-010 Generated drift — PASSED.** TDD-006 reuses generic digest-based drift detection and identifies modified generated artifacts.
-- **AC-011 Offline conformance/planning — PASSED.** Distribution run `31710769332` executes the installed Codex probe with network proxies intentionally unreachable.
-- **AC-012 Wheel isolation — PASSED.** Distribution run `31710769332` builds, installs, and probes the wheel outside the source tree.
+- **AC-011 Offline operation — PASSED.** The automated suite covers invariant assessment and generic conformance without live vendor input; Distribution run `31716161380` separately executes the installed Codex descriptor, projection, planning, installation-state, and drift probe with network proxies intentionally unreachable.
+- **AC-012 Wheel isolation — PASSED.** Distribution run `31716161380` builds, installs, and probes the wheel outside the source tree.
 - **AC-013 Canonical state survives projection deletion — PASSED.** Final acceptance tests prove projection generation/discard does not mutate or replace canonical input; generated artifacts are derived outputs only.
 - **AC-014 Evidence does not mutate runtime — PASSED.** TDD-007 packages observation metadata into the release and final acceptance tests prove repeated projection remains identical without live vendor input.
 
@@ -59,13 +62,13 @@ All 33 Functional Requirements are implemented and verified.
 - **FR-025–FR-027:** TDD-004 plus final acceptance tests verify no false compliance, separation of invariant assessment from capability declarations, and canonical semantics winning over publication convention.
 - **FR-028–FR-033:** TDD-006/007 plus isolated distribution verify local planning, wheel completeness, no Codex SDK dependency in Core, human-reviewable limitations, generic drift diagnostics, and fixed release evidence/staleness metadata.
 
-## Architectural observations for Strict Review
+## Strict Review remediation
 
-Verification does not hide two review concerns:
+Iteration 1 findings REV-001 and REV-002 were resolved through TDD-008 and TDD-009:
 
-1. `adapter.yml` and `capabilities.yml` are packaged and tested, but the current descriptor loader still carries equivalent metadata in Python rather than treating those files as its sole runtime source. This is coherent today but duplicates release metadata and should be assessed for maintainability in Strict Review.
-2. `resources/skills/workflow.md` is packaged as distribution evidence/template material while the current deterministic projection renderer still constructs workflow content in Python. Strict Review should decide whether to consolidate this representation or retain the resource only as packaged Adapter material.
+1. `adapter.yml` and `capabilities.yml` are now runtime descriptor/evidence authority rather than duplicated Python constants.
+2. `resources/skills/workflow.md` now supplies stable projection framing while stage and Gate content remains derived from canonical Flow input.
 
-Neither observation invalidates the verified behavioral requirements: runtime behavior is deterministic, offline, conservative, and Core remains Harness-agnostic.
+Strict Review Iteration 2 passed with no unresolved BLOCKER or MAJOR findings. REV-003 remains an accepted non-blocking test-naming/maintainability risk.
 
 Verification status: PASSED.
