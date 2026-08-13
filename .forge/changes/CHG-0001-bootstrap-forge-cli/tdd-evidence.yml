@@ -36,3 +36,31 @@ cycles:
       reason: >
         No additional refactoring was justified after GREEN. The implementation is
         already minimal for the current requirement.
+
+  - id: TDD-002
+    requirements: [FR-001, FR-002, FR-006]
+    behavior: resolve the Forge Project Root from a Git repository or nested directory
+
+    red:
+      status: observed
+      workflow_run_id: 31668342390
+      job_id: 94347687237
+      commit: 5ebd490d08bd75848e783f9692f4ee3652b6cf72
+      tests:
+        - tests/unit/test_git_project_root.py::test_resolves_git_repository_root_from_root_directory
+        - tests/unit/test_git_project_root.py::test_resolves_same_git_repository_root_from_nested_directory
+        - tests/unit/test_git_project_root.py::test_rejects_directory_outside_git_repository
+      expected_failure: >
+        The Git boundary exists only as an empty scaffold and does not yet resolve a
+        Project Root or expose an explicit non-repository error.
+      observed_failure: >
+        All three new tests failed with AttributeError because resolve_project_root
+        and NotGitRepositoryError were absent. The existing version test passed,
+        confirming the environment and prior behavior remained healthy.
+      valid: true
+
+    green:
+      status: pending
+
+    refactor:
+      status: pending
