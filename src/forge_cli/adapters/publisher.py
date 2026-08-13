@@ -57,7 +57,6 @@ def _safe_target(root: Path, relative_path: str) -> Path:
     resolved_root = root.resolve()
     candidate = resolved_root.joinpath(*pure.parts)
 
-    # Reject any existing symlink component before resolving the candidate.
     current = resolved_root
     for part in pure.parts:
         current = current / part
@@ -78,7 +77,6 @@ def _safe_target(root: Path, relative_path: str) -> Path:
 
 
 def _replace_file(path: Path, content: str) -> None:
-    """Atomically replace one text file on the same filesystem."""
     path.parent.mkdir(parents=True, exist_ok=True)
     temp_path = path.with_name(f".{path.name}.forge-tmp-{uuid4().hex}")
     try:
@@ -219,22 +217,19 @@ def publish_adapter_plan(
             "Adapter plan contains unresolved conflicts."
         )
 
-    _validate_record_matches_plan(plan, installation_record)
-
-    installation_relative = (
-        f".forge/adapters/{plan.adapter_id}/installation.yml"
-    )
+    installation_relative = f".forge/adapters/{plan.adapter_id}/installation.yml"
     installation_path = _safe_target(root, installation_relative)
 
-    # All paths and preconditions are validated before the first mutation.
+    # Path safety and repository-state preconditions are evaluated before
+    # consistency checks that could otherwise mask a path violation.
     targets: dict[str, Path] = {}
     for operation in plan.operations:
         targets[operation.path] = _preflight_operation(root, operation)
 
+    _validate_record_matches_plan(plan, installation_record)
+
     applied: list[tuple[Path, bytes | None]] = []
-    prior_installation = (
-        installation_path.read_bytes() if installation_path.exists() else None
-    )
+    prior_installation = installation_path.read_bytes() if installation_path.exists() else None
     installation_existed = installation_path.exists()
 
     try:
@@ -244,7 +239,6 @@ def publish_adapter_plan(
 
             target = targets[operation.path]
 
-            # Revalidate UPDATE immediately before mutation to narrow TOCTOU.
             if operation.intent is OperationIntent.UPDATE:
                 if (
                     operation.expected_current_digest is None
@@ -260,11 +254,7 @@ def publish_adapter_plan(
             applied.append((target, original))
             _replace_file(target, operation.content or "")
 
-        # The installation record is the success marker and is therefore last.
-        _write_installation_record_atomically(
-            installation_path,
-            installation_record,
-        )
+        _write_installation_record_atomically(installation_path, installation_record)
     except AdapterPublicationConflictError:
         for target, original in reversed(applied):
             _restore_bytes(target, original)
