@@ -4,7 +4,8 @@ import json
 from pathlib import Path
 
 import yaml
-from jsonschema import Draft202012Validator
+from jsonschema import Draft202012Validator, ValidationError
+import pytest
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -135,3 +136,77 @@ def test_chg_0004_migration_preserves_acceptance_mappings() -> None:
         "AC-013": ["T-006"],
         "AC-014": ["T-007"],
     }
+    assert traceability["requirements"] == {
+        f"FR-{number:03d}": {"tasks": tasks}
+        for number, tasks in {
+            1: ["T-001"], 2: ["T-001"], 3: ["T-001"], 4: ["T-001"],
+            5: ["T-001"], 6: ["T-001"], 7: ["T-001"], 8: ["T-001"],
+            9: ["T-002"], 10: ["T-002"], 11: ["T-006"], 12: ["T-006"],
+            13: ["T-002", "T-003"], 14: ["T-003"], 15: ["T-003"],
+            16: ["T-003", "T-004"], 17: ["T-003"],
+            18: ["T-002", "T-005"], 19: ["T-006"], 20: ["T-006"],
+            21: ["T-006"], 22: ["T-006"], 23: ["T-006"],
+            24: ["T-004", "T-009"], 25: ["T-004"], 26: ["T-004"],
+            27: ["T-004"], 28: ["T-007"], 29: ["T-007"],
+            30: ["T-007"], 31: ["T-004", "T-009"], 32: ["T-006"],
+            33: ["T-007"],
+        }.items()
+    }
+
+
+def test_adapter_schema_rejects_non_protocol_bounds() -> None:
+    """Catch Adapter intervals that use invalid Protocol identifiers."""
+    schema = _catalog_schemas()["forge/adapter@1"]
+    instance = _load_yaml(
+        ROOT / "src/forge_cli/adapters/codex/resources/adapter.yml"
+    )
+    instance["protocol"] = {"min": 0, "max_exclusive": 1}
+
+    with pytest.raises(ValidationError):
+        Draft202012Validator(schema).validate(instance)
+
+
+@pytest.mark.parametrize(
+    ("identifier", "instance"),
+    [
+        (
+            "forge/flow@1",
+            {
+                "schema": "forge/flow@1",
+                "flow": {"id": "fast", "name": "FULL", "description": "wrong"},
+                "stages": [{"id": "completion", "required": True}],
+                "gates": {"unrelated": {"require": ["anything"]}},
+                "review": {"required": True, "strict": True, "adversarial": True},
+            },
+        ),
+        (
+            "forge/policy/architecture@1",
+            {"schema": "forge/policy/architecture@1", "architecture": {"invented": True}},
+        ),
+        (
+            "forge/policy/documentation@1",
+            {"schema": "forge/policy/documentation@1", "documentation": {"invented": True}},
+        ),
+        (
+            "forge/policy/security@1",
+            {"schema": "forge/policy/security@1", "security": {"invented": True}},
+        ),
+        (
+            "forge/tdd-evidence@1",
+            {
+                "schema": "forge/tdd-evidence@1",
+                "change": "CHG-9999",
+                "status": "complete",
+                "cycle_count": 1,
+                "cycles": [{"id": "TDD-001"}],
+            },
+        ),
+    ],
+)
+def test_stable_schemas_reject_semantically_empty_or_contradictory_artifacts(
+    identifier: str,
+    instance: dict,
+) -> None:
+    """Catch stable schemas that validate artifacts with no promised semantics."""
+    with pytest.raises(ValidationError):
+        Draft202012Validator(_catalog_schemas()[identifier]).validate(instance)
