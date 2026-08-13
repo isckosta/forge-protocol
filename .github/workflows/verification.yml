@@ -3,6 +3,7 @@ name: Distribution Verification
 on:
   push:
     branches:
+      - main
       - chore/chg-0001-verification
       - feat/chg-0002-harness-adapter-foundation
   pull_request:
