@@ -6,41 +6,28 @@ cycles:
   - id: TDD-001
     requirement: FR-003
     behavior: forge version reports CLI and supported Protocol versions
-
     red:
       status: observed
       workflow_run_id: 31667898431
       job_id: 94346320217
       commit: 9b68d9ada980ef14fd62db858dcd31d7cd1fc3d9
       test: tests/cli/test_version.py::test_version_reports_cli_and_supported_protocol_versions
-      expected_failure: >
-        The public CLI does not yet provide the version command required by FR-003.
-      observed_failure: >
-        Typer raised RuntimeError: Could not get a command for this Typer instance.
-        The package and test dependencies installed successfully, and the test reached
-        the CLI invocation before failing because no command was registered.
+      expected_failure: The public CLI does not yet provide the version command required by FR-003.
+      observed_failure: Typer could not build a command because no command was registered.
       valid: true
-
     green:
       status: observed
       workflow_run_id: 31667967444
       job_id: 94346532519
       commit: 6c1579e62b3c86b8688137e3bea34810f626e400
-      result: >
-        GitHub Actions completed successfully. The FR-003 CLI behavior test passed
-        after preserving Typer command-group semantics and implementing the version
-        command.
-
+      result: The FR-003 CLI behavior test passed.
     refactor:
       status: not_performed
-      reason: >
-        No additional refactoring was justified after GREEN. The implementation is
-        already minimal for the current requirement.
+      reason: The implementation was already minimal.
 
   - id: TDD-002
     requirements: [FR-001, FR-002, FR-006]
     behavior: resolve the Forge Project Root from a Git repository or nested directory
-
     red:
       status: observed
       workflow_run_id: 31668342390
@@ -50,27 +37,35 @@ cycles:
         - tests/unit/test_git_project_root.py::test_resolves_git_repository_root_from_root_directory
         - tests/unit/test_git_project_root.py::test_resolves_same_git_repository_root_from_nested_directory
         - tests/unit/test_git_project_root.py::test_rejects_directory_outside_git_repository
-      expected_failure: >
-        The Git boundary exists only as an empty scaffold and does not yet resolve a
-        Project Root or expose an explicit non-repository error.
-      observed_failure: >
-        All three new tests failed with AttributeError because resolve_project_root
-        and NotGitRepositoryError were absent. The existing version test passed,
-        confirming the environment and prior behavior remained healthy.
+      expected_failure: The Git boundary does not yet resolve a Project Root or expose an explicit non-repository error.
+      observed_failure: All three new tests failed because resolve_project_root and NotGitRepositoryError were absent while prior tests passed.
       valid: true
-
     green:
       status: observed
       workflow_run_id: 31668399469
       job_id: 94347862179
       commit: 0ebcafc09dc9abe96ac759a6424e8a84dc83f11a
-      result: >
-        GitHub Actions completed successfully. Forge resolves the same Git top-level
-        directory from repository root and nested paths, and rejects a path outside a
-        Git repository with an explicit NotGitRepositoryError.
-
+      result: GitHub Actions passed for root, nested-path, and non-repository behavior.
     refactor:
       status: not_performed
-      reason: >
-        The boundary remains minimal: one explicit error type and one deterministic
-        git rev-parse invocation. Additional abstraction is not justified yet.
+      reason: The Git boundary remained minimal.
+
+  - id: TDD-003
+    requirements: [FR-004, FR-005, FR-007, FR-008]
+    behavior: publish a Forge workspace safely without overwrite or partial state
+    red:
+      status: observed
+      workflow_run_id: 31668564019
+      job_id: 94348345860
+      commit: b55054c652579f6c83eda8ab3feb97b6766bb4d9
+      tests:
+        - tests/unit/test_workspace_initialization.py::test_initializes_forge_workspace_with_requested_files
+        - tests/unit/test_workspace_initialization.py::test_rejects_existing_forge_workspace_without_modifying_it
+        - tests/unit/test_workspace_initialization.py::test_failed_initialization_does_not_publish_partial_workspace
+      expected_failure: The workspace boundary is only an empty scaffold and cannot initialize, reject overwrite, or guarantee rollback-safe publication.
+      observed_failure: All three new tests failed with AttributeError because initialize_workspace and the explicit workspace errors were absent; four prior tests passed.
+      valid: true
+    green:
+      status: pending
+    refactor:
+      status: pending
