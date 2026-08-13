@@ -1,212 +1,188 @@
 schema: forge/tdd-evidence@1
 
 change: CHG-0001
+status: compliant
+cycle_count: 12
 
 cycles:
   - id: TDD-001
-    requirement: FR-003
+    requirements: [FR-003]
     behavior: forge version reports CLI and supported Protocol versions
     red:
-      status: observed
+      valid: true
       workflow_run_id: 31667898431
       job_id: 94346320217
       commit: 9b68d9ada980ef14fd62db858dcd31d7cd1fc3d9
-      test: tests/cli/test_version.py::test_version_reports_cli_and_supported_protocol_versions
-      expected_failure: The public CLI does not yet provide the version command required by FR-003.
-      observed_failure: Typer could not build a command because no command was registered.
-      valid: true
+      reason: No public version command existed.
     green:
-      status: observed
       workflow_run_id: 31667967444
       job_id: 94346532519
       commit: 6c1579e62b3c86b8688137e3bea34810f626e400
-      result: The FR-003 CLI behavior test passed.
-    refactor:
-      status: not_performed
-      reason: The implementation was already minimal.
 
   - id: TDD-002
     requirements: [FR-001, FR-002, FR-006]
-    behavior: resolve the Forge Project Root from a Git repository or nested directory
+    behavior: resolve Git Project Root from root or nested directory and reject non-repository paths
     red:
-      status: observed
+      valid: true
       workflow_run_id: 31668342390
       job_id: 94347687237
       commit: 5ebd490d08bd75848e783f9692f4ee3652b6cf72
-      tests:
-        - tests/unit/test_git_project_root.py::test_resolves_git_repository_root_from_root_directory
-        - tests/unit/test_git_project_root.py::test_resolves_same_git_repository_root_from_nested_directory
-        - tests/unit/test_git_project_root.py::test_rejects_directory_outside_git_repository
-      expected_failure: The Git boundary does not yet resolve a Project Root or expose an explicit non-repository error.
-      observed_failure: All three new tests failed because resolve_project_root and NotGitRepositoryError were absent while prior tests passed.
-      valid: true
+      reason: Git Project Root behavior and domain error were absent.
     green:
-      status: observed
       workflow_run_id: 31668399469
       job_id: 94347862179
       commit: 0ebcafc09dc9abe96ac759a6424e8a84dc83f11a
-      result: GitHub Actions passed for root, nested-path, and non-repository behavior.
-    refactor:
-      status: not_performed
-      reason: The Git boundary remained minimal.
 
   - id: TDD-003
     requirements: [FR-004, FR-005, FR-007, FR-008]
-    behavior: publish a Forge workspace safely without overwrite or partial state
+    behavior: publish Forge workspace through staging without overwrite or partial state
     red:
-      status: observed
+      valid: true
       workflow_run_id: 31668564019
       job_id: 94348345860
       commit: b55054c652579f6c83eda8ab3feb97b6766bb4d9
-      tests:
-        - tests/unit/test_workspace_initialization.py::test_initializes_forge_workspace_with_requested_files
-        - tests/unit/test_workspace_initialization.py::test_rejects_existing_forge_workspace_without_modifying_it
-        - tests/unit/test_workspace_initialization.py::test_failed_initialization_does_not_publish_partial_workspace
-      expected_failure: The workspace boundary is only an empty scaffold and cannot initialize, reject overwrite, or guarantee rollback-safe publication.
-      observed_failure: All three new tests failed with AttributeError because initialize_workspace and the explicit workspace errors were absent; four prior tests passed.
-      valid: true
+      reason: Workspace initialization behavior was absent.
     green:
-      status: observed
       workflow_run_id: 31668623054
       job_id: 94348523529
       commit: 47d5b04c9245f1978beef06d240773824dedd307
-      result: GitHub Actions passed. Workspace publication creates requested files, preserves an existing workspace, validates conflicting plans, and leaves no .forge or staging directory after a failed plan.
-    refactor:
-      status: not_performed
-      reason: The staging publisher, validation, and cleanup logic are already narrowly scoped to the requirements.
 
   - id: TDD-004
     requirements: [FR-009, FR-010, FR-018, FR-019, FR-023]
-    behavior: load and validate Forge project configuration against the canonical Project Schema and supported Protocol versions
+    behavior: load project YAML, validate the canonical Project Schema, and enforce Protocol compatibility
     red:
-      status: observed
+      valid: true
       workflow_run_id: 31669001236
       job_id: 94349625107
       commit: ae29145796d51cff275c98592d2c41f4cb97cc68
-      tests:
-        - tests/unit/test_project_configuration.py::test_loads_valid_project_configuration
-        - tests/unit/test_project_configuration.py::test_rejects_configuration_that_violates_project_schema
-        - tests/unit/test_project_configuration.py::test_rejects_unsupported_protocol_version
-        - tests/unit/test_project_configuration.py::test_validation_is_deterministic_for_identical_repository_state
-      expected_failure: The configuration boundary is only an empty scaffold and cannot parse, validate, or enforce Protocol compatibility.
-      observed_failure: All four new tests failed with AttributeError because load_project_configuration and explicit configuration errors were absent; seven prior tests passed.
-      valid: true
+      reason: Project configuration loading and validation were absent.
     green:
-      status: observed
       workflow_run_id: 31669052322
       job_id: 94349769493
       commit: 9ac4aa62d7d1407672955700d32fa41c20f16a59
-      result: GitHub Actions passed. Forge parses YAML, validates against protocol/schemas/project.schema.json, rejects unsupported Protocol versions, and returns deterministic results for identical state.
-    refactor:
-      status: not_performed
-      reason: The implementation is minimal for the current source-tree execution model. Packaging the canonical Schema as a distribution resource is deferred to installation Verification rather than hidden inside this cycle.
 
   - id: TDD-005
     requirements: [FR-011, FR-012, FR-013, FR-014, FR-015]
-    behavior: resolve canonical Flow and Engineering Contract layers without allowing project configuration to replace canonical semantics
+    behavior: resolve canonical Flow and Engineering Contract layers without replacement of canonical semantics
     red:
-      status: observed
+      valid: true
       workflow_run_id: 31669289131
       job_id: 94350422734
       commit: 438fcd566f54d7958a7e64a2dfba4e0247ee02b9
-      tests:
-        - tests/unit/test_protocol_resolution.py::test_resolves_effective_standard_flow_from_canonical_and_project_layers
-        - tests/unit/test_protocol_resolution.py::test_rejects_unknown_canonical_flow_reference
-        - tests/unit/test_protocol_resolution.py::test_project_flow_cannot_redefine_canonical_stages
-        - tests/unit/test_protocol_resolution.py::test_effective_contract_is_canonical_contract_plus_project_extension
-        - tests/unit/test_protocol_resolution.py::test_project_contract_is_optional_but_canonical_contract_is_required
-        - tests/unit/test_protocol_resolution.py::test_fails_when_canonical_contract_is_unavailable
-      expected_failure: The Protocol resolution boundary is only an empty scaffold and cannot resolve canonical Flow references or compose the Effective Engineering Contract.
-      observed_failure: All six new tests failed with AttributeError because resolution functions and explicit errors were absent; eleven prior tests passed.
-      valid: true
+      reason: Protocol resolution functions and explicit errors were absent.
     green:
-      status: observed
       workflow_run_id: 31669341596
       job_id: 94350569118
       commit: 4dc74fd5d022ca40da998cf6681d6f015c6ca094
-      result: GitHub Actions passed. Forge resolves canonical and project Flow layers separately, rejects unknown canonical references and canonical stage redefinition, and composes the canonical Contract before the optional project extension.
-    refactor:
-      status: not_performed
-      reason: The layer-preserving resolver is intentionally small and avoids premature semantic merging of Markdown Contracts.
 
   - id: TDD-006
     requirements: [FR-016, FR-017, FR-020, FR-021, FR-022, FR-029, FR-030]
-    behavior: validate a Forge project through structured findings and expose the result through forge validate
+    behavior: validate Forge project state through structured findings and forge validate
     red:
-      status: observed
+      valid: true
       workflow_run_id: 31669614311
       job_id: 94351355295
       commit: 673734d35e9f50c33b0ff6553c2aea6a1e8aa287
-      tests:
-        - tests/unit/test_validation.py::test_valid_project_returns_passed_result
-        - tests/unit/test_validation.py::test_missing_workspace_returns_actionable_not_initialized_finding
-        - tests/unit/test_validation.py::test_unknown_project_flow_returns_actionable_finding
-        - tests/unit/test_validation.py::test_missing_canonical_contract_returns_actionable_finding
-        - tests/cli/test_validate.py::test_validate_reports_success_for_valid_forge_project
-        - tests/cli/test_validate.py::test_validate_reports_not_initialized_with_exit_code_two
-      expected_failure: Forge has no validation application boundary or public validate command.
-      observed_failure: Six new tests failed while seventeen prior tests passed. Validation functions were absent and the CLI had no validate command.
-      valid: true
+      reason: Validation application boundary and public validate command were absent.
     green:
-      status: observed
       workflow_run_id: 31669667157
       job_id: 94351504760
       commit: c3f3b9e60106bac112099d848b78b11b32a82d1a
-      result: GitHub Actions passed. Forge validates workspace presence, project configuration, project Flow references, canonical Contract availability, renders structured actionable findings, and returns exit code 0 for valid state or 2 for invalid Forge state.
-    refactor:
-      status: not_performed
-      reason: The validation pipeline is intentionally explicit and composes existing boundaries without adding another abstraction layer.
 
   - id: TDD-007
     requirements: [FR-024, FR-025, FR-026, FR-027]
-    behavior: aggregate read-only Forge diagnostics and expose them through forge doctor
+    behavior: aggregate read-only Doctor diagnostics and expose forge doctor
     red:
-      status: observed
+      valid: true
       workflow_run_id: 31670067393
       job_id: 94352684472
       commit: dbc87ae49e9f2e04ee8737ab27576866a0fc8152
-      tests:
-        - tests/unit/test_doctor_diagnostics.py::test_doctor_passes_all_required_checks_for_valid_project
-        - tests/unit/test_doctor_diagnostics.py::test_doctor_aggregates_failure_and_skipped_checks
-        - tests/unit/test_doctor_diagnostics.py::test_doctor_skips_repository_dependent_checks_outside_git
-        - tests/unit/test_doctor_diagnostics.py::test_doctor_is_read_only
-        - tests/cli/test_doctor.py::test_doctor_reports_failed_and_skipped_checks_with_exit_code_two
-        - tests/cli/test_doctor.py::test_doctor_reports_non_git_environment_without_modifying_files
-      expected_failure: Forge has no Doctor diagnostic application boundary or public doctor command.
-      observed_failure: Six new tests failed while twenty-three prior tests passed. doctor.diagnose was absent and the CLI had no doctor command. An earlier collection failure caused by duplicate test module names was rejected as invalid RED and corrected before this run.
-      valid: true
+      reason: Doctor diagnostic boundary and public command were absent. A prior Pytest collection failure was rejected as invalid RED.
     green:
-      status: observed
       workflow_run_id: 31670131750
       job_id: 94352862022
       commit: ec9542971b20b4c434490038f8eed0497d12529f
-      result: GitHub Actions passed. Forge Doctor aggregates Git availability, repository detection, Forge initialization, project configuration, Protocol compatibility, canonical Flow availability, and canonical Contract availability; dependent checks can be skipped and diagnostics remain read-only.
-    refactor:
-      status: not_performed
-      reason: The explicit check pipeline is small and keeps diagnostic dependencies visible.
 
   - id: TDD-008
     requirements: [FR-004, FR-028, FR-031, FR-032]
-    behavior: expose the complete infrastructure-only CLI surface and stable environment/internal failure exit codes
+    behavior: expose infrastructure-only CLI surface, public init, and stable environment/internal exit codes
     red:
-      status: observed
+      valid: true
       workflow_run_id: 31670329489
       job_id: 94353427371
       commit: a1353a1c2364f7127c6790a191b12f47ec3d5485
-      tests:
-        - tests/cli/test_cli_contract.py::test_cli_exposes_only_infrastructure_commands
-        - tests/cli/test_cli_contract.py::test_init_creates_a_valid_forge_project_from_nested_directory
-        - tests/cli/test_cli_contract.py::test_environment_failure_uses_exit_code_three
-        - tests/cli/test_cli_contract.py::test_unexpected_internal_failure_uses_distinct_exit_code
-      expected_failure: The public CLI is missing forge init and has no explicit internal-error exit contract.
-      observed_failure: Three new assertions failed while thirty prior tests passed. init was absent from the command surface, invoking it exited 2, and an unexpected RuntimeError escaped with exit code 1. The existing non-Git environment path already satisfied exit code 3.
-      valid: true
+      reason: init was absent and unexpected internal failures escaped with exit code 1.
     green:
-      status: observed
       workflow_run_id: 31670370440
       job_id: 94353547913
       commit: 86cc8472fbc9b8e032d1f26651aa6764ad34be0f
-      result: GitHub Actions passed. Forge exposes exactly the intended infrastructure command family, init creates a valid project from a nested Git path, environment failure uses 3, and unexpected internal failure uses 70.
-    refactor:
-      status: not_performed
-      reason: The CLI boundary remains intentionally explicit; extracting a command execution framework would be premature.
+
+  - id: TDD-009
+    requirements: [FR-009, FR-010, FR-018, FR-021, NFR-002, CON-005]
+    behavior: resolve canonical Protocol resources from an installed wheel outside the source tree
+    origin: verification_finding_V-001
+    red:
+      valid: true
+      workflow_run_id: 31670537580
+      job_id: 94354031510
+      reason: Packaged Protocol resource resolver did not exist; regression test failed with ModuleNotFoundError.
+    green:
+      tests_workflow_run_id: 31670613378
+      distribution_workflow_run_id: 31670613450
+      result: Packaged resources resolved successfully and isolated-wheel init, validate, and doctor passed.
+
+  - id: TDD-010
+    requirements: [FR-009, AC-001, AC-002]
+    behavior: preserve YAML-significant repository names as string project names
+    origin: strict_review_REV-001
+    red:
+      valid: true
+      workflow_run_id: 31670898776
+      job_id: 94355108917
+      commit: 991de905d96bf36dd3f125d4ed4f7165b8ef6bc5
+      reason: Repository name `null` was parsed as YAML null instead of the string `null`.
+    green:
+      workflow_run_id: 31670961650
+      job_id: 94355309981
+      commit: 19155aad24b410225b8391053d2dc5b21a4a1f08
+      result: Generated project configuration uses safe YAML serialization.
+
+  - id: TDD-011
+    requirements: [FR-007, FR-008, NFR-003, INV-003]
+    behavior: reject cross-platform ambiguous workspace paths and serialize concurrent Forge initialization
+    origin: strict_review_REV-002_REV-003
+    red:
+      valid: true
+      workflow_run_id: 31671009073
+      job_id: 94355446477
+      commit: fe69597d7bc20dbce2c09f7f69eff89592a20aaf
+      reason: Backslash-ambiguous traversal was accepted and a pre-existing initialization lock was ignored.
+    intermediate_green:
+      workflow_run_id: 31671056178
+      job_id: 94355581266
+      result: One test remained failing because the implementation removed a lock it did not own.
+    green:
+      workflow_run_id: 31671102355
+      job_id: 94355715239
+      commit: c708a793c59ed510338349f33f4b0bd23b541318
+      result: Workspace paths are canonical POSIX-relative inputs and initialization uses an owned exclusive cross-process lock.
+
+  - id: TDD-012
+    requirements: [FR-031]
+    behavior: classify a missing Git executable as an environment failure for init and validate
+    origin: strict_review_REV-004
+    red:
+      valid: true
+      workflow_run_id: 31671218640
+      job_id: 94356057043
+      commit: e0dfb662d4eb9b75af756bc0f6554584e8e7bf01
+      reason: Missing Git produced exit code 70 for init instead of environment exit code 3.
+    green:
+      workflow_run_id: 31671275934
+      job_id: 94356226237
+      commit: 381f9d3c0b338c26e13529504a820a761e537fa4
+      result: Missing Git is represented by GitUnavailableError and maps to E_FORGE_GIT_UNAVAILABLE with exit code 3.
+
+notes:
+  - Tests written after implementation are not represented as TDD evidence.
+  - Verification and Strict Review findings that required behavioral fixes started new regression-first TDD cycles.
