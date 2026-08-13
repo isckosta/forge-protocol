@@ -11,7 +11,7 @@ flow:
   escalations: []
 
 state:
-  current: review
+  current: complete
 
 artifacts:
   intent: complete
