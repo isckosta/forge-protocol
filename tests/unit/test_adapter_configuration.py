@@ -134,6 +134,43 @@ def test_write_cleans_its_anchored_temporary_file_when_replace_fails(
     assert not list(adapter_directory.glob(".config.yml.*.tmp"))
 
 
+def test_raced_replace_failure_preserves_an_external_same_name_temp_and_cleans_internal_temp(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Catch cleanup that resolves a raced temporary name outside its opened directory."""
+    project_root = tmp_path / "repository"
+    adapter_directory = project_root / ".forge" / "adapters" / "codex"
+    adapter_directory.mkdir(parents=True)
+    forge_config = project_root / ".forge" / "forge.yml"
+    forge_config.write_bytes(b"project-owned\n")
+    installation = adapter_directory / "installation.yml"
+    installation.write_bytes(b"forge-owned\n")
+    outside = tmp_path / "outside"
+    outside.mkdir()
+    temporary_name = ".config.yml.race.tmp"
+    monkeypatch.setattr(configuration_module.secrets, "token_hex", lambda _: "race")
+    monkeypatch.chdir(outside)
+
+    def swap_then_fail_replace(*args: object, **kwargs: object) -> None:
+        moved_directory = adapter_directory.with_name("codex-original")
+        adapter_directory.rename(moved_directory)
+        adapter_directory.symlink_to(outside, target_is_directory=True)
+        (outside / temporary_name).write_bytes(b"external-sentinel\n")
+        raise OSError("simulated raced replacement failure")
+
+    monkeypatch.setattr(configuration_module.os, "replace", swap_then_fail_replace)
+
+    with pytest.raises(InvalidAdapterConfigurationError):
+        write_adapter_configuration(project_root, AdapterConfiguration(adapter_id="codex", target="safe/path"))
+
+    moved_directory = adapter_directory.with_name("codex-original")
+    assert not (outside / "config.yml").exists()
+    assert (outside / temporary_name).read_bytes() == b"external-sentinel\n"
+    assert not (moved_directory / temporary_name).exists()
+    assert forge_config.read_bytes() == b"project-owned\n"
+    assert (moved_directory / "installation.yml").read_bytes() == b"forge-owned\n"
+
+
 def test_write_fails_closed_when_descriptor_relative_replace_is_unavailable(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:

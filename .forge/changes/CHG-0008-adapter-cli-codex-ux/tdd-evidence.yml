@@ -1,7 +1,7 @@
 schema: forge/tdd-evidence@1
 change: CHG-0008
 status: active
-cycle_count: 14
+cycle_count: 15
 cycles:
   - id: TDD-001A
     title: Registry stable ordering
@@ -171,8 +171,23 @@ cycles:
     green:
       command: .venv/bin/python -m pytest tests/unit/test_adapter_configuration.py::test_write_fails_closed_when_descriptor_relative_replace_is_unavailable -v
       result: 1 passed
+    notes:
+      - Fix round 3 adds the independent TDD-002H raced-cleanup proof; it does not combine the primitive-availability behavior with cleanup behavior.
+  - id: TDD-002H
+    title: Descriptor-anchored raced temporary cleanup
+    requirements: [FR-005, FR-007, AC-011]
+    behavior: a replacement failure after the Adapter directory is swapped to a symlink preserves an external same-name temporary sentinel, removes only the internal temporary through the original directory descriptor, and leaves external configuration plus Forge files untouched
+    red:
+      valid: true
+      command: .venv/bin/python -m pytest tests/unit/test_adapter_configuration.py::test_raced_replace_failure_preserves_an_external_same_name_temp_and_cleans_internal_temp -v
+      result: 1 failed
+      reason: With the descriptor-relative cleanup temporarily removed, the cleanup resolved the injected same-name temporary in the external working directory and deleted the external sentinel.
+    green:
+      command: .venv/bin/python -m pytest tests/unit/test_adapter_configuration.py::test_raced_replace_failure_preserves_an_external_same_name_temp_and_cleans_internal_temp -v
+      result: 1 passed
 notes:
   - Focused regression command `.venv/bin/python -m pytest tests/unit/test_adapter_registry.py tests/unit/test_codex_adapter_descriptor.py -v` passed 11 tests.
   - 'rg -n "codex" src/forge_cli/adapters/driver.py src/forge_cli/adapters/registry.py returned no matches.'
   - Fix round 1 full suite command `.venv/bin/python -m pytest` passed 202 tests.
   - Fix round 2 focused configuration/target/contract command passed 66 tests; full suite command `.venv/bin/python -m pytest` passed 205 tests.
+  - Fix round 3 focused configuration/target/contract command passed 67 tests; sandbox full suite covered 205 tests and only wheel build isolation failed due unavailable Hatchling download; approved-network full suite passed 206 tests.
