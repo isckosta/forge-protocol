@@ -47,9 +47,12 @@ work discovered before a stage starts.
 
 ## Protocol v1 Contract Freeze
 
+Status: Completed by `CHG-0007`.
+
 ### Objective
 
-Promote the current draft/Foundation semantics into a stable v1 contract suitable for external adoption.
+Promote the Foundation semantics into a stable v1 contract suitable for
+external adoption.
 
 ### Scope
 

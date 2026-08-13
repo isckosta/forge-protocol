@@ -6,12 +6,12 @@ reason: >
   before implementation in the working tree, but test and implementation first
   appear together in commits 60b7326 and e85f3bc. They are retained as
   Verification coverage, not credited as independently auditable TDD evidence.
-cycle_count: 1
+cycle_count: 3
 cycles:
   - id: TDD-001
     title: Strict Review Contract Rejection Remediation
     requirements: [FR-007, FR-008, FR-009, FR-010, FR-013, NFR-001, INV-002]
-    behavior: reject semantically invalid stable artifacts and protect packaged catalog closure
+    behavior: reject semantically invalid stable artifacts
     red:
       valid: true
       commit: 01878a4
@@ -22,5 +22,34 @@ cycles:
       commit: 6a1b98b
       command: .venv/bin/pytest tests/contract/test_protocol_contract.py -v
       result: 10 passed
+  - id: TDD-002
+    title: Canonical Flow and Policy Semantic Closure
+    requirements: [FR-008, FR-011, FR-012, FR-013, INV-002]
+    behavior: reject weakened Gates, incomplete FULL stages, reduced Policy dimensions, and unexplained TDD exceptions
+    red:
+      valid: true
+      commit: 68804ca
+      command: .venv/bin/pytest tests/contract/test_protocol_contract.py -v
+      result: 8 failed, 10 passed
+      reason: each semantic bypass validated independently before schema remediation
+    green:
+      commit: 0c46f27
+      command: .venv/bin/pytest tests/contract/test_protocol_contract.py -v
+      result: 18 passed
+  - id: TDD-003
+    title: Canonical Flow Stage Requiredness
+    requirements: [FR-011, FR-012]
+    behavior: reject mandatory stages marked optional and conditional stages with weakened applicability
+    red:
+      valid: true
+      commit: 8ada1d4
+      command: .venv/bin/pytest tests/contract/test_protocol_contract.py -v
+      result: 6 failed, 18 passed
+      reason: FAST, STANDARD, and FULL accepted optional Completion and a non-applicable TDD condition
+    green:
+      commit: 5221d16
+      command: .venv/bin/pytest tests/contract/test_protocol_contract.py -v
+      result: 24 passed
 notes:
   - Initial catalog, canonical-instance, and version-label tests count as Verification coverage only.
+  - Installed-wheel catalog closure is Verification coverage, not TDD evidence.
