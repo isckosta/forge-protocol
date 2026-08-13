@@ -1,0 +1,24 @@
+schema: forge/policy/documentation@1
+
+documentation:
+  impact_evaluation:
+    required: true
+  update_required_when_change_affects:
+    - business_rules
+    - domain_invariants
+    - architectural_boundaries
+    - module_responsibilities
+    - public_contracts
+    - integration_behavior
+    - persistence_semantics
+    - operational_workflows
+    - security_behavior
+    - developer_workflows
+  no_update_required:
+    allowed: true
+    require_reason: true
+  stale_documentation:
+    blocks_completion_when_material: true
+  knowledge_capture:
+    full_flow:
+      required_when_material: true

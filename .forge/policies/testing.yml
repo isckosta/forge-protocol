@@ -1,0 +1,22 @@
+schema: forge/policy/testing@1
+
+testing:
+  approach: tdd_first
+  behavioral_changes:
+    tdd_required_when_reasonably_testable: true
+  cycle:
+    required: [red, green, refactor]
+  red:
+    execution_required: true
+    expected_failure_required: true
+    test_before_production_implementation: true
+  bugfix:
+    regression_test:
+      required_when_reasonably_automatable: true
+      must_reproduce_bug_before_fix: true
+  post_hoc_tests:
+    count_as_tdd_evidence: false
+  exceptions:
+    reason_required: true
+  verification:
+    passing_tests_alone_are_sufficient: false

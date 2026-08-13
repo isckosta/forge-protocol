@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://forge.dev/schemas/traceability.schema.json",
+  "title": "Forge Traceability",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "change", "requirements"],
+  "properties": {
+    "schema": {"const": "forge/traceability@1"},
+    "change": {"type": "string", "pattern": "^CHG-[0-9]{4,}$"},
+    "requirements": {"type": "object", "additionalProperties": {"type": "object", "additionalProperties": true, "properties": {"tasks": {"type": "array", "items": {"type": "string"}}, "test_strategy": {"type": "string"}}}}
+  }
+}

@@ -1,0 +1,22 @@
+schema: forge/policy/architecture@1
+
+architecture:
+  principles:
+    - repository_native
+    - chat_executed
+    - harness_agnostic
+    - policy_governed
+    - protocol_first
+    - tdd_first
+    - local_first
+  inspect_existing_patterns_before_new_abstractions: true
+  design_for_testability: true
+  parallel_architecture:
+    prohibit_without_explicit_decision: true
+  adr:
+    required_when:
+      - core_boundary_changes
+      - persistence_model_changes
+      - runtime_model_changes
+      - protocol_cli_responsibility_changes
+      - major_dependency_choices

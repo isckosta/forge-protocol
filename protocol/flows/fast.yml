@@ -1,0 +1,70 @@
+schema: forge/flow@1
+
+flow:
+  id: fast
+  name: FAST
+  description: >
+    Minimal-ceremony flow for low-semantic-impact Changes. FAST reduces
+    planning overhead without reducing TDD, Verification, Review, or
+    Documentation Impact requirements.
+
+classification:
+  intended_for:
+    - localized_bugfix
+    - isolated_ui_correction
+    - copy_correction
+    - behavior_preserving_small_refactor
+    - localized_validation_correction
+    - low_risk_maintenance
+  disqualifiers:
+    - architectural_change
+    - security_model_change
+    - authorization_model_change
+    - new_domain_invariant
+    - broad_business_rule_change
+    - new_integration
+    - significant_cross_module_change
+    - major_public_contract_change
+
+stages:
+  - id: intent
+    required: true
+  - id: inspection
+    required: true
+  - id: test_design
+    required_when: behavioral_change
+  - id: tdd_implementation
+    required_when: tdd_applicable
+    cycle: [red, green, refactor]
+  - id: verification
+    required: true
+  - id: strict_review
+    required: true
+  - id: documentation_impact
+    required: true
+  - id: completion
+    required: true
+
+gates:
+  before_behavioral_implementation:
+    require_when: tdd_applicable
+    checks:
+      - expected_behavior_identified
+      - test_exists
+      - red_executed
+      - red_failed_for_expected_reason
+  before_completion:
+    require:
+      - verification_passed
+      - review_passed
+      - documentation_impact_evaluated
+      - tdd_compliant_or_explicitly_excepted
+
+escalation:
+  enabled: true
+  automatic_downgrade: false
+
+review:
+  required: true
+  strict: true
+  adversarial: true

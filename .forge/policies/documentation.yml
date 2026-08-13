@@ -1,0 +1,16 @@
+schema: forge/policy/documentation@1
+
+documentation:
+  impact_evaluation:
+    required: true
+  update_required_when_change_affects:
+    - protocol_semantics
+    - architectural_decisions
+    - public_cli_behavior
+    - adapter_contracts
+    - contribution_workflow
+    - compatibility
+    - schemas
+  no_update_required:
+    allowed: true
+    require_reason: true

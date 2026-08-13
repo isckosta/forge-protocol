@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://forge.dev/schemas/change.schema.json",
+  "title": "Forge Change Manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "change", "flow", "state", "artifacts", "tdd", "verification", "review", "documentation"],
+  "properties": {
+    "schema": {"const": "forge/change@1"},
+    "change": {"type": "object", "additionalProperties": false, "required": ["id", "title", "kind"], "properties": {"id": {"type": "string", "pattern": "^CHG-[0-9]{4,}$"}, "title": {"type": "string", "minLength": 1}, "kind": {"enum": ["feature", "bugfix", "refactor", "security", "performance", "migration", "documentation", "infrastructure", "chore"]}}},
+    "flow": {"type": "object", "additionalProperties": false, "required": ["initial", "current"], "properties": {"initial": {"enum": ["fast", "standard", "full"]}, "current": {"enum": ["fast", "standard", "full"]}, "escalations": {"type": "array", "items": {"type": "object", "additionalProperties": false, "required": ["from", "to", "reason"], "properties": {"from": {"enum": ["fast", "standard"]}, "to": {"enum": ["standard", "full"]}, "reason": {"type": "string", "minLength": 1}}}}}},
+    "state": {"type": "object", "additionalProperties": false, "required": ["current"], "properties": {"current": {"type": "string", "minLength": 1}}},
+    "artifacts": {"type": "object"},
+    "requirements": {"type": "object", "additionalProperties": false, "properties": {"total": {"type": "integer", "minimum": 0}, "implemented": {"type": "integer", "minimum": 0}, "verified": {"type": "integer", "minimum": 0}}},
+    "tdd": {"type": "object", "additionalProperties": false, "required": ["status"], "properties": {"status": {"enum": ["pending", "active", "compliant", "not_applicable", "exception"]}, "reason": {"type": "string"}, "cycles": {"type": "integer", "minimum": 0}}},
+    "verification": {"type": "object", "additionalProperties": false, "required": ["status"], "properties": {"status": {"enum": ["pending", "active", "passed", "failed"]}}},
+    "review": {"type": "object", "additionalProperties": false, "required": ["status", "blockers", "majors", "minors", "observations"], "properties": {"status": {"enum": ["pending", "active", "passed", "failed"]}, "iteration": {"type": "integer", "minimum": 0}, "blockers": {"type": "integer", "minimum": 0}, "majors": {"type": "integer", "minimum": 0}, "minors": {"type": "integer", "minimum": 0}, "observations": {"type": "integer", "minimum": 0}}},
+    "documentation": {"type": "object", "additionalProperties": false, "required": ["impact_evaluated"], "properties": {"impact_evaluated": {"type": "boolean"}, "update_required": {"type": "boolean"}, "reason": {"type": "string"}}}
+  }
+}

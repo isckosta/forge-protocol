@@ -1,0 +1,56 @@
+schema: forge/change@1
+
+change:
+  id: CHG-0001
+  title: Bootstrap Forge CLI
+  kind: feature
+
+flow:
+  initial: full
+  current: full
+  escalations: []
+
+state:
+  current: test_strategy
+
+artifacts:
+  intent: complete
+  discovery: complete
+  specification: complete
+  specification_review: complete
+  architecture: complete
+  test_strategy: active
+  plan: draft
+  tasks: draft
+  implementation: pending
+  verification: pending
+  review: pending
+  documentation: pending
+  knowledge_capture: pending
+
+requirements:
+  total: 32
+  implemented: 0
+  verified: 0
+
+tdd:
+  status: pending
+  cycles: 0
+
+verification:
+  status: pending
+
+review:
+  status: pending
+  iteration: 0
+  blockers: 0
+  majors: 0
+  minors: 0
+  observations: 0
+
+documentation:
+  impact_evaluated: true
+  update_required: true
+  reason: >
+    The first CLI establishes public installation, initialization, validation,
+    diagnostic, and Protocol resolution behavior.

@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://forge.dev/schemas/project.schema.json",
+  "title": "Forge Project",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "project", "forge", "flows", "testing", "review", "documentation"],
+  "properties": {
+    "schema": {"const": "forge/project@1"},
+    "project": {"type": "object", "additionalProperties": false, "required": ["name"], "properties": {"name": {"type": "string", "minLength": 1}}},
+    "forge": {"type": "object", "additionalProperties": false, "required": ["protocol"], "properties": {"protocol": {"type": ["string", "integer"]}}},
+    "flows": {"type": "object", "additionalProperties": false, "required": ["default", "allow_fast", "auto_escalation"], "properties": {"default": {"enum": ["fast", "standard", "full"]}, "allow_fast": {"type": "boolean"}, "auto_escalation": {"type": "boolean"}}},
+    "testing": {"type": "object", "additionalProperties": false, "required": ["approach"], "properties": {"approach": {"const": "tdd_first"}}},
+    "review": {"type": "object", "additionalProperties": false, "required": ["strict"], "properties": {"strict": {"const": true}}},
+    "documentation": {"type": "object", "additionalProperties": false, "required": ["impact_evaluation"], "properties": {"impact_evaluation": {"const": "required"}}},
+    "harnesses": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}}
+  }
+}

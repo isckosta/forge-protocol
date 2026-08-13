@@ -1,0 +1,51 @@
+schema: forge/review/specification@1
+change: CHG-0001
+iteration: 1
+status: resolved
+summary:
+  blockers: 2
+  majors: 4
+  minors: 1
+findings:
+  - id: SPEC-001
+    severity: blocker
+    category: protocol_resolution
+    problem: Canonical Flow availability was ambiguous.
+    resolution: Project Flow configuration references canonical Flow identifiers; authoritative Flow definitions are not copied into the project.
+    status: resolved
+  - id: SPEC-002
+    severity: blocker
+    category: contract_resolution
+    problem: Canonical versus project Contract composition was undefined.
+    resolution: Effective Contract equals canonical Contract plus strengthening project extensions.
+    status: resolved
+  - id: SPEC-003
+    severity: major
+    category: project_root
+    problem: Forge Project Root resolution was undefined.
+    resolution: Forge v1 requires Git and uses the Git top-level directory.
+    status: resolved
+  - id: SPEC-004
+    severity: major
+    category: validation
+    problem: validate behavior for an uninitialized repository was undefined.
+    resolution: Validation reports E_FORGE_NOT_INITIALIZED and exits non-zero.
+    status: resolved
+  - id: SPEC-005
+    severity: major
+    category: diagnostics
+    problem: Doctor aggregation and exit semantics were underspecified.
+    resolution: Doctor aggregates executable checks and exits non-zero when required checks fail.
+    status: resolved
+  - id: SPEC-006
+    severity: major
+    category: initialization
+    problem: Partial initialization behavior was undefined.
+    resolution: Initialization must avoid leaving a successfully-looking partial workspace.
+    status: resolved
+  - id: SPEC-007
+    severity: minor
+    category: cli_contract
+    problem: Public exit-code semantics were unspecified.
+    resolution: Foundation establishes initial exit-code expectations.
+    status: resolved

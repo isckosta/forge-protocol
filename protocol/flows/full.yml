@@ -1,0 +1,78 @@
+schema: forge/flow@1
+
+flow:
+  id: full
+  name: FULL
+  description: >
+    High-rigor flow for architecture, security, integrations, major domain
+    behavior, persistence, public contracts, and other high-impact work.
+
+stages:
+  - id: intent
+    required: true
+  - id: discovery
+    required: true
+  - id: specification
+    required: true
+  - id: specification_review
+    required: true
+    mode: adversarial
+  - id: architecture
+    required: true
+  - id: test_strategy
+    required: true
+  - id: plan
+    required: true
+  - id: tasks
+    required: true
+  - id: tdd_implementation
+    required_when: tdd_applicable
+    cycle: [red, green, refactor]
+  - id: verification
+    required: true
+  - id: strict_review
+    required: true
+  - id: documentation
+    required: true
+  - id: knowledge_capture
+    required: true
+  - id: completion
+    required: true
+
+gates:
+  before_architecture:
+    require:
+      - discovery_complete
+      - specification_complete
+      - specification_review_passed
+  before_implementation:
+    require:
+      - architecture_complete
+      - architecture_gate_passed
+      - test_strategy_complete
+      - plan_complete
+      - tasks_ready
+  before_behavioral_implementation:
+    require_when: tdd_applicable
+    checks:
+      - relevant_requirement_identified
+      - test_level_selected
+      - test_exists
+      - red_executed
+      - red_failed_for_expected_reason
+  before_completion:
+    require:
+      - verification_passed
+      - review_passed
+      - documentation_impact_evaluated
+      - required_documentation_updated
+      - required_knowledge_capture_complete
+      - tdd_compliant_or_explicitly_excepted
+
+downgrade:
+  automatic: false
+
+review:
+  required: true
+  strict: true
+  adversarial: true

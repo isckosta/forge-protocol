@@ -1,0 +1,24 @@
+schema: forge/policy/review@1
+
+review:
+  required: true
+  strict: true
+  adversarial: true
+  blocking: [blocker, major]
+  dimensions:
+    - protocol_compliance
+    - requirement_compliance
+    - tdd_compliance
+    - correctness
+    - test_quality
+    - architecture
+    - backward_compatibility
+    - security
+    - maintainability
+    - documentation
+  evidence:
+    required_for: [blocker, major]
+  reviewer_resolver_separation:
+    required: true
+  re_review:
+    required_after_blocking_resolution: true

@@ -1,0 +1,23 @@
+schema: forge/policy/security@1
+
+security:
+  security_model_change:
+    minimum_flow: full
+  authorization_model_change:
+    minimum_flow: full
+  review_dimensions:
+    - authentication
+    - authorization
+    - privilege_escalation
+    - information_exposure
+    - input_validation
+    - trust_boundaries
+    - secrets
+    - unsafe_execution
+    - data_integrity
+  assumptions:
+    must_be_explicit_when_material: true
+  harness_enforcement:
+    note: >
+      Forge defines security expectations, but actual filesystem, network,
+      process, and shell isolation depends on the selected coding Harness.

@@ -1,0 +1,50 @@
+schema: forge/policy/review@1
+
+review:
+  required: true
+  strict: true
+  adversarial: true
+  objective: >
+    Identify plausible reasons why the implementation should not be accepted,
+    rather than attempting merely to confirm that it appears correct.
+  severities: [blocker, major, minor, observation]
+  blocking: [blocker, major]
+  dimensions:
+    - requirement_compliance
+    - tdd_compliance
+    - correctness
+    - test_quality
+    - edge_cases
+    - invalid_states
+    - domain_invariants
+    - architecture
+    - authorization
+    - security
+    - persistence
+    - data_integrity
+    - concurrency
+    - transactions
+    - performance
+    - maintainability
+    - backward_compatibility
+    - documentation
+  tdd_review:
+    inspect:
+      - test_precedes_production_behavior
+      - red_was_observed
+      - red_failed_for_expected_reason
+      - test_validates_behavior
+      - green_scope_is_proportional
+      - refactor_preserved_behavior
+      - post_hoc_tests_not_misrepresented
+      - behavioral_requirements_have_evidence
+  evidence:
+    required_for: [blocker, major]
+  reviewer_resolver_separation:
+    required: true
+  diff_only_review:
+    allowed: false
+  passing_tests_are_sufficient:
+    value: false
+  re_review:
+    required_after_blocking_resolution: true

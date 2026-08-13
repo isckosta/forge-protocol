@@ -1,0 +1,63 @@
+schema: forge/flow@1
+
+flow:
+  id: standard
+  name: STANDARD
+  description: >
+    Default flow for ordinary behavioral Changes and small-to-medium Features.
+
+stages:
+  - id: intent
+    required: true
+  - id: discovery
+    required: true
+  - id: specification
+    required: true
+  - id: test_design
+    required_when: behavioral_change
+  - id: plan
+    required: true
+  - id: tdd_implementation
+    required_when: tdd_applicable
+    cycle: [red, green, refactor]
+  - id: verification
+    required: true
+  - id: strict_review
+    required: true
+  - id: documentation
+    required: true
+  - id: completion
+    required: true
+
+gates:
+  before_implementation:
+    require:
+      - intent_present
+      - discovery_complete
+      - specification_complete
+      - specification_gate_passed
+      - plan_complete
+  before_behavioral_implementation:
+    require_when: tdd_applicable
+    checks:
+      - relevant_requirement_identified
+      - test_exists
+      - red_executed
+      - red_failed_for_expected_reason
+  before_completion:
+    require:
+      - verification_passed
+      - review_passed
+      - documentation_impact_evaluated
+      - required_documentation_updated
+      - tdd_compliant_or_explicitly_excepted
+
+escalation:
+  enabled: true
+  target: full
+  automatic_downgrade: false
+
+review:
+  required: true
+  strict: true
+  adversarial: true

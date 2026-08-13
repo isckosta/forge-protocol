@@ -1,0 +1,51 @@
+schema: forge/traceability@1
+change: CHG-0001
+requirements:
+  FR-001: {tasks: [T-003], test_strategy: integration}
+  FR-002: {tasks: [T-003], test_strategy: integration}
+  FR-003: {tasks: [T-002, T-014], test_strategy: cli}
+  FR-004: {tasks: [T-004, T-007], test_strategy: integration}
+  FR-005: {tasks: [T-004, T-007], test_strategy: integration}
+  FR-006: {tasks: [T-003, T-007], test_strategy: integration}
+  FR-007: {tasks: [T-004, T-007], test_strategy: integration}
+  FR-008: {tasks: [T-004, T-007], test_strategy: integration}
+  FR-009: {tasks: [T-005, T-007], test_strategy: integration}
+  FR-010: {tasks: [T-005, T-007], test_strategy: unit_and_integration}
+  FR-011: {tasks: [T-006, T-007], test_strategy: integration}
+  FR-012: {tasks: [T-006, T-007], test_strategy: unit_and_integration}
+  FR-013: {tasks: [T-006, T-007], test_strategy: integration}
+  FR-014: {tasks: [T-006, T-007], test_strategy: integration}
+  FR-015: {tasks: [T-006, T-007], test_strategy: integration}
+  FR-016: {tasks: [T-008, T-009], test_strategy: cli}
+  FR-017: {tasks: [T-008, T-009], test_strategy: integration}
+  FR-018: {tasks: [T-005, T-008, T-009], test_strategy: unit_and_integration}
+  FR-019: {tasks: [T-005, T-008, T-009], test_strategy: unit_and_integration}
+  FR-020: {tasks: [T-006, T-008, T-009], test_strategy: unit_and_integration}
+  FR-021: {tasks: [T-006, T-008, T-009], test_strategy: integration}
+  FR-022: {tasks: [T-008, T-009], test_strategy: unit_and_cli}
+  FR-023: {tasks: [T-005, T-008, T-009], test_strategy: unit}
+  FR-024: {tasks: [T-010, T-011], test_strategy: cli}
+  FR-025: {tasks: [T-010, T-011], test_strategy: integration}
+  FR-026: {tasks: [T-010, T-011], test_strategy: integration}
+  FR-027: {tasks: [T-010, T-011], test_strategy: integration}
+  FR-028: {tasks: [T-012], test_strategy: cli_surface}
+  FR-029: {tasks: [T-002, T-009, T-011], test_strategy: cli}
+  FR-030: {tasks: [T-009], test_strategy: cli}
+  FR-031: {tasks: [T-003, T-011], test_strategy: cli}
+  FR-032: {tasks: [T-009, T-011], test_strategy: cli}
+  NFR-001: {tasks: [T-001, T-014]}
+  NFR-002: {tasks: [T-015]}
+  NFR-003: {tasks: [T-003, T-004]}
+  NFR-004: {tasks: [T-008, T-009, T-011]}
+  NFR-005: {tasks: [T-008, T-010]}
+  NFR-006: {tasks: [T-001, T-013]}
+  CON-001: {tasks: [T-015]}
+  CON-002: {tasks: [T-015]}
+  CON-003: {tasks: [T-015]}
+  CON-004: {tasks: [T-015]}
+  CON-005: {tasks: [T-015]}
+  INV-001: {tasks: [T-005, T-006]}
+  INV-002: {tasks: [T-012]}
+  INV-003: {tasks: [T-004, T-007]}
+  INV-004: {tasks: [T-006]}
+  INV-005: {tasks: [T-006]}

@@ -1,0 +1,29 @@
+schema: forge/policy/architecture@1
+
+architecture:
+  inspect_existing_patterns_before_new_abstractions: true
+  parallel_architecture:
+    prohibit_without_explicit_decision: true
+  full_flow:
+    architecture_artifact_required: true
+  evaluate:
+    - boundaries
+    - dependencies
+    - cohesion
+    - coupling
+    - data_flow
+    - invariants
+    - persistence
+    - integrations
+    - compatibility
+    - operational_effects
+    - testability
+  design_for_testability:
+    required_when_material: true
+  adr:
+    required_when:
+      - long_lived_cross_cutting_decision
+      - architectural_pattern_change
+      - major_dependency_direction_change
+      - significant_technology_choice
+      - irreversible_or_expensive_to_reverse_decision

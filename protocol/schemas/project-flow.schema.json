@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://forge.dev/schemas/project-flow.schema.json",
+  "title": "Forge Project Flow Configuration",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "flow"],
+  "properties": {
+    "schema": {"const": "forge/project-flow@1"},
+    "flow": {"type": "object", "additionalProperties": false, "required": ["canonical", "enabled"], "properties": {"canonical": {"enum": ["fast", "standard", "full"]}, "enabled": {"type": "boolean"}}},
+    "review": {"type": "object", "additionalProperties": false, "properties": {"blocking": {"type": "array", "uniqueItems": true, "items": {"enum": ["blocker", "major", "minor", "observation"]}}}},
+    "testing": {"type": "object", "additionalProperties": false, "properties": {"approach": {"const": "tdd_first"}}}
+  }
+}

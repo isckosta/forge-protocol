@@ -1,0 +1,11 @@
+schema: forge/project-flow@1
+
+flow:
+  canonical: full
+  enabled: true
+
+review:
+  blocking: [blocker, major]
+
+testing:
+  approach: tdd_first

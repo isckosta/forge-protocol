@@ -1,0 +1,11 @@
+schema: forge/policy/security@1
+
+security:
+  dependency_additions:
+    evaluate_supply_chain_risk: true
+  command_execution:
+    distinguish_protocol_from_harness_enforcement: true
+  secrets:
+    never_commit: true
+  external_services:
+    avoid_mandatory_dependency_for_core_operation: true
