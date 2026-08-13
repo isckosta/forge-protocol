@@ -1,0 +1,29 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "forge-protocol"
+version = "0.1.0.dev0"
+description = "The official CLI for the Forge engineering protocol."
+readme = "README.md"
+requires-python = ">=3.12"
+license = { text = "Apache-2.0" }
+dependencies = [
+  "typer>=0.16,<1",
+]
+
+[project.optional-dependencies]
+test = [
+  "pytest>=8.4,<9",
+]
+
+[project.scripts]
+forge = "forge_cli.app:app"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/forge_cli"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"
