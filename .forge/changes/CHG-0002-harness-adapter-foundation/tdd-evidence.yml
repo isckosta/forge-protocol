@@ -1,170 +1,88 @@
 schema: forge/tdd-evidence@1
 
 change: CHG-0002
-status: active
-cycle_count: 10
+status: complete
+cycle_count: 11
 
 cycles:
   - id: TDD-001
     requirements: [FR-001, FR-002, FR-003, FR-004, FR-006, FR-007, FR-034, FR-035]
     behavior: load and deterministically validate the canonical Harness Adapter manifest structure
-    red:
-      valid: true
-      workflow_run_id: 31672870281
-      job_id: 94361056235
-      commit: bc05f00c8f0964edfffff987cecfe0ecc7dd92e4
-      reason: Adapter manifest package, canonical schema, loader, and validation error did not exist; 4 new tests failed while 39 existing tests passed.
-    green:
-      workflow_run_id: 31672941619
-      job_id: 94361272375
-      commit: ad8408c901173d4d1b85dfc13927bd7dabe83b88
-      result: Canonical adapter.schema.json and immutable AdapterManifest loading/validation were introduced; full test suite passed.
+    red: {valid: true, workflow_run_id: 31672870281, job_id: 94361056235, commit: bc05f00c8f0964edfffff987cecfe0ecc7dd92e4}
+    green: {workflow_run_id: 31672941619, job_id: 94361272375, commit: ad8408c901173d4d1b85dfc13927bd7dabe83b88}
 
   - id: TDD-002
     requirements: [FR-004, FR-005]
     behavior: enforce the exact half-open integer Protocol compatibility interval
-    red:
-      valid: true
-      workflow_run_id: 31672994908
-      job_id: 94361432990
-      commit: 746e9e5302c8e6b820f6c7719b3240f7c864abbf
-      reason: Compatibility functions/error did not exist and invalid empty intervals were accepted; 4 new tests failed while 43 existing tests passed.
-    green:
-      workflow_run_id: 31673042787
-      job_id: 94361571980
-      commit: 874b925bafc32172358574889d3eae5e14186eb1
-      result: Compatibility is exactly min <= project_protocol < max_exclusive, incompatible Protocols raise a structured domain error, invalid intervals are rejected, and the full test suite passed.
+    red: {valid: true, workflow_run_id: 31672994908, job_id: 94361432990, commit: 746e9e5302c8e6b820f6c7719b3240f7c864abbf}
+    green: {workflow_run_id: 31673042787, job_id: 94361571980, commit: 874b925bafc32172358574889d3eae5e14186eb1}
 
   - id: TDD-003
     requirements: [FR-006, FR-007, FR-008, FR-009, FR-030]
-    behavior: distinguish Forge representation requirements from Adapter-internal requirements and surface unsupported Forge requirements as explicit non-enforcement limitations
-    red:
-      valid: true
-      workflow_run_id: 31694116523
-      job_id: 94427821901
-      commit: bd2dcdf09164c873097c0b704e41c0ff2c85df20
-      reason: The capability requirement model and explicit limitation evaluation did not exist; 4 behavior tests failed while 47 existing tests passed. The prior collection error in run 31694060330 was rejected as invalid RED and is not used as evidence.
-    green:
-      workflow_run_id: 31694172063
-      job_id: 94427997280
-      commit: 447d676bacf108789f042b6830339748e0d917db
-      result: Forge and Adapter-internal requirement sources are distinct, supported Forge requirements produce no limitation, unsupported Forge requirements produce explicit enforced=false limitations, ordering is deterministic, and the full test suite passed.
+    behavior: surface unsupported Forge representation requirements as explicit non-enforcement limitations
+    red: {valid: true, workflow_run_id: 31694116523, job_id: 94427821901, commit: bd2dcdf09164c873097c0b704e41c0ff2c85df20}
+    green: {workflow_run_id: 31694172063, job_id: 94427997280, commit: 447d676bacf108789f042b6830339748e0d917db}
 
   - id: TDD-004
     requirements: [FR-013, FR-014, FR-015, FR-016, FR-023, NFR-003]
-    behavior: represent deterministic immutable Adapter plans and planned artifact operations before any repository mutation
-    red:
-      valid: true
-      workflow_run_id: 31694260046
-      job_id: 94428286406
-      commit: 19c7b9ca4b189257fa2702039152e1ee21589002
-      reason: The canonical AdapterPlan, AdapterOperation, ownership/intent vocabularies, content digest helper, and stable operation ordering did not exist; 4 behavior tests failed while 51 existing tests passed.
-    green:
-      workflow_run_id: 31694300140
-      job_id: 94428417586
-      commit: ddbafcd5a8258ab1181f745776565269bc06641e
-      result: Immutable plan and operation models now expose canonical ownership and intent vocabularies, deterministic SHA-256 content digests, immutable limitation/conflict collections, and stable path-first operation ordering; the full test suite passed.
+    behavior: represent deterministic immutable Adapter plans before repository mutation
+    red: {valid: true, workflow_run_id: 31694260046, job_id: 94428286406, commit: 19c7b9ca4b189257fa2702039152e1ee21589002}
+    green: {workflow_run_id: 31694300140, job_id: 94428417586, commit: ddbafcd5a8258ab1181f745776565269bc06641e}
 
   - id: TDD-005
     requirements: [FR-017, FR-018, FR-019, INV-004]
-    behavior: classify artifact collisions without filesystem mutation so user-owned state is preserved, Forge-owned updates require proven expected state, and shared artifacts conflict unless an explicit merge result is supplied
-    red:
-      valid: true
-      workflow_run_id: 31694603349
-      job_id: 94429387598
-      commit: b55388f8cc0af49b5ada8dc29931263a031df279
-      reason: Ownership classification did not exist; 7 behavior tests failed while 55 existing tests passed, covering missing targets, user-owned preservation, Forge-owned expected-state checks, and shared merge/no-merge classification.
-    green:
-      workflow_run_id: 31694653381
-      job_id: 94429550285
-      commit: 2d8a8e76283f0664d54faaf2f3281cba46f2b18f
-      result: A pure immutable OwnershipDecision classifier now returns create/preserve/update/conflict decisions without filesystem access; user-owned existing targets are never marked safe to apply, Forge-owned updates require an expected digest matching current state, and shared targets require an explicit merge result before update classification; the full test suite passed.
+    behavior: classify collisions while preserving user-owned state and requiring proven Forge-owned state
+    red: {valid: true, workflow_run_id: 31694603349, job_id: 94429387598, commit: b55388f8cc0af49b5ada8dc29931263a031df279}
+    green: {workflow_run_id: 31694653381, job_id: 94429550285, commit: 2d8a8e76283f0664d54faaf2f3281cba46f2b18f}
 
   - id: TDD-006
     requirements: [FR-021, FR-022, INV-002]
-    behavior: persist deterministic repository-native Adapter installation metadata without duplicating canonical Change lifecycle state
-    red:
-      valid: true
-      workflow_run_id: 31695057843
-      job_id: 94430850013
-      commit: bc56ebe154e5c597d60bd83e258bbdb749addf95
-      reason: Adapter installation state, canonical installation schema, deterministic roundtrip, digest validation, and lifecycle-field rejection did not exist; 4 new tests failed while 62 existing tests passed.
-    green:
-      workflow_run_id: 31695144941
-      job_id: 94431127854
-      commit: 95453384d0f4ea9d4214e3d8352307065bb729e5
-      result: The canonical installation record now stores only Adapter identity/version, target Harness, Protocol interval, generated Forge-owned artifact digests, and explicit limitations; records are immutable and deterministically serialized, unknown lifecycle fields and invalid digests are rejected, and the full test suite passed.
+    behavior: persist deterministic Adapter installation metadata without Change lifecycle state
+    red: {valid: true, workflow_run_id: 31695057843, job_id: 94430850013, commit: bc56ebe154e5c597d60bd83e258bbdb749addf95}
+    green: {workflow_run_id: 31695144941, job_id: 94431127854, commit: 95453384d0f4ea9d4214e3d8352307065bb729e5}
 
   - id: TDD-007
     requirements: [FR-024, FR-025]
-    behavior: detect drift against recorded Forge-owned generated state and force conflict classification before any update when expected content no longer matches
-    red:
-      valid: true
-      workflow_run_id: 31695301580
-      job_id: 94431618052
-      commit: 1a356cec13f37710af692e118a469d4040ac4831
-      reason: Generated drift detection and recorded Forge-owned conflict classification did not exist; 4 new tests failed while 66 existing tests passed, covering matching state, modified state, missing generated artifacts, and pre-update conflict behavior.
-    green:
-      workflow_run_id: 31695381866
-      job_id: 94431868289
-      commit: 69b5707cdf2f8cb2865fc82fe4b458ccae1a7840
-      result: Drift detection now compares installation-record expected digests with already-observed digests, distinguishes modified and missing generated artifacts, returns deterministic findings, and routes divergent Forge-owned state to conflict before update; the full test suite passed.
+    behavior: detect generated drift and force conflict before update
+    red: {valid: true, workflow_run_id: 31695301580, job_id: 94431618052, commit: 1a356cec13f37710af692e118a469d4040ac4831}
+    green: {workflow_run_id: 31695381866, job_id: 94431868289, commit: 69b5707cdf2f8cb2865fc82fe4b458ccae1a7840}
 
   - id: TDD-008
     requirements: [FR-026, FR-027, FR-028, FR-029, FR-030, INV-001, INV-002, INV-003]
-    behavior: validate that a Harness representation preserves canonical stages, Gates, invariants, TDD RED, Strict Review, explicit enforcement limitations, and repository semantic authority
-    red:
-      valid: true
-      workflow_run_id: 31695617477
-      job_id: 94432605221
-      commit: 623d49305103e70c3fb7460f8ba52a1ba4963fca
-      reason: Harness-agnostic conformance validation did not exist; after rejecting the prior uncontrolled ImportError run 31695550901 as invalid RED, 6 behavior tests failed explicitly while 70 existing tests passed.
-    green:
-      workflow_run_id: 31695751227
-      job_id: 94433029347
-      commit: 7492fcd17869ea3dfd3f933fbd039b81cc4294fe
-      result: Conformance validation now rejects removed required stages/Gates/invariants, TDD RED bypass, Strict Review bypass, and semantic-authority shifts. Required invariants may be represented but unenforced only when an explicit enforced=false limitation exists; limitations never excuse removing canonical representation. The full test suite passed.
+    behavior: validate preservation of canonical stages, Gates, invariants, RED, Strict Review, limitations, and semantic authority
+    red: {valid: true, workflow_run_id: 31695617477, job_id: 94432605221, commit: 623d49305103e70c3fb7460f8ba52a1ba4963fca}
+    green: {workflow_run_id: 31695751227, job_id: 94433029347, commit: 7492fcd17869ea3dfd3f933fbd039b81cc4294fe}
 
   - id: TDD-009
     requirements: [FR-010, FR-011, FR-012, FR-013, FR-019, FR-023, NFR-001, NFR-002, NFR-005]
-    behavior: combine resolved Effective Forge Configuration, Adapter manifest, Adapter projections, and repository observations into a deterministic Harness-agnostic plan without mutation
-    red:
-      valid: true
-      workflow_run_id: 31696029000
-      job_id: 94433891735
-      commit: 7c223417c6104da7ce9c8e55d035c693abf77e62
-      reason: The deterministic Adapter planner did not exist; after rejecting the prior uncontrolled ImportError run, 5 behavior tests failed explicitly while 76 existing tests passed.
-    green:
-      workflow_run_id: 31696093769
-      job_id: 94434092924
-      commit: 60c8d93452ca72376e9ec3e89b161f26ad6d2aef
-      result: Planning now fails Protocol incompatibility before plan production, derives explicit limitations from Effective Configuration, classifies repository state without mutation, requires named deterministic merge provenance for shared updates, and returns semantically identical plans for identical inputs; the full test suite passed.
+    behavior: produce deterministic Harness-agnostic plans from effective configuration and observed repository state
+    red: {valid: true, workflow_run_id: 31696029000, job_id: 94433891735, commit: 7c223417c6104da7ce9c8e55d035c693abf77e62}
+    green: {workflow_run_id: 31696093769, job_id: 94434092924, commit: 60c8d93452ca72376e9ec3e89b161f26ad6d2aef}
 
   - id: TDD-010
     requirements: [FR-017, FR-018, FR-019, FR-020, FR-025, NFR-004, INV-004]
-    behavior: publish precomputed Adapter plans inside the repository boundary without silent overwrite, stale-state replacement, partial-install success markers, or unsafe path traversal
+    behavior: publish precomputed plans without silent overwrite, stale replacement, unsafe paths, or partial success records
+    red: {valid: true, workflow_run_id: 31696563811, job_id: 94435578380, commit: 3e731c525f86c1eea0f80bf890b213046f8d0506}
+    green: {workflow_run_id: 31696828724, job_id: 94436411658, commit: 8d52a729609304ac27f75dcc5f226a7e62728fca}
+
+  - id: TDD-011
+    requirements: [FR-017, INV-004]
+    behavior: reject CREATE when an external file appears after preflight and before publication
     red:
       valid: true
-      workflow_run_id: 31696563811
-      job_id: 94435578380
-      commit: 3e731c525f86c1eea0f80bf890b213046f8d0506
-      reason: Safe Adapter publication, UPDATE planning preconditions, rollback semantics, repository path confinement, Adapter-id confinement, symlink protection, and installation-record consistency were absent; 10 behavior tests failed while 81 existing tests passed. Earlier publisher runs 31696254890 and 31696346174 were rejected as RED evidence because they contained uncontrolled import failures or incomplete safety coverage.
+      workflow_run_id: 31698420717
+      job_id: 94441436355
+      commit: de6ed5cd004be06e3aa061ae1a3ff8c9a5dbb8d2
+      reason: The regression test demonstrated silent replacement of an externally-created CREATE target; exactly 1 new test failed while 92 prior tests passed.
     green:
-      workflow_run_id: 31696828724
-      job_id: 94436411658
-      commit: 8d52a729609304ac27f75dcc5f226a7e62728fca
-      result: The publisher now performs complete safety preflight before mutation, rejects conflicting/stale/unsafe plans, preserves user-owned artifacts, revalidates UPDATE digests immediately before write, confines paths and Adapter ids, rejects symlink/backslash/traversal escapes, rolls back partial writes best-effort, validates installation-record digests against planned Forge-owned content, and publishes the installation record last; 91 tests passed.
+      workflow_run_id: 31698601674
+      job_id: 94442009987
+      commit: 924f7b5ba9a086f5de6744a6426b05ef5c71bb29
+      result: CREATE now reserves the target exclusively before replacement; an external target produces AdapterPublicationConflictError and is preserved. The full suite passed with 93 tests.
 
 notes:
-  - TDD-001 validates manifest structure; TDD-002 owns compatibility semantics.
-  - TDD-003 does not define semantic mappings such as Strict Review -> hooks; callers provide resolved representation requirements so Core remains Harness-agnostic.
-  - TDD-004 defines only the plan data model; planner behavior, collision semantics, and filesystem mutation remain intentionally absent.
-  - TDD-005 is classification only. It does not read/write filesystem state; deterministic shared-merge provenance is completed by TDD-009.
-  - TDD-006 validates installation-state semantics in the source tree; isolated wheel packaging of the schemas remains explicitly deferred to T-011 and is not claimed here.
-  - TDD-007 consumes observed digests supplied by callers; it does not read filesystem state or publish mutations.
-  - The initial TDD-008 run 31695550901 failed through an uncontrolled ImportError and is explicitly rejected as RED evidence. The valid RED is run 31695617477.
-  - TDD-008 validates preservation against already-resolved Forge requirements. It does not infer Harness capability semantics and introduces no Harness SDK dependency.
-  - TDD-009 is pure planning. It performs no filesystem, network, or Harness SDK access and provides deterministic shared-merge provenance through merge_strategy_id.
-  - TDD-010 intentionally refuses delete_generated publication because safe deletion has not yet been driven by a dedicated RED/GREEN behavior cycle.
-  - FR-031, FR-032, and FR-033 remain uncounted as implemented until a dedicated CLI-boundary audit proves no lifecycle execution or activation-state surface was introduced.
-  - No Harness-specific SDK or implementation has been introduced.
+  - Invalid collection/import failures observed during earlier cycles are not counted as RED evidence.
+  - T-011 wheel/schema coverage started GREEN because protocol resources were already force-included; it is Verification evidence, not fabricated TDD evidence.
+  - FR-031, FR-032, and FR-033 were closed by the dedicated CLI/state boundary audit: lifecycle commands remain absent and installation state rejects lifecycle fields.
+  - TDD-010 intentionally refuses delete_generated publication because safe deletion was not required for Foundation publication and has no dedicated RED/GREEN cycle.
+  - No Harness-specific SDK or AI-provider dependency was introduced.
