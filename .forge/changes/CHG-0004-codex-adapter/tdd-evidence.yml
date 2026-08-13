@@ -1,7 +1,7 @@
 schema: forge/tdd-evidence@1
 change: CHG-0004
 status: active
-cycle_count: 3
+cycle_count: 4
 cycles:
   - id: TDD-001
     title: Codex Adapter Descriptor and Capability Evidence
@@ -19,3 +19,9 @@ cycles:
     requirements: [FR-013, FR-014, FR-015, FR-016, FR-017]
     red: {commit: 76000ce2aef30f27c203b7a770294274b68b6994, run_id: 31704166201, valid: true}
     green: {commit: 52ec32c2c84a36ddbdaf961f31540f5d8b810f01, run_id: 31704306892, valid: true}
+  - id: TDD-004
+    title: Codex Invariant Assessment and Generic Limitations
+    requirements: [FR-016, FR-024, FR-025, FR-026, FR-031]
+    red: {commit: 7711a7c0023da355edfda74dfbfc7dccb36489f2, run_id: 31705584052, valid: true}
+    green: {commit: eac3c74748de75ea7e7cb7e9be2ce279e0806f48, run_id: 31706168268, valid: true}
+    notes: [FR-027 remains pending for conformance and planning evidence]
