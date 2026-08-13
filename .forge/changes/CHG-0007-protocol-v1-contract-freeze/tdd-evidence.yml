@@ -1,6 +1,6 @@
 schema: forge/tdd-evidence@1
 change: CHG-0007
-status: active
+status: exception
 reason: >
   Initial catalog, artifact-audit, and display-label tests were observed RED
   before implementation in the working tree, but test and implementation first
@@ -19,6 +19,8 @@ cycles:
       result: 6 failed, 4 passed
       reason: Adapter bounds, contradictory Flow, empty policies, and complete TDD evidence without RED/GREEN all validated
     green:
-      result: pending committed GREEN
+      commit: 6a1b98b
+      command: .venv/bin/pytest tests/contract/test_protocol_contract.py -v
+      result: 10 passed
 notes:
   - Initial catalog, canonical-instance, and version-label tests count as Verification coverage only.

@@ -53,12 +53,18 @@ Read-only validation found:
   map from an earlier shape, prohibited by `forge/traceability@1`;
 - one CHG-0002 evidence note contains an unquoted colon and therefore parses as
   a YAML map rather than the intended text;
+- CHG-0005 declares TDD compliance but its durable evidence retains only a
+  cycle title, so it cannot substantiate Requirements, RED, or GREEN;
 - CHG-0006 already uses the current manifest and traceability shapes.
 
 These are structural discrepancies. Removing the obsolete status property and
 wrapping existing task mappings in the current requirement object shape does
 not change any historical outcome. The stable traceability schema can add an
 optional top-level acceptance map and retain those mappings exactly.
+
+CHG-0005 is not a mechanical shape issue. Its absent TDD detail cannot be
+reconstructed, so the truthful stable migration is an explicit exception with
+the historical behavior retained as Verification evidence.
 
 ## Flow consistency findings
 

@@ -74,6 +74,8 @@ Migration is limited to:
 - wrapping existing CHG-0004 traceability arrays in requirement objects;
 - retaining its acceptance map unchanged in an optional schema field.
 - quoting one CHG-0002 note so YAML preserves its existing textual meaning.
+- classifying CHG-0005 as a TDD evidence exception rather than manufacturing
+  missing Requirements or RED/GREEN details.
 
 No evidence value or lifecycle outcome changes.
 

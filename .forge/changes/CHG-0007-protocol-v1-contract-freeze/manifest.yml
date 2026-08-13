@@ -37,7 +37,7 @@ requirements:
   verified: 0
 
 tdd:
-  status: active
+  status: exception
   cycles: 1
   reason: >
     The first three interactive RED/GREEN runs lack durable revision or run
