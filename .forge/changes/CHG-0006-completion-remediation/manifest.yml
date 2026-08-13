@@ -1,7 +1,7 @@
 schema: forge/change@1
 change: {id: CHG-0006, title: Completion Remediation, kind: bugfix}
 flow: {initial: full, current: full, escalations: []}
-state: {current: completion}
+state: {current: complete}
 artifacts:
   intent: complete
   discovery: complete

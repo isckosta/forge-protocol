@@ -38,4 +38,18 @@ CHG-0005's behavioral regression remains valid historical context: RED run `3172
 
 The Engineering Contract now makes active external blocking threads a Completion blocker alongside unresolved BLOCKER findings. Architecture explains reconciliation before `review_passed`, the trivially satisfied no-external-surface case, and the separation between external process evidence and repository-native canonical Change state. Knowledge Capture preserves the Adapter/CLI non-enforcement boundary and immutable CHG-0005 history.
 
-Verification status: PASSED for all four requirements. Completion remains pending the final repository and GitHub reality audit.
+## Completion audit
+
+Audit performed at documentation HEAD `b853573d813222d082f720f3af76d384c7fc8ad2`:
+
+- local full suite: `138 passed`;
+- CHG-0006 YAML artifacts: 3 parsed successfully;
+- `git diff --check`: passed;
+- Tests run `31727435783`, job `94539199570`: SUCCESS (`138 passed`);
+- Distribution Verification run `31727435900`, job `94539200185`: SUCCESS;
+- PR #6 base/head: `main` / `fix/chg-0006-completion-remediation`;
+- merge state: MERGEABLE/CLEAN;
+- unresolved review threads: 0;
+- BLOCKER/MAJOR findings: 0.
+
+Verification status: PASSED for all four requirements and all pre-Completion Gates.
