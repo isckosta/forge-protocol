@@ -156,3 +156,31 @@ cycles:
     refactor:
       status: not_performed
       reason: The validation pipeline is intentionally explicit and composes existing boundaries without adding another abstraction layer.
+
+  - id: TDD-007
+    requirements: [FR-024, FR-025, FR-026, FR-027]
+    behavior: aggregate read-only Forge diagnostics and expose them through forge doctor
+    red:
+      status: observed
+      workflow_run_id: 31670067393
+      job_id: 94352684472
+      commit: dbc87ae49e9f2e04ee8737ab27576866a0fc8152
+      tests:
+        - tests/unit/test_doctor_diagnostics.py::test_doctor_passes_all_required_checks_for_valid_project
+        - tests/unit/test_doctor_diagnostics.py::test_doctor_aggregates_failure_and_skipped_checks
+        - tests/unit/test_doctor_diagnostics.py::test_doctor_skips_repository_dependent_checks_outside_git
+        - tests/unit/test_doctor_diagnostics.py::test_doctor_is_read_only
+        - tests/cli/test_doctor.py::test_doctor_reports_failed_and_skipped_checks_with_exit_code_two
+        - tests/cli/test_doctor.py::test_doctor_reports_non_git_environment_without_modifying_files
+      expected_failure: Forge has no Doctor diagnostic application boundary or public doctor command.
+      observed_failure: Six new tests failed while twenty-three prior tests passed. doctor.diagnose was absent and the CLI had no doctor command. An earlier collection failure caused by duplicate test module names was rejected as invalid RED and corrected before this run.
+      valid: true
+    green:
+      status: observed
+      workflow_run_id: 31670131750
+      job_id: 94352862022
+      commit: ec9542971b20b4c434490038f8eed0497d12529f
+      result: GitHub Actions passed. Forge Doctor aggregates Git availability, repository detection, Forge initialization, project configuration, Protocol compatibility, canonical Flow availability, and canonical Contract availability; dependent checks can be skipped and diagnostics remain read-only.
+    refactor:
+      status: not_performed
+      reason: The explicit check pipeline is small and keeps diagnostic dependencies visible.
