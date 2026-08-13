@@ -26,6 +26,9 @@ forge = "forge_cli.app:app"
 [tool.hatch.build.targets.wheel]
 packages = ["src/forge_cli"]
 
+[tool.hatch.build.targets.wheel.force-include]
+"protocol" = "forge_cli/resources/protocol"
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-ra"
