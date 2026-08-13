@@ -12,7 +12,7 @@ Forge governs that process through Spec-Driven Development, Test-Driven Developm
 
 ## Status
 
-Forge is in its Foundation phase. The Core Protocol and bootstrap CLI are implemented as pre-release software under Protocol `1` (`1-draft` as the current human-readable maturity label).
+Forge is in its Foundation phase. The Core Protocol, bootstrap CLI, Harness Adapter Foundation, and first concrete Codex Adapter are implemented as pre-release software under Protocol `1` (`1-draft` as the current human-readable maturity label).
 
 ## Core engineering loop
 
@@ -78,7 +78,19 @@ The Foundation defines:
 
 Adapters consume Effective Forge Configuration. They do not execute Forge lifecycle stages, and Protocol v1 defines no separate Adapter activation lifecycle.
 
-No real Harness-specific Adapter ships in this Foundation Change. The first concrete Harness integration is intentionally a separate Change so the abstraction can be tested against real Harness primitives without contaminating Core semantics.
+### Codex Adapter
+
+The first concrete Harness integration targets Codex while preserving the generic Adapter Core boundary.
+
+- packaged `adapter.yml` and `capabilities.yml` resources are the runtime authority for Adapter identity and capability evidence;
+- `skills` and deterministic generated files are supported, while hooks, commands, agent roles, and persistent instructions remain unsupported until evidence proves otherwise;
+- deterministic `forge-flow.md` and `forge-contract.md` resources are generated from canonical Forge input;
+- stable workflow framing comes from the packaged Adapter resource, while stage order and Gate content remain derived from canonical Flow state;
+- projection generation does not invent a Codex publication path; publication requires an explicit or evidence-backed target;
+- planning, ownership, collision handling, installation state, and drift detection reuse the generic Adapter Core;
+- normal descriptor loading, projection, and planning require neither live vendor access nor a Codex/OpenAI SDK.
+
+Codex workflow instructions represent Forge requirements but do not claim technical enforcement. Canonical repository-native Forge state remains authoritative, and no separate Adapter activation lifecycle is introduced.
 
 ## Change as the fundamental unit
 
@@ -109,7 +121,7 @@ Flows may escalate `FAST -> STANDARD -> FULL`. Automatic downgrade is forbidden.
 
 Forge develops Forge using Forge. The `.forge/` directory is active engineering state, not an example.
 
-The first Forge Change is `CHG-0001 — Bootstrap Forge CLI`. The Harness Adapter Foundation is governed as `CHG-0002`.
+The first Forge Change is `CHG-0001 — Bootstrap Forge CLI`. The Harness Adapter Foundation is governed as `CHG-0002`, and the first concrete Codex integration as `CHG-0004`.
 
 ## License
 

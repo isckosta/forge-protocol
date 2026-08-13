@@ -44,6 +44,12 @@ Added:
 - Harness-agnostic conformance validation for canonical Flow, TDD RED, Strict Review, and repository authority;
 - deterministic Harness-agnostic Adapter planner;
 - safe Adapter publisher with repository path confinement, symlink/traversal protection, update preconditions, rollback, and installation-record-last semantics;
-- isolated-wheel regression coverage proving Adapter Schemas resolve without a source checkout.
+- isolated-wheel regression coverage proving Adapter Schemas resolve without a source checkout;
+- first concrete Codex Harness Adapter with packaged descriptor and dated capability evidence;
+- deterministic Codex workflow and Engineering Contract projection resources derived from canonical Forge input;
+- conservative Codex capability declarations and explicit invariant enforcement limitations;
+- optional explicit/evidence-backed Codex publication targets without an invented vendor path;
+- generic Core reuse for Codex planning, ownership, collision protection, installation state, and drift detection;
+- isolated-wheel and offline Codex Adapter verification without a Codex/OpenAI SDK dependency.
 
-The bootstrap CLI remains pre-release software. Harness Adapter Foundation defines the contract only; concrete Harness integrations are separate Changes.
+The bootstrap CLI and Adapter interfaces remain pre-release software. Codex is the first concrete Harness integration and remains governed by canonical repository-native Forge state.

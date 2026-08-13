@@ -161,22 +161,32 @@ Adapters use explicit independent versions and a half-open integer Protocol comp
 
 Conformance validates preservation of canonical stages, Gates, invariants, TDD RED, Strict Review, and repository semantic authority. A Harness limitation may explain lack of technical enforcement; it cannot remove the canonical requirement.
 
-## 25. Protocol versioning
+## 25. Codex Harness Adapter
+
+The first concrete Harness Adapter lives under `src/forge_cli/adapters/codex/`. Its packaged descriptor and capability-evidence resources are immutable release inputs and runtime authority; runtime planning does not fetch live vendor documentation.
+
+The Adapter generates deterministic logical workflow and Contract resources from canonical Forge input. Packaged workflow material supplies stable framing, while stage order and Gate statements remain derived from the effective canonical Flow. These instructions represent Forge requirements and do not claim technical enforcement.
+
+Projection and publication are separate. A projection bundle may exist without a filesystem destination. Publication requires an explicit or evidence-backed target and then delegates planning, ownership, collision handling, installation state, drift control, path safety, and mutation to the generic Adapter Core.
+
+Codex-specific invariant assessment distinguishes `enforced`, `represented`, and `unsupported` without redefining generic capability booleans. Unsupported enforcement remains visible through generic limitations. The integration adds no Codex/OpenAI SDK dependency to the Core and supports deterministic offline loading, projection, and planning from the installed distribution.
+
+## 26. Protocol versioning
 
 CLI, Protocol, Schemas, and Adapters may be versioned independently.
 
-## 26. Security boundary
+## 27. Security boundary
 
 Forge defines engineering expectations. Actual process isolation and filesystem, network, and shell enforcement depend on the underlying Harness. Adapter publication still owns repository path confinement and must reject unsafe repository escapes.
 
-## 27. Non-goals
+## 28. Non-goals
 
 Forge is not intended to become an IDE, issue tracker, Git hosting platform, CI platform, LLM gateway, general AI assistant, or mandatory cloud service. Harness Adapters are not a second lifecycle runtime and do not introduce Adapter activation state in Protocol v1.
 
-## 28. Core responsibility
+## 29. Core responsibility
 
 Forge's core architectural responsibility is **Engineering Change Governance**.
 
-## 29. Dogfooding
+## 30. Dogfooding
 
 Forge develops Forge using Forge. If Forge cannot govern its own development without unreasonable ceremony, the Protocol should be reconsidered.
