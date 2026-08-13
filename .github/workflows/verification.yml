@@ -25,11 +25,23 @@ jobs:
         run: python -m venv /tmp/forge-wheel-venv
       - name: Install wheel only
         run: /tmp/forge-wheel-venv/bin/pip install dist/*.whl
-      - name: Verify installed CLI version
+      - name: Copy isolated Adapter probe
+        run: cp tests/integration/adapter_wheel_probe.py /tmp/adapter_wheel_probe.py
+      - name: Verify installed CLI version without network
         working-directory: /tmp
+        env:
+          HTTP_PROXY: http://127.0.0.1:9
+          HTTPS_PROXY: http://127.0.0.1:9
+          ALL_PROXY: http://127.0.0.1:9
+          NO_PROXY: ""
         run: /tmp/forge-wheel-venv/bin/forge version
-      - name: Verify installed init validate doctor flow
+      - name: Verify installed init validate doctor flow without network
         working-directory: /tmp
+        env:
+          HTTP_PROXY: http://127.0.0.1:9
+          HTTPS_PROXY: http://127.0.0.1:9
+          ALL_PROXY: http://127.0.0.1:9
+          NO_PROXY: ""
         run: |
           rm -rf forge-smoke
           mkdir forge-smoke
@@ -40,10 +52,14 @@ jobs:
           /tmp/forge-wheel-venv/bin/forge init
           /tmp/forge-wheel-venv/bin/forge validate
           /tmp/forge-wheel-venv/bin/forge doctor
-      - name: Verify Adapter schemas and loaders from isolated wheel
+      - name: Verify Adapter schemas and loaders from isolated wheel without network
         working-directory: /tmp
-        run: >-
-          /tmp/forge-wheel-venv/bin/python -c "from forge_cli.protocol_resources import resolve_protocol_root; r=resolve_protocol_root(); assert (r/'schemas'/'adapter.schema.json').is_file(); assert (r/'schemas'/'adapter-installation.schema.json').is_file(); print('Adapter protocol resource verification passed')"
+        env:
+          HTTP_PROXY: http://127.0.0.1:9
+          HTTPS_PROXY: http://127.0.0.1:9
+          ALL_PROXY: http://127.0.0.1:9
+          NO_PROXY: ""
+        run: /tmp/forge-wheel-venv/bin/python /tmp/adapter_wheel_probe.py
       - name: Inspect runtime dependencies
         run: >-
           /tmp/forge-wheel-venv/bin/python -c "from importlib.metadata import requires; d='\n'.join(requires('forge-protocol') or []).lower(); forbidden=['openai','anthropic','langchain','sqlalchemy','django']; found=[n for n in forbidden if n in d]; assert not found, found; print('Runtime dependency audit passed')"
