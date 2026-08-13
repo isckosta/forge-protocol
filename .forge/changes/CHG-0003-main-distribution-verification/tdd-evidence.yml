@@ -1,0 +1,17 @@
+schema: forge/tdd-evidence@1
+change: CHG-0003
+status: complete
+cycle_count: 1
+cycles:
+  - id: TDD-001
+    requirements: [FR-001]
+    behavior: pushes to main trigger Distribution Verification
+    red:
+      valid: true
+      commit: ce391059a81c721cbda9c2a17d8bc19f8c5f5073
+      reason: After CHG-0002 integration, Tests ran on main but Distribution Verification did not because main was absent from push.branches.
+    green:
+      commit: b1bb2a92595852e5a2a67d3815f661474a7587bd
+      workflow_run_id: 31700539323
+      job_id: 94448332189
+      result: A push to main triggered Distribution Verification and the distribution job completed successfully.
