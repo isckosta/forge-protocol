@@ -10,6 +10,8 @@ readme = "README.md"
 requires-python = ">=3.12"
 license = { text = "Apache-2.0" }
 dependencies = [
+  "jsonschema>=4.23,<5",
+  "PyYAML>=6.0,<7",
   "typer>=0.16,<1",
 ]
 
