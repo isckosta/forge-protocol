@@ -45,7 +45,25 @@
           "mode": {"type": "string", "minLength": 1},
           "cycle": {"const": ["red", "green", "refactor"]}
         },
-        "anyOf": [{"required": ["required"]}, {"required": ["required_when"]}]
+        "anyOf": [{"required": ["required"]}, {"required": ["required_when"]}],
+        "allOf": [
+          {
+            "if": {"properties": {"id": {"enum": ["intent", "inspection", "discovery", "specification", "specification_review", "architecture", "test_strategy", "plan", "tasks", "verification", "strict_review", "documentation_impact", "documentation", "knowledge_capture", "completion"]}}, "required": ["id"]},
+            "then": {"required": ["required"], "properties": {"required": {"const": true}}, "not": {"required": ["required_when"]}}
+          },
+          {
+            "if": {"properties": {"id": {"const": "test_design"}}, "required": ["id"]},
+            "then": {"required": ["required_when"], "properties": {"required_when": {"const": "behavioral_change"}}, "not": {"required": ["required"]}}
+          },
+          {
+            "if": {"properties": {"id": {"const": "tdd_implementation"}}, "required": ["id"]},
+            "then": {"required": ["required_when", "cycle"], "properties": {"required_when": {"const": "tdd_applicable"}, "cycle": {"const": ["red", "green", "refactor"]}}, "not": {"required": ["required"]}}
+          },
+          {
+            "if": {"properties": {"id": {"const": "specification_review"}}, "required": ["id"]},
+            "then": {"required": ["mode"], "properties": {"mode": {"const": "adversarial"}}}
+          }
+        ]
       },
       "allOf": [
         {"contains": {"properties": {"id": {"const": "intent"}}, "required": ["id"]}},

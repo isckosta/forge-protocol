@@ -20,6 +20,12 @@ Canonical format: `CHG-NNNN`. Identifiers MUST remain stable after creation.
 Planning documents MUST NOT reserve Change identifiers. Forge assigns the next
 available stable identifier when the repository-native Change is created.
 
+When a Change uses a dedicated Git branch, the branch SHOULD include the
+lowercase Change identifier for repository traceability. The recommended form
+is `<type>/chg-NNNN-<slug>`, for example
+`feat/chg-0007-protocol-v1-contract-freeze`. Branch names are references, not
+an alternate source of Change state.
+
 ## 4. Change kinds
 
 Protocol version 1 recognizes `feature`, `bugfix`, `refactor`, `security`, `performance`, `migration`, `documentation`, `infrastructure`, and `chore`. Projects MAY introduce additional kinds. Additional kinds MUST NOT alter canonical Flow semantics.
