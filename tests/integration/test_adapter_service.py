@@ -415,3 +415,143 @@ def test_install_dry_run_is_read_only_and_returns_the_install_plan(initialized_p
     assert result.mutated is False
     assert result.plan.operations
     assert _tree_bytes_and_mtimes(initialized_project) == before
+
+
+def test_doctor_reports_drift_and_action_without_mutating(initialized_project: Path) -> None:
+    service = _installed_service(initialized_project)
+    skill = initialized_project / ".agents/skills/forge/SKILL.md"
+    skill.write_text("user edit\n", encoding="utf-8")
+    before = _tree_bytes_and_mtimes(initialized_project)
+
+    result = service.doctor(initialized_project, "codex")
+
+    assert result.passed is False
+    drift = next(item for item in result.checks if item.id == "generated_drift")
+    assert drift.status == "failed"
+    assert "restore the recorded artifact" in drift.remediation
+    assert _tree_bytes_and_mtimes(initialized_project) == before
+
+
+def test_validate_converts_doctor_failures_to_stable_findings_without_mutating(
+    initialized_project: Path,
+) -> None:
+    before = _tree_bytes_and_mtimes(initialized_project)
+
+    result = _service().validate(initialized_project, "codex")
+
+    assert result.passed is False
+    assert [(item.id, item.code) for item in result.findings] == [
+        ("installation", "E_FORGE_ADAPTER_NOT_INSTALLED"),
+    ]
+    assert _tree_bytes_and_mtimes(initialized_project) == before
+
+
+def test_doctor_is_deterministic_and_limitations_do_not_fail_an_intact_installation(
+    initialized_project: Path,
+) -> None:
+    service = _installed_service(initialized_project)
+    before = _tree_bytes_and_mtimes(initialized_project)
+
+    first = service.doctor(initialized_project, "codex")
+    second = service.doctor(initialized_project, "codex")
+    validation = service.validate(initialized_project, "codex")
+
+    assert first == second
+    assert [item.id for item in first.checks] == [
+        "configuration",
+        "compatibility",
+        "target",
+        "installation",
+        "generated_drift",
+        "conformance",
+        "limitations",
+    ]
+    assert first.passed is True
+    assert any(item.status == "warning" for item in first.checks)
+    assert validation.passed is True
+    assert validation.findings == ()
+    assert _tree_bytes_and_mtimes(initialized_project) == before
+
+
+def test_doctor_distinguishes_a_missing_recorded_artifact_without_mutating(
+    initialized_project: Path,
+) -> None:
+    service = _installed_service(initialized_project)
+    (initialized_project / ".agents/skills/forge/SKILL.md").unlink()
+    before = _tree_bytes_and_mtimes(initialized_project)
+
+    result = service.doctor(initialized_project, "codex")
+
+    drift = next(item for item in result.checks if item.id == "generated_drift")
+    assert drift.status == "failed"
+    assert "missing" in drift.message
+    assert "restore the recorded artifact" in drift.remediation
+    assert _tree_bytes_and_mtimes(initialized_project) == before
+
+
+def test_validate_reports_generic_conformance_failure_without_mutating(
+    initialized_project: Path,
+) -> None:
+    class NonconformantDriver:
+        manifest = AdapterManifest(
+            adapter_id="nonconformant",
+            version="1.0.0",
+            harness="fixture",
+            protocol_min=1,
+            protocol_max_exclusive=2,
+            capabilities={},
+        )
+        default_target = "generated/fixture"
+
+        def project(self, context: object) -> AdapterProjection:
+            return AdapterProjection(
+                artifacts=(),
+                limitations=(),
+                representation=AdapterRepresentation(
+                    stages=(),
+                    gates=(),
+                    represented_invariants=(),
+                    enforced_invariants=(),
+                    limitations=(),
+                    repository_authority_preserved=True,
+                    red_before_behavior_preserved=False,
+                    strict_review_preserved=False,
+                ),
+            )
+
+    service = AdapterService(AdapterRegistry((NonconformantDriver(),)))
+    before = _tree_bytes_and_mtimes(initialized_project)
+
+    result = service.validate(initialized_project, "nonconformant")
+
+    conformance = next(item for item in result.findings if item.id == "conformance")
+    assert conformance.code == "E_FORGE_ADAPTER_CONFORMANCE"
+    assert _tree_bytes_and_mtimes(initialized_project) == before
+
+
+def test_doctor_reports_unsafe_recorded_generated_paths_without_mutating(
+    initialized_project: Path,
+) -> None:
+    path = _record_path(initialized_project)
+    path.parent.mkdir(parents=True)
+    write_installation_record(
+        path,
+        AdapterInstallationRecord(
+            adapter_id="codex",
+            adapter_version="0.1.0",
+            harness="codex",
+            protocol_min=1,
+            protocol_max_exclusive=2,
+            generated_artifacts=(GeneratedArtifact(path="../outside.md", digest="a" * 64),),
+            limitations=(),
+        ),
+    )
+    before = _tree_bytes_and_mtimes(initialized_project)
+
+    result = _service().doctor(initialized_project, "codex")
+
+    drift = next(item for item in result.checks if item.id == "generated_drift")
+    assert drift.status == "failed"
+    assert drift.code == "E_FORGE_ADAPTER_INSTALLATION_INVALID"
+    assert "unsafe" in drift.message.lower()
+    assert _tree_bytes_and_mtimes(initialized_project) == before

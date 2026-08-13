@@ -7,8 +7,20 @@ from pathlib import Path
 
 import yaml
 
-from forge_cli.adapters.configuration import AdapterConfiguration, load_adapter_configuration
+from forge_cli.adapters.configuration import (
+    AdapterConfiguration,
+    InvalidAdapterConfigurationError,
+    load_adapter_configuration,
+)
+from forge_cli.adapters.diagnostics import (
+    AdapterCheck,
+    AdapterDoctorResult,
+    AdapterValidationResult,
+    diagnose_adapter,
+    validate_adapter,
+)
 from forge_cli.adapters.driver import AdapterProjectionContext, HarnessDriver
+from forge_cli.adapters.manifest import is_protocol_compatible
 from forge_cli.adapters.ownership import detect_generated_drift
 from forge_cli.adapters.plan import AdapterPlan, OperationIntent, OwnershipMode
 from forge_cli.adapters.planner import (
@@ -25,9 +37,18 @@ from forge_cli.adapters.repository import (
 )
 from forge_cli.adapters.registry import AdapterRegistry
 from forge_cli.adapters.state import AdapterInstallationRecord, GeneratedArtifact
-from forge_cli.configuration import load_project_configuration
+from forge_cli.configuration import (
+    InvalidProjectConfigurationError,
+    UnsupportedProtocolVersionError,
+    load_project_configuration,
+)
 from forge_cli.protocol_resources import resolve_protocol_root
-from forge_cli.protocol_resolution import resolve_effective_contract, resolve_effective_flow
+from forge_cli.protocol_resolution import (
+    ProtocolResolutionError,
+    resolve_effective_contract,
+    resolve_effective_flow,
+)
+from forge_cli.adapters.validation import ConformanceRequirements, validate_conformance
 
 
 class AdapterServiceError(RuntimeError):
@@ -56,6 +77,71 @@ class AdapterPlanConflictError(AdapterServiceError):
 
 class AdapterTargetUnavailableError(AdapterServiceError):
     code = "E_FORGE_ADAPTER_TARGET_UNAVAILABLE"
+
+
+def _passed_check(check_id: str, message: str) -> AdapterCheck:
+    return AdapterCheck(id=check_id, status="passed", code="OK", message=message)
+
+
+def _failed_check(
+    check_id: str,
+    code: str,
+    message: str,
+    remediation: str,
+) -> AdapterCheck:
+    return AdapterCheck(
+        id=check_id,
+        status="failed",
+        code=code,
+        message=message,
+        remediation=remediation,
+    )
+
+
+def _warning_check(check_id: str, code: str, message: str) -> AdapterCheck:
+    return AdapterCheck(id=check_id, status="warning", code=code, message=message)
+
+
+def _conformance_requirements(
+    flows: tuple[tuple[str, str], ...],
+) -> ConformanceRequirements:
+    stages: set[str] = set()
+    gates: set[str] = set()
+    tdd_red_required = False
+    strict_review_required = False
+
+    for _, content in flows:
+        data = yaml.safe_load(content) or {}
+        for stage in data.get("stages") or ():
+            if isinstance(stage, dict) and isinstance(stage.get("id"), str):
+                stages.add(stage["id"])
+        flow_gates = data.get("gates") or {}
+        if isinstance(flow_gates, dict):
+            gates.update(str(gate) for gate in flow_gates)
+            behavioral = flow_gates.get("before_behavioral_implementation") or {}
+            checks = behavioral.get("checks") if isinstance(behavioral, dict) else ()
+            tdd_red_required = tdd_red_required or {
+                "red_executed",
+                "red_failed_for_expected_reason",
+            }.issubset(checks or ())
+        review = data.get("review") or {}
+        strict_review_required = strict_review_required or (
+            "strict_review" in stages
+            or (isinstance(review, dict) and review.get("strict") is True)
+        )
+
+    invariants: list[str] = []
+    if tdd_red_required:
+        invariants.append("tdd-red-before-behavior")
+    if strict_review_required:
+        invariants.append("strict-review")
+    return ConformanceRequirements(
+        required_stages=tuple(sorted(stages)),
+        required_gates=tuple(sorted(gates)),
+        required_invariants=tuple(invariants),
+        tdd_red_required=tdd_red_required,
+        strict_review_required=strict_review_required,
+    )
 
 
 @dataclass(frozen=True)
@@ -90,6 +176,291 @@ class AdapterService:
         explicit_target: str | None = None,
     ) -> AdapterPlanResult:
         return self._prepare(project_root, adapter_id, explicit_target).result
+
+    def validate(
+        self,
+        project_root: Path,
+        adapter_id: str,
+        explicit_target: str | None = None,
+    ) -> AdapterValidationResult:
+        """Read the Adapter state and return failures suitable for CLI serialization."""
+        return validate_adapter(self.doctor(project_root, adapter_id, explicit_target))
+
+    def doctor(
+        self,
+        project_root: Path,
+        adapter_id: str,
+        explicit_target: str | None = None,
+    ) -> AdapterDoctorResult:
+        """Diagnose Adapter state without creating, normalizing, or publishing files."""
+        root = Path(project_root)
+        driver = self._registry.get(adapter_id)
+        manifest = driver.manifest
+        checks: list[AdapterCheck] = []
+
+        configuration: AdapterConfiguration | None = None
+        project_configuration: dict | None = None
+        project_protocol: int | None = None
+        configuration_failure: AdapterCheck | None = None
+        try:
+            project_configuration = load_project_configuration(root / ".forge" / "forge.yml")
+            project_protocol = project_configuration["forge"]["protocol"]
+        except UnsupportedProtocolVersionError as error:
+            if isinstance(error.protocol, int):
+                project_protocol = error.protocol
+            else:
+                configuration_failure = _failed_check(
+                    "configuration",
+                    error.code,
+                    str(error),
+                    "Set `.forge/forge.yml` to a supported Forge Protocol, then rerun diagnostics.",
+                )
+        except InvalidProjectConfigurationError as error:
+            configuration_failure = _failed_check(
+                "configuration",
+                error.code,
+                str(error),
+                "Repair `.forge/forge.yml` so it satisfies the Forge Project Schema, then rerun diagnostics.",
+            )
+
+        try:
+            configuration = load_adapter_configuration(root, adapter_id)
+        except InvalidAdapterConfigurationError as error:
+            if configuration_failure is None:
+                configuration_failure = _failed_check(
+                    "configuration",
+                    error.code,
+                    str(error),
+                    "Repair `.forge/adapters/<adapter>/config.yml` or remove it to use packaged target evidence.",
+                )
+
+        if configuration_failure is not None:
+            checks.append(configuration_failure)
+        else:
+            checks.append(
+                _passed_check(
+                    "configuration",
+                    "Adapter and project configuration are valid.",
+                )
+            )
+
+        if project_protocol is None:
+            checks.append(
+                _warning_check(
+                    "compatibility",
+                    "W_FORGE_ADAPTER_COMPATIBILITY_UNAVAILABLE",
+                    "Protocol compatibility cannot be checked until project configuration is valid.",
+                )
+            )
+        elif is_protocol_compatible(manifest, project_protocol):
+            checks.append(
+                _passed_check(
+                    "compatibility",
+                    f"Adapter supports configured Forge Protocol {project_protocol}.",
+                )
+            )
+        else:
+            checks.append(
+                _failed_check(
+                    "compatibility",
+                    "E_FORGE_ADAPTER_PROTOCOL_INCOMPATIBLE",
+                    "Adapter does not support configured Forge Protocol "
+                    f"{project_protocol}; supported interval is "
+                    f"[{manifest.protocol_min}, {manifest.protocol_max_exclusive}).",
+                    "Select an Adapter version compatible with the configured Forge Protocol.",
+                )
+            )
+
+        target: str | None = None
+        try:
+            target, _ = self._resolve_target(
+                adapter_id=adapter_id,
+                explicit_target=explicit_target,
+                configuration=configuration,
+                driver=driver,
+            )
+        except (AdapterTargetUnavailableError, InvalidAdapterConfigurationError) as error:
+            checks.append(
+                _failed_check(
+                    "target",
+                    getattr(error, "code", "E_FORGE_ADAPTER_TARGET_UNAVAILABLE"),
+                    str(error),
+                    "Provide a safe repository-relative Adapter target or repair packaged target evidence.",
+                )
+            )
+        else:
+            checks.append(
+                _passed_check("target", f"Adapter target is `{target}`."))
+
+        record: AdapterInstallationRecord | None = None
+        try:
+            candidate_record = load_optional_installation_record(root, adapter_id)
+            if candidate_record is None:
+                checks.append(
+                    _failed_check(
+                        "installation",
+                        "E_FORGE_ADAPTER_NOT_INSTALLED",
+                        "Adapter is not installed.",
+                        f"Run `forge adapter install {adapter_id}`.",
+                    )
+                )
+            else:
+                self._require_valid_identity(candidate_record, driver)
+                if candidate_record.adapter_version != manifest.version:
+                    checks.append(
+                        _failed_check(
+                            "installation",
+                            "E_FORGE_ADAPTER_INSTALLATION_STALE",
+                            "Adapter installation record version does not match the packaged Adapter version.",
+                            f"Run `forge adapter update {adapter_id}` to refresh the installation record.",
+                        )
+                    )
+                else:
+                    checks.append(
+                        _passed_check("installation", "Adapter installation record is valid and current.")
+                    )
+                record = candidate_record
+        except (AdapterRepositoryError, InvalidAdapterInstallationError) as error:
+            checks.append(
+                _failed_check(
+                    "installation",
+                    "E_FORGE_ADAPTER_INSTALLATION_INVALID",
+                    f"Adapter installation state is invalid: {error}",
+                    f"Repair or remove the invalid installation record, then run `forge adapter install {adapter_id}`.",
+                )
+            )
+
+        if record is None:
+            checks.append(
+                _warning_check(
+                    "generated_drift",
+                    "W_FORGE_ADAPTER_DRIFT_UNAVAILABLE",
+                    "Generated drift cannot be checked until a valid installation record is available.",
+                )
+            )
+        else:
+            try:
+                snapshot = snapshot_repository_artifacts(
+                    root,
+                    (artifact.path for artifact in record.generated_artifacts),
+                )
+            except AdapterRepositoryError as error:
+                checks.append(
+                    _failed_check(
+                        "generated_drift",
+                        "E_FORGE_ADAPTER_INSTALLATION_INVALID",
+                        f"Unsafe recorded generated paths cannot be read safely: {error}",
+                        f"Repair or remove the invalid installation record, then run `forge adapter install {adapter_id}`.",
+                    )
+                )
+            else:
+                observed = {
+                    path: state.current_digest for path, state in snapshot.artifacts.items()
+                }
+                drift = detect_generated_drift(record, observed)
+                if not drift:
+                    checks.append(
+                        _passed_check("generated_drift", "Recorded generated artifacts are intact."))
+                else:
+                    description = ", ".join(
+                        f"{item.kind}: {item.path}" for item in drift
+                    )
+                    checks.append(
+                        _failed_check(
+                            "generated_drift",
+                            "E_FORGE_ADAPTER_DRIFT",
+                            f"Generated artifacts have drifted ({description}).",
+                            "restore the recorded artifact from trusted generated content, then rerun `forge adapter validate`.",
+                        )
+                    )
+
+        projection = None
+        if project_configuration is None or target is None:
+            checks.append(
+                _warning_check(
+                    "conformance",
+                    "W_FORGE_ADAPTER_CONFORMANCE_UNAVAILABLE",
+                    "Adapter conformance cannot be checked until project configuration and target are valid.",
+                )
+            )
+        else:
+            try:
+                flows = self._effective_flows(root)
+                projection = driver.project(
+                    AdapterProjectionContext(
+                        project_protocol=project_configuration["forge"]["protocol"],
+                        flows=flows,
+                        contract_content=resolve_effective_contract(
+                            resolve_protocol_root(), root
+                        ).text,
+                        target=target,
+                    )
+                )
+            except (AdapterServiceError, ProtocolResolutionError) as error:
+                checks.append(
+                    _failed_check(
+                        "conformance",
+                        "E_FORGE_ADAPTER_CONFORMANCE",
+                        f"Adapter conformance inputs are invalid: {error}",
+                        "Repair the effective Forge Flow or Contract input, then rerun diagnostics.",
+                    )
+                )
+            else:
+                findings = validate_conformance(
+                    _conformance_requirements(flows), projection.representation
+                )
+                if findings:
+                    labels = ", ".join(
+                        f"{finding.code}{f': {finding.subject}' if finding.subject else ''}"
+                        for finding in findings
+                    )
+                    checks.append(
+                        _failed_check(
+                            "conformance",
+                            "E_FORGE_ADAPTER_CONFORMANCE",
+                            f"Adapter representation does not preserve required Forge semantics ({labels}).",
+                            "Update the Adapter representation to preserve the reported Forge semantics, then rerun validation.",
+                        )
+                    )
+                else:
+                    checks.append(
+                        _passed_check(
+                            "conformance",
+                            "Adapter representation preserves the checked Forge semantics.",
+                        )
+                    )
+
+        if projection is None:
+            checks.append(
+                _warning_check(
+                    "limitations",
+                    "W_FORGE_ADAPTER_LIMITATIONS_UNAVAILABLE",
+                    "Adapter capability limitations cannot be inspected until representation is available.",
+                )
+            )
+        elif not projection.limitations:
+            checks.append(_passed_check("limitations", "No Adapter capability limitations are reported."))
+        else:
+            details = "; ".join(
+                f"{item.requirement_id} uses {item.capability} ({item.source_reference})"
+                for item in sorted(
+                    projection.limitations,
+                    key=lambda item: (
+                        item.requirement_id,
+                        item.capability,
+                        item.source_reference,
+                    ),
+                )
+            )
+            checks.append(
+                _warning_check(
+                    "limitations",
+                    "W_FORGE_ADAPTER_LIMITATION",
+                    f"Adapter capability limitations are represented: {details}.",
+                )
+            )
+
+        return diagnose_adapter(checks)
 
     def install(
         self,
