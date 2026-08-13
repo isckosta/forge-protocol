@@ -2,7 +2,7 @@ schema: forge/tdd-evidence@1
 
 change: CHG-0002
 status: active
-cycle_count: 5
+cycle_count: 6
 
 cycles:
   - id: TDD-001
@@ -80,10 +80,26 @@ cycles:
       commit: 2d8a8e76283f0664d54faaf2f3281cba46f2b18f
       result: A pure immutable OwnershipDecision classifier now returns create/preserve/update/conflict decisions without filesystem access; user-owned existing targets are never marked safe to apply, Forge-owned updates require an expected digest matching current state, and shared targets require an explicit merge result before update classification; the full test suite passed.
 
+  - id: TDD-006
+    requirements: [FR-021, FR-022, INV-002]
+    behavior: persist deterministic repository-native Adapter installation metadata without duplicating canonical Change lifecycle state
+    red:
+      valid: true
+      workflow_run_id: 31695057843
+      job_id: 94430850013
+      commit: bc56ebe154e5c597d60bd83e258bbdb749addf95
+      reason: Adapter installation state, canonical installation schema, deterministic roundtrip, digest validation, and lifecycle-field rejection did not exist; 4 new tests failed while 62 existing tests passed.
+    green:
+      workflow_run_id: 31695144941
+      job_id: 94431127854
+      commit: 95453384d0f4ea9d4214e3d8352307065bb729e5
+      result: The canonical installation record now stores only Adapter identity/version, target Harness, Protocol interval, generated Forge-owned artifact digests, and explicit limitations; records are immutable and deterministically serialized, unknown lifecycle fields and invalid digests are rejected, and the full test suite passed.
+
 notes:
   - TDD-001 validates manifest structure; TDD-002 owns compatibility semantics.
   - TDD-003 does not define semantic mappings such as Strict Review -> hooks; callers provide resolved representation requirements so Core remains Harness-agnostic.
   - TDD-004 defines only the plan data model; planner behavior, collision semantics, and filesystem mutation remain intentionally absent.
   - TDD-005 is classification only. It does not read/write filesystem state, prove the provenance/determinism of a shared merge strategy, or complete generated drift detection; those remain for TDD-007/TDD-009/TDD-010.
   - FR-019 is not counted as fully implemented yet because deterministic merge-strategy provenance is not proven by the classifier alone.
+  - TDD-006 validates installation-state semantics in the source tree; isolated wheel packaging of the new schema remains explicitly deferred to T-011 and is not claimed here.
   - No Harness-specific SDK or implementation has been introduced.
