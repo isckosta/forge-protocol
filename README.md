@@ -57,7 +57,28 @@ pip install -e .
 forge version
 ```
 
-The built wheel bundles the canonical Protocol resources required by the CLI, so normal runtime operation does not depend on the source tree or a network connection.
+The built wheel bundles the canonical Protocol resources required by the CLI, including Harness Adapter Schemas, so normal runtime operation does not depend on the source tree or a network connection.
+
+## Harness Adapters
+
+Harness Adapters translate resolved Forge semantics into Harness-native representation without becoming a second source of truth.
+
+The Foundation defines:
+
+- machine-readable Adapter manifests with independent Adapter versioning and explicit Protocol compatibility intervals;
+- capability declarations for instructions, commands, skills, hooks, agent roles, and generated files;
+- deterministic plans generated before mutation;
+- `forge_owned`, `user_owned`, and `shared` ownership modes;
+- explicit `create`, `update`, `preserve`, `conflict`, and `delete_generated` operation intents;
+- repository-native installation records under `.forge/adapters/<id>/installation.yml`;
+- digest-based drift detection and stale-state protection;
+- explicit Harness enforcement limitations;
+- conformance checks preserving canonical Flow, TDD RED, Strict Review, and repository authority;
+- safe repository publication with path confinement, update preconditions, rollback, and installation-record-last semantics.
+
+Adapters consume Effective Forge Configuration. They do not execute Forge lifecycle stages, and Protocol v1 defines no separate Adapter activation lifecycle.
+
+No real Harness-specific Adapter ships in this Foundation Change. The first concrete Harness integration is intentionally a separate Change so the abstraction can be tested against real Harness primitives without contaminating Core semantics.
 
 ## Change as the fundamental unit
 
@@ -79,7 +100,7 @@ Flows may escalate `FAST -> STANDARD -> FULL`. Automatic downgrade is forbidden.
 
 - `protocol/` — canonical Forge Protocol.
 - `.forge/` — Forge's own dogfooding workspace.
-- `src/forge_cli/` — bootstrap CLI implementation.
+- `src/forge_cli/` — bootstrap CLI and Harness Adapter Foundation implementation.
 - `docs/adr/` — Architecture Decision Records.
 - `docs/rfcs/` — Protocol evolution proposals.
 - `examples/` — reference Forge Changes.
@@ -88,7 +109,7 @@ Flows may escalate `FAST -> STANDARD -> FULL`. Automatic downgrade is forbidden.
 
 Forge develops Forge using Forge. The `.forge/` directory is active engineering state, not an example.
 
-The first Forge Change is `CHG-0001 — Bootstrap Forge CLI`.
+The first Forge Change is `CHG-0001 — Bootstrap Forge CLI`. The Harness Adapter Foundation is governed as `CHG-0002`.
 
 ## License
 
