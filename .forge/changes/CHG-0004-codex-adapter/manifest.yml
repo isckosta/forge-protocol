@@ -1,0 +1,33 @@
+schema: forge/change@1
+change: {id: CHG-0004, title: Codex Harness Adapter, kind: feature}
+flow: {initial: full, current: full, escalations: []}
+state: {current: complete}
+artifacts:
+  intent: complete
+  discovery: complete
+  specification: complete
+  specification_review: complete
+  architecture: complete
+  architecture_decision: complete
+  test_strategy: approved
+  plan: approved
+  tasks: approved
+  traceability: complete
+  tdd_evidence: complete
+  implementation: complete
+  verification: passed
+  review: complete
+  documentation: complete
+  knowledge_capture: complete
+requirements: {total: 33, implemented: 33, verified: 33}
+tdd: {status: compliant, cycles: 11}
+verification: {status: passed}
+review: {status: passed, iteration: 4, blockers: 0, majors: 0, minors: 1, observations: 0}
+documentation:
+  impact_evaluated: true
+  update_required: true
+  status: complete
+  reason: >
+    The first concrete Harness Adapter changes public Adapter behavior and
+    confirms architectural boundaries documented in README, Architecture,
+    Changelog, ADR-0007, and Change knowledge capture.
