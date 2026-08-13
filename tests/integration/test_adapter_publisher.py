@@ -4,14 +4,18 @@ from pathlib import Path
 import pytest
 
 from forge_cli.adapters.manifest import AdapterManifest
-from forge_cli.adapters.plan import AdapterPlan, OwnershipMode, digest_content
+from forge_cli.adapters.plan import AdapterPlan, OperationIntent, OwnershipMode, digest_content
 from forge_cli.adapters.planner import (
     EffectiveAdapterConfiguration,
     ProjectedArtifact,
     RepositoryArtifactState,
     plan_adapter,
 )
-from forge_cli.adapters.state import AdapterInstallationRecord, GeneratedArtifact
+from forge_cli.adapters.state import (
+    AdapterInstallationRecord,
+    GeneratedArtifact,
+    write_installation_record,
+)
 
 
 def publisher_module():
@@ -265,3 +269,217 @@ def test_publication_failure_rolls_back_files_and_never_publishes_installation_r
     assert not (tmp_path / "a.md").exists()
     assert not (tmp_path / "b.md").exists()
     assert not (tmp_path / ".forge/adapters/example/installation.yml").exists()
+
+
+def test_unchanged_forge_owned_content_is_skipped_and_remains_in_the_record(
+    tmp_path: Path,
+) -> None:
+    publisher = publisher_module()
+    target = tmp_path / "generated.md"
+    target.write_text("same", encoding="utf-8")
+    plan = plan_adapter(
+        manifest=_manifest(),
+        effective_configuration=EffectiveAdapterConfiguration(1, ()),
+        projections=(
+            ProjectedArtifact(
+                path="generated.md",
+                ownership=OwnershipMode.FORGE_OWNED,
+                content="same",
+            ),
+        ),
+        repository_state=(
+            RepositoryArtifactState(
+                path="generated.md",
+                exists=True,
+                current_digest=digest_content("same"),
+                expected_digest=digest_content("same"),
+            ),
+        ),
+    )
+
+    assert plan.operations[0].intent is OperationIntent.UNCHANGED
+
+    publisher.publish_adapter_plan(
+        tmp_path,
+        plan,
+        _record(("generated.md", digest_content("same"))),
+    )
+
+    assert target.read_text(encoding="utf-8") == "same"
+    assert (tmp_path / ".forge/adapters/example/installation.yml").exists()
+
+
+def test_all_unchanged_operations_preserve_the_existing_installation_record(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    publisher = publisher_module()
+    target = tmp_path / "generated.md"
+    target.write_text("same", encoding="utf-8")
+    record = _record(("generated.md", digest_content("same")))
+    installation_path = tmp_path / ".forge/adapters/example/installation.yml"
+    write_installation_record(installation_path, record)
+    previous_record_bytes = installation_path.read_bytes()
+    plan = plan_adapter(
+        manifest=_manifest(),
+        effective_configuration=EffectiveAdapterConfiguration(1, ()),
+        projections=(
+            ProjectedArtifact(
+                path="generated.md",
+                ownership=OwnershipMode.FORGE_OWNED,
+                content="same",
+            ),
+        ),
+        repository_state=(
+            RepositoryArtifactState(
+                path="generated.md",
+                exists=True,
+                current_digest=digest_content("same"),
+                expected_digest=digest_content("same"),
+            ),
+        ),
+    )
+
+    def fail_if_record_is_rewritten(path: Path, record: AdapterInstallationRecord) -> None:
+        raise OSError("unchanged publication rewrote installation state")
+
+    monkeypatch.setattr(
+        publisher,
+        "_write_installation_record_atomically",
+        fail_if_record_is_rewritten,
+    )
+
+    publisher.publish_adapter_plan(tmp_path, plan, record)
+
+    assert target.read_text(encoding="utf-8") == "same"
+    assert installation_path.read_bytes() == previous_record_bytes
+
+
+def test_failure_after_create_update_and_delete_restores_every_file_and_installation_record(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    publisher = publisher_module()
+    update_target = tmp_path / "update.md"
+    delete_target = tmp_path / "delete.md"
+    update_target.write_text("old update", encoding="utf-8")
+    delete_target.write_text("old delete", encoding="utf-8")
+    installation_path = tmp_path / ".forge/adapters/example/installation.yml"
+    write_installation_record(
+        installation_path,
+        _record(
+            ("delete.md", digest_content("old delete")),
+            ("update.md", digest_content("old update")),
+        ),
+    )
+    before = {
+        path: path.read_bytes()
+        for path in (update_target, delete_target, installation_path)
+    }
+    plan = plan_adapter(
+        manifest=_manifest(),
+        effective_configuration=EffectiveAdapterConfiguration(1, ()),
+        projections=(
+            ProjectedArtifact(
+                path="create.md",
+                ownership=OwnershipMode.FORGE_OWNED,
+                content="new create",
+            ),
+            ProjectedArtifact(
+                path="update.md",
+                ownership=OwnershipMode.FORGE_OWNED,
+                content="new update",
+            ),
+        ),
+        repository_state=(
+            RepositoryArtifactState(
+                path="delete.md",
+                exists=True,
+                current_digest=digest_content("old delete"),
+                expected_digest=digest_content("old delete"),
+            ),
+            RepositoryArtifactState(
+                path="update.md",
+                exists=True,
+                current_digest=digest_content("old update"),
+                expected_digest=digest_content("old update"),
+            ),
+        ),
+        previous_generated=(
+            GeneratedArtifact("delete.md", digest_content("old delete")),
+            GeneratedArtifact("update.md", digest_content("old update")),
+        ),
+    )
+    record_write_attempted = False
+
+    def fail_after_operations(path: Path, record: AdapterInstallationRecord) -> None:
+        nonlocal record_write_attempted
+        record_write_attempted = True
+        raise OSError("simulated failure after create/update/delete")
+
+    monkeypatch.setattr(
+        publisher,
+        "_write_installation_record_atomically",
+        fail_after_operations,
+    )
+
+    with pytest.raises(publisher.AdapterPublicationError):
+        publisher.publish_adapter_plan(
+            tmp_path,
+            plan,
+            _record(
+                ("create.md", digest_content("new create")),
+                ("update.md", digest_content("new update")),
+            ),
+        )
+
+    assert not (tmp_path / "create.md").exists()
+    assert {path: path.read_bytes() for path in before} == before
+    assert record_write_attempted is True
+
+
+def test_deleting_generated_tree_leaves_separate_canonical_forge_tree_byte_identical(
+    tmp_path: Path,
+) -> None:
+    publisher = publisher_module()
+    canonical_root = tmp_path / "canonical-forge"
+    canonical_files = {
+        canonical_root / ".forge/project.yml": b"protocol: 1\n",
+        canonical_root / ".forge/flows/default.yml": b"id: default\n",
+        canonical_root / ".forge/contracts/project.yml": b"name: project\n",
+        canonical_root / ".forge/changes/CHG-0008/status.yml": b"status: active\n",
+    }
+    for path, content in canonical_files.items():
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(content)
+    canonical_before = {path: path.read_bytes() for path in canonical_files}
+
+    generated_root = tmp_path / "generated-tree"
+    generated_path = generated_root / ".agents/skills/forge/SKILL.md"
+    generated_path.parent.mkdir(parents=True)
+    generated_path.write_text("generated skill", encoding="utf-8")
+    plan = plan_adapter(
+        manifest=_manifest(),
+        effective_configuration=EffectiveAdapterConfiguration(1, ()),
+        projections=(),
+        repository_state=(
+            RepositoryArtifactState(
+                path=".agents/skills/forge/SKILL.md",
+                exists=True,
+                current_digest=digest_content("generated skill"),
+                expected_digest=digest_content("generated skill"),
+            ),
+        ),
+        previous_generated=(
+            GeneratedArtifact(
+                ".agents/skills/forge/SKILL.md",
+                digest_content("generated skill"),
+            ),
+        ),
+    )
+
+    publisher.publish_adapter_plan(generated_root, plan, _record())
+
+    assert not generated_path.exists()
+    assert generated_root.exists()
+    assert {path: path.read_bytes() for path in canonical_files} == canonical_before

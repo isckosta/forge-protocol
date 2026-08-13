@@ -60,6 +60,41 @@ def test_forge_owned_target_may_update_only_when_expected_state_matches() -> Non
     assert decision.safe_to_apply is True
 
 
+def test_recorded_equal_desired_file_is_unchanged() -> None:
+    module = ownership_module()
+
+    try:
+        decision = module.classify_artifact(
+            ownership=OwnershipMode.FORGE_OWNED,
+            exists=True,
+            current_digest=digest_content("same"),
+            expected_digest=digest_content("same"),
+            desired_digest=digest_content("same"),
+            merge_result=None,
+        )
+    except TypeError as exc:
+        pytest.fail(f"Recorded desired state is not accepted: {exc}")
+
+    assert decision.intent.value == "unchanged"
+    assert decision.safe_to_apply is True
+
+
+def test_unrecorded_equal_desired_file_conflicts_without_silent_adoption() -> None:
+    module = ownership_module()
+
+    decision = module.classify_artifact(
+        ownership=OwnershipMode.FORGE_OWNED,
+        exists=True,
+        current_digest=digest_content("same"),
+        expected_digest=None,
+        desired_digest=digest_content("same"),
+        merge_result=None,
+    )
+
+    assert decision.intent is OperationIntent.CONFLICT
+    assert decision.safe_to_apply is False
+
+
 def test_forge_owned_target_without_proven_expected_state_conflicts() -> None:
     module = ownership_module()
 

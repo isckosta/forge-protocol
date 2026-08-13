@@ -16,6 +16,7 @@ from forge_cli.adapters.plan import (
 )
 from forge_cli.adapters.state import (
     AdapterInstallationRecord,
+    load_installation_record,
     write_installation_record,
 )
 
@@ -138,7 +139,12 @@ def _validate_record_matches_plan(
         operation.path: operation.content_digest
         for operation in plan.operations
         if operation.ownership is OwnershipMode.FORGE_OWNED
-        and operation.intent in {OperationIntent.CREATE, OperationIntent.UPDATE}
+        and operation.intent
+        in {
+            OperationIntent.CREATE,
+            OperationIntent.UPDATE,
+            OperationIntent.UNCHANGED,
+        }
     }
     recorded_generated = {
         artifact.path: artifact.digest for artifact in record.generated_artifacts
@@ -161,10 +167,35 @@ def _preflight_operation(root: Path, operation: AdapterOperation) -> Path:
     if operation.intent is OperationIntent.PRESERVE:
         return target
 
+    if operation.intent is OperationIntent.UNCHANGED:
+        if not target.exists() or target.is_symlink() or not target.is_file():
+            raise AdapterPublicationConflictError(
+                f"Adapter unchanged target is not a safe existing file: {operation.path}."
+            )
+        if operation.expected_current_digest is None:
+            raise AdapterPublicationConflictError(
+                f"Adapter unchanged target lacks an expected current digest: {operation.path}."
+            )
+        if _current_digest(target) != operation.expected_current_digest:
+            raise AdapterPublicationConflictError(
+                f"Adapter unchanged target changed after planning: {operation.path}."
+            )
+        return target
+
     if operation.intent is OperationIntent.DELETE_GENERATED:
-        raise AdapterPublicationError(
-            "delete_generated publication is not implemented by the Foundation publisher."
-        )
+        if not target.exists() or target.is_symlink() or not target.is_file():
+            raise AdapterPublicationConflictError(
+                f"Adapter delete target is not a safe existing file: {operation.path}."
+            )
+        if operation.expected_current_digest is None:
+            raise AdapterPublicationConflictError(
+                f"Adapter delete lacks an expected current digest: {operation.path}."
+            )
+        if _current_digest(target) != operation.expected_current_digest:
+            raise AdapterPublicationConflictError(
+                f"Adapter delete target changed after planning: {operation.path}."
+            )
+        return target
 
     if operation.content is None:
         raise AdapterPublicationError(
@@ -240,9 +271,15 @@ def publish_adapter_plan(
     prior_installation = installation_path.read_bytes() if installation_path.exists() else None
     installation_existed = installation_path.exists()
 
+    if installation_existed and all(
+        operation.intent in {OperationIntent.PRESERVE, OperationIntent.UNCHANGED}
+        for operation in plan.operations
+    ) and load_installation_record(installation_path) == installation_record:
+        return
+
     try:
         for operation in plan.operations:
-            if operation.intent is OperationIntent.PRESERVE:
+            if operation.intent in {OperationIntent.PRESERVE, OperationIntent.UNCHANGED}:
                 continue
 
             target = targets[operation.path]
@@ -266,6 +303,22 @@ def publish_adapter_plan(
                 _reserve_create_target(target)
                 applied.append((target, None))
                 _replace_file(target, operation.content or "")
+                continue
+
+            if operation.intent is OperationIntent.DELETE_GENERATED:
+                if (
+                    operation.expected_current_digest is None
+                    or not target.exists()
+                    or target.is_symlink()
+                    or not target.is_file()
+                    or _current_digest(target) != operation.expected_current_digest
+                ):
+                    raise AdapterPublicationConflictError(
+                        f"Adapter delete precondition changed before removal: {operation.path}."
+                    )
+                original = target.read_bytes()
+                applied.append((target, original))
+                target.unlink()
                 continue
 
             raise AdapterPublicationError(

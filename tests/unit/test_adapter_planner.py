@@ -5,6 +5,7 @@ import pytest
 from forge_cli.adapters.capabilities import CapabilityRequirement, RequirementSource
 from forge_cli.adapters.manifest import AdapterManifest, IncompatibleAdapterProtocolError
 from forge_cli.adapters.plan import OperationIntent, OwnershipMode, digest_content
+from forge_cli.adapters.state import GeneratedArtifact
 
 
 def planner_module():
@@ -155,3 +156,46 @@ def test_repeated_planning_with_identical_inputs_is_semantically_identical() -> 
 
     assert first == second
     assert [operation.path for operation in first.operations] == ["a.md", "z.md"]
+
+
+def test_obsolete_intact_generated_file_is_deleted_but_drifted_one_conflicts() -> None:
+    planner = planner_module()
+    previous = (GeneratedArtifact("old.md", digest_content("old")),)
+    try:
+        intact = planner.plan_adapter(
+            manifest=_manifest(),
+            effective_configuration=planner.EffectiveAdapterConfiguration(1, ()),
+            projections=(),
+            repository_state=(
+                planner.RepositoryArtifactState(
+                    "old.md",
+                    True,
+                    digest_content("old"),
+                    digest_content("old"),
+                ),
+            ),
+            previous_generated=previous,
+        )
+    except TypeError as exc:
+        pytest.fail(f"Prior generated artifacts are not accepted: {exc}")
+
+    assert intact.operations[0].intent is OperationIntent.DELETE_GENERATED
+    assert intact.operations[0].expected_current_digest == digest_content("old")
+
+    drifted = planner.plan_adapter(
+        manifest=_manifest(),
+        effective_configuration=planner.EffectiveAdapterConfiguration(1, ()),
+        projections=(),
+        repository_state=(
+            planner.RepositoryArtifactState(
+                "old.md",
+                True,
+                digest_content("edited"),
+                digest_content("old"),
+            ),
+        ),
+        previous_generated=previous,
+    )
+
+    assert drifted.operations[0].intent is OperationIntent.CONFLICT
+    assert drifted.conflicts == ("old.md: ownership or expected-state conflict",)

@@ -37,6 +37,7 @@ def classify_artifact(
     current_digest: str | None,
     expected_digest: str | None,
     merge_result: str | None,
+    desired_digest: str | None = None,
 ) -> OwnershipDecision:
     """Classify an artifact without reading or mutating filesystem state."""
 
@@ -53,15 +54,19 @@ def classify_artifact(
         )
 
     if ownership is OwnershipMode.FORGE_OWNED:
-        if expected_digest is not None and current_digest == expected_digest:
+        if expected_digest is None or current_digest != expected_digest:
             return OwnershipDecision(
-                intent=OperationIntent.UPDATE,
-                safe_to_apply=True,
+                intent=OperationIntent.CONFLICT,
+                safe_to_apply=False,
             )
 
         return OwnershipDecision(
-            intent=OperationIntent.CONFLICT,
-            safe_to_apply=False,
+            intent=(
+                OperationIntent.UNCHANGED
+                if desired_digest is not None and current_digest == desired_digest
+                else OperationIntent.UPDATE
+            ),
+            safe_to_apply=True,
         )
 
     if ownership is OwnershipMode.SHARED:

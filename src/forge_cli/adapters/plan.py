@@ -17,6 +17,7 @@ class OwnershipMode(StrEnum):
 class OperationIntent(StrEnum):
     CREATE = "create"
     UPDATE = "update"
+    UNCHANGED = "unchanged"
     PRESERVE = "preserve"
     CONFLICT = "conflict"
     DELETE_GENERATED = "delete_generated"
