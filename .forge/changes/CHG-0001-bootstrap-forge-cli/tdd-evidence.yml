@@ -74,3 +74,29 @@ cycles:
     refactor:
       status: not_performed
       reason: The staging publisher, validation, and cleanup logic are already narrowly scoped to the requirements.
+
+  - id: TDD-004
+    requirements: [FR-009, FR-010, FR-018, FR-019, FR-023]
+    behavior: load and validate Forge project configuration against the canonical Project Schema and supported Protocol versions
+    red:
+      status: observed
+      workflow_run_id: 31669001236
+      job_id: 94349625107
+      commit: ae29145796d51cff275c98592d2c41f4cb97cc68
+      tests:
+        - tests/unit/test_project_configuration.py::test_loads_valid_project_configuration
+        - tests/unit/test_project_configuration.py::test_rejects_configuration_that_violates_project_schema
+        - tests/unit/test_project_configuration.py::test_rejects_unsupported_protocol_version
+        - tests/unit/test_project_configuration.py::test_validation_is_deterministic_for_identical_repository_state
+      expected_failure: The configuration boundary is only an empty scaffold and cannot parse, validate, or enforce Protocol compatibility.
+      observed_failure: All four new tests failed with AttributeError because load_project_configuration and explicit configuration errors were absent; seven prior tests passed.
+      valid: true
+    green:
+      status: observed
+      workflow_run_id: 31669052322
+      job_id: 94349769493
+      commit: 9ac4aa62d7d1407672955700d32fa41c20f16a59
+      result: GitHub Actions passed. Forge parses YAML, validates against protocol/schemas/project.schema.json, rejects unsupported Protocol versions, and returns deterministic results for identical state.
+    refactor:
+      status: not_performed
+      reason: The implementation is minimal for the current source-tree execution model. Packaging the canonical Schema as a distribution resource is deferred to installation Verification rather than hidden inside this cycle.
