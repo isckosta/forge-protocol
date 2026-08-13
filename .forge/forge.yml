@@ -1,0 +1,23 @@
+schema: forge/project@1
+
+project:
+  name: forge
+
+forge:
+  protocol: 1
+
+flows:
+  default: standard
+  allow_fast: true
+  auto_escalation: true
+
+testing:
+  approach: tdd_first
+
+review:
+  strict: true
+
+documentation:
+  impact_evaluation: required
+
+harnesses: []
