@@ -100,3 +100,31 @@ cycles:
     refactor:
       status: not_performed
       reason: The implementation is minimal for the current source-tree execution model. Packaging the canonical Schema as a distribution resource is deferred to installation Verification rather than hidden inside this cycle.
+
+  - id: TDD-005
+    requirements: [FR-011, FR-012, FR-013, FR-014, FR-015]
+    behavior: resolve canonical Flow and Engineering Contract layers without allowing project configuration to replace canonical semantics
+    red:
+      status: observed
+      workflow_run_id: 31669289131
+      job_id: 94350422734
+      commit: 438fcd566f54d7958a7e64a2dfba4e0247ee02b9
+      tests:
+        - tests/unit/test_protocol_resolution.py::test_resolves_effective_standard_flow_from_canonical_and_project_layers
+        - tests/unit/test_protocol_resolution.py::test_rejects_unknown_canonical_flow_reference
+        - tests/unit/test_protocol_resolution.py::test_project_flow_cannot_redefine_canonical_stages
+        - tests/unit/test_protocol_resolution.py::test_effective_contract_is_canonical_contract_plus_project_extension
+        - tests/unit/test_protocol_resolution.py::test_project_contract_is_optional_but_canonical_contract_is_required
+        - tests/unit/test_protocol_resolution.py::test_fails_when_canonical_contract_is_unavailable
+      expected_failure: The Protocol resolution boundary is only an empty scaffold and cannot resolve canonical Flow references or compose the Effective Engineering Contract.
+      observed_failure: All six new tests failed with AttributeError because resolution functions and explicit errors were absent; eleven prior tests passed.
+      valid: true
+    green:
+      status: observed
+      workflow_run_id: 31669341596
+      job_id: 94350569118
+      commit: 4dc74fd5d022ca40da998cf6681d6f015c6ca094
+      result: GitHub Actions passed. Forge resolves canonical and project Flow layers separately, rejects unknown canonical references and canonical stage redefinition, and composes the canonical Contract before the optional project extension.
+    refactor:
+      status: not_performed
+      reason: The layer-preserving resolver is intentionally small and avoids premature semantic merging of Markdown Contracts.
