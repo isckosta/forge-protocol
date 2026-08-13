@@ -1,6 +1,7 @@
 from pathlib import Path
 
 import typer
+import yaml
 
 from forge_cli.doctor import diagnose
 from forge_cli.git import NotGitRepositoryError, resolve_project_root
@@ -20,26 +21,29 @@ def _protocol_root() -> Path:
     return resolve_protocol_root()
 
 
+def _project_configuration(project_name: str) -> str:
+    return yaml.safe_dump(
+        {
+            "schema": "forge/project@1",
+            "project": {"name": project_name},
+            "forge": {"protocol": 1},
+            "flows": {
+                "default": "standard",
+                "allow_fast": True,
+                "auto_escalation": True,
+            },
+            "testing": {"approach": "tdd_first"},
+            "review": {"strict": True},
+            "documentation": {"impact_evaluation": "required"},
+        },
+        sort_keys=False,
+        allow_unicode=True,
+    )
+
+
 def _workspace_files(project_root: Path) -> dict[str, str]:
-    project_name = project_root.name
     return {
-        "forge.yml": (
-            "schema: forge/project@1\n"
-            "project:\n"
-            f"  name: {project_name}\n"
-            "forge:\n"
-            "  protocol: 1\n"
-            "flows:\n"
-            "  default: standard\n"
-            "  allow_fast: true\n"
-            "  auto_escalation: true\n"
-            "testing:\n"
-            "  approach: tdd_first\n"
-            "review:\n"
-            "  strict: true\n"
-            "documentation:\n"
-            "  impact_evaluation: required\n"
-        ),
+        "forge.yml": _project_configuration(project_root.name),
         "flows/fast.yml": "schema: forge/project-flow@1\nflow:\n  canonical: fast\n  enabled: true\n",
         "flows/standard.yml": "schema: forge/project-flow@1\nflow:\n  canonical: standard\n  enabled: true\n",
         "flows/full.yml": "schema: forge/project-flow@1\nflow:\n  canonical: full\n  enabled: true\n",
