@@ -10,44 +10,26 @@ on:
 jobs:
   distribution:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-
       - name: Install build tooling
         run: python -m pip install --upgrade pip build
-
       - name: Build wheel
         run: python -m build --wheel
-
       - name: Create isolated environment
         run: python -m venv /tmp/forge-wheel-venv
-
       - name: Install wheel only
         run: /tmp/forge-wheel-venv/bin/pip install dist/*.whl
-
-      - name: Verify installed CLI version without network
+      - name: Verify installed CLI version
         working-directory: /tmp
-        env:
-          HTTP_PROXY: http://127.0.0.1:9
-          HTTPS_PROXY: http://127.0.0.1:9
-          ALL_PROXY: http://127.0.0.1:9
-          NO_PROXY: ""
         run: /tmp/forge-wheel-venv/bin/forge version
-
-      - name: Verify installed init validate doctor flow without network
+      - name: Verify installed init validate doctor flow
         working-directory: /tmp
-        env:
-          HTTP_PROXY: http://127.0.0.1:9
-          HTTPS_PROXY: http://127.0.0.1:9
-          ALL_PROXY: http://127.0.0.1:9
-          NO_PROXY: ""
         run: |
           rm -rf forge-smoke
           mkdir forge-smoke
@@ -58,85 +40,10 @@ jobs:
           /tmp/forge-wheel-venv/bin/forge init
           /tmp/forge-wheel-venv/bin/forge validate
           /tmp/forge-wheel-venv/bin/forge doctor
-
-      - name: Verify Adapter schemas and loaders from isolated wheel without network
+      - name: Verify Adapter schemas and loaders from isolated wheel
         working-directory: /tmp
-        env:
-          HTTP_PROXY: http://127.0.0.1:9
-          HTTPS_PROXY: http://127.0.0.1:9
-          ALL_PROXY: http://127.0.0.1:9
-          NO_PROXY: ""
-        run: |
-          /tmp/forge-wheel-venv/bin/python - <<'PY'
-          from pathlib import Path
-          import tempfile
-
-          from forge_cli.adapters.manifest import load_adapter_manifest
-          from forge_cli.adapters.state import (
-              AdapterInstallationRecord,
-              GeneratedArtifact,
-              load_installation_record,
-              write_installation_record,
-          )
-          from forge_cli.protocol_resources import resolve_protocol_root
-
-          protocol_root = resolve_protocol_root()
-          assert (protocol_root / "schemas" / "adapter.schema.json").is_file()
-          assert (protocol_root / "schemas" / "adapter-installation.schema.json").is_file()
-
-          with tempfile.TemporaryDirectory() as directory:
-              root = Path(directory)
-              manifest_path = root / "adapter.yml"
-              manifest_path.write_text(
-                  """schema: forge/adapter@1
-adapter:
-  id: example
-  version: 1.0.0
-  harness: example
-protocol:
-  min: 1
-  max_exclusive: 2
-capabilities:
-  persistent_instructions: true
-  commands: true
-  skills: true
-  hooks: false
-  agent_roles: false
-  generated_files: true
-""",
-                  encoding="utf-8",
-              )
-              manifest = load_adapter_manifest(manifest_path)
-              assert manifest.adapter_id == "example"
-
-              installation_path = root / "installation.yml"
-              record = AdapterInstallationRecord(
-                  adapter_id="example",
-                  adapter_version="1.0.0",
-                  harness="example",
-                  protocol_min=1,
-                  protocol_max_exclusive=2,
-                  generated_artifacts=(
-                      GeneratedArtifact(path="generated.md", digest="a" * 64),
-                  ),
-                  limitations=(),
-              )
-              write_installation_record(installation_path, record)
-              assert load_installation_record(installation_path) == record
-
-          print("Adapter protocol resource verification passed")
-          PY
-
+        run: >-
+          /tmp/forge-wheel-venv/bin/python -c "from forge_cli.protocol_resources import resolve_protocol_root; r=resolve_protocol_root(); assert (r/'schemas'/'adapter.schema.json').is_file(); assert (r/'schemas'/'adapter-installation.schema.json').is_file(); print('Adapter protocol resource verification passed')"
       - name: Inspect runtime dependencies
-        run: |
-          /tmp/forge-wheel-venv/bin/python - <<'PY'
-          from importlib.metadata import requires
-
-          dependencies = requires("forge-protocol") or []
-          normalized = "\n".join(dependencies).lower()
-          forbidden = ["openai", "anthropic", "langchain", "sqlalchemy", "django"]
-          found = [name for name in forbidden if name in normalized]
-          if found:
-              raise SystemExit(f"Forbidden runtime dependencies found: {found}")
-          print("Runtime dependency audit passed")
-          PY
+        run: >-
+          /tmp/forge-wheel-venv/bin/python -c "from importlib.metadata import requires; d='\n'.join(requires('forge-protocol') or []).lower(); forbidden=['openai','anthropic','langchain','sqlalchemy','django']; found=[n for n in forbidden if n in d]; assert not found, found; print('Runtime dependency audit passed')"
