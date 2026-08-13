@@ -3,7 +3,7 @@ forge:
   artifact: plan
   schema: 1
 change: CHG-0001
-status: draft
+status: approved
 ---
 
 # Plan — Bootstrap Forge CLI
