@@ -3,7 +3,7 @@ forge:
   artifact: test_strategy
   schema: 1
 change: CHG-0002
-status: draft
+status: approved
 ---
 
 # Test Strategy — Harness Adapter Foundation
@@ -44,4 +44,4 @@ Any defect discovered during CHG-0002 receives a reproducing regression test fir
 
 ## Verification beyond TDD
 
-Completion Verification includes full suite, isolated wheel installation, bundled schema/resource availability, offline manifest validation/planning, path-security cases, deterministic repeated planning, and dependency audit.
+Completion Verification includes full suite, isolated wheel installation, bundled schema/resource availability, offline manifest validation/planning, path-security and symlink cases, deterministic repeated planning, installation-record roundtrip, and dependency audit.
