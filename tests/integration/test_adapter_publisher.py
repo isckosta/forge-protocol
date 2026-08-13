@@ -118,6 +118,34 @@ def test_create_publishes_content_and_installation_record_last(tmp_path: Path) -
     assert (tmp_path / ".forge/adapters/example/installation.yml").exists()
 
 
+def test_create_revalidates_absence_immediately_before_write(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    publisher = publisher_module()
+    target = tmp_path / "generated.md"
+    plan = plan_adapter(
+        manifest=_manifest(),
+        effective_configuration=EffectiveAdapterConfiguration(1, ()),
+        projections=(ProjectedArtifact(path="generated.md", ownership=OwnershipMode.FORGE_OWNED, content="new"),),
+        repository_state=(),
+    )
+    original_record_validation = publisher._validate_record_matches_plan
+
+    def create_external_file_after_preflight(plan, record) -> None:
+        original_record_validation(plan, record)
+        target.write_text("external", encoding="utf-8")
+
+    monkeypatch.setattr(publisher, "_validate_record_matches_plan", create_external_file_after_preflight)
+
+    with pytest.raises(publisher.AdapterPublicationConflictError):
+        publisher.publish_adapter_plan(
+            tmp_path,
+            plan,
+            _record(("generated.md", digest_content("new"))),
+        )
+
+    assert target.read_text(encoding="utf-8") == "external"
+    assert not (tmp_path / ".forge/adapters/example/installation.yml").exists()
+
+
 def test_repository_escape_path_is_rejected_without_writing_outside_root(tmp_path: Path) -> None:
     publisher = publisher_module()
     outside = tmp_path.parent / "forge-outside.txt"
