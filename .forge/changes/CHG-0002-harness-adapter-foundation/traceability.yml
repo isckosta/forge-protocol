@@ -1,0 +1,48 @@
+schema: forge/traceability@1
+change: CHG-0002
+requirements:
+  FR-001: {tasks: [T-001], test_strategy: unit}
+  FR-002: {tasks: [T-001], test_strategy: unit}
+  FR-003: {tasks: [T-001], test_strategy: unit}
+  FR-004: {tasks: [T-001, T-002], test_strategy: unit}
+  FR-005: {tasks: [T-002, T-009, T-010], test_strategy: unit_and_integration}
+  FR-006: {tasks: [T-001, T-003], test_strategy: unit}
+  FR-007: {tasks: [T-001, T-003], test_strategy: unit}
+  FR-008: {tasks: [T-003, T-008], test_strategy: unit_and_contract}
+  FR-009: {tasks: [T-003, T-008, T-009], test_strategy: unit_and_contract}
+  FR-010: {tasks: [T-009], test_strategy: contract}
+  FR-011: {tasks: [T-008, T-009], test_strategy: contract}
+  FR-012: {tasks: [T-006, T-008], test_strategy: unit_and_contract}
+  FR-013: {tasks: [T-004, T-009], test_strategy: unit}
+  FR-014: {tasks: [T-004], test_strategy: unit}
+  FR-015: {tasks: [T-004, T-005], test_strategy: unit}
+  FR-016: {tasks: [T-004, T-005], test_strategy: unit}
+  FR-017: {tasks: [T-005, T-010], test_strategy: unit_and_integration}
+  FR-018: {tasks: [T-005, T-007, T-010], test_strategy: unit_and_integration}
+  FR-019: {tasks: [T-005, T-010], test_strategy: unit_and_integration}
+  FR-020: {tasks: [T-010], test_strategy: integration}
+  FR-021: {tasks: [T-006], test_strategy: unit_and_integration}
+  FR-022: {tasks: [T-006, T-008], test_strategy: unit_and_contract}
+  FR-023: {tasks: [T-004, T-009], test_strategy: unit}
+  FR-024: {tasks: [T-006, T-007], test_strategy: unit}
+  FR-025: {tasks: [T-005, T-007, T-010], test_strategy: unit_and_integration}
+  FR-026: {tasks: [T-008], test_strategy: contract}
+  FR-027: {tasks: [T-008], test_strategy: contract}
+  FR-028: {tasks: [T-008], test_strategy: contract}
+  FR-029: {tasks: [T-008], test_strategy: contract}
+  FR-030: {tasks: [T-003, T-008], test_strategy: unit_and_contract}
+  FR-031: {tasks: [T-009, T-010], test_strategy: cli_boundary_and_integration}
+  FR-032: {tasks: [T-008, T-009], test_strategy: cli_boundary_and_contract}
+  FR-033: {tasks: [T-006, T-009], test_strategy: contract}
+  FR-034: {tasks: [T-001, T-011], test_strategy: unit_and_distribution}
+  FR-035: {tasks: [T-001, T-011], test_strategy: unit_and_distribution}
+  NFR-001: {tasks: [T-009, T-011, T-013], test_strategy: contract_and_distribution}
+  NFR-002: {tasks: [T-003, T-009, T-013], test_strategy: dependency_audit}
+  NFR-003: {tasks: [T-004, T-009], test_strategy: unit}
+  NFR-004: {tasks: [T-010, T-013], test_strategy: integration_security}
+  NFR-005: {tasks: [T-003, T-004, T-005, T-009], test_strategy: unit_and_contract}
+  INV-001: {tasks: [T-008, T-009], test_strategy: contract}
+  INV-002: {tasks: [T-006, T-008], test_strategy: contract}
+  INV-003: {tasks: [T-003, T-008], test_strategy: unit_and_contract}
+  INV-004: {tasks: [T-005, T-010], test_strategy: unit_and_integration}
+  INV-005: {tasks: [T-001, T-006], test_strategy: unit}
