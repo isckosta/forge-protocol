@@ -8,13 +8,13 @@ flow:
   current: full
   escalations: []
 state:
-  current: specification
+  current: architecture
 artifacts:
   intent: complete
   discovery: complete
-  specification: active
-  specification_review: pending
-  architecture: pending
+  specification: complete
+  specification_review: complete
+  architecture: active
   architecture_decision: pending
   test_strategy: pending
   plan: pending
@@ -27,7 +27,7 @@ artifacts:
   documentation: pending
   knowledge_capture: pending
 requirements:
-  total: 0
+  total: 14
   implemented: 0
   verified: 0
 tdd:
