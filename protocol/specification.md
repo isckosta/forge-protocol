@@ -137,3 +137,31 @@ Forge Protocol MUST remain independent from specific AI providers.
 ## 33. Local operation
 
 Canonical Forge operation MUST NOT require a Forge-hosted backend.
+
+## 34. Harness Adapter contract
+
+A Harness Adapter is a projection layer from resolved Effective Forge Configuration to Harness-native representation. It MUST NOT redefine canonical Contract, Flow, Policy, Change, TDD, Verification, Review, or Documentation semantics.
+
+Every Adapter manifest MUST declare stable identity, independent Adapter version, target Harness, a half-open integer Protocol interval (`min <= protocol < max_exclusive`), and declared capabilities. Protocol v1 capabilities are `persistent_instructions`, `commands`, `skills`, `hooks`, `agent_roles`, and `generated_files`.
+
+Adapters MUST plan before mutation. Plans MUST be deterministic for identical inputs and declare artifact path, ownership, operation intent, resulting content or digest, limitations, and conflicts. Initial ownership modes are `forge_owned`, `user_owned`, and `shared`; initial operation intents are `create`, `update`, `preserve`, `conflict`, and `delete_generated`.
+
+User-owned artifacts MUST NOT be silently overwritten. Forge-owned updates require proven expected generated state. Shared updates require an Adapter-defined deterministic merge strategy; otherwise they MUST conflict.
+
+## 35. Adapter installation state and drift
+
+A configured Adapter MUST retain repository-native installation metadata at `.forge/adapters/<adapter-id>/installation.yml` containing Adapter identity/version, target Harness, Protocol interval, generated Forge-owned artifacts with expected digests, and explicit limitations.
+
+Installation metadata is derived representation state and MUST NOT duplicate canonical Change lifecycle state. Divergence between recorded and observed generated content MUST be reported as drift/conflict before replacement.
+
+Adapter publication SHOULD avoid leaving state that appears successfully installed after partial failure. Repository-bound paths MUST reject traversal, ambiguous cross-platform paths, and symlink escapes.
+
+## 36. Adapter conformance and CLI boundary
+
+Harness representation MUST preserve required canonical stages, Gates, Contract invariants, TDD RED semantics, Strict Review semantics, and repository semantic authority. If the Harness cannot enforce an invariant, the limitation MUST be explicit; a limitation MUST NOT excuse removing the canonical requirement.
+
+Adapter-related CLI behavior is infrastructure-only. It MAY install, configure, validate, update, plan, and diagnose Adapter infrastructure, but MUST NOT execute Specification, TDD Implementation, Verification, Review, Resolution, or Completion stages. Protocol v1 introduces no separate Adapter activation lifecycle state.
+
+## 37. Adapter schemas and locality
+
+Forge MUST provide deterministic machine-readable Schemas for Adapter manifests and installation records. Core Adapter validation and planning MUST NOT require network access or a Harness-specific SDK. Official distributions MUST package the canonical Protocol resources required to resolve these Schemas outside a source checkout.
