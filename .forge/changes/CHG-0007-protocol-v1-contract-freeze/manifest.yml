@@ -38,7 +38,7 @@ requirements:
 
 tdd:
   status: active
-  cycles: 2
+  cycles: 3
 
 verification:
   status: pending

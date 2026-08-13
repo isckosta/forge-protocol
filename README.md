@@ -12,7 +12,9 @@ Forge governs that process through Spec-Driven Development, Test-Driven Developm
 
 ## Status
 
-Forge is in its Foundation phase. The Core Protocol, bootstrap CLI, Harness Adapter Foundation, and first concrete Codex Adapter are implemented as pre-release software under Protocol `1` (`1-draft` as the current human-readable maturity label).
+Forge Protocol `1` is a stable engineering contract. The bootstrap CLI, Harness
+Adapter Foundation, and first concrete Codex Adapter remain pre-release
+software with their own independent versions.
 
 ## Core engineering loop
 

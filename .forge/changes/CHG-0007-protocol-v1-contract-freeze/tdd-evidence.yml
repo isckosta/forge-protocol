@@ -1,7 +1,7 @@
 schema: forge/tdd-evidence@1
 change: CHG-0007
 status: active
-cycle_count: 2
+cycle_count: 3
 cycles:
   - id: TDD-001
     title: Supported Schema Catalog Closure
@@ -28,3 +28,14 @@ cycles:
         - obsolete fields were removed without changing lifecycle outcomes
         - CHG-0004 task and acceptance mappings remain identical
         - CHG-0002 note text is unchanged and now parses as text
+
+  - id: TDD-003
+    title: Stable Protocol Display Label
+    requirements: [FR-001, FR-002, INV-001]
+    behavior: report stable Protocol 1 identity without the draft maturity label
+    red:
+      valid: true
+      result: 1 failed
+      reason: forge version still reported Forge Protocol 1-draft
+    green:
+      result: focused CLI version test passed
