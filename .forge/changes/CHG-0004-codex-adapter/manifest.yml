@@ -8,11 +8,11 @@ flow:
   current: full
   escalations: []
 state:
-  current: discovery
+  current: specification
 artifacts:
   intent: complete
-  discovery: active
-  specification: pending
+  discovery: complete
+  specification: active
   specification_review: pending
   architecture: pending
   architecture_decision: pending
