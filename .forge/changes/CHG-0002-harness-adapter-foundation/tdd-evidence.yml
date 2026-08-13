@@ -2,7 +2,7 @@ schema: forge/tdd-evidence@1
 
 change: CHG-0002
 status: active
-cycle_count: 4
+cycle_count: 5
 
 cycles:
   - id: TDD-001
@@ -65,8 +65,25 @@ cycles:
       commit: ddbafcd5a8258ab1181f745776565269bc06641e
       result: Immutable plan and operation models now expose canonical ownership and intent vocabularies, deterministic SHA-256 content digests, immutable limitation/conflict collections, and stable path-first operation ordering; the full test suite passed.
 
+  - id: TDD-005
+    requirements: [FR-017, FR-018, FR-019, INV-004]
+    behavior: classify artifact collisions without filesystem mutation so user-owned state is preserved, Forge-owned updates require proven expected state, and shared artifacts conflict unless an explicit merge result is supplied
+    red:
+      valid: true
+      workflow_run_id: 31694603349
+      job_id: 94429387598
+      commit: b55388f8cc0af49b5ada8dc29931263a031df279
+      reason: Ownership classification did not exist; 7 behavior tests failed while 55 existing tests passed, covering missing targets, user-owned preservation, Forge-owned expected-state checks, and shared merge/no-merge classification.
+    green:
+      workflow_run_id: 31694653381
+      job_id: 94429550285
+      commit: 2d8a8e76283f0664d54faaf2f3281cba46f2b18f
+      result: A pure immutable OwnershipDecision classifier now returns create/preserve/update/conflict decisions without filesystem access; user-owned existing targets are never marked safe to apply, Forge-owned updates require an expected digest matching current state, and shared targets require an explicit merge result before update classification; the full test suite passed.
+
 notes:
   - TDD-001 validates manifest structure; TDD-002 owns compatibility semantics.
   - TDD-003 does not define semantic mappings such as Strict Review -> hooks; callers provide resolved representation requirements so Core remains Harness-agnostic.
   - TDD-004 defines only the plan data model; planner behavior, collision semantics, and filesystem mutation remain intentionally absent.
+  - TDD-005 is classification only. It does not read/write filesystem state, prove the provenance/determinism of a shared merge strategy, or complete generated drift detection; those remain for TDD-007/TDD-009/TDD-010.
+  - FR-019 is not counted as fully implemented yet because deterministic merge-strategy provenance is not proven by the classifier alone.
   - No Harness-specific SDK or implementation has been introduced.
