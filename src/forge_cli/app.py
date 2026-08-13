@@ -7,11 +7,10 @@ from forge_cli.doctor import diagnose
 from forge_cli.git import GitUnavailableError, NotGitRepositoryError, resolve_project_root
 from forge_cli.protocol_resources import resolve_protocol_root
 from forge_cli.validation import validate_project
+from forge_cli.version import CLI_VERSION, PROTOCOL_DISPLAY_VERSION, PROTOCOL_ID
 from forge_cli.workspace import WorkspaceAlreadyInitializedError, initialize_workspace
 
 
-CLI_VERSION = "0.1.0.dev0"
-PROTOCOL_VERSION = "1-draft"
 INTERNAL_ERROR_EXIT_CODE = 70
 
 app = typer.Typer()
@@ -26,7 +25,7 @@ def _project_configuration(project_name: str) -> str:
         {
             "schema": "forge/project@1",
             "project": {"name": project_name},
-            "forge": {"protocol": 1},
+            "forge": {"protocol": PROTOCOL_ID},
             "flows": {
                 "default": "standard",
                 "allow_fast": True,
@@ -69,7 +68,7 @@ def main() -> None:
 def version() -> None:
     """Report Forge CLI and supported Protocol versions."""
     typer.echo(f"Forge CLI {CLI_VERSION}")
-    typer.echo(f"Forge Protocol {PROTOCOL_VERSION}")
+    typer.echo(f"Forge Protocol {PROTOCOL_DISPLAY_VERSION}")
 
 
 @app.command()
