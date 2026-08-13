@@ -82,8 +82,8 @@ BLOCKER and MAJOR Findings MUST include sufficient evidence.
 ## C-026 — Reviewer/Resolver separation
 Reviewer and Resolver MUST remain distinct conceptual Roles.
 
-## C-027 — Blocking Findings block Completion
-Unresolved BLOCKER Findings MUST prevent Completion.
+## C-027 — Blocking review evidence blocks Completion
+Unresolved BLOCKER Findings MUST prevent Completion. When an active external review surface exists, unresolved threads containing findings classified as blocking MUST also prevent Completion. Without an external review surface, the thread condition is satisfied trivially.
 
 ## C-028 — Documentation Impact is mandatory
 Every Change MUST evaluate Documentation Impact.

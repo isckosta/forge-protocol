@@ -1,0 +1,23 @@
+schema: forge/tdd-evidence@1
+change: CHG-0006
+status: complete
+cycle_count: 1
+cycles:
+  - id: TDD-001
+    title: Blocking Review Thread Gate Projection
+    requirements: [FR-001, FR-002]
+    behavior: explicit conditional Codex instruction for blocking external review threads
+    red:
+      valid: true
+      commit: 4c7f141e61e9c89db3bc981abcbc769f55951e44
+      workflow_run_id: 31726766575
+      job_id: 94536962734
+      result: 1 failed, 137 passed
+      reason: the canonical token survived only in raw YAML and produced no explicit Harness instruction
+    green:
+      commit: c0ba501cedf27234020c76661f880e6f83053f38
+      tests_workflow_run_id: 31726947626
+      tests_job_id: 94537581379
+      distribution_workflow_run_id: 31726947700
+      distribution_job_id: 94537581861
+      result: 138 passed; isolated distribution passed

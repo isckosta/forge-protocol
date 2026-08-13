@@ -1,12 +1,16 @@
 from forge_cli.adapters.codex.projection import CodexProjectionInput, generate_codex_projection_bundle
 
-FLOW = """flow:\n  id: full\nstages:\n  - id: specification_review\n  - id: tdd_implementation\n  - id: verification\n  - id: strict_review\n  - id: completion\ngates:\n  before_behavioral_implementation:\n    checks: [red_executed, red_failed_for_expected_reason]\n  before_completion:\n    require: [verification_passed, review_passed]\n"""
+FLOW = """flow:\n  id: full\nstages:\n  - id: specification_review\n  - id: tdd_implementation\n  - id: verification\n  - id: strict_review\n  - id: completion\ngates:\n  before_behavioral_implementation:\n    checks: [red_executed, red_failed_for_expected_reason]\n  before_completion:\n    require: [verification_passed, review_passed, blocking_review_threads_resolved]\n"""
+BLOCKING_THREAD_INSTRUCTION = (
+    "Completion requires all blocking review threads on any active external "
+    "review surface to be resolved"
+)
 
 
-def _content() -> str:
+def _content(flow_content: str = FLOW) -> str:
     bundle = generate_codex_projection_bundle(CodexProjectionInput(
         flow_id="full",
-        flow_content=FLOW,
+        flow_content=flow_content,
         contract_content="Canonical Forge state is authoritative.\n",
     ))
     return "\n".join(item.content for item in bundle.resources)
@@ -32,6 +36,19 @@ def test_projection_presents_completion_gate() -> None:
     content = _content()
     assert "Completion requires Verification to pass" in content
     assert "Completion requires Strict Review to pass" in content
+
+
+def test_projection_presents_blocking_review_thread_gate() -> None:
+    assert BLOCKING_THREAD_INSTRUCTION in _content()
+
+
+def test_projection_does_not_invent_blocking_review_thread_gate() -> None:
+    flow_without_gate = FLOW.replace(
+        ", blocking_review_threads_resolved",
+        "",
+    )
+
+    assert BLOCKING_THREAD_INSTRUCTION not in _content(flow_without_gate)
 
 
 def test_projection_marks_instructions_as_representation_not_enforcement() -> None:

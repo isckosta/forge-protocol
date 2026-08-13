@@ -1,0 +1,7 @@
+schema: forge/traceability@1
+change: CHG-0006
+requirements:
+  FR-001: {tasks: [T-002, T-003], test_strategy: unit}
+  FR-002: {tasks: [T-002, T-003], test_strategy: unit}
+  FR-003: {tasks: [T-006], test_strategy: documentation_review}
+  FR-004: {tasks: [T-004, T-007], test_strategy: evidence_audit}

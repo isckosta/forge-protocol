@@ -108,9 +108,11 @@ TDD drives Implementation. Verification evaluates the resulting Change as a whol
 
 Every Change requires adversarial Strict Review. Review evaluates Requirements, TDD compliance, correctness, tests, edge cases, Architecture, domain Invariants, authorization, security, persistence, concurrency, transactions, performance, maintainability, compatibility, and Documentation when applicable.
 
+When an external review surface is active, Review reconciles its blocking threads with repository-native findings before `review_passed` may be asserted. External thread state is process evidence rather than a second source of canonical Change state; when no such surface exists, this condition is satisfied trivially.
+
 ## 16. Findings and Roles
 
-Initial severities are BLOCKER, MAJOR, MINOR, and OBSERVATION. BLOCKER always blocks Completion. Reviewer and Resolver are separate conceptual Roles and blocking Findings require re-review after Resolution.
+Initial severities are BLOCKER, MAJOR, MINOR, and OBSERVATION. BLOCKER always blocks Completion. Project policy may classify other findings as blocking. Reviewer and Resolver are separate conceptual Roles, blocking Findings require re-review after Resolution, and unresolved blocking threads on an active external review surface prevent Completion.
 
 ## 17. Gates
 

@@ -78,6 +78,11 @@ def _instructions(flow_content: str) -> str:
         lines.append("- Completion requires " + "Verification to pass.")
     if "review_passed" in required:
         lines.append("- Completion requires " + "Strict Review to pass.")
+    if "blocking_review_threads_resolved" in required:
+        lines.append(
+            "- Completion requires all blocking review threads on any active "
+            "external review surface to be resolved."
+        )
 
     return "\n".join(lines).rstrip()
 
