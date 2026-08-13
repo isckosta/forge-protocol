@@ -10,41 +10,7 @@ status: passed
 
 ## Result
 
-Verification passed after one material distribution defect was discovered and corrected through regression-first TDD.
-
-## Automated test suite
-
-Final verified commit before this artifact: `1e34d5ac80ddf6ddb461cc986a1105ad899f4b70`.
-
-GitHub Actions Tests:
-
-- workflow run: `31670700948`
-- job: `94354521196`
-- result: success
-- full Pytest step: success
-
-## Distribution verification
-
-GitHub Actions Distribution Verification:
-
-- workflow run: `31670700974`
-- job: `94354521352`
-- result: success
-
-Verified behavior:
-
-1. Build a wheel from the repository.
-2. Create a clean Python 3.12 virtual environment.
-3. Install only the built wheel and runtime dependencies.
-4. Execute the installed `forge version` outside the source tree.
-5. Create a new Git repository.
-6. Execute `forge init` from a nested directory.
-7. Execute `forge validate` against the generated workspace.
-8. Execute `forge doctor` against the generated workspace.
-9. Execute runtime commands with HTTP, HTTPS, and ALL proxy variables pointed at an unreachable local endpoint to demonstrate that normal Core execution does not depend on network access.
-10. Inspect package runtime dependencies for prohibited AI SDK / agent framework / database framework dependencies.
-
-All checks passed.
+Verification passed. One material distribution defect was discovered during the initial verification and corrected through regression-first TDD. Strict Review later produced additional behavioral fixes; the full test and isolated-distribution verification were rerun after those fixes.
 
 ## Verification finding — V-001
 
@@ -52,47 +18,75 @@ Severity: MAJOR
 
 Status: RESOLVED
 
-### Problem
+The first isolated-wheel verification built and installed the package and executed `forge version`, but `forge validate` failed after initialization because the canonical Project Schema was resolved through a source-tree-relative path.
 
-The first isolated-wheel verification successfully built and installed the package and executed `forge version`, but `forge validate` failed after initialization because the canonical Project Schema was resolved through a source-tree-relative path.
+Initial failing distribution evidence:
 
-Observed error:
-
-`E_FORGE_INVALID_PROJECT_CONFIGURATION [.forge/forge.yml] [Errno 2] No such file or directory: '/tmp/forge-wheel-venv/lib/python3.12/protocol/schemas/project.schema.json'`
-
-Initial failing distribution run:
-
-- workflow run: `31670483873`
-- job: `94353874439`
-
-### Resolution
-
-A regression-first TDD cycle introduced a canonical Protocol resource resolver that prefers packaged resources and falls back to the repository `protocol/` directory only for editable development.
-
-The wheel now force-includes the canonical `protocol/` tree under `forge_cli/resources/protocol`.
+- workflow run: `31670483873`;
+- job: `94353874439`;
+- observed failure: canonical Project Schema missing from the installed environment.
 
 Regression RED:
 
-- workflow run: `31670537580`
-- job: `94354031510`
-- observed failure: `ModuleNotFoundError: No module named 'forge_cli.protocol_resources'`
+- workflow run: `31670537580`;
+- job: `94354031510`;
+- observed failure: `ModuleNotFoundError: No module named 'forge_cli.protocol_resources'`.
 
-GREEN:
+Resolution:
 
-- Tests workflow run: `31670613378`
-- Distribution Verification run: `31670613450`
+- canonical Protocol resources are bundled under `forge_cli/resources/protocol`;
+- runtime resolution prefers packaged resources;
+- source-tree Protocol resolution is only a development fallback.
 
-Final offline verification:
+Initial GREEN evidence:
 
-- Distribution Verification run: `31670700974`
-- job: `94354521352`
+- Tests workflow run: `31670613378`;
+- Distribution Verification run: `31670613450`.
+
+## Final post-review verification
+
+Verified code commit: `094e06885cc9c59ff3bd3ce6f89596b7c6e4d14e`.
+
+### Automated suite
+
+- workflow run: `31671363071`;
+- job: `94356481812`;
+- result: SUCCESS;
+- Pytest step: SUCCESS.
+
+### Isolated distribution
+
+- workflow run: `31671363034`;
+- job: `94356481901`;
+- result: SUCCESS.
+
+The distribution workflow verified:
+
+1. building the wheel;
+2. creating a clean Python 3.12 virtual environment;
+3. installing only the wheel and declared runtime dependencies;
+4. executing installed `forge version` outside the source tree;
+5. creating a new Git repository;
+6. executing `forge init` from a nested directory;
+7. executing `forge validate` on the generated workspace;
+8. executing `forge doctor` on the generated workspace;
+9. running the installed CLI with HTTP/HTTPS/ALL proxies pointed at an unreachable local endpoint;
+10. auditing runtime dependencies for prohibited AI SDK, agent framework, and database framework dependencies.
+
+All checks passed.
+
+## Strict Review regression verification
+
+Review fixes were driven through additional TDD cycles:
+
+- TDD-010: safe YAML serialization for YAML-significant repository names;
+- TDD-011: cross-platform-safe workspace paths and exclusive initialization locking;
+- TDD-012: missing Git executable classified as an environment failure.
+
+The final automated and distribution runs above include those fixes and the Protocol version metadata refactor.
 
 ## Requirement status
 
-All 32 Functional Requirements have implementation evidence and passed the applicable verification path.
+All 32 Functional Requirements have implementation and verification evidence.
 
-## Remaining gate
-
-Verification passing does not complete the Change.
-
-CHG-0001 must now undergo adversarial Strict Review before Documentation, Knowledge Capture, and Completion.
+Verification status: PASSED.
