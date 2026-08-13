@@ -1,10 +1,19 @@
+import importlib
+
+import pytest
+
 from forge_cli.adapters.capabilities import CapabilityLimitation
 
 
-def test_conformance_rejects_missing_required_flow_stage_and_gate() -> None:
-    from forge_cli.adapters import validation
+def validation_module():
+    try:
+        return importlib.import_module("forge_cli.adapters.validation")
+    except ModuleNotFoundError:
+        pytest.fail("Adapter conformance validation is not implemented yet")
 
-    assert hasattr(validation, "validate_conformance"), "Adapter conformance validation is not implemented yet"
+
+def test_conformance_rejects_missing_required_flow_stage_and_gate() -> None:
+    validation = validation_module()
 
     requirements = validation.ConformanceRequirements(
         required_stages=("specification", "tdd_implementation", "strict_review"),
@@ -31,7 +40,7 @@ def test_conformance_rejects_missing_required_flow_stage_and_gate() -> None:
 
 
 def test_conformance_rejects_representation_that_authorizes_behavior_without_red() -> None:
-    from forge_cli.adapters import validation
+    validation = validation_module()
 
     requirements = validation.ConformanceRequirements(
         required_stages=("tdd_implementation",),
@@ -56,7 +65,7 @@ def test_conformance_rejects_representation_that_authorizes_behavior_without_red
 
 
 def test_conformance_rejects_strict_review_bypass() -> None:
-    from forge_cli.adapters import validation
+    validation = validation_module()
 
     requirements = validation.ConformanceRequirements(
         required_stages=("strict_review",),
@@ -81,7 +90,7 @@ def test_conformance_rejects_strict_review_bypass() -> None:
 
 
 def test_unenforced_invariant_requires_explicit_limitation_but_must_remain_represented() -> None:
-    from forge_cli.adapters import validation
+    validation = validation_module()
 
     requirements = validation.ConformanceRequirements(
         required_stages=(),
@@ -111,7 +120,7 @@ def test_unenforced_invariant_requires_explicit_limitation_but_must_remain_repre
 
 
 def test_missing_invariant_representation_is_never_excused_by_limitation() -> None:
-    from forge_cli.adapters import validation
+    validation = validation_module()
 
     requirements = validation.ConformanceRequirements(
         required_stages=(),
@@ -141,7 +150,7 @@ def test_missing_invariant_representation_is_never_excused_by_limitation() -> No
 
 
 def test_conformance_rejects_harness_representation_as_semantic_authority() -> None:
-    from forge_cli.adapters import validation
+    validation = validation_module()
 
     requirements = validation.ConformanceRequirements(
         required_stages=(),
