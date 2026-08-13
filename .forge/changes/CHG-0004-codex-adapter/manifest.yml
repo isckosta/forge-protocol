@@ -1,14 +1,7 @@
 schema: forge/change@1
-change:
-  id: CHG-0004
-  title: Codex Harness Adapter
-  kind: feature
-flow:
-  initial: full
-  current: full
-  escalations: []
-state:
-  current: implementation
+change: {id: CHG-0004, title: Codex Harness Adapter, kind: feature}
+flow: {initial: full, current: full, escalations: []}
+state: {current: implementation}
 artifacts:
   intent: complete
   discovery: complete
@@ -26,19 +19,7 @@ artifacts:
   review: pending
   documentation: pending
   knowledge_capture: pending
-requirements:
-  total: 33
-  implemented: 8
-  verified: 0
-tdd:
-  status: active
-  cycles: 1
-verification:
-  status: pending
-review:
-  status: pending
-  iteration: 0
-  blockers: 0
-  majors: 0
-  minors: 0
-  observations: 0
+requirements: {total: 33, implemented: 12, verified: 0}
+tdd: {status: active, cycles: 3}
+verification: {status: pending}
+review: {status: pending, iteration: 0, blockers: 0, majors: 0, minors: 0, observations: 0}
