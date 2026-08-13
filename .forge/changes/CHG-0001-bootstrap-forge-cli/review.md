@@ -3,8 +3,8 @@ forge:
   artifact: strict_review
   schema: 1
 change: CHG-0001
-iteration: 1
-status: failed
+iteration: 2
+status: passed
 ---
 
 # Strict Review — CHG-0001
@@ -22,160 +22,95 @@ Findings:
 
 Project policy makes MAJOR findings blocking.
 
-## REV-001 — Unsafe YAML generation for project name
+### REV-001 — Unsafe YAML generation for project name
 
 Severity: MAJOR
 
-Status: OPEN
+Status: RESOLVED
 
-Dimensions: correctness, configuration, compatibility
+The initial implementation interpolated the repository directory name directly into YAML. Regression TDD proved that a repository named `null` became YAML null. The configuration generator now uses `yaml.safe_dump`, preserving project names as strings. TDD-010 records RED and GREEN evidence.
 
-Requirements: FR-009, AC-001, AC-002
-
-### Problem
-
-`forge init` builds `.forge/forge.yml` through string interpolation and emits the repository directory name as an unquoted YAML scalar.
-
-A valid repository directory can have a name such as `null`, `true`, `foo # bar`, or another YAML-significant value. The generated scalar can therefore change type, be truncated as a comment, or become syntactically invalid.
-
-### Impact
-
-`forge init` may return success while producing a workspace that fails `forge validate`, violating the requirement that successful initialization creates configuration conforming to the Project Schema.
-
-### Evidence
-
-`src/forge_cli/app.py::_workspace_files` interpolates `project_root.name` directly into `  name: ...`.
-
-The Project Schema requires `project.name` to remain a non-empty string.
-
-### Required direction
-
-Generate YAML through a serializer or otherwise guarantee scalar-safe encoding. Add regression coverage using YAML-significant repository names.
-
----
-
-## REV-002 — Workspace path validation is not cross-platform safe
+### REV-002 — Workspace path validation was not cross-platform safe
 
 Severity: MAJOR
 
-Status: OPEN
+Status: RESOLVED
 
-Dimensions: security, filesystem, compatibility
+Workspace plan paths are now explicitly defined as canonical POSIX-relative inputs. Backslash ambiguity and NUL bytes are rejected before native filesystem materialization. Regression coverage proves that `..\\outside.txt` is rejected. TDD-011 records evidence.
 
-Requirements: NFR-003, INV-003
-
-### Problem
-
-Workspace plans are validated with `PurePosixPath`, then applied with the host-native `Path.joinpath`.
-
-On Windows, a raw component containing backslashes can have different semantics when converted from the POSIX validation model to a native filesystem path. A value such as a backslash-separated parent traversal is not rejected by the current `".." in path.parts` check in the POSIX model but can become structural in Windows path handling.
-
-### Impact
-
-The workspace boundary does not currently provide the platform-independent path-safety guarantee expected by the specification and may permit a future caller to write outside the intended staging tree on Windows.
-
-### Required direction
-
-Define workspace plan paths as canonical POSIX-relative paths and explicitly reject native separator ambiguity and other unsafe components before materialization. Add regression tests independent from host OS semantics.
-
----
-
-## REV-003 — No-overwrite guarantee contains a cross-process race
+### REV-003 — No-overwrite guarantee contained a cross-process race
 
 Severity: MAJOR
 
-Status: OPEN
+Status: RESOLVED
 
-Dimensions: correctness, concurrency, data integrity
+Forge initialization now acquires `.forge.init.lock` through exclusive filesystem creation before staging and holds ownership through publication. A competing Forge initialization cannot enter the publication section. Lock ownership is explicit so a process never removes a lock it did not create. TDD-011 records both the original RED and an intermediate failed GREEN that exposed the ownership bug.
 
-Requirements: FR-007, INV-003
+The guarantee is scoped to cooperating Forge initialization processes and normal filesystem semantics; Forge does not claim protection against an arbitrary external actor mutating repository files concurrently.
 
-### Problem
-
-`initialize_workspace` checks `target.exists()`, stages files, checks `target.exists()` again, and then calls `staging.rename(target)`.
-
-Another process can create `.forge/` between the second existence check and the rename. The check and publication are not one exclusive operation.
-
-### Impact
-
-The implementation cannot strictly guarantee the MUST-level no-silent-overwrite invariant under concurrent initialization.
-
-### Required direction
-
-Introduce a cross-process initialization lock acquired with exclusive creation before staging. Hold it through publication and always clean it up. The lock itself must not make a failed initialization appear initialized.
-
----
-
-## REV-004 — Missing Git executable does not use one consistent environment-failure path
+### REV-004 — Missing Git executable used inconsistent exit semantics
 
 Severity: MINOR
 
-Status: OPEN
+Status: RESOLVED
 
-Dimensions: error handling, CLI contract
+The Git boundary now raises `GitUnavailableError`. `forge init` and `forge validate` map it to `E_FORGE_GIT_UNAVAILABLE` and exit code `3`, consistent with the environment-failure contract. TDD-012 records evidence.
 
-Requirements: FR-031
-
-### Problem
-
-`resolve_project_root` calls `subprocess.run` directly. If `git` is unavailable, Python raises `FileNotFoundError` instead of `NotGitRepositoryError` or another explicit environment error.
-
-`forge init` maps this through the generic internal-error path (70), while `forge validate` can receive the exception before its generic application-error boundary.
-
-Doctor already distinguishes Git availability explicitly.
-
-### Impact
-
-The CLI exposes inconsistent exit semantics for the same missing environment capability.
-
-### Required direction
-
-Introduce an explicit Git-unavailable error and map it to exit code 3 in commands that require Git.
-
----
-
-## REV-005 — Protocol version identity is represented differently in public output and project configuration
+### REV-005 — Protocol identity and display version were implicit
 
 Severity: MINOR
 
-Status: OPEN
+Status: RESOLVED
 
-Dimensions: compatibility, maintainability
+Runtime version metadata is centralized in `forge_cli.version`:
 
-### Problem
+- Protocol compatibility identifier: `1`;
+- human-readable maturity label: `1-draft`;
+- CLI version: `0.1.0.dev0`.
 
-`forge version` reports `Forge Protocol 1-draft`, while generated project configuration stores `forge.protocol: 1` and the runtime compatibility set contains integer `1`.
+Generated project configuration stores the compatibility identifier while `forge version` reports the display label. README documents the distinction.
 
-### Impact
-
-The distinction between Protocol identity (`1`) and maturity label (`1-draft`) is implicit and could become ambiguous once migrations/version negotiation exist.
-
-### Required direction
-
-Centralize Protocol identity/version metadata and make the relationship explicit. This need not block the first CLI if documented before Completion.
-
----
-
-## REV-006 — Initialization atomicity is process-safe but not crash-atomic
+### REV-006 — Initialization is not crash-atomic
 
 Severity: OBSERVATION
 
-Status: OPEN
+Status: ACCEPTED
 
-Dimensions: reliability
+A hard process kill or machine failure may leave `.forge.tmp-*` or `.forge.init.lock` behind. Such state does not appear as a successfully initialized `.forge/` workspace, so it does not violate FR-008, but a stale lock may require manual inspection/removal before a later initialization.
 
-### Problem
+This is intentionally not auto-recovered in CHG-0001 because blindly breaking a lock cannot reliably prove that another initialization process is dead, especially across PID reuse, containers, or shared filesystems. A future Doctor enhancement should detect and report stale initialization artifacts rather than silently delete them.
 
-Staging cleanup runs through Python exception handling. A hard process kill, machine crash, or power loss can leave `.forge.tmp-*` behind.
+## Iteration 2 — Adversarial Re-review
 
-### Impact
+Result: PASSED
 
-The repository can retain stale staging data, although it does not appear as an initialized `.forge/` workspace and therefore does not violate FR-008 directly.
+Re-review examined:
 
-### Direction
+- generated configuration and YAML scalar safety;
+- workspace path confinement;
+- concurrent initialization behavior and lock ownership;
+- Git environment error classification;
+- Protocol resource packaging;
+- Protocol version identity;
+- public CLI boundary;
+- exit-code contract;
+- isolated installed-wheel behavior;
+- offline runtime behavior;
+- regression TDD evidence.
 
-A future `forge doctor` or `forge init` evolution may detect and report stale staging directories.
+No unresolved BLOCKER or MAJOR findings remain.
+
+Fresh evidence after the behavioral review fixes:
+
+- Tests workflow run `31671363071`, job `94356481812`: SUCCESS;
+- Distribution Verification run `31671363034`, job `94356481901`: SUCCESS;
+- isolated wheel build/install: SUCCESS;
+- installed `forge version`: SUCCESS;
+- installed `forge init -> validate -> doctor` with unreachable proxies: SUCCESS;
+- runtime dependency audit: SUCCESS.
 
 ## Review gate
 
-FAILED until REV-001, REV-002, and REV-003 are resolved and re-reviewed.
+PASSED.
+
+Remaining accepted risk: REV-006 only.
