@@ -15,7 +15,7 @@
         "inspect_existing_patterns_before_new_abstractions": {"const": true},
         "parallel_architecture": {"type": "object", "additionalProperties": false, "required": ["prohibit_without_explicit_decision"], "properties": {"prohibit_without_explicit_decision": {"const": true}}},
         "full_flow": {"type": "object", "additionalProperties": false, "required": ["architecture_artifact_required"], "properties": {"architecture_artifact_required": {"const": true}}},
-        "evaluate": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string"}},
+        "evaluate": {"const": ["boundaries", "dependencies", "cohesion", "coupling", "data_flow", "invariants", "persistence", "integrations", "compatibility", "operational_effects", "testability"]},
         "design_for_testability": {"type": "object", "additionalProperties": false, "required": ["required_when_material"], "properties": {"required_when_material": {"const": true}}},
         "adr": {"type": "object", "additionalProperties": false, "required": ["required_when"], "properties": {"required_when": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string"}}}}
       }

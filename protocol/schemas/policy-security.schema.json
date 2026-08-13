@@ -14,7 +14,7 @@
       "properties": {
         "security_model_change": {"type": "object", "additionalProperties": false, "required": ["minimum_flow"], "properties": {"minimum_flow": {"const": "full"}}},
         "authorization_model_change": {"type": "object", "additionalProperties": false, "required": ["minimum_flow"], "properties": {"minimum_flow": {"const": "full"}}},
-        "review_dimensions": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string"}},
+        "review_dimensions": {"const": ["authentication", "authorization", "privilege_escalation", "information_exposure", "input_validation", "trust_boundaries", "secrets", "unsafe_execution", "data_integrity"]},
         "assumptions": {"type": "object", "additionalProperties": false, "required": ["must_be_explicit_when_material"], "properties": {"must_be_explicit_when_material": {"const": true}}},
         "harness_enforcement": {"type": "object", "additionalProperties": false, "required": ["note"], "properties": {"note": {"type": "string", "minLength": 1}}}
       }

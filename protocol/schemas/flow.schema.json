@@ -65,7 +65,7 @@
         "before_behavioral_implementation": {
           "allOf": [
             {"$ref": "#/$defs/gate"},
-            {"properties": {"checks": {"allOf": [
+            {"required": ["checks"], "properties": {"checks": {"allOf": [
               {"contains": {"const": "test_exists"}},
               {"contains": {"const": "red_executed"}},
               {"contains": {"const": "red_failed_for_expected_reason"}}
@@ -75,7 +75,7 @@
         "before_completion": {
           "allOf": [
             {"$ref": "#/$defs/gate"},
-            {"properties": {"require": {"allOf": [
+            {"required": ["require"], "properties": {"require": {"allOf": [
               {"contains": {"const": "verification_passed"}},
               {"contains": {"const": "review_passed"}},
               {"contains": {"const": "blocking_review_threads_resolved"}},
@@ -112,6 +112,55 @@
       }
     }
   },
+  "allOf": [
+    {
+      "if": {"properties": {"flow": {"properties": {"id": {"const": "fast"}}, "required": ["id"]}}},
+      "then": {"properties": {"stages": {"minItems": 8, "maxItems": 8, "prefixItems": [
+        {"properties": {"id": {"const": "intent"}}, "required": ["id"]},
+        {"properties": {"id": {"const": "inspection"}}, "required": ["id"]},
+        {"properties": {"id": {"const": "test_design"}}, "required": ["id"]},
+        {"properties": {"id": {"const": "tdd_implementation"}}, "required": ["id"]},
+        {"properties": {"id": {"const": "verification"}}, "required": ["id"]},
+        {"properties": {"id": {"const": "strict_review"}}, "required": ["id"]},
+        {"properties": {"id": {"const": "documentation_impact"}}, "required": ["id"]},
+        {"properties": {"id": {"const": "completion"}}, "required": ["id"]}
+      ]}}}
+    },
+    {
+      "if": {"properties": {"flow": {"properties": {"id": {"const": "standard"}}, "required": ["id"]}}},
+      "then": {"properties": {"stages": {"minItems": 10, "maxItems": 10, "prefixItems": [
+        {"properties": {"id": {"const": "intent"}}, "required": ["id"]},
+        {"properties": {"id": {"const": "discovery"}}, "required": ["id"]},
+        {"properties": {"id": {"const": "specification"}}, "required": ["id"]},
+        {"properties": {"id": {"const": "test_design"}}, "required": ["id"]},
+        {"properties": {"id": {"const": "plan"}}, "required": ["id"]},
+        {"properties": {"id": {"const": "tdd_implementation"}}, "required": ["id"]},
+        {"properties": {"id": {"const": "verification"}}, "required": ["id"]},
+        {"properties": {"id": {"const": "strict_review"}}, "required": ["id"]},
+        {"properties": {"id": {"const": "documentation"}}, "required": ["id"]},
+        {"properties": {"id": {"const": "completion"}}, "required": ["id"]}
+      ]}}}
+    },
+    {
+      "if": {"properties": {"flow": {"properties": {"id": {"const": "full"}}, "required": ["id"]}}},
+      "then": {"properties": {"stages": {"minItems": 14, "maxItems": 14, "prefixItems": [
+        {"properties": {"id": {"const": "intent"}}, "required": ["id"]},
+        {"properties": {"id": {"const": "discovery"}}, "required": ["id"]},
+        {"properties": {"id": {"const": "specification"}}, "required": ["id"]},
+        {"properties": {"id": {"const": "specification_review"}}, "required": ["id"]},
+        {"properties": {"id": {"const": "architecture"}}, "required": ["id"]},
+        {"properties": {"id": {"const": "test_strategy"}}, "required": ["id"]},
+        {"properties": {"id": {"const": "plan"}}, "required": ["id"]},
+        {"properties": {"id": {"const": "tasks"}}, "required": ["id"]},
+        {"properties": {"id": {"const": "tdd_implementation"}}, "required": ["id"]},
+        {"properties": {"id": {"const": "verification"}}, "required": ["id"]},
+        {"properties": {"id": {"const": "strict_review"}}, "required": ["id"]},
+        {"properties": {"id": {"const": "documentation"}}, "required": ["id"]},
+        {"properties": {"id": {"const": "knowledge_capture"}}, "required": ["id"]},
+        {"properties": {"id": {"const": "completion"}}, "required": ["id"]}
+      ]}}}
+    }
+  ],
   "$defs": {
     "gate": {
       "type": "object",
