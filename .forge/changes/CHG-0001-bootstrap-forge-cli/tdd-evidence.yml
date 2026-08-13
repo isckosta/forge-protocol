@@ -66,6 +66,11 @@ cycles:
       observed_failure: All three new tests failed with AttributeError because initialize_workspace and the explicit workspace errors were absent; four prior tests passed.
       valid: true
     green:
-      status: pending
+      status: observed
+      workflow_run_id: 31668623054
+      job_id: 94348523529
+      commit: 47d5b04c9245f1978beef06d240773824dedd307
+      result: GitHub Actions passed. Workspace publication creates requested files, preserves an existing workspace, validates conflicting plans, and leaves no .forge or staging directory after a failed plan.
     refactor:
-      status: pending
+      status: not_performed
+      reason: The staging publisher, validation, and cleanup logic are already narrowly scoped to the requirements.
