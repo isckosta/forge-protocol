@@ -31,12 +31,22 @@ jobs:
       - name: Install wheel only
         run: /tmp/forge-wheel-venv/bin/pip install dist/*.whl
 
-      - name: Verify installed CLI version
+      - name: Verify installed CLI version without network
         working-directory: /tmp
+        env:
+          HTTP_PROXY: http://127.0.0.1:9
+          HTTPS_PROXY: http://127.0.0.1:9
+          ALL_PROXY: http://127.0.0.1:9
+          NO_PROXY: ""
         run: /tmp/forge-wheel-venv/bin/forge version
 
-      - name: Verify installed init validate doctor flow
+      - name: Verify installed init validate doctor flow without network
         working-directory: /tmp
+        env:
+          HTTP_PROXY: http://127.0.0.1:9
+          HTTPS_PROXY: http://127.0.0.1:9
+          ALL_PROXY: http://127.0.0.1:9
+          NO_PROXY: ""
         run: |
           rm -rf forge-smoke
           mkdir forge-smoke
