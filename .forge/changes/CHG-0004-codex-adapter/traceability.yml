@@ -1,39 +1,39 @@
 schema: forge/traceability@1
 change: CHG-0004
 requirements:
-  FR-001: [T-001]
-  FR-002: [T-001]
-  FR-003: [T-001]
-  FR-004: [T-001]
-  FR-005: [T-001]
-  FR-006: [T-001]
-  FR-007: [T-001]
-  FR-008: [T-001]
-  FR-009: [T-002]
-  FR-010: [T-002]
-  FR-011: [T-006]
-  FR-012: [T-006]
-  FR-013: [T-002, T-003]
-  FR-014: [T-003]
-  FR-015: [T-003]
-  FR-016: [T-003, T-004]
-  FR-017: [T-003]
-  FR-018: [T-002, T-005]
-  FR-019: [T-006]
-  FR-020: [T-006]
-  FR-021: [T-006]
-  FR-022: [T-006]
-  FR-023: [T-006]
-  FR-024: [T-004, T-009]
-  FR-025: [T-004]
-  FR-026: [T-004]
-  FR-027: [T-004]
-  FR-028: [T-007]
-  FR-029: [T-007]
-  FR-030: [T-007]
-  FR-031: [T-004, T-009]
-  FR-032: [T-006]
-  FR-033: [T-007]
+  FR-001: {tasks: [T-001]}
+  FR-002: {tasks: [T-001]}
+  FR-003: {tasks: [T-001]}
+  FR-004: {tasks: [T-001]}
+  FR-005: {tasks: [T-001]}
+  FR-006: {tasks: [T-001]}
+  FR-007: {tasks: [T-001]}
+  FR-008: {tasks: [T-001]}
+  FR-009: {tasks: [T-002]}
+  FR-010: {tasks: [T-002]}
+  FR-011: {tasks: [T-006]}
+  FR-012: {tasks: [T-006]}
+  FR-013: {tasks: [T-002, T-003]}
+  FR-014: {tasks: [T-003]}
+  FR-015: {tasks: [T-003]}
+  FR-016: {tasks: [T-003, T-004]}
+  FR-017: {tasks: [T-003]}
+  FR-018: {tasks: [T-002, T-005]}
+  FR-019: {tasks: [T-006]}
+  FR-020: {tasks: [T-006]}
+  FR-021: {tasks: [T-006]}
+  FR-022: {tasks: [T-006]}
+  FR-023: {tasks: [T-006]}
+  FR-024: {tasks: [T-004, T-009]}
+  FR-025: {tasks: [T-004]}
+  FR-026: {tasks: [T-004]}
+  FR-027: {tasks: [T-004]}
+  FR-028: {tasks: [T-007]}
+  FR-029: {tasks: [T-007]}
+  FR-030: {tasks: [T-007]}
+  FR-031: {tasks: [T-004, T-009]}
+  FR-032: {tasks: [T-006]}
+  FR-033: {tasks: [T-007]}
 acceptance:
   AC-001: [T-001]
   AC-002: [T-001]

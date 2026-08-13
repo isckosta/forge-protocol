@@ -1,8 +1,8 @@
 schema: forge/change@1
 
 change:
-  id: CHG-0002
-  title: Harness Adapter Foundation
+  id: CHG-0007
+  title: Protocol v1 Contract Freeze
   kind: feature
 
 flow:
@@ -32,20 +32,24 @@ artifacts:
   knowledge_capture: complete
 
 requirements:
-  total: 35
-  implemented: 35
-  verified: 35
+  total: 16
+  implemented: 16
+  verified: 16
 
 tdd:
-  status: compliant
-  cycles: 11
+  status: exception
+  cycles: 3
+  reason: >
+    The first three interactive RED/GREEN runs lack durable revision or run
+    identifiers and are not credited as auditable TDD evidence. Strict Review
+    remediation started with committed RED 01878a4.
 
 verification:
   status: passed
 
 review:
   status: passed
-  iteration: 2
+  iteration: 4
   blockers: 0
   majors: 0
   minors: 0
@@ -55,4 +59,5 @@ documentation:
   impact_evaluated: true
   update_required: true
   reason: >
-    Harness Adapter semantics are documented in canonical public documentation.
+    Freezing Protocol 1 changes normative version, compatibility, schema,
+    lifecycle, and adoption documentation.

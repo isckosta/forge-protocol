@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://forge.dev/schemas/policy-review.schema.json",
+  "title": "Forge Review Policy",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "review"],
+  "properties": {
+    "schema": {"const": "forge/policy/review@1"},
+    "review": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["required", "strict", "adversarial", "objective", "severities", "blocking", "dimensions", "tdd_review", "evidence", "reviewer_resolver_separation", "diff_only_review", "passing_tests_are_sufficient", "re_review"],
+      "properties": {
+        "required": {"const": true},
+        "strict": {"const": true},
+        "adversarial": {"const": true},
+        "objective": {"type": "string", "minLength": 1},
+        "severities": {"const": ["blocker", "major", "minor", "observation"]},
+        "blocking": {"type": "array", "contains": {"const": "blocker"}, "items": {"enum": ["blocker", "major", "minor", "observation"]}, "uniqueItems": true},
+        "dimensions": {"const": ["requirement_compliance", "tdd_compliance", "correctness", "test_quality", "edge_cases", "invalid_states", "domain_invariants", "architecture", "authorization", "security", "persistence", "data_integrity", "concurrency", "transactions", "performance", "maintainability", "backward_compatibility", "documentation"]},
+        "tdd_review": {"type": "object", "additionalProperties": false, "required": ["inspect"], "properties": {"inspect": {"const": ["test_precedes_production_behavior", "red_was_observed", "red_failed_for_expected_reason", "test_validates_behavior", "green_scope_is_proportional", "refactor_preserved_behavior", "post_hoc_tests_not_misrepresented", "behavioral_requirements_have_evidence"]}}},
+        "evidence": {"type": "object", "additionalProperties": false, "required": ["required_for"], "properties": {"required_for": {"type": "array", "contains": {"const": "blocker"}, "items": {"enum": ["blocker", "major", "minor", "observation"]}, "uniqueItems": true}}},
+        "reviewer_resolver_separation": {"type": "object", "additionalProperties": false, "required": ["required"], "properties": {"required": {"const": true}}},
+        "diff_only_review": {"type": "object", "additionalProperties": false, "required": ["allowed"], "properties": {"allowed": {"const": false}}},
+        "passing_tests_are_sufficient": {"type": "object", "additionalProperties": false, "required": ["value"], "properties": {"value": {"const": false}}},
+        "re_review": {"type": "object", "additionalProperties": false, "required": ["required_after_blocking_resolution"], "properties": {"required_after_blocking_resolution": {"const": true}}}
+      }
+    }
+  }
+}

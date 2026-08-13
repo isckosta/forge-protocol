@@ -40,11 +40,19 @@ These percentages are directional only. Release readiness is determined by the g
 
 # Roadmap to v1
 
-## CHG-0006 — Protocol v1 Contract Freeze
+Roadmap stages do not reserve Change identifiers. Forge assigns the next stable
+`CHG-NNNN` identifier when a stage begins as an actual repository-native
+Change. This keeps planning labels from colliding with remediation or other
+work discovered before a stage starts.
+
+## Protocol v1 Contract Freeze
+
+Status: Completed by `CHG-0007`.
 
 ### Objective
 
-Promote the current draft/Foundation semantics into a stable v1 contract suitable for external adoption.
+Promote the Foundation semantics into a stable v1 contract suitable for
+external adoption.
 
 ### Scope
 
@@ -71,7 +79,7 @@ Promote the current draft/Foundation semantics into a stable v1 contract suitabl
 - v1 semantics are frozen except for release-blocking corrections;
 - Strict Review passes with zero blocker/major findings.
 
-## CHG-0007 — Adapter CLI & Codex Installation UX
+## Adapter CLI & Codex Installation UX
 
 ### Objective
 
@@ -132,7 +140,7 @@ Lifecycle commands such as `forge specify`, `forge implement`, `forge verify`, a
 - behavior works from an installed wheel;
 - onboarding requires no manual prompt copying.
 
-## CHG-0008 — Interaction Language Resolution
+## Interaction Language Resolution
 
 ### Objective
 
@@ -172,7 +180,7 @@ The Specification must determine which signals are deterministic configuration a
 - canonical machine-readable semantics remain interoperable;
 - language behavior has conformance coverage.
 
-## CHG-0009 — End-to-End Examples & External Project Validation
+## End-to-End Examples & External Project Validation
 
 ### Objective
 
@@ -225,7 +233,7 @@ Create `docs/getting-started.md` with a first successful Change as the primary o
 - at least one legacy repository is validated;
 - a developer unfamiliar with Forge can complete the golden path without studying internal architecture first.
 
-## CHG-0010 — Second Harness Adapter
+## Second Harness Adapter
 
 ### Objective
 
@@ -256,7 +264,7 @@ The key question is not merely whether the second Adapter works. It is whether i
 - both Adapters pass shared conformance tests;
 - Adapter architecture is sufficiently proven for v1 freeze.
 
-## CHG-0011 — Release Engineering & v1 Release Candidate
+## Release Engineering & v1 Release Candidate
 
 ### Objective
 
@@ -374,25 +382,25 @@ These may be proposed later through explicit RFCs/Changes.
 # Recommended execution order
 
 ```text
-CHG-0006  Protocol v1 Contract Freeze
+Protocol v1 Contract Freeze
     |
     v
-CHG-0007  Adapter CLI & Codex Installation UX
+Adapter CLI & Codex Installation UX
     |
     v
-CHG-0008  Interaction Language Resolution
+Interaction Language Resolution
     |
     v
-CHG-0009  End-to-End Examples & External Validation
+End-to-End Examples & External Validation
     |
     v
-CHG-0010  Second Harness Adapter
+Second Harness Adapter
     |
     v
-CHG-0011  Release Engineering & v1 RC
+Release Engineering & v1 RC
 ```
 
-Discovery for CHG-0006 and CHG-0007 may overlap: usability evidence found while designing Adapter installation should feed the Protocol freeze rather than being ignored until after freeze.
+Discovery for Protocol v1 Contract Freeze and Adapter CLI & Codex Installation UX may overlap: usability evidence found while designing Adapter installation should feed the Protocol freeze rather than being ignored until after freeze.
 
 # Definition of Forge v1
 

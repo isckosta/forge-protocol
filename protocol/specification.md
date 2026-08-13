@@ -1,8 +1,8 @@
 # Forge Core Protocol Specification
 
-Protocol version: `1-draft`
+Protocol version: `1`
 
-Status: Foundation Draft
+Status: Stable
 
 ## 1. Scope
 
@@ -17,6 +17,14 @@ A Change MUST have a stable identifier, title, kind, explicit Intent, assigned F
 ## 3. Change identifier
 
 Canonical format: `CHG-NNNN`. Identifiers MUST remain stable after creation.
+Planning documents MUST NOT reserve Change identifiers. Forge assigns the next
+available stable identifier when the repository-native Change is created.
+
+When a Change uses a dedicated Git branch, the branch SHOULD include the
+lowercase Change identifier for repository traceability. The recommended form
+is `<type>/chg-NNNN-<slug>`, for example
+`feat/chg-0007-protocol-v1-contract-freeze`. Branch names are references, not
+an alternate source of Change state.
 
 ## 4. Change kinds
 
@@ -167,3 +175,13 @@ Adapter-related CLI behavior is infrastructure-only. It MAY install, configure, 
 ## 37. Adapter schemas and locality
 
 Forge MUST provide deterministic machine-readable Schemas for Adapter manifests and installation records. Core Adapter validation and planning MUST NOT require network access or a Harness-specific SDK. Official distributions MUST package the canonical Protocol resources required to resolve these Schemas outside a source checkout.
+
+## 38. Compatibility and evolution
+
+Protocol, Schema, CLI, and Adapter versions are independent. Protocol 1
+compatibility, breaking-change boundaries, deprecation, stable lifecycle
+vocabulary, and schema catalog rules are defined in `compatibility.md`.
+
+A Protocol 1 revision MUST NOT weaken canonical invariants, change the meaning
+of existing required fields or Gates, or invalidate previously valid conforming
+instances. Such changes require a new integer Protocol identifier.

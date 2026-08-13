@@ -1,6 +1,6 @@
 # RFC-0001 — Forge Core Protocol
 
-Status: Accepted for Foundation
+Status: Accepted for Protocol 1
 
 ## Summary
 
@@ -74,4 +74,6 @@ Canonical Protocol definitions remain authoritative. Projects reference canonica
 
 ## Future work
 
-Future RFCs may define formal TDD evidence representation, traceability graphs, Drift Detection, Adapter Conformance, custom Flow extension, and Protocol interoperability.
+Later Changes established formal TDD evidence, traceability, Adapter drift and
+conformance, and the Protocol 1 compatibility contract. Future RFCs may define
+custom Flow extension and cross-implementation Protocol interoperability.

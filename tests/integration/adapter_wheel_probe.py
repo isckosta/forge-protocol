@@ -1,6 +1,10 @@
 from importlib.resources import files
+import json
 from pathlib import Path
 import tempfile
+
+import yaml
+from jsonschema import Draft202012Validator
 
 from forge_cli.adapters.codex import load_codex_adapter_descriptor
 from forge_cli.adapters.codex.integration import (
@@ -24,8 +28,19 @@ from forge_cli.protocol_resources import resolve_protocol_root
 
 
 protocol_root = resolve_protocol_root()
-assert (protocol_root / "schemas" / "adapter.schema.json").is_file()
-assert (protocol_root / "schemas" / "adapter-installation.schema.json").is_file()
+schema_root = protocol_root / "schemas"
+catalog = yaml.safe_load((schema_root / "catalog.yml").read_text(encoding="utf-8"))
+catalog_schema = json.loads(
+    (schema_root / "schema-catalog.schema.json").read_text(encoding="utf-8")
+)
+Draft202012Validator.check_schema(catalog_schema)
+Draft202012Validator(catalog_schema).validate(catalog)
+cataloged_files = {entry["file"] for entry in catalog["schemas"]}
+assert {path.name for path in schema_root.glob("*.schema.json")} == cataloged_files
+for entry in catalog["schemas"]:
+    schema = json.loads((schema_root / entry["file"]).read_text(encoding="utf-8"))
+    Draft202012Validator.check_schema(schema)
+    assert schema["properties"]["schema"]["const"] == entry["id"]
 
 with tempfile.TemporaryDirectory() as directory:
     root = Path(directory)

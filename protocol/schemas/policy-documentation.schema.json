@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://forge.dev/schemas/policy-documentation.schema.json",
+  "title": "Forge Documentation Policy",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "documentation"],
+  "properties": {
+    "schema": {"const": "forge/policy/documentation@1"},
+    "documentation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["impact_evaluation", "update_required_when_change_affects", "no_update_required", "stale_documentation", "knowledge_capture"],
+      "properties": {
+        "impact_evaluation": {"type": "object", "additionalProperties": false, "required": ["required"], "properties": {"required": {"const": true}}},
+        "update_required_when_change_affects": {"const": ["business_rules", "domain_invariants", "architectural_boundaries", "module_responsibilities", "public_contracts", "integration_behavior", "persistence_semantics", "operational_workflows", "security_behavior", "developer_workflows"]},
+        "no_update_required": {"type": "object", "additionalProperties": false, "required": ["allowed", "require_reason"], "properties": {"allowed": {"const": true}, "require_reason": {"const": true}}},
+        "stale_documentation": {"type": "object", "additionalProperties": false, "required": ["blocks_completion_when_material"], "properties": {"blocks_completion_when_material": {"const": true}}},
+        "knowledge_capture": {"type": "object", "additionalProperties": false, "required": ["full_flow"], "properties": {"full_flow": {"type": "object", "additionalProperties": false, "required": ["required_when_material"], "properties": {"required_when_material": {"const": true}}}}}
+      }
+    }
+  }
+}

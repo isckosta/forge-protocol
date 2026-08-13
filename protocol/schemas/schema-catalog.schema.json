@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://forge.dev/schemas/schema-catalog.schema.json",
+  "title": "Forge Schema Catalog",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "protocol", "schemas"],
+  "properties": {
+    "schema": {"const": "forge/schema-catalog@1"},
+    "protocol": {"const": 1},
+    "schemas": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "file"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^forge/[a-z][a-z0-9/-]*@[1-9][0-9]*$"
+          },
+          "file": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*\\.schema\\.json$"
+          }
+        }
+      }
+    }
+  }
+}

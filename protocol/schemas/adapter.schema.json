@@ -22,8 +22,8 @@
       "additionalProperties": false,
       "required": ["min", "max_exclusive"],
       "properties": {
-        "min": {"type": "integer"},
-        "max_exclusive": {"type": "integer"}
+        "min": {"type": "integer", "minimum": 1},
+        "max_exclusive": {"type": "integer", "minimum": 2}
       }
     },
     "capabilities": {

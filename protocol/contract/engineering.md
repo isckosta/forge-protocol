@@ -1,6 +1,6 @@
 # Forge Engineering Contract
 
-Status: Canonical Foundation Contract
+Status: Canonical Protocol 1 Contract
 
 These rules are non-negotiable Forge engineering invariants. Projects may become stricter. They may not weaken these invariants while claiming canonical Forge compliance.
 
@@ -135,3 +135,12 @@ Harness Adapters MUST NOT redefine canonical or effective Forge semantics.
 
 ## C-044 — Forge dogfoods Forge
 Material development of Forge itself MUST use Forge.
+
+## C-045 — Compatible Protocol evolution
+Changes that retain an integer Protocol identifier MUST preserve the meaning
+and minimum obligations of existing valid instances under that identifier.
+
+## C-046 — Breaking changes require a new Protocol identifier
+Removing or weakening an invariant, changing an existing required field or Gate
+meaning, or invalidating a previously valid conforming instance MUST require a
+new integer Protocol identifier.

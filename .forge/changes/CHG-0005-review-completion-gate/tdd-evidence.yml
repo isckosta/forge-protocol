@@ -1,7 +1,9 @@
 schema: forge/tdd-evidence@1
 change: CHG-0005
-status: complete
-cycle_count: 1
-cycles:
-  - id: TDD-001
-    title: Review completion gate
+status: exception
+reason: >
+  The original artifact retained only a cycle title. It cannot independently
+  substantiate test-before-production ordering or valid RED/GREEN, so the
+  historical behavior remains Verification evidence rather than TDD evidence.
+cycle_count: 0
+cycles: []

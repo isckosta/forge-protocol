@@ -177,6 +177,17 @@ Codex-specific invariant assessment distinguishes `enforced`, `represented`, and
 
 CLI, Protocol, Schemas, and Adapters may be versioned independently.
 
+Protocol `1` is the stable integer compatibility contract. Schema suffixes such
+as `forge/change@1` version individual artifact shapes; they are not CLI or
+Protocol release numbers. Adapters declare independent versions and half-open
+integer compatibility intervals. The canonical compatible-versus-breaking and
+deprecation rules live in `protocol/compatibility.md`.
+
+`protocol/schemas/catalog.yml` is the portable registry of supported artifact
+schemas. Contract tests validate the catalog, each Draft 2020-12 schema,
+canonical Flow/Policy resources, and repository-native instances without a
+network dependency.
+
 ## 27. Security boundary
 
 Forge defines engineering expectations. Actual process isolation and filesystem, network, and shell enforcement depend on the underlying Harness. Adapter publication still owns repository path confinement and must reject unsafe repository escapes.

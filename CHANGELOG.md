@@ -6,6 +6,18 @@ CLI releases will follow Semantic Versioning when releases begin. Protocol versi
 
 ## Unreleased
 
+### Protocol 1 Contract Freeze
+
+Changed:
+
+- stabilized the human-readable Protocol label as `1` while preserving integer
+  Protocol compatibility;
+- published Protocol 1 compatibility, breaking-change, and deprecation rules;
+- added a portable schema catalog and offline contract coverage for canonical
+  schemas and repository-native artifacts;
+- migrated historical artifact structures to their canonical schemas without
+  changing recorded engineering outcomes.
+
 ### Foundation
 
 Added:
