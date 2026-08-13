@@ -1,0 +1,63 @@
+name: Distribution Verification
+
+on:
+  push:
+    branches:
+      - chore/chg-0001-verification
+  pull_request:
+
+jobs:
+  distribution:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install build tooling
+        run: python -m pip install --upgrade pip build
+
+      - name: Build wheel
+        run: python -m build --wheel
+
+      - name: Create isolated environment
+        run: python -m venv /tmp/forge-wheel-venv
+
+      - name: Install wheel only
+        run: /tmp/forge-wheel-venv/bin/pip install dist/*.whl
+
+      - name: Verify installed CLI version
+        working-directory: /tmp
+        run: /tmp/forge-wheel-venv/bin/forge version
+
+      - name: Verify installed init validate doctor flow
+        working-directory: /tmp
+        run: |
+          rm -rf forge-smoke
+          mkdir forge-smoke
+          cd forge-smoke
+          git init
+          mkdir -p services/api
+          cd services/api
+          /tmp/forge-wheel-venv/bin/forge init
+          /tmp/forge-wheel-venv/bin/forge validate
+          /tmp/forge-wheel-venv/bin/forge doctor
+
+      - name: Inspect runtime dependencies
+        run: |
+          /tmp/forge-wheel-venv/bin/python - <<'PY'
+          from importlib.metadata import requires
+
+          dependencies = requires("forge-protocol") or []
+          normalized = "\n".join(dependencies).lower()
+          forbidden = ["openai", "anthropic", "langchain", "sqlalchemy", "django"]
+          found = [name for name in forbidden if name in normalized]
+          if found:
+              raise SystemExit(f"Forbidden runtime dependencies found: {found}")
+          print("Runtime dependency audit passed")
+          PY
