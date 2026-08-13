@@ -38,7 +38,11 @@ requirements:
 
 tdd:
   status: active
-  cycles: 3
+  cycles: 1
+  reason: >
+    The first three interactive RED/GREEN runs lack durable revision or run
+    identifiers and are not credited as auditable TDD evidence. Strict Review
+    remediation started with committed RED 01878a4.
 
 verification:
   status: pending

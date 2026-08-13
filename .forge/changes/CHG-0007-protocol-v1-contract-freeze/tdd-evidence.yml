@@ -1,41 +1,24 @@
 schema: forge/tdd-evidence@1
 change: CHG-0007
 status: active
-cycle_count: 3
+reason: >
+  Initial catalog, artifact-audit, and display-label tests were observed RED
+  before implementation in the working tree, but test and implementation first
+  appear together in commits 60b7326 and e85f3bc. They are retained as
+  Verification coverage, not credited as independently auditable TDD evidence.
+cycle_count: 1
 cycles:
   - id: TDD-001
-    title: Supported Schema Catalog Closure
-    requirements: [FR-002, FR-007, FR-008, FR-010, NFR-001, INV-001]
-    behavior: resolve every supported schema through a portable valid catalog
+    title: Strict Review Contract Rejection Remediation
+    requirements: [FR-007, FR-008, FR-009, FR-010, FR-013, NFR-001, INV-002]
+    behavior: reject semantically invalid stable artifacts and protect packaged catalog closure
     red:
       valid: true
-      result: 1 failed
-      reason: contract test failed because protocol/schemas/catalog.yml was absent
+      commit: 01878a4
+      command: .venv/bin/pytest tests/contract/test_protocol_contract.py -v
+      result: 6 failed, 4 passed
+      reason: Adapter bounds, contradictory Flow, empty policies, and complete TDD evidence without RED/GREEN all validated
     green:
-      result: focused contract test passed; full suite 142 passed
-
-  - id: TDD-002
-    title: Canonical Repository Artifact Validation
-    requirements: [FR-009, FR-013, NFR-001, INV-002]
-    behavior: validate canonical YAML instances without losing historical mappings
-    red:
-      valid: true
-      result: 1 failed, 3 passed
-      reason: five obsolete manifest properties, old CHG-0004 traceability shape, and one misparsed CHG-0002 note were exposed
-    green:
-      result: 12 focused tests passed; full suite 142 passed
-      notes:
-        - obsolete fields were removed without changing lifecycle outcomes
-        - CHG-0004 task and acceptance mappings remain identical
-        - CHG-0002 note text is unchanged and now parses as text
-
-  - id: TDD-003
-    title: Stable Protocol Display Label
-    requirements: [FR-001, FR-002, INV-001]
-    behavior: report stable Protocol 1 identity without the draft maturity label
-    red:
-      valid: true
-      result: 1 failed
-      reason: forge version still reported Forge Protocol 1-draft
-    green:
-      result: focused CLI version test passed
+      result: pending committed GREEN
+notes:
+  - Initial catalog, canonical-instance, and version-label tests count as Verification coverage only.

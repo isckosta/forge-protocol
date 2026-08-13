@@ -15,7 +15,12 @@
         "id": {"enum": ["fast", "standard", "full"]},
         "name": {"enum": ["FAST", "STANDARD", "FULL"]},
         "description": {"type": "string", "minLength": 1}
-      }
+      },
+      "allOf": [
+        {"if": {"properties": {"id": {"const": "fast"}}}, "then": {"properties": {"name": {"const": "FAST"}}}},
+        {"if": {"properties": {"id": {"const": "standard"}}}, "then": {"properties": {"name": {"const": "STANDARD"}}}},
+        {"if": {"properties": {"id": {"const": "full"}}}, "then": {"properties": {"name": {"const": "FULL"}}}}
+      ]
     },
     "classification": {
       "type": "object",
@@ -34,41 +39,51 @@
         "additionalProperties": false,
         "required": ["id"],
         "properties": {
-          "id": {"type": "string", "minLength": 1},
+          "id": {"enum": ["intent", "inspection", "discovery", "specification", "specification_review", "architecture", "test_design", "test_strategy", "plan", "tasks", "tdd_implementation", "verification", "strict_review", "documentation_impact", "documentation", "knowledge_capture", "completion"]},
           "required": {"type": "boolean"},
           "required_when": {"type": "string", "minLength": 1},
           "mode": {"type": "string", "minLength": 1},
-          "cycle": {
-            "type": "array",
-            "items": {"enum": ["red", "green", "refactor"]},
-            "uniqueItems": true
-          }
+          "cycle": {"const": ["red", "green", "refactor"]}
         },
         "anyOf": [{"required": ["required"]}, {"required": ["required_when"]}]
-      }
+      },
+      "allOf": [
+        {"contains": {"properties": {"id": {"const": "intent"}}, "required": ["id"]}},
+        {"contains": {"properties": {"id": {"const": "tdd_implementation"}}, "required": ["id"]}},
+        {"contains": {"properties": {"id": {"const": "verification"}}, "required": ["id"]}},
+        {"contains": {"properties": {"id": {"const": "strict_review"}}, "required": ["id"]}},
+        {"contains": {"properties": {"id": {"const": "completion"}}, "required": ["id"]}}
+      ]
     },
     "gates": {
       "type": "object",
-      "minProperties": 1,
-      "additionalProperties": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "require": {
-            "type": "array",
-            "minItems": 1,
-            "items": {"type": "string"},
-            "uniqueItems": true
-          },
-          "require_when": {"type": "string", "minLength": 1},
-          "checks": {
-            "type": "array",
-            "minItems": 1,
-            "items": {"type": "string"},
-            "uniqueItems": true
-          }
+      "additionalProperties": false,
+      "required": ["before_behavioral_implementation", "before_completion"],
+      "properties": {
+        "before_architecture": {"$ref": "#/$defs/gate"},
+        "before_implementation": {"$ref": "#/$defs/gate"},
+        "before_behavioral_implementation": {
+          "allOf": [
+            {"$ref": "#/$defs/gate"},
+            {"properties": {"checks": {"allOf": [
+              {"contains": {"const": "test_exists"}},
+              {"contains": {"const": "red_executed"}},
+              {"contains": {"const": "red_failed_for_expected_reason"}}
+            ]}}}
+          ]
         },
-        "anyOf": [{"required": ["require"]}, {"required": ["checks"]}]
+        "before_completion": {
+          "allOf": [
+            {"$ref": "#/$defs/gate"},
+            {"properties": {"require": {"allOf": [
+              {"contains": {"const": "verification_passed"}},
+              {"contains": {"const": "review_passed"}},
+              {"contains": {"const": "blocking_review_threads_resolved"}},
+              {"contains": {"const": "documentation_impact_evaluated"}},
+              {"contains": {"const": "tdd_compliant_or_explicitly_excepted"}}
+            ]}}}
+          ]
+        }
       }
     },
     "escalation": {
@@ -95,6 +110,18 @@
         "strict": {"const": true},
         "adversarial": {"const": true}
       }
+    }
+  },
+  "$defs": {
+    "gate": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "require": {"type": "array", "minItems": 1, "items": {"type": "string"}, "uniqueItems": true},
+        "require_when": {"type": "string", "minLength": 1},
+        "checks": {"type": "array", "minItems": 1, "items": {"type": "string"}, "uniqueItems": true}
+      },
+      "anyOf": [{"required": ["require"]}, {"required": ["checks"]}]
     }
   }
 }

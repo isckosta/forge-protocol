@@ -33,8 +33,29 @@
         }
       }
     },
-    "notes": {"type": "array", "items": {"type": "string"}}
+    "notes": {"type": "array", "items": {"type": "string"}},
+    "reason": {"type": "string", "minLength": 1}
   },
+  "allOf": [
+    {
+      "if": {"properties": {"status": {"enum": ["complete", "compliant"]}}, "required": ["status"]},
+      "then": {
+        "properties": {
+          "cycles": {
+            "minItems": 1,
+            "items": {
+              "required": ["id", "requirements", "red", "green"],
+              "anyOf": [{"required": ["title"]}, {"required": ["behavior"]}]
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {"properties": {"status": {"enum": ["not_applicable", "exception"]}}, "required": ["status"]},
+      "then": {"required": ["reason"]}
+    }
+  ],
   "$defs": {
     "evidence": {
       "type": "object",

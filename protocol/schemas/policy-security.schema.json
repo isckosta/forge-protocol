@@ -7,6 +7,17 @@
   "required": ["schema", "security"],
   "properties": {
     "schema": {"const": "forge/policy/security@1"},
-    "security": {"type": "object", "minProperties": 1}
+    "security": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["security_model_change", "authorization_model_change", "review_dimensions", "assumptions", "harness_enforcement"],
+      "properties": {
+        "security_model_change": {"type": "object", "additionalProperties": false, "required": ["minimum_flow"], "properties": {"minimum_flow": {"const": "full"}}},
+        "authorization_model_change": {"type": "object", "additionalProperties": false, "required": ["minimum_flow"], "properties": {"minimum_flow": {"const": "full"}}},
+        "review_dimensions": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string"}},
+        "assumptions": {"type": "object", "additionalProperties": false, "required": ["must_be_explicit_when_material"], "properties": {"must_be_explicit_when_material": {"const": true}}},
+        "harness_enforcement": {"type": "object", "additionalProperties": false, "required": ["note"], "properties": {"note": {"type": "string", "minLength": 1}}}
+      }
+    }
   }
 }

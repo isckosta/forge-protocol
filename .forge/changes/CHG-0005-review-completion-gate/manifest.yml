@@ -4,7 +4,13 @@ flow: {initial: fast, current: fast, escalations: []}
 state: {current: complete}
 artifacts: {intent: complete, inspection: complete, test_design: complete, tdd_evidence: complete, implementation: complete, verification: complete, review: complete, documentation: complete, knowledge_capture: not_required}
 requirements: {total: 2, implemented: 2, verified: 2}
-tdd: {status: compliant, cycles: 1}
+tdd:
+  status: exception
+  cycles: 0
+  reason: >
+    Historical RED/GREEN behavior exists in CI history, but the original
+    repository-native evidence artifact did not retain auditable Requirements,
+    RED, or GREEN details. CHG-0007 does not reconstruct missing evidence.
 verification: {status: passed}
 review: {status: passed, iteration: 1, blockers: 0, majors: 0, minors: 0, observations: 0}
 documentation: {impact_evaluated: true, update_required: true}
