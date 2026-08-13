@@ -1,5 +1,7 @@
 schema: forge/tdd-evidence@1
 change: CHG-0005
-status: active
-cycle_count: 0
-cycles: []
+status: complete
+cycle_count: 1
+cycles:
+  - id: TDD-001
+    title: Review completion gate
