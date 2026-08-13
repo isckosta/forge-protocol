@@ -22,7 +22,17 @@ cycles:
       valid: true
 
     green:
-      status: pending
+      status: observed
+      workflow_run_id: 31667967444
+      job_id: 94346532519
+      commit: 6c1579e62b3c86b8688137e3bea34810f626e400
+      result: >
+        GitHub Actions completed successfully. The FR-003 CLI behavior test passed
+        after preserving Typer command-group semantics and implementing the version
+        command.
 
     refactor:
-      status: pending
+      status: not_performed
+      reason: >
+        No additional refactoring was justified after GREEN. The implementation is
+        already minimal for the current requirement.
