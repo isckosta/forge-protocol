@@ -14,7 +14,7 @@ def _load(name: str):
 def test_manifest_parser_uses_resource_content() -> None:
     module = _load("forge_cli.adapters.codex.descriptor")
     manifest = module.parse_codex_adapter_manifest(
-        "schema: forge/adapter@1enadapter: {id: codex-test, version: 9.9.9, harness: codex}\nprotocol: {min: 3, max_exclusive: 7}\ncapabilities: {persistent_instructions: false, commands: false, skills: true, hooks: false, agent_roles: false, generated_files: true}\n"
+        "schema: forge/adapter@1\nadapter: {id: codex-test, version: 9.9.9, harness: codex}\nprotocol: {min: 3, max_exclusive: 7}\ncapabilities: {persistent_instructions: false, commands: false, skills: true, hooks: false, agent_roles: false, generated_files: true}\n"
     )
     assert manifest.adapter_id == "codex-test"
     assert manifest.version == "9.9.9"
