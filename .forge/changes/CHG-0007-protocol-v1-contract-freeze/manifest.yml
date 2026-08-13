@@ -1,0 +1,59 @@
+schema: forge/change@1
+
+change:
+  id: CHG-0007
+  title: Protocol v1 Contract Freeze
+  kind: feature
+
+flow:
+  initial: full
+  current: full
+  escalations: []
+
+state:
+  current: tdd_implementation
+
+artifacts:
+  intent: complete
+  discovery: complete
+  specification: complete
+  specification_review: complete
+  architecture: complete
+  architecture_decision: complete
+  test_strategy: approved
+  plan: approved
+  tasks: approved
+  traceability: active
+  tdd_evidence: active
+  implementation: pending
+  verification: pending
+  review: pending
+  documentation: pending
+  knowledge_capture: pending
+
+requirements:
+  total: 16
+  implemented: 0
+  verified: 0
+
+tdd:
+  status: active
+  cycles: 0
+
+verification:
+  status: pending
+
+review:
+  status: pending
+  iteration: 0
+  blockers: 0
+  majors: 0
+  minors: 0
+  observations: 0
+
+documentation:
+  impact_evaluated: true
+  update_required: true
+  reason: >
+    Freezing Protocol 1 changes normative version, compatibility, schema,
+    lifecycle, and adoption documentation.

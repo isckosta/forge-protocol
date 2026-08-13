@@ -1,0 +1,19 @@
+schema: forge/traceability@1
+change: CHG-0007
+requirements:
+  FR-001: {tasks: [T-004], test_strategy: cli}
+  FR-002: {tasks: [T-002, T-004, T-005], test_strategy: contract}
+  FR-003: {tasks: [T-005], test_strategy: documentation_review}
+  FR-004: {tasks: [T-005], test_strategy: documentation_review}
+  FR-005: {tasks: [T-005], test_strategy: documentation_review}
+  FR-006: {tasks: [T-005], test_strategy: documentation_review}
+  FR-007: {tasks: [T-002], test_strategy: contract}
+  FR-008: {tasks: [T-002], test_strategy: contract}
+  FR-009: {tasks: [T-003], test_strategy: contract}
+  FR-010: {tasks: [T-002], test_strategy: contract}
+  FR-011: {tasks: [T-005], test_strategy: contract_and_documentation_review}
+  FR-012: {tasks: [T-005], test_strategy: contract_and_documentation_review}
+  FR-013: {tasks: [T-003], test_strategy: contract_and_evidence_audit}
+  NFR-001: {tasks: [T-002, T-003, T-006], test_strategy: contract_and_distribution}
+  INV-001: {tasks: [T-002, T-004, T-005], test_strategy: contract_and_documentation_review}
+  INV-002: {tasks: [T-003, T-006], test_strategy: evidence_audit}
