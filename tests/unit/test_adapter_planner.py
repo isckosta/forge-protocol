@@ -199,3 +199,32 @@ def test_obsolete_intact_generated_file_is_deleted_but_drifted_one_conflicts() -
 
     assert drifted.operations[0].intent is OperationIntent.CONFLICT
     assert drifted.conflicts == ("old.md: ownership or expected-state conflict",)
+
+
+@pytest.mark.parametrize(
+    "expected_digest",
+    (None, digest_content("different recorded ownership")),
+)
+def test_obsolete_equal_bytes_without_matching_recorded_state_conflict(
+    expected_digest: str | None,
+) -> None:
+    planner = planner_module()
+    previous = GeneratedArtifact("old.md", digest_content("old"))
+
+    plan = planner.plan_adapter(
+        manifest=_manifest(),
+        effective_configuration=planner.EffectiveAdapterConfiguration(1, ()),
+        projections=(),
+        repository_state=(
+            planner.RepositoryArtifactState(
+                "old.md",
+                True,
+                digest_content("old"),
+                expected_digest,
+            ),
+        ),
+        previous_generated=(previous,),
+    )
+
+    assert plan.operations[0].intent is OperationIntent.CONFLICT
+    assert plan.conflicts == ("old.md: ownership or expected-state conflict",)

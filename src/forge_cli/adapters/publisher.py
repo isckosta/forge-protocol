@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import os
+from dataclasses import dataclass
 from pathlib import Path, PurePosixPath
 import tempfile
 from uuid import uuid4
@@ -31,6 +32,33 @@ class AdapterPublicationConflictError(AdapterPublicationError):
 
 class UnsafeAdapterPathError(AdapterPublicationError):
     """Raised when an Adapter path is unsafe or ambiguous across platforms."""
+
+
+@dataclass(frozen=True)
+class AdapterRollbackFailure:
+    """A target that could not be restored after publication failed."""
+
+    target: str
+    error: Exception
+
+
+class AdapterPublicationRollbackError(AdapterPublicationError):
+    """Raised when publication failed and one or more rollback steps failed."""
+
+    def __init__(
+        self,
+        publication_error: Exception,
+        rollback_failures: tuple[AdapterRollbackFailure, ...],
+    ) -> None:
+        self.publication_error = publication_error
+        self.rollback_failures = rollback_failures
+        targets = ", ".join(
+            f"{failure.target}: {failure.error}" for failure in rollback_failures
+        )
+        super().__init__(
+            "Adapter publication failed and rollback was incomplete for "
+            f"{targets}."
+        )
 
 
 def _validate_adapter_id(adapter_id: str) -> None:
@@ -243,6 +271,40 @@ def _write_installation_record_atomically(
             temporary.unlink()
 
 
+def _rollback_publication(
+    *,
+    root: Path,
+    applied: list[tuple[Path, bytes | None]],
+    installation_path: Path,
+    prior_installation: bytes | None,
+    installation_existed: bool,
+) -> tuple[AdapterRollbackFailure, ...]:
+    failures: list[AdapterRollbackFailure] = []
+
+    def record_failure(path: Path, error: Exception) -> None:
+        try:
+            target = path.relative_to(root).as_posix()
+        except ValueError:
+            target = str(path)
+        failures.append(AdapterRollbackFailure(target=target, error=error))
+
+    for target, original in reversed(applied):
+        try:
+            _restore_bytes(target, original)
+        except Exception as exc:
+            record_failure(target, exc)
+
+    try:
+        if installation_existed:
+            _restore_bytes(installation_path, prior_installation)
+        elif installation_path.exists() or installation_path.is_symlink():
+            installation_path.unlink()
+    except Exception as exc:
+        record_failure(installation_path, exc)
+
+    return tuple(failures)
+
+
 def publish_adapter_plan(
     repository_root: Path,
     plan: AdapterPlan,
@@ -326,27 +388,16 @@ def publish_adapter_plan(
             )
 
         _write_installation_record_atomically(installation_path, installation_record)
-    except AdapterPublicationConflictError:
-        for target, original in reversed(applied):
-            _restore_bytes(target, original)
-        if installation_existed:
-            _restore_bytes(installation_path, prior_installation)
-        elif installation_path.exists():
-            installation_path.unlink()
-        raise
     except Exception as exc:
-        for target, original in reversed(applied):
-            try:
-                _restore_bytes(target, original)
-            except OSError:
-                pass
-        try:
-            if installation_existed:
-                _restore_bytes(installation_path, prior_installation)
-            elif installation_path.exists():
-                installation_path.unlink()
-        except OSError:
-            pass
+        rollback_failures = _rollback_publication(
+            root=root,
+            applied=applied,
+            installation_path=installation_path,
+            prior_installation=prior_installation,
+            installation_existed=installation_existed,
+        )
+        if rollback_failures:
+            raise AdapterPublicationRollbackError(exc, rollback_failures) from exc
         if isinstance(exc, AdapterPublicationError):
             raise
         raise AdapterPublicationError("Adapter publication failed and was rolled back.") from exc

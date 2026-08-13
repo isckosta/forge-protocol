@@ -161,7 +161,11 @@ def plan_adapter(
                 expected_digest=None,
             ),
         )
-        if state.exists and state.current_digest == previous.digest:
+        if (
+            state.exists
+            and state.expected_digest == previous.digest
+            and state.current_digest == state.expected_digest
+        ):
             operations.append(
                 AdapterOperation(
                     path=path,

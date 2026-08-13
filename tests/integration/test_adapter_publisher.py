@@ -483,3 +483,113 @@ def test_deleting_generated_tree_leaves_separate_canonical_forge_tree_byte_ident
     assert not generated_path.exists()
     assert generated_root.exists()
     assert {path: path.read_bytes() for path in canonical_files} == canonical_before
+
+
+def test_incomplete_rollback_reports_generic_publication_failure_and_target(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    publisher = publisher_module()
+    created = tmp_path / "created.md"
+    plan = plan_adapter(
+        manifest=_manifest(),
+        effective_configuration=EffectiveAdapterConfiguration(1, ()),
+        projections=(
+            ProjectedArtifact(
+                path="created.md",
+                ownership=OwnershipMode.FORGE_OWNED,
+                content="created",
+            ),
+        ),
+        repository_state=(),
+    )
+
+    def fail_record_write(path: Path, record: AdapterInstallationRecord) -> None:
+        raise OSError("simulated record write failure")
+
+    def fail_restore(path: Path, content: bytes | None) -> None:
+        raise OSError("simulated restore failure")
+
+    monkeypatch.setattr(publisher, "_write_installation_record_atomically", fail_record_write)
+    monkeypatch.setattr(publisher, "_restore_bytes", fail_restore)
+
+    with pytest.raises(publisher.AdapterPublicationError) as raised:
+        publisher.publish_adapter_plan(
+            tmp_path,
+            plan,
+            _record(("created.md", digest_content("created"))),
+        )
+
+    error = raised.value
+    assert type(error).__name__ == "AdapterPublicationRollbackError"
+    assert str(error.__cause__) == "simulated record write failure"
+    assert [failure.target for failure in getattr(error, "rollback_failures", ())] == [
+        "created.md",
+    ]
+    assert "created.md" in str(error)
+    assert created.exists()
+
+
+def test_incomplete_rollback_preserves_late_conflict_as_the_public_cause(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    publisher = publisher_module()
+    created = tmp_path / "a-created.md"
+    updated = tmp_path / "b-updated.md"
+    updated.write_text("old", encoding="utf-8")
+    plan = plan_adapter(
+        manifest=_manifest(),
+        effective_configuration=EffectiveAdapterConfiguration(1, ()),
+        projections=(
+            ProjectedArtifact(
+                path="a-created.md",
+                ownership=OwnershipMode.FORGE_OWNED,
+                content="created",
+            ),
+            ProjectedArtifact(
+                path="b-updated.md",
+                ownership=OwnershipMode.FORGE_OWNED,
+                content="new",
+            ),
+        ),
+        repository_state=(
+            RepositoryArtifactState(
+                path="b-updated.md",
+                exists=True,
+                current_digest=digest_content("old"),
+                expected_digest=digest_content("old"),
+            ),
+        ),
+    )
+    original_replace = publisher._replace_file
+
+    def create_then_drift(path: Path, content: str) -> None:
+        original_replace(path, content)
+        if path == created:
+            updated.write_text("changed after planning", encoding="utf-8")
+
+    def fail_restore(path: Path, content: bytes | None) -> None:
+        raise OSError("simulated restore failure")
+
+    monkeypatch.setattr(publisher, "_replace_file", create_then_drift)
+    monkeypatch.setattr(publisher, "_restore_bytes", fail_restore)
+
+    with pytest.raises(publisher.AdapterPublicationError) as raised:
+        publisher.publish_adapter_plan(
+            tmp_path,
+            plan,
+            _record(
+                ("a-created.md", digest_content("created")),
+                ("b-updated.md", digest_content("new")),
+            ),
+        )
+
+    error = raised.value
+    assert type(error).__name__ == "AdapterPublicationRollbackError"
+    assert type(error.__cause__).__name__ == "AdapterPublicationConflictError"
+    assert [failure.target for failure in getattr(error, "rollback_failures", ())] == [
+        "a-created.md",
+    ]
+    assert "a-created.md" in str(error)
+    assert created.exists()
