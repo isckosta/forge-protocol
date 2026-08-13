@@ -1,0 +1,41 @@
+schema: forge/change@1
+change:
+  id: CHG-0003
+  title: Run Distribution Verification on main
+  kind: bugfix
+flow:
+  initial: fast
+  current: fast
+  escalations: []
+state:
+  current: tdd_implementation
+artifacts:
+  intent: complete
+  inspection: complete
+  test_design: complete
+  tdd_evidence: pending
+  implementation: pending
+  verification: pending
+  review: pending
+  documentation: pending
+  knowledge_capture: not_required
+requirements:
+  total: 1
+  implemented: 0
+  verified: 0
+tdd:
+  status: active
+  cycles: 0
+verification:
+  status: pending
+review:
+  status: pending
+  iteration: 0
+  blockers: 0
+  majors: 0
+  minors: 0
+  observations: 0
+documentation:
+  impact_evaluated: false
+  update_required: false
+  reason: CI trigger correction only.
