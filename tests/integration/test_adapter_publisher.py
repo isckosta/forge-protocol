@@ -1,9 +1,10 @@
+import importlib
 from pathlib import Path
 
 import pytest
 
 from forge_cli.adapters.manifest import AdapterManifest
-from forge_cli.adapters.plan import AdapterPlan, OperationIntent, OwnershipMode, digest_content
+from forge_cli.adapters.plan import AdapterPlan, OwnershipMode, digest_content
 from forge_cli.adapters.planner import (
     EffectiveAdapterConfiguration,
     ProjectedArtifact,
@@ -11,6 +12,13 @@ from forge_cli.adapters.planner import (
     plan_adapter,
 )
 from forge_cli.adapters.state import AdapterInstallationRecord, GeneratedArtifact
+
+
+def publisher_module():
+    try:
+        return importlib.import_module("forge_cli.adapters.publisher")
+    except ModuleNotFoundError:
+        pytest.fail("Safe Adapter publisher is not implemented yet")
 
 
 def _manifest() -> AdapterManifest:
@@ -44,15 +52,10 @@ def _record(*artifacts: tuple[str, str]) -> AdapterInstallationRecord:
 
 
 def test_conflicted_plan_is_refused_before_any_mutation(tmp_path: Path) -> None:
-    from forge_cli.adapters import publisher
-
+    publisher = publisher_module()
     target = tmp_path / "user.md"
     target.write_text("user", encoding="utf-8")
-    plan = AdapterPlan(
-        adapter_id="example",
-        operations=(),
-        conflicts=("user.md: collision",),
-    )
+    plan = AdapterPlan(adapter_id="example", operations=(), conflicts=("user.md: collision",))
 
     with pytest.raises(publisher.AdapterPublicationConflictError):
         publisher.publish_adapter_plan(tmp_path, plan, _record())
@@ -62,8 +65,7 @@ def test_conflicted_plan_is_refused_before_any_mutation(tmp_path: Path) -> None:
 
 
 def test_user_owned_preserve_operation_never_overwrites_existing_content(tmp_path: Path) -> None:
-    from forge_cli.adapters import publisher
-
+    publisher = publisher_module()
     target = tmp_path / "user.md"
     target.write_text("user", encoding="utf-8")
     plan = plan_adapter(
@@ -79,8 +81,6 @@ def test_user_owned_preserve_operation_never_overwrites_existing_content(tmp_pat
 
 
 def test_forge_owned_update_revalidates_planning_precondition_before_write(tmp_path: Path) -> None:
-    from forge_cli.adapters import publisher
-
     target = tmp_path / "generated.md"
     target.write_text("old", encoding="utf-8")
     plan = plan_adapter(
@@ -89,24 +89,22 @@ def test_forge_owned_update_revalidates_planning_precondition_before_write(tmp_p
         projections=(ProjectedArtifact(path="generated.md", ownership=OwnershipMode.FORGE_OWNED, content="new"),),
         repository_state=(RepositoryArtifactState(path="generated.md", exists=True, current_digest=digest_content("old"), expected_digest=digest_content("old")),),
     )
+
+    assert hasattr(plan.operations[0], "expected_current_digest"), "Adapter operation publication precondition is not implemented yet"
     assert plan.operations[0].expected_current_digest == digest_content("old")
 
+    publisher = publisher_module()
     target.write_text("changed-after-plan", encoding="utf-8")
 
     with pytest.raises(publisher.AdapterPublicationConflictError):
-        publisher.publish_adapter_plan(
-            tmp_path,
-            plan,
-            _record(("generated.md", digest_content("new"))),
-        )
+        publisher.publish_adapter_plan(tmp_path, plan, _record(("generated.md", digest_content("new"))))
 
     assert target.read_text(encoding="utf-8") == "changed-after-plan"
     assert not (tmp_path / ".forge/adapters/example/installation.yml").exists()
 
 
 def test_create_publishes_content_and_installation_record_last(tmp_path: Path) -> None:
-    from forge_cli.adapters import publisher
-
+    publisher = publisher_module()
     plan = plan_adapter(
         manifest=_manifest(),
         effective_configuration=EffectiveAdapterConfiguration(1, ()),
@@ -114,19 +112,14 @@ def test_create_publishes_content_and_installation_record_last(tmp_path: Path) -
         repository_state=(),
     )
 
-    publisher.publish_adapter_plan(
-        tmp_path,
-        plan,
-        _record(("generated.md", digest_content("new"))),
-    )
+    publisher.publish_adapter_plan(tmp_path, plan, _record(("generated.md", digest_content("new"))))
 
     assert (tmp_path / "generated.md").read_text(encoding="utf-8") == "new"
     assert (tmp_path / ".forge/adapters/example/installation.yml").exists()
 
 
 def test_repository_escape_path_is_rejected_without_writing_outside_root(tmp_path: Path) -> None:
-    from forge_cli.adapters import publisher
-
+    publisher = publisher_module()
     outside = tmp_path.parent / "forge-outside.txt"
     if outside.exists():
         outside.unlink()
@@ -144,8 +137,7 @@ def test_repository_escape_path_is_rejected_without_writing_outside_root(tmp_pat
 
 
 def test_symlink_escape_is_rejected(tmp_path: Path) -> None:
-    from forge_cli.adapters import publisher
-
+    publisher = publisher_module()
     outside = tmp_path.parent / "forge-outside-dir"
     outside.mkdir(exist_ok=True)
     link = tmp_path / "tool"
@@ -168,8 +160,7 @@ def test_symlink_escape_is_rejected(tmp_path: Path) -> None:
 
 
 def test_publication_failure_rolls_back_files_and_never_publishes_installation_record(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    from forge_cli.adapters import publisher
-
+    publisher = publisher_module()
     plan = plan_adapter(
         manifest=_manifest(),
         effective_configuration=EffectiveAdapterConfiguration(1, ()),
