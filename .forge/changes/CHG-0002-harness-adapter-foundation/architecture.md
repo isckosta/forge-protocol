@@ -3,7 +3,7 @@ forge:
   artifact: architecture
   schema: 1
 change: CHG-0002
-status: draft
+status: approved
 ---
 
 # Architecture — Harness Adapter Foundation
@@ -34,9 +34,7 @@ Harness-native representation
 
 ## Adapter manifest
 
-A canonical Adapter manifest describes identity, version, target Harness, supported Protocol range, declared capabilities, and implementation metadata needed for deterministic validation.
-
-Proposed conceptual shape:
+A canonical Adapter manifest describes identity, version, target Harness, explicit Protocol compatibility bounds, and declared capabilities.
 
 ```yaml
 schema: forge/adapter@1
@@ -45,7 +43,8 @@ adapter:
   version: 0.1.0
   harness: example-harness
 protocol:
-  supported: ">=1,<2"
+  min: 1
+  max_exclusive: 2
 capabilities:
   persistent_instructions: true
   commands: false
@@ -55,7 +54,7 @@ capabilities:
   generated_files: true
 ```
 
-The exact version-range grammar must be deterministic and documented; CHG-0002 should prefer a deliberately small grammar rather than importing a package-manager semantics accidentally.
+Compatibility is exactly `min <= project_protocol < max_exclusive`. Free-form version-range expressions are not part of Protocol v1.
 
 ## Adapter planner
 
@@ -71,13 +70,9 @@ plan_adapter(
 ) -> AdapterPlan
 ```
 
-The planner emits stable operations and limitations.
+The planner emits stable operations, conflicts, and limitations before any mutation.
 
 ## Adapter plan
-
-The plan is the reviewable mutation contract.
-
-Conceptual entities:
 
 ```text
 AdapterPlan
@@ -92,105 +87,85 @@ AdapterOperation
 ├── ownership
 ├── intent
 ├── content_digest
-└── content? 
+└── content?
 ```
 
-Plan ordering must be deterministic.
+Plan ordering is deterministic.
 
 ## Ownership model
 
 ### forge_owned
-Created entirely by Forge/Adapter and safe to replace only when current content still matches recorded generated state.
+Created entirely by Forge/Adapter and replaceable only when current content still matches recorded expected generated state.
 
 ### user_owned
 Never silently overwritten.
 
 ### shared
-May be changed only through an Adapter-defined deterministic merge strategy. Absence of a safe merge strategy produces a conflict.
+May be changed only through an Adapter-defined deterministic merge strategy. No safe merge result means conflict.
 
-Ownership is metadata about mutation authority; it does not make Harness artifacts canonical Forge state.
+Ownership is mutation metadata, never semantic authority.
 
 ## Installation record
 
-Project-side Adapter state should live under a repository-native namespace such as:
+Project-side Adapter state lives under:
 
 `.forge/adapters/<adapter-id>/installation.yml`
 
-The record stores:
-
-- Adapter identity/version;
-- target Harness;
-- Protocol compatibility used at install/update time;
-- Forge-owned generated artifact paths;
-- expected content digests;
-- explicit limitations.
-
-It must not duplicate Change lifecycle state.
+The record contains Adapter identity/version, target Harness, Protocol interval, Forge-owned generated paths and expected digests, and explicit limitations. It must not duplicate Change lifecycle state.
 
 ## Drift model
-
-For Forge-owned artifacts:
 
 ```text
 expected digest == current digest
     -> safe generated update candidate
 
 expected digest != current digest
-    -> externally modified / drifted
-    -> conflict, never silent overwrite
+    -> drift/conflict
+    -> never silent overwrite
 ```
 
-This is content-based ownership evidence, not merely path-based ownership.
+Ownership evidence is content-based, not path-only.
 
 ## Capability model
 
-Core owns a stable vocabulary of Forge-relevant capability names. Adapters declare whether each capability is supported.
+Core owns the stable capability vocabulary. Adapter declarations describe Harness primitives.
 
-A missing Harness primitive is not automatically a protocol violation. The critical question is whether the effective Forge invariant can still be faithfully represented. If not, the plan carries an explicit limitation or blocks installation when the invariant is required.
+Forge-required representation needs derive from Effective Forge Configuration and canonical Contract/Flow invariants. Adapter-internal capability needs are separate implementation concerns and cannot redefine Forge requirements.
+
+If a required invariant cannot be faithfully represented, the plan exposes an explicit limitation and must not claim enforcement.
 
 ## Conformance boundary
 
-Conformance is evaluated against semantic invariants rather than file names.
-
-Initial checks should include:
-
-- Protocol compatibility;
-- no canonical mutation;
-- no required Flow-stage omission;
-- TDD/RED preservation;
-- Strict Review preservation;
-- explicit unsupported capabilities;
-- no user-owned overwrite;
-- repository-native authority preservation.
+Initial conformance checks cover Protocol compatibility, canonical immutability, required Flow stages/Gates, TDD/RED preservation, Strict Review preservation, explicit limitations, user-owned overwrite protection, and repository-native authority.
 
 ## Package boundaries
-
-The Python CLI implementation should introduce focused Adapter modules, tentatively:
 
 ```text
 src/forge_cli/adapters/
     manifest.py
     capabilities.py
     plan.py
+    planner.py
     ownership.py
     state.py
     validation.py
+    publisher.py
 ```
 
-Harness-specific code does not belong in these modules.
+Harness-specific implementation does not belong in these modules.
 
 ## CLI boundary
 
-CHG-0002 may introduce only infrastructure behavior needed to validate or plan Adapter foundations. It should not add a real Harness Adapter and should not execute SDD lifecycle stages.
+CHG-0002 may provide infrastructure needed to validate, plan, install/update, or diagnose Adapter state. It does not add a real Harness Adapter and does not execute SDD lifecycle stages.
 
 ## Security
 
-Generated paths must be normalized and confined before mutation. Adapter-provided paths cannot escape the repository/Harness configuration boundary. Symlink and pre-existing-file behavior must be evaluated before Safe Publisher implementation.
+Generated paths are normalized and confined before mutation. Adapter-provided paths cannot escape the intended repository/Harness configuration boundary. Symlink, collision, and pre-existing-file behavior are part of publisher Verification.
 
 ## Compatibility
 
-Adapter version, Protocol version, Schema version, and CLI version are independent. The manifest must not imply they advance together.
+Adapter, Protocol, Schema, and CLI versions are independent.
 
 ## Future changes
 
-A first-party Harness Adapter should be a separate Change. That Change will validate whether the Foundation abstraction is sufficient and may propose Protocol refinements through RFC rather than embedding special cases in Core.
+The first real Harness Adapter is a separate Change. It validates this abstraction against an actual Harness and proposes any necessary Core refinement through RFC rather than special-casing Core.
