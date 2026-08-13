@@ -132,22 +132,51 @@ The official CLI may perform installation, initialization, configuration, valida
 
 Forge Core contains no dependency on an AI provider SDK. AI execution belongs to the coding Harness. Adapters translate Forge semantics but may not redefine them.
 
-## 22. Protocol versioning
+## 22. Harness Adapter architecture
+
+Harness Adapters are deterministic projection components, not workflow engines. They consume resolved Effective Forge Configuration, an Adapter manifest, Harness capability state, Adapter projections, and observed repository state. The Core planner returns an immutable `AdapterPlan`; only the publisher owns repository mutation.
+
+The Adapter package is split by responsibility:
+
+- `manifest.py` — manifest loading, Schema validation, and Protocol compatibility;
+- `capabilities.py` — Forge representation requirements and explicit limitations;
+- `plan.py` — immutable plan and operation models;
+- `ownership.py` — collision, ownership, and drift classification;
+- `state.py` — repository-native installation metadata;
+- `validation.py` — Harness-agnostic conformance checks;
+- `planner.py` — deterministic composition without filesystem or Harness SDK access;
+- `publisher.py` — safe repository-bound application with preflight, stale-state checks, and rollback.
+
+Generated Harness artifacts are derived state. Canonical Contract, Flow, Policy, Change, TDD, Verification, and Review state remain repository-native Forge authority.
+
+## 23. Adapter publication boundary
+
+Plans distinguish `forge_owned`, `user_owned`, and `shared` artifacts. User-owned state is preserved. Forge-owned updates require recorded expected state. Shared updates require deterministic merge provenance.
+
+Publication validates every destination before mutation, rejects traversal and symlink escapes, revalidates update digests immediately before write, and writes `.forge/adapters/<id>/installation.yml` last as the successful-installation marker. Failed publication must not leave an installation record that implies success.
+
+## 24. Adapter compatibility and conformance
+
+Adapters use explicit independent versions and a half-open integer Protocol compatibility interval. Unsupported representation capabilities become explicit limitations rather than silent semantic loss.
+
+Conformance validates preservation of canonical stages, Gates, invariants, TDD RED, Strict Review, and repository semantic authority. A Harness limitation may explain lack of technical enforcement; it cannot remove the canonical requirement.
+
+## 25. Protocol versioning
 
 CLI, Protocol, Schemas, and Adapters may be versioned independently.
 
-## 23. Security boundary
+## 26. Security boundary
 
-Forge defines engineering expectations. Actual process isolation and filesystem, network, and shell enforcement depend on the underlying Harness.
+Forge defines engineering expectations. Actual process isolation and filesystem, network, and shell enforcement depend on the underlying Harness. Adapter publication still owns repository path confinement and must reject unsafe repository escapes.
 
-## 24. Non-goals
+## 27. Non-goals
 
-Forge is not intended to become an IDE, issue tracker, Git hosting platform, CI platform, LLM gateway, general AI assistant, or mandatory cloud service.
+Forge is not intended to become an IDE, issue tracker, Git hosting platform, CI platform, LLM gateway, general AI assistant, or mandatory cloud service. Harness Adapters are not a second lifecycle runtime and do not introduce Adapter activation state in Protocol v1.
 
-## 25. Core responsibility
+## 28. Core responsibility
 
 Forge's core architectural responsibility is **Engineering Change Governance**.
 
-## 26. Dogfooding
+## 29. Dogfooding
 
 Forge develops Forge using Forge. If Forge cannot govern its own development without unreasonable ceremony, the Protocol should be reconsidered.
