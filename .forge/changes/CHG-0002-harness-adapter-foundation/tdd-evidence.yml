@@ -2,7 +2,7 @@ schema: forge/tdd-evidence@1
 
 change: CHG-0002
 status: active
-cycle_count: 8
+cycle_count: 10
 
 cycles:
   - id: TDD-001
@@ -125,14 +125,46 @@ cycles:
       commit: 7492fcd17869ea3dfd3f933fbd039b81cc4294fe
       result: Conformance validation now rejects removed required stages/Gates/invariants, TDD RED bypass, Strict Review bypass, and semantic-authority shifts. Required invariants may be represented but unenforced only when an explicit enforced=false limitation exists; limitations never excuse removing canonical representation. The full test suite passed.
 
+  - id: TDD-009
+    requirements: [FR-010, FR-011, FR-012, FR-013, FR-019, FR-023, NFR-001, NFR-002, NFR-005]
+    behavior: combine resolved Effective Forge Configuration, Adapter manifest, Adapter projections, and repository observations into a deterministic Harness-agnostic plan without mutation
+    red:
+      valid: true
+      workflow_run_id: 31696029000
+      job_id: 94433891735
+      commit: 7c223417c6104da7ce9c8e55d035c693abf77e62
+      reason: The deterministic Adapter planner did not exist; after rejecting the prior uncontrolled ImportError run, 5 behavior tests failed explicitly while 76 existing tests passed.
+    green:
+      workflow_run_id: 31696093769
+      job_id: 94434092924
+      commit: 60c8d93452ca72376e9ec3e89b161f26ad6d2aef
+      result: Planning now fails Protocol incompatibility before plan production, derives explicit limitations from Effective Configuration, classifies repository state without mutation, requires named deterministic merge provenance for shared updates, and returns semantically identical plans for identical inputs; the full test suite passed.
+
+  - id: TDD-010
+    requirements: [FR-017, FR-018, FR-019, FR-020, FR-025, NFR-004, INV-004]
+    behavior: publish precomputed Adapter plans inside the repository boundary without silent overwrite, stale-state replacement, partial-install success markers, or unsafe path traversal
+    red:
+      valid: true
+      workflow_run_id: 31696563811
+      job_id: 94435578380
+      commit: 3e731c525f86c1eea0f80bf890b213046f8d0506
+      reason: Safe Adapter publication, UPDATE planning preconditions, rollback semantics, repository path confinement, Adapter-id confinement, symlink protection, and installation-record consistency were absent; 10 behavior tests failed while 81 existing tests passed. Earlier publisher runs 31696254890 and 31696346174 were rejected as RED evidence because they contained uncontrolled import failures or incomplete safety coverage.
+    green:
+      workflow_run_id: 31696828724
+      job_id: 94436411658
+      commit: 8d52a729609304ac27f75dcc5f226a7e62728fca
+      result: The publisher now performs complete safety preflight before mutation, rejects conflicting/stale/unsafe plans, preserves user-owned artifacts, revalidates UPDATE digests immediately before write, confines paths and Adapter ids, rejects symlink/backslash/traversal escapes, rolls back partial writes best-effort, validates installation-record digests against planned Forge-owned content, and publishes the installation record last; 91 tests passed.
+
 notes:
   - TDD-001 validates manifest structure; TDD-002 owns compatibility semantics.
   - TDD-003 does not define semantic mappings such as Strict Review -> hooks; callers provide resolved representation requirements so Core remains Harness-agnostic.
   - TDD-004 defines only the plan data model; planner behavior, collision semantics, and filesystem mutation remain intentionally absent.
-  - TDD-005 is classification only. It does not read/write filesystem state or prove deterministic shared-merge provenance.
-  - FR-019 is not counted as fully implemented yet because deterministic merge-strategy provenance is not proven by the classifier alone.
-  - TDD-006 validates installation-state semantics in the source tree; isolated wheel packaging of the new schema remains explicitly deferred to T-011 and is not claimed here.
-  - TDD-007 consumes observed digests supplied by callers; it does not read filesystem state or publish mutations. Filesystem observation/application remain later responsibilities.
+  - TDD-005 is classification only. It does not read/write filesystem state; deterministic shared-merge provenance is completed by TDD-009.
+  - TDD-006 validates installation-state semantics in the source tree; isolated wheel packaging of the schemas remains explicitly deferred to T-011 and is not claimed here.
+  - TDD-007 consumes observed digests supplied by callers; it does not read filesystem state or publish mutations.
   - The initial TDD-008 run 31695550901 failed through an uncontrolled ImportError and is explicitly rejected as RED evidence. The valid RED is run 31695617477.
   - TDD-008 validates preservation against already-resolved Forge requirements. It does not infer Harness capability semantics and introduces no Harness SDK dependency.
+  - TDD-009 is pure planning. It performs no filesystem, network, or Harness SDK access and provides deterministic shared-merge provenance through merge_strategy_id.
+  - TDD-010 intentionally refuses delete_generated publication because safe deletion has not yet been driven by a dedicated RED/GREEN behavior cycle.
+  - FR-031, FR-032, and FR-033 remain uncounted as implemented until a dedicated CLI-boundary audit proves no lifecycle execution or activation-state surface was introduced.
   - No Harness-specific SDK or implementation has been introduced.
