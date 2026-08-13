@@ -21,10 +21,13 @@ def test_target_is_a_root_for_multiple_resources() -> None:
     assert resolve_resource_path(target, "forge-contract.md") == "tools/codex/forge-contract.md"
 
 
-def test_resource_name_must_be_simple_relative_path() -> None:
+def test_resource_name_must_stay_within_publication_root() -> None:
     _require_behavior()
     target = resolve_publication_target(explicit_target="tools/codex")
     assert target is not None
+
+    assert resolve_resource_path(target, "nested/item.md") == "tools/codex/nested/item.md"
+
     for name in ("../item.md", "/item.md", r"a\b.md", "a/../b.md"):
         try:
             resolve_resource_path(target, name)
