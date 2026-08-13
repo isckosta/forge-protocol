@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://forge.dev/schemas/adapter.schema.json",
+  "title": "Forge Harness Adapter Manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "adapter", "protocol", "capabilities"],
+  "properties": {
+    "schema": {"const": "forge/adapter@1"},
+    "adapter": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "version", "harness"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "version": {"type": "string", "minLength": 1},
+        "harness": {"type": "string", "minLength": 1}
+      }
+    },
+    "protocol": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["min", "max_exclusive"],
+      "properties": {
+        "min": {"type": "integer"},
+        "max_exclusive": {"type": "integer"}
+      }
+    },
+    "capabilities": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["persistent_instructions", "commands", "skills", "hooks", "agent_roles", "generated_files"],
+      "properties": {
+        "persistent_instructions": {"type": "boolean"},
+        "commands": {"type": "boolean"},
+        "skills": {"type": "boolean"},
+        "hooks": {"type": "boolean"},
+        "agent_roles": {"type": "boolean"},
+        "generated_files": {"type": "boolean"}
+      }
+    }
+  }
+}

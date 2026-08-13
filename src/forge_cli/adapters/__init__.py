@@ -1,0 +1,1 @@
+"""Harness Adapter foundation."""
