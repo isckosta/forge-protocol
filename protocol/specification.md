@@ -94,6 +94,8 @@ Every Change MUST undergo Verification. Passing tests alone MUST NOT automatical
 
 Every Change MUST undergo adversarial Strict Review. Reviewer MUST attempt to identify plausible reasons the Implementation should not be accepted.
 
+When a pull request or equivalent external review surface is part of the Change, Review MUST reconcile all unresolved threads that contain BLOCKER findings, MAJOR findings when project policy makes MAJOR blocking, or any other finding explicitly classified as blocking. `review_passed` MUST NOT be asserted while such a thread remains unresolved. If no external review surface exists, this condition is satisfied trivially.
+
 ## 23. TDD Review
 
 Where TDD applies, Review SHOULD evaluate test-before-production ordering, RED validity, behavioral relevance, GREEN scope, refactoring safety, missing behavioral tests, and false TDD evidence.
@@ -112,7 +114,7 @@ Every Change MUST explicitly evaluate Documentation Impact.
 
 ## 27. Completion
 
-A Change MUST NOT complete when required stages remain incomplete; a blocking Gate has failed; unresolved BLOCKER Findings exist; required Verification is incomplete; required TDD evidence is missing without an explicit exception; Documentation Impact has not been evaluated; or Manifest state contradicts repository reality.
+A Change MUST NOT complete when required stages remain incomplete; a blocking Gate has failed; unresolved BLOCKER Findings exist; required Verification is incomplete; required TDD evidence is missing without an explicit exception; Documentation Impact has not been evaluated; Manifest state contradicts repository reality; or blocking review threads on an active external review surface remain unresolved.
 
 ## 28. Repository-native state
 
