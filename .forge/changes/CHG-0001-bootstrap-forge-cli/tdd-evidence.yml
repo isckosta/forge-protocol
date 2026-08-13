@@ -60,7 +60,17 @@ cycles:
       valid: true
 
     green:
-      status: pending
+      status: observed
+      workflow_run_id: 31668399469
+      job_id: 94347862179
+      commit: 0ebcafc09dc9abe96ac759a6424e8a84dc83f11a
+      result: >
+        GitHub Actions completed successfully. Forge resolves the same Git top-level
+        directory from repository root and nested paths, and rejects a path outside a
+        Git repository with an explicit NotGitRepositoryError.
 
     refactor:
-      status: pending
+      status: not_performed
+      reason: >
+        The boundary remains minimal: one explicit error type and one deterministic
+        git rev-parse invocation. Additional abstraction is not justified yet.
