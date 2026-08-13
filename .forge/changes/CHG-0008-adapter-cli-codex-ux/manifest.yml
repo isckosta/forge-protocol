@@ -11,19 +11,19 @@ flow:
   escalations: []
 
 state:
-  current: architecture
+  current: tdd_implementation
 
 artifacts:
   intent: complete
   discovery: complete
   specification: complete
   specification_review: complete
-  architecture: active
-  architecture_decision: pending
-  test_strategy: pending
-  plan: pending
-  tasks: pending
-  traceability: pending
+  architecture: complete
+  architecture_decision: complete
+  test_strategy: approved
+  plan: approved
+  tasks: approved
+  traceability: complete
   tdd_evidence: pending
   implementation: pending
   verification: pending
