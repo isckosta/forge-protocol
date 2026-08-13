@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from hashlib import sha256
+from importlib.resources import files
 
 import yaml
 
@@ -29,13 +30,14 @@ class CodexProjectionBundle:
     resources: tuple[CodexProjectionResource, ...]
 
 
+def load_workflow_skill_template() -> str:
+    resource = files("forge_cli.adapters.codex").joinpath("resources", "skills", "workflow.md")
+    return resource.read_text(encoding="utf-8").rstrip()
+
+
 def _resource(name: str, content: str) -> CodexProjectionResource:
     normalized = content.rstrip() + "\n"
-    return CodexProjectionResource(
-        name=name,
-        content=normalized,
-        digest=sha256(normalized.encode("utf-8")).hexdigest(),
-    )
+    return CodexProjectionResource(name=name, content=normalized, digest=sha256(normalized.encode("utf-8")).hexdigest())
 
 
 def _label(stage_id: str) -> str:
@@ -55,12 +57,7 @@ def _instructions(flow_content: str) -> str:
     gates = data.get("gates") or {}
     stage_ids = [item.get("id") for item in stages if isinstance(item, dict) and item.get("id")]
 
-    lines = [
-        "## Forge Workflow Instructions",
-        "",
-        "These instructions " + "represent Forge requirements; they are " + "not technical enforcement.",
-        "",
-    ]
+    lines = [load_workflow_skill_template(), ""]
     if stage_ids:
         lines.extend(("### Required stage order", ""))
         lines.extend(f"{index}. {_label(stage_id)}" for index, stage_id in enumerate(stage_ids, 1))
