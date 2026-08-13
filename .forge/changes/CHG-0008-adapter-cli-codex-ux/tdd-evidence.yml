@@ -1,7 +1,7 @@
 schema: forge/tdd-evidence@1
 change: CHG-0008
 status: active
-cycle_count: 7
+cycle_count: 9
 cycles:
   - id: TDD-001A
     title: Registry stable ordering
@@ -87,6 +87,31 @@ cycles:
     green:
       command: .venv/bin/python -m pytest tests/unit/test_adapter_registry.py::test_codex_driver_project_is_explicitly_unimplemented -v
       result: 1 passed
+  - id: TDD-002
+    title: Schema-backed Adapter configuration and Codex target evidence
+    requirements: [FR-005, FR-006, FR-007, FR-023, INV-005, AC-009, AC-011]
+    behavior: Adapter configuration validates safe user-owned targets and resolves Codex publication targets by explicit option, configuration, then packaged repository evidence
+    red:
+      valid: true
+      command: .venv/bin/python -m pytest tests/unit/test_adapter_configuration.py tests/unit/test_codex_publication_targets.py -v
+      result: 13 failed, 5 passed
+      reason: After successful collection, the importable configuration scaffold returned no target or validation failure; Codex target resolution rejected the configuration argument and the driver returned None instead of packaged evidence.
+    green:
+      command: .venv/bin/python -m pytest tests/unit/test_adapter_configuration.py tests/unit/test_codex_publication_targets.py tests/contract/test_protocol_contract.py -v
+      result: 43 passed
+  - id: TDD-002B
+    title: Configuration schema normalized target shapes
+    requirements: [FR-005, FR-007, AC-011]
+    behavior: the configuration schema independently rejects paths that are repository-normalizable but not normalized publication targets
+    red:
+      valid: true
+      command: .venv/bin/python -m pytest tests/contract/test_protocol_contract.py::test_adapter_configuration_schema_rejects_unsafe_target_shapes -v
+      result: 3 failed, 5 passed
+      reason: The initial schema accepted '.', './target', and 'target//child' even though the runtime configuration boundary rejected those unsafe normalized shapes.
+    green:
+      command: .venv/bin/python -m pytest tests/contract/test_protocol_contract.py::test_adapter_configuration_schema_rejects_unsafe_target_shapes -v
+      result: 8 passed
 notes:
   - Focused regression command `.venv/bin/python -m pytest tests/unit/test_adapter_registry.py tests/unit/test_codex_adapter_descriptor.py -v` passed 11 tests.
   - 'rg -n "codex" src/forge_cli/adapters/driver.py src/forge_cli/adapters/registry.py returned no matches.'
+  - TDD-002 full suite command `.venv/bin/python -m pytest` passed 190 tests.

@@ -5,6 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from forge_cli.adapters.codex.descriptor import load_codex_adapter_descriptor
+from forge_cli.adapters.codex.targets import load_packaged_publication_target
 from forge_cli.adapters.driver import (
     AdapterProjection,
     AdapterProjectionContext,
@@ -20,7 +21,7 @@ class CodexDriver:
 
     @property
     def default_target(self) -> str | None:
-        return None
+        return load_packaged_publication_target()
 
     def project(self, context: AdapterProjectionContext) -> AdapterProjection:
         raise NotImplementedError

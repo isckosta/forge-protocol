@@ -46,6 +46,41 @@ def test_supported_schema_catalog_is_closed_and_valid() -> None:
         assert schema["properties"]["schema"]["const"] == entry["id"]
 
 
+def test_adapter_configuration_schema_has_one_catalog_mapping() -> None:
+    """Catch a configuration schema omitted from, or duplicated in, the closed catalog."""
+    catalog = _load_yaml(CATALOG_PATH)
+    mappings = [
+        entry
+        for entry in catalog["schemas"]
+        if entry["id"] == "forge/adapter-configuration@1"
+    ]
+
+    assert mappings == [
+        {
+            "id": "forge/adapter-configuration@1",
+            "file": "adapter-configuration.schema.json",
+        }
+    ]
+
+
+@pytest.mark.parametrize(
+    "target",
+    [".", "./target", "target//child", "/tmp/target", "a/../target", r"a\\target", "C:/target", ".codex/forge"],
+)
+def test_adapter_configuration_schema_rejects_unsafe_target_shapes(target: str) -> None:
+    """Catch a schema that admits a target the configuration boundary cannot safely publish."""
+    schema = _catalog_schemas()["forge/adapter-configuration@1"]
+
+    with pytest.raises(ValidationError):
+        Draft202012Validator(schema).validate(
+            {
+                "schema": "forge/adapter-configuration@1",
+                "adapter": "codex",
+                "target": target,
+            }
+        )
+
+
 def _catalog_schemas() -> dict[str, dict]:
     catalog = _load_yaml(CATALOG_PATH)
     return {

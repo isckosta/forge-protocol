@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+from forge_cli.adapters.configuration import AdapterConfiguration
+from forge_cli.adapters.codex.driver import CodexDriver
+
 try:
     from forge_cli.adapters.codex.targets import (
         PublicationTargetSource,
@@ -45,6 +48,23 @@ def test_explicit_target_takes_precedence_over_packaged_evidence() -> None:
     assert target is not None
     assert target.path == "project/codex.md"
     assert target.source is PublicationTargetSource.EXPLICIT
+
+
+def test_configured_target_takes_precedence_over_packaged_evidence() -> None:
+    """Catch Codex target resolution that ignores its user-owned configuration."""
+    _require_behavior()
+    target = resolve_publication_target(
+        configuration=AdapterConfiguration(adapter_id="codex", target="configured/codex"),
+        evidence_target=".agents/skills/forge",
+    )
+    assert target is not None
+    assert target.path == "configured/codex"
+    assert target.source is PublicationTargetSource.CONFIGURATION
+
+
+def test_codex_driver_exposes_the_packaged_repository_skill_target() -> None:
+    """Catch a driver that invents a global/default target instead of packaged evidence."""
+    assert CodexDriver().default_target == ".agents/skills/forge"
 
 
 def test_unsafe_target_shape_is_rejected_before_generic_planning() -> None:

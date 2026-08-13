@@ -1,6 +1,7 @@
 schema: forge/schema-catalog@1
 protocol: 1
 schemas:
+  - {id: forge/adapter-configuration@1, file: adapter-configuration.schema.json}
   - {id: forge/adapter-installation@1, file: adapter-installation.schema.json}
   - {id: forge/adapter@1, file: adapter.schema.json}
   - {id: forge/change@1, file: change.schema.json}

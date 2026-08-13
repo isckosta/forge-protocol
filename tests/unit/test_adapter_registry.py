@@ -74,10 +74,6 @@ def test_codex_driver_exposes_packaged_manifest() -> None:
     assert driver.manifest.harness == "codex"
 
 
-def test_codex_driver_has_no_default_target_before_target_evidence() -> None:
-    assert CodexDriver().default_target is None
-
-
 def test_codex_driver_project_is_explicitly_unimplemented() -> None:
     context = AdapterProjectionContext(
         project_protocol=1,
