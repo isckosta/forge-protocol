@@ -9,6 +9,8 @@ from typing import Any
 import yaml
 from jsonschema import ValidationError, validate
 
+from forge_cli.protocol_resources import resolve_protocol_root
+
 
 SUPPORTED_PROTOCOLS = {1}
 
@@ -26,7 +28,7 @@ class UnsupportedProtocolVersionError(RuntimeError):
 
 
 def _project_schema_path() -> Path:
-    return Path(__file__).resolve().parents[3] / "protocol" / "schemas" / "project.schema.json"
+    return resolve_protocol_root() / "schemas" / "project.schema.json"
 
 
 def load_project_configuration(path: Path) -> dict[str, Any]:
