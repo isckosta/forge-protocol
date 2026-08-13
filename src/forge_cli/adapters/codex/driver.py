@@ -97,7 +97,6 @@ def _flow_representation(
             "strict_review" in stages
             or (isinstance(review, dict) and review.get("strict") is True)
         )
-    has_tdd = has_tdd or "tdd_implementation" in stages
     return tuple(sorted(stages)), tuple(sorted(gates)), has_tdd, has_strict_review
 
 

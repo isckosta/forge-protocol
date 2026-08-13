@@ -1,7 +1,7 @@
 schema: forge/tdd-evidence@1
 change: CHG-0008
 status: active
-cycle_count: 16
+cycle_count: 17
 cycles:
   - id: TDD-001A
     title: Registry stable ordering
@@ -187,13 +187,25 @@ cycles:
       result: 1 passed
   - id: TDD-003
     title: Valid deterministic Codex repository skill
-    requirements: [FR-008, FR-009, FR-010, FR-022, NFR-001, NFR-003, INV-001, INV-005, AC-010, AC-012]
+    requirements: [FR-008, FR-009, FR-010, FR-022, NFR-001, NFR-003, INV-001, INV-005, AC-010]
     behavior: CodexDriver renders a stable repository-local Forge skill with only effective references, preserves authority, and exposes skill-only TDD and review behavior as generic limitations
     red:
       valid: true
       command: .venv/bin/python -m pytest tests/unit/test_codex_skill_projection.py -v
       result: 4 failed
-      reason: The importable empty projection returned no skill artifacts or generic limitations, so layout, reference, deletion-survival, and limitation assertions failed after successful collection.
+      reason: The importable empty projection returned no skill artifacts or generic limitations, so layout, reference, and limitation assertions failed after successful collection.
+    green:
+      command: .venv/bin/python -m pytest tests/unit/test_codex_skill_projection.py tests/unit/test_codex_projection_bundle.py tests/unit/test_codex_projection_gates.py tests/unit/test_codex_distribution_resources.py -v
+      result: 17 passed
+  - id: TDD-003A
+    title: Codex semantic gate rendering and truthful TDD representation
+    requirements: [FR-009, FR-022, AC-010]
+    behavior: Codex renders human-readable configured RED and completion gates, omits absent blocking-review obligations, and represents TDD only when both RED checks are present
+    red:
+      valid: true
+      command: .venv/bin/python -m pytest tests/unit/test_codex_skill_projection.py tests/unit/test_codex_projection_gates.py -v
+      result: 4 failed, 6 passed
+      reason: The renderer exposed only YAML identifiers instead of gate instructions, and the driver treated a TDD stage without both RED checks as a preserved TDD invariant.
     green:
       command: .venv/bin/python -m pytest tests/unit/test_codex_skill_projection.py tests/unit/test_codex_projection_bundle.py tests/unit/test_codex_projection_gates.py tests/unit/test_codex_distribution_resources.py -v
       result: 17 passed
@@ -204,3 +216,5 @@ notes:
   - Fix round 2 focused configuration/target/contract command passed 66 tests; full suite command `.venv/bin/python -m pytest` passed 205 tests.
   - Fix round 3 focused configuration/target/contract command passed 67 tests; sandbox full suite covered 205 tests and only wheel build isolation failed due unavailable Hatchling download; approved-network full suite passed 206 tests.
   - TDD-003 full suite command `.venv/bin/python -m pytest -q` passed 210 tests.
+  - TDD-003A focused suite passed 17 tests; approved-network full suite command `.venv/bin/python -m pytest -q` passed 210 tests.
+  - AC-012 is deferred from the pure TDD-003 projection boundary to TDD-004 publisher cleanup and TDD-008 distribution verification.

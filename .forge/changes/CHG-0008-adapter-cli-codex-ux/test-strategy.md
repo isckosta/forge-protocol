@@ -60,12 +60,12 @@ Cover FR-005 through FR-007, FR-023, and AC-009/AC-011.
 
 ### TDD-003 — Valid deterministic Codex skill
 
-Cover FR-008 through FR-010, FR-022, NFR-001, and AC-010/AC-012.
+Cover FR-008 through FR-010, FR-022, NFR-001, and AC-010. Projection remains pure; canonical survival is verified at the publisher cleanup boundary in TDD-004.
 
 ### TDD-004 — Ownership-aware plan transitions
 
 Cover FR-011 through FR-019, NFR-002, INV-002/INV-004, and
-AC-003 through AC-008.
+AC-003 through AC-008 plus AC-012, including a publisher cleanup test with separate canonical and generated trees.
 
 ### TDD-005 — Generic Adapter service
 

@@ -1,8 +1,6 @@
 from __future__ import annotations
 
 from hashlib import sha256
-from pathlib import Path
-import shutil
 
 import yaml
 
@@ -79,23 +77,6 @@ def test_codex_projection_keeps_effective_inputs_in_references_and_is_determinis
     assert "id: full" in first_by_path[".agents/skills/forge/references/flows/full.yml"]
 
 
-def test_removing_projected_skill_output_does_not_mutate_canonical_inputs(tmp_path: Path) -> None:
-    """Deleting generated artifacts must never alter the input snapshot."""
-    context = _context()
-    before = (context.flows, context.contract_content)
-    output = tmp_path / context.target
-
-    for artifact in CodexDriver().project(context).artifacts:
-        destination = tmp_path / artifact.path
-        destination.parent.mkdir(parents=True, exist_ok=True)
-        destination.write_text(artifact.content, encoding="utf-8")
-    assert output.is_dir()
-    shutil.rmtree(output)
-
-    assert (context.flows, context.contract_content) == before
-    assert not output.exists()
-
-
 def test_codex_projection_reports_skill_only_gates_as_generic_limitations() -> None:
     """Claiming technical TDD or Strict Review enforcement must fail this contract."""
     projection = CodexDriver().project(_context())
@@ -107,3 +88,25 @@ def test_codex_projection_reports_skill_only_gates_as_generic_limitations() -> N
     assert projection.representation.repository_authority_preserved is True
     assert projection.representation.red_before_behavior_preserved is True
     assert projection.representation.strict_review_preserved is True
+
+
+def test_codex_projection_does_not_claim_red_gate_from_tdd_stage_alone() -> None:
+    """A TDD stage without both RED checks must not satisfy the TDD invariant."""
+    incomplete_flow = FLOW.replace(
+        "checks: [red_executed, red_failed_for_expected_reason]",
+        "checks: [red_executed]",
+    )
+    context = AdapterProjectionContext(
+        project_protocol=1,
+        flows=(("standard", incomplete_flow.format(flow_id="standard")),),
+        contract_content="contract",
+        target=".agents/skills/forge",
+    )
+
+    projection = CodexDriver().project(context)
+
+    assert projection.representation.red_before_behavior_preserved is False
+    assert "tdd-red-before-behavior" not in projection.representation.represented_invariants
+    assert "tdd-red-before-behavior" in {
+        limitation.requirement_id for limitation in projection.limitations
+    }

@@ -209,7 +209,7 @@ git commit -m "feat(adapter): add schema-backed target configuration"
 
 ### Task 3: Valid deterministic Codex skill projection
 
-**Requirements:** FR-008–FR-010, FR-022, NFR-001/NFR-003, INV-001/INV-005, AC-010/AC-012; TDD-003.
+**Requirements:** FR-008–FR-010, FR-022, NFR-001/NFR-003, INV-001/INV-005, AC-010; TDD-003.
 
 **Files:**
 
@@ -243,7 +243,7 @@ def test_codex_projection_is_a_valid_repo_skill() -> None:
     assert "Repository-native Forge state remains authoritative" in by_path[".agents/skills/forge/SKILL.md"]
 ```
 
-Add repeated-generation equality and deletion-of-output-does-not-touch-input fixtures.
+Add repeated-generation equality and pure-input snapshot fixtures.
 
 - [ ] **Step 2: Create importable scaffolding and execute behavioral RED**
 
@@ -273,7 +273,7 @@ git commit -m "feat(codex): render repository Forge skill"
 
 ### Task 4: No-op, obsolete artifact, deletion, and rollback semantics
 
-**Requirements:** FR-011, FR-013–FR-019, NFR-001/NFR-002, INV-002/INV-004, AC-003–AC-008; TDD-004.
+**Requirements:** FR-011, FR-013–FR-019, NFR-001/NFR-002, INV-002/INV-004, AC-003–AC-008/AC-012; TDD-004.
 
 **Files:**
 
@@ -330,6 +330,8 @@ def test_obsolete_intact_generated_file_is_deleted_but_drifted_one_conflicts() -
 ```
 
 Add a publisher failure injected after create/update/delete and assert every file plus `installation.yml` is byte-identical to the pre-run snapshot.
+
+Add an AC-012 cleanup regression that deletes generated artifacts from a generated tree while a separate canonical Forge tree remains byte-identical and independently present.
 
 - [ ] **Step 2: Execute RED**
 

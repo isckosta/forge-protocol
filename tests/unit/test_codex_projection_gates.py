@@ -25,22 +25,20 @@ def test_projection_keeps_required_stage_order_in_the_effective_flow_reference()
     assert positions == sorted(positions)
 
 
-def test_projection_presents_red_gate() -> None:
+def test_projection_renders_understandable_red_gate_instructions() -> None:
     content = _content()
-    assert "red_executed" in content
-    assert "red_failed_for_expected_reason" in content
-    assert "TDD RED-before-behavior" in content
+    assert "RED must be executed." in content
+    assert "RED must fail for the expected reason." in content
 
 
-def test_projection_presents_completion_gate() -> None:
+def test_projection_renders_understandable_completion_gate_instructions() -> None:
     content = _content()
-    assert "verification_passed" in content
-    assert "review_passed" in content
-    assert "Strict Review requirements" in content
+    assert "Completion requires Verification to pass." in content
+    assert "Completion requires Strict Review to pass." in content
 
 
-def test_projection_presents_blocking_review_thread_gate() -> None:
-    assert "blocking_review_threads_resolved" in _content()
+def test_projection_renders_understandable_blocking_review_thread_instruction() -> None:
+    assert BLOCKING_THREAD_INSTRUCTION in _content()
 
 
 def test_projection_does_not_invent_blocking_review_thread_gate() -> None:
@@ -49,7 +47,7 @@ def test_projection_does_not_invent_blocking_review_thread_gate() -> None:
         "",
     )
 
-    assert "blocking_review_threads_resolved" not in _content(flow_without_gate)
+    assert BLOCKING_THREAD_INSTRUCTION not in _content(flow_without_gate)
 
 
 def test_projection_marks_instructions_as_representation_not_enforcement() -> None:
