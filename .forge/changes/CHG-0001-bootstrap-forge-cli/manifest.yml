@@ -11,7 +11,7 @@ flow:
   escalations: []
 
 state:
-  current: test_strategy
+  current: implementation
 
 artifacts:
   intent: complete
@@ -19,10 +19,10 @@ artifacts:
   specification: complete
   specification_review: complete
   architecture: complete
-  test_strategy: active
-  plan: draft
-  tasks: draft
-  implementation: pending
+  test_strategy: approved
+  plan: approved
+  tasks: approved
+  implementation: active
   verification: pending
   review: pending
   documentation: pending
