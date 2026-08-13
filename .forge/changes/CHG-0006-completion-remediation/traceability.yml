@@ -1,12 +1,7 @@
 schema: forge/traceability@1
 change: CHG-0006
 requirements:
-  FR-001: [T-002, T-003]
-  FR-002: [T-002, T-003]
-  FR-003: [T-006]
-  FR-004: [T-004, T-007]
-acceptance:
-  AC-001: [T-002, T-003]
-  AC-002: [T-002, T-003]
-  AC-003: [T-006]
-  AC-004: [T-004, T-007]
+  FR-001: {tasks: [T-002, T-003], test_strategy: unit}
+  FR-002: {tasks: [T-002, T-003], test_strategy: unit}
+  FR-003: {tasks: [T-006], test_strategy: documentation_review}
+  FR-004: {tasks: [T-004, T-007], test_strategy: evidence_audit}

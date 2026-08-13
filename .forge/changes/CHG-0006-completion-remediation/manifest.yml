@@ -1,7 +1,7 @@
 schema: forge/change@1
 change: {id: CHG-0006, title: Completion Remediation, kind: bugfix}
 flow: {initial: full, current: full, escalations: []}
-state: {current: complete}
+state: {current: review}
 artifacts:
   intent: complete
   discovery: complete
@@ -16,15 +16,14 @@ artifacts:
   tdd_evidence: complete
   implementation: complete
   verification: passed
-  review: complete
+  review: active
   documentation: complete
   knowledge_capture: complete
 requirements: {total: 4, implemented: 4, verified: 4}
 tdd: {status: compliant, cycles: 1}
 verification: {status: passed}
-review: {status: passed, iteration: 1, blockers: 0, majors: 0, minors: 0, observations: 0}
+review: {status: active, iteration: 2, blockers: 0, majors: 0, minors: 2, observations: 0}
 documentation:
   impact_evaluated: true
   update_required: true
-  status: complete
   reason: The Engineering Contract, Architecture guidance, and Codex projection behavior require alignment.

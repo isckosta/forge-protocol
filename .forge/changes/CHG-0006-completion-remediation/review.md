@@ -51,3 +51,29 @@ The positive test would fail if the new production branch were removed. The nega
 ## Review gate
 
 PASSED. Documentation and Knowledge Capture remain required before Completion.
+
+## Iteration 2 — Schema conformance reconciliation
+
+Result: FAILED.
+
+Post-Completion GitHub review identified two non-behavioral artifact findings:
+
+### REV-001 — Manifest documentation shape violates `forge/change@1`
+
+Severity: MINOR
+
+Status: RESOLVED pending re-review
+
+The manifest included `documentation.status`, but the canonical Change schema disallows that property. The field was removed, and the manifest was returned to active Review rather than remaining falsely complete.
+
+### REV-002 — Traceability shape violates `forge/traceability@1`
+
+Severity: MINOR
+
+Status: RESOLVED pending re-review
+
+Requirement values were arrays and an unsupported top-level `acceptance` map was present. Each requirement now uses the canonical `{tasks: [...], test_strategy: ...}` object form, and acceptance evidence remains in Specification and Verification rather than an unsupported schema property.
+
+## Iteration 2 review gate
+
+FAILED until canonical JSON Schema validation, current-HEAD checks, external thread resolution, and a subsequent re-review pass.
