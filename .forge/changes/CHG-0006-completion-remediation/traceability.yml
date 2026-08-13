@@ -1,0 +1,12 @@
+schema: forge/traceability@1
+change: CHG-0006
+requirements:
+  FR-001: [T-002, T-003]
+  FR-002: [T-002, T-003]
+  FR-003: [T-006]
+  FR-004: [T-004, T-007]
+acceptance:
+  AC-001: [T-002, T-003]
+  AC-002: [T-002, T-003]
+  AC-003: [T-006]
+  AC-004: [T-004, T-007]

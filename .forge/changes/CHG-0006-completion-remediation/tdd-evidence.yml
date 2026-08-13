@@ -1,0 +1,9 @@
+schema: forge/tdd-evidence@1
+change: CHG-0006
+status: active
+cycle_count: 1
+cycles:
+  - id: TDD-001
+    title: Blocking Review Thread Gate Projection
+    requirements: [FR-001, FR-002]
+    behavior: explicit conditional Codex instruction for blocking external review threads
