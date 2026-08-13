@@ -87,6 +87,16 @@ def _replace_file(path: Path, content: str) -> None:
             temp_path.unlink()
 
 
+def _reserve_create_target(path: Path) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    try:
+        path.touch(exist_ok=False)
+    except FileExistsError as exc:
+        raise AdapterPublicationConflictError(
+            f"Adapter create target appeared after planning: {path}."
+        ) from exc
+
+
 def _restore_bytes(path: Path, content: bytes | None) -> None:
     if content is None:
         if path.exists() or path.is_symlink():
@@ -220,8 +230,6 @@ def publish_adapter_plan(
     installation_relative = f".forge/adapters/{plan.adapter_id}/installation.yml"
     installation_path = _safe_target(root, installation_relative)
 
-    # Path safety and repository-state preconditions are evaluated before
-    # consistency checks that could otherwise mask a path violation.
     targets: dict[str, Path] = {}
     for operation in plan.operations:
         targets[operation.path] = _preflight_operation(root, operation)
@@ -249,10 +257,20 @@ def publish_adapter_plan(
                     raise AdapterPublicationConflictError(
                         f"Adapter update precondition changed before write: {operation.path}."
                     )
+                original = target.read_bytes()
+                applied.append((target, original))
+                _replace_file(target, operation.content or "")
+                continue
 
-            original = target.read_bytes() if target.exists() else None
-            applied.append((target, original))
-            _replace_file(target, operation.content or "")
+            if operation.intent is OperationIntent.CREATE:
+                _reserve_create_target(target)
+                applied.append((target, None))
+                _replace_file(target, operation.content or "")
+                continue
+
+            raise AdapterPublicationError(
+                f"Unsupported publishable Adapter operation intent: {operation.intent}."
+            )
 
         _write_installation_record_atomically(installation_path, installation_record)
     except AdapterPublicationConflictError:
