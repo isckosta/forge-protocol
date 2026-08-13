@@ -1,7 +1,7 @@
 schema: forge/tdd-evidence@1
 change: CHG-0004
 status: active
-cycle_count: 4
+cycle_count: 5
 cycles:
   - id: TDD-001
     title: Codex Adapter Descriptor and Capability Evidence
@@ -25,3 +25,9 @@ cycles:
     red: {commit: 7711a7c0023da355edfda74dfbfc7dccb36489f2, run_id: 31705584052, valid: true}
     green: {commit: eac3c74748de75ea7e7cb7e9be2ce279e0806f48, run_id: 31706168268, valid: true}
     notes: [FR-027 remains pending for conformance and planning evidence]
+  - id: TDD-005
+    title: Codex Publication Target Resolution
+    requirements: [FR-018]
+    red: {commit: 79934977cdd639eb8cb2557775d5fa889fc0a429, run_id: 31706541563, valid: true}
+    green: {commit: 003a810e39afdab53a81562d6a6b5465c32bf29e, run_id: 31707225745, valid: true}
+    notes: [no default destination is invented; explicit configuration takes precedence over packaged evidence]
