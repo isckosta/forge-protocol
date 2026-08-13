@@ -25,7 +25,7 @@ artifacts:
   tasks: approved
   traceability: complete
   tdd_evidence: active
-  implementation: active
+  implementation: complete
   verification: pending
   review: pending
   documentation: pending
@@ -33,7 +33,7 @@ artifacts:
 
 requirements:
   total: 35
-  implemented: 32
+  implemented: 35
   verified: 0
 
 tdd:
