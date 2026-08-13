@@ -23,7 +23,9 @@ from forge_cli.adapters.manifest import IncompatibleAdapterProtocolError
 from forge_cli.adapters.manifest import AdapterManifest
 from forge_cli.adapters.registry import AdapterRegistry
 from forge_cli.adapters.codex.driver import CodexDriver
+from forge_cli.adapters.driver import AdapterProjection
 from forge_cli.adapters.plan import digest_content
+from forge_cli.adapters.validation import AdapterRepresentation
 
 
 def _tree_bytes_and_mtimes(root: Path) -> dict[str, tuple[bytes, int]]:
@@ -81,6 +83,40 @@ def _record_path(project_root: Path) -> Path:
     return project_root / ".forge" / "adapters" / "codex" / "installation.yml"
 
 
+class _EmptyDriver:
+    manifest = AdapterManifest(
+        adapter_id="empty",
+        version="1.0.0",
+        harness="empty",
+        protocol_min=1,
+        protocol_max_exclusive=2,
+        capabilities={},
+    )
+    default_target = "empty"
+
+    def project(self, context: object) -> AdapterProjection:
+        return AdapterProjection(
+            artifacts=(),
+            limitations=(),
+            representation=AdapterRepresentation(
+                stages=(),
+                gates=(),
+                represented_invariants=(),
+                enforced_invariants=(),
+                limitations=(),
+                repository_authority_preserved=True,
+            ),
+        )
+
+
+def _empty_service() -> AdapterService:
+    return AdapterService(AdapterRegistry((_EmptyDriver(),)))
+
+
+def _empty_record_path(project_root: Path) -> Path:
+    return project_root / ".forge" / "adapters" / "empty" / "installation.yml"
+
+
 def test_plan_is_read_only_and_uses_evidence_target(initialized_project: Path) -> None:
     before = _tree_bytes_and_mtimes(initialized_project)
 
@@ -118,6 +154,41 @@ def test_install_then_reinstall_is_true_noop(initialized_project: Path) -> None:
 
     assert first.mutated is True
     assert second.mutated is False
+    assert _tree_bytes_and_mtimes(initialized_project) == before
+
+
+def test_empty_projection_first_install_publishes_an_empty_record(
+    initialized_project: Path,
+) -> None:
+    result = _empty_service().install(initialized_project, "empty")
+
+    record = load_installation_record(_empty_record_path(initialized_project))
+    assert result.mutated is True
+    assert record.adapter_id == "empty"
+    assert record.generated_artifacts == ()
+
+
+def test_empty_projection_reinstall_is_a_true_noop(initialized_project: Path) -> None:
+    service = _empty_service()
+    assert service.install(initialized_project, "empty").mutated is True
+    before = _tree_bytes_and_mtimes(initialized_project)
+
+    result = service.install(initialized_project, "empty")
+
+    assert result.mutated is False
+    assert _tree_bytes_and_mtimes(initialized_project) == before
+
+
+def test_empty_projection_current_version_update_is_a_true_noop(
+    initialized_project: Path,
+) -> None:
+    service = _empty_service()
+    assert service.install(initialized_project, "empty").mutated is True
+    before = _tree_bytes_and_mtimes(initialized_project)
+
+    result = service.update(initialized_project, "empty")
+
+    assert result.mutated is False
     assert _tree_bytes_and_mtimes(initialized_project) == before
 
 

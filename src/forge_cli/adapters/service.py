@@ -289,9 +289,7 @@ class AdapterService:
 
     @staticmethod
     def _entirely_unchanged(plan: AdapterPlan) -> bool:
-        return bool(plan.operations) and all(
-            operation.intent is OperationIntent.UNCHANGED for operation in plan.operations
-        )
+        return all(operation.intent is OperationIntent.UNCHANGED for operation in plan.operations)
 
     @staticmethod
     def _installation_record(driver: HarnessDriver, plan: AdapterPlan) -> AdapterInstallationRecord:
