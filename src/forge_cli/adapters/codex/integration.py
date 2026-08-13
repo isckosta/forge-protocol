@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Iterable, Mapping
 
-from forge_cli.adapters.capabilities import CapabilityRequirement
+from forge_cli.adapters.capabilities import CapabilityLimitation, CapabilityRequirement
 from forge_cli.adapters.ownership import GeneratedDrift, detect_generated_drift
 from forge_cli.adapters.plan import AdapterPlan, OperationIntent, OwnershipMode
 from forge_cli.adapters.planner import (
@@ -27,6 +27,7 @@ def plan_codex_projection(
     project_protocol: int,
     capability_requirements: Iterable[CapabilityRequirement],
     repository_state: Iterable[RepositoryArtifactState],
+    invariant_limitations: Iterable[CapabilityLimitation] = (),
 ) -> AdapterPlan:
     from forge_cli.adapters.codex import load_codex_adapter_descriptor
 
@@ -47,6 +48,7 @@ def plan_codex_projection(
         ),
         projections=projections,
         repository_state=repository_state,
+        additional_limitations=invariant_limitations,
     )
 
 

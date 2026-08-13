@@ -6,6 +6,7 @@ from dataclasses import dataclass
 from typing import Iterable
 
 from forge_cli.adapters.capabilities import (
+    CapabilityLimitation,
     CapabilityRequirement,
     evaluate_capability_requirements,
 )
@@ -58,14 +59,16 @@ def plan_adapter(
     effective_configuration: EffectiveAdapterConfiguration,
     projections: Iterable[ProjectedArtifact],
     repository_state: Iterable[RepositoryArtifactState],
+    additional_limitations: Iterable[CapabilityLimitation] = (),
 ) -> AdapterPlan:
     """Produce a stable plan from already-resolved Forge and Adapter inputs."""
     require_protocol_compatibility(manifest, effective_configuration.project_protocol)
 
-    limitations = evaluate_capability_requirements(
+    capability_limitations = evaluate_capability_requirements(
         declared_capabilities=manifest.capabilities,
         requirements=effective_configuration.capability_requirements,
     )
+    limitations = (*capability_limitations, *additional_limitations)
 
     states: dict[str, RepositoryArtifactState] = {}
     for state in repository_state:
