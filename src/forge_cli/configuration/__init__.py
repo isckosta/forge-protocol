@@ -10,9 +10,7 @@ import yaml
 from jsonschema import ValidationError, validate
 
 from forge_cli.protocol_resources import resolve_protocol_root
-
-
-SUPPORTED_PROTOCOLS = {1}
+from forge_cli.version import SUPPORTED_PROTOCOL_IDS
 
 
 class InvalidProjectConfigurationError(RuntimeError):
@@ -40,7 +38,7 @@ def load_project_configuration(path: Path) -> dict[str, Any]:
         raise InvalidProjectConfigurationError(str(error)) from error
 
     protocol = data["forge"]["protocol"]
-    if protocol not in SUPPORTED_PROTOCOLS:
+    if protocol not in SUPPORTED_PROTOCOL_IDS:
         raise UnsupportedProtocolVersionError(protocol)
 
     return data
