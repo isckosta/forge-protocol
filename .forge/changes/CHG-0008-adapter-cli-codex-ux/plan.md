@@ -72,11 +72,16 @@ def test_packaged_registry_contains_codex_without_network(monkeypatch) -> None:
     assert build_packaged_registry().get("codex").manifest.harness == "codex"
 ```
 
-- [ ] **Step 2: Execute RED**
+- [ ] **Step 2: Create importable scaffolding and execute behavioral RED**
 
 Run: `.venv/bin/python -m pytest tests/unit/test_adapter_registry.py -v`
 
-Expected: collection fails because `forge_cli.adapters.registry` does not exist. Record this valid missing-behavior RED in `tdd-evidence.yml`.
+Before running, create only enough importable type/module scaffolding for test
+collection; it MUST NOT implement ordering, unknown lookup, duplicate rejection,
+or packaged discovery. Expected: tests collect and fail by assertion or the
+expected domain exception because those behaviors are absent. Import, syntax,
+fixture, or collection errors do not count as RED. Record only the behavioral
+failure in `tdd-evidence.yml`.
 
 - [ ] **Step 3: Implement the minimal generic contract and registry**
 
@@ -158,11 +163,14 @@ def test_invalid_or_forbidden_target_is_rejected(target: str) -> None:
 
 Also assert malformed YAML, unknown keys, wrong Adapter identity, and a symlinked configuration path do not mutate existing bytes.
 
-- [ ] **Step 2: Execute RED**
+- [ ] **Step 2: Create importable scaffolding and execute behavioral RED**
 
 Run: `.venv/bin/python -m pytest tests/unit/test_adapter_configuration.py tests/unit/test_codex_publication_targets.py -v`
 
-Expected: missing configuration API/default publication evidence.
+Before running, create only importable API scaffolding that returns no effective
+configuration/default. Expected: tests collect and fail on literal precedence,
+validation, schema, or atomicity assertions. Import, syntax, fixture, or
+collection errors do not count as RED.
 
 - [ ] **Step 3: Implement schema-backed atomic configuration**
 
@@ -219,11 +227,14 @@ def test_codex_projection_is_a_valid_repo_skill() -> None:
 
 Add repeated-generation equality and deletion-of-output-does-not-touch-input fixtures.
 
-- [ ] **Step 2: Execute RED**
+- [ ] **Step 2: Create importable scaffolding and execute behavioral RED**
 
 Run: `.venv/bin/python -m pytest tests/unit/test_codex_skill_projection.py -v`
 
-Expected: missing `CodexDriver` and skill resource layout.
+Before running, create only an importable `CodexDriver` stub that returns an
+empty projection through the declared interface. Expected: tests collect and
+fail on the required skill layout, metadata, content, or determinism assertions.
+Import, syntax, fixture, or collection errors do not count as RED.
 
 - [ ] **Step 3: Implement the Codex driver and skill renderer**
 
@@ -366,11 +377,14 @@ def test_update_refuses_drift_without_partial_mutation(initialized_project: Path
 
 Add different-version install rejection, missing-record update rejection, target precedence, Protocol incompatibility, invalid record identity, and plan read-only tests.
 
-- [ ] **Step 2: Execute RED**
+- [ ] **Step 2: Create importable scaffolding and execute behavioral RED**
 
 Run: `.venv/bin/python -m pytest tests/integration/test_adapter_service.py -v`
 
-Expected: service/repository modules are missing.
+Before running, create only importable service/result scaffolding whose methods
+return empty results or raise a neutral unimplemented domain condition. Expected:
+tests collect and fail on state-machine, mutation, or error-code assertions.
+Import, syntax, fixture, or collection errors do not count as RED.
 
 - [ ] **Step 3: Implement read-once orchestration**
 
@@ -425,11 +439,14 @@ def test_limitations_are_warnings_not_enforcement() -> None:
     assert all("enforced" not in item.message.lower() for item in result.checks if item.status == "warning")
 ```
 
-- [ ] **Step 2: Execute RED**
+- [ ] **Step 2: Create importable scaffolding and execute behavioral RED**
 
 Run: `.venv/bin/python -m pytest tests/unit/test_adapter_diagnostics.py tests/integration/test_adapter_service.py -v`
 
-Expected: missing diagnostic result types and service methods.
+Before running, create only importable diagnostic/result scaffolding with empty
+checks/findings. Expected: tests collect and fail on required statuses,
+remediation, read-only behavior, or limitation assertions. Import, syntax,
+fixture, or collection errors do not count as RED.
 
 - [ ] **Step 3: Implement deterministic findings/checks**
 
@@ -520,7 +537,9 @@ git commit -m "feat(cli): add Adapter management commands"
 
 ### Task 8: Installed-wheel offline golden path
 
-**Requirements:** FR-024, NFR-001, INV-001/INV-005, AC-001–AC-012; TDD-008.
+**Requirements:** FR-024, NFR-001, INV-001/INV-005, AC-001–AC-012;
+distribution Verification by default. It becomes TDD-008 only if the executable
+acceptance test reveals a real missing behavior or packaging defect.
 
 **Files:**
 
@@ -532,7 +551,7 @@ git commit -m "feat(cli): add Adapter management commands"
 
 - Probe takes an isolated `forge` executable and temporary Git repository; it imports no source-tree helpers.
 
-- [ ] **Step 1: Write the distribution RED**
+- [ ] **Step 1: Write the executable distribution acceptance test**
 
 Build/install a wheel into a temporary venv, clear `PYTHONPATH`, set
 `PYTHONNOUSERSITE=1`, disable index/network for runtime commands, then execute:
@@ -555,11 +574,15 @@ forge adapter update codex          # success
 Assert skill frontmatter, all references, record digests, plan/dry-run parity,
 no-op bytes/mtimes, canonical-state survival, and absence of `.codex/`.
 
-- [ ] **Step 2: Execute RED**
+- [ ] **Step 2: Execute the acceptance test and classify the result**
 
 Run: `.venv/bin/python -m pytest tests/integration/test_adapter_distribution.py -v`
 
-Expected: wheel lacks the new command/resources or golden path behavior.
+If it passes immediately, record it as Verification and do not manufacture a
+TDD cycle. If it fails because a required behavior or packaged resource is
+absent, confirm the assertion is behavioral and record that valid RED as
+TDD-008. Environment, dependency-download, import, syntax, fixture, or
+collection failures are not RED and must be corrected before classification.
 
 - [ ] **Step 3: Fix only proven distribution gaps**
 

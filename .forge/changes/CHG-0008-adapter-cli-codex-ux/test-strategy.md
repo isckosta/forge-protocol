@@ -81,9 +81,14 @@ Cover FR-020 through FR-023 and AC-007/AC-010/AC-011.
 Cover FR-001 through FR-007, FR-011, FR-015/FR-016, FR-020/FR-021,
 FR-023, NFR-004, and AC-001 through AC-003/AC-005/AC-009.
 
-### TDD-008 — Installed-wheel golden path
+### Distribution Verification / conditional TDD-008 — Installed-wheel golden path
 
-Cover FR-024, INV-005, and all acceptance scenarios at distribution level.
+Cover FR-024, INV-005, and all acceptance scenarios at distribution level. The
+first executable run is Verification when it passes against behavior already
+implemented by earlier cycles. It is credited as TDD-008 only when it fails on
+a genuine missing product or packaging behavior and precedes the corresponding
+production/package fix. Environment, import, collection, and dependency setup
+failures never count as RED.
 
 ## Safety regressions
 
