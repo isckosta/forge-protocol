@@ -11,7 +11,8 @@ status: approved
 ## Phase 1 — Machine-readable contract
 
 Drive a catalog-closure test from RED to GREEN, add schemas for Flow, Policy,
-and TDD evidence, and require Adapter interval ordering at schema level.
+and TDD evidence. Preserve schema validation for Adapter field bounds and prove
+interval ordering through the existing semantic validator.
 
 ## Phase 2 — Repository consistency
 

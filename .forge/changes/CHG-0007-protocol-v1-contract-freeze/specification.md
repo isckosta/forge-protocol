@@ -5,7 +5,7 @@ forge:
 change: CHG-0007
 status: approved
 review:
-  iterations: 2
+  iterations: 3
 ---
 
 # Specification — Protocol v1 Contract Freeze
@@ -78,7 +78,8 @@ formal Requirement identifier before behavioral implementation.
 Schema-invalid historical repository artifacts MUST be migrated to the stable
 shape when the migration is mechanical. Existing outcomes, evidence commits,
 test results, severity counts, and completion claims MUST NOT be changed merely
-to satisfy schema validation.
+to satisfy schema validation. Existing acceptance mappings MAY remain an
+optional top-level traceability map keyed by acceptance identifier.
 
 ## Non-functional requirement
 
@@ -110,8 +111,9 @@ Given the repository's canonical YAML instances, every instance selected by
 the contract suite validates against the schema for its identifier.
 
 ### AC-004 — Invalid Adapter interval
-Given an Adapter manifest whose `min` is not lower than `max_exclusive`, schema
-validation rejects it.
+Given an Adapter manifest whose `min` is not lower than `max_exclusive`,
+canonical Adapter validation rejects it. JSON Schema validates field types and
+bounds; the existing semantic manifest validator enforces cross-field order.
 
 ### AC-005 — Common completion quality
 Given each canonical Flow, its completion Gate requires Verification, Strict

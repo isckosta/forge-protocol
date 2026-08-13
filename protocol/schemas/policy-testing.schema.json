@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://forge.dev/schemas/policy-testing.schema.json",
+  "title": "Forge Testing Policy",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "testing"],
+  "properties": {
+    "schema": {"const": "forge/policy/testing@1"},
+    "testing": {
+      "type": "object",
+      "minProperties": 1,
+      "required": ["approach", "cycle", "red", "green", "refactor", "verification"],
+      "properties": {
+        "approach": {"const": "tdd_first"},
+        "cycle": {
+          "type": "object",
+          "required": ["required"],
+          "properties": {
+            "required": {"const": ["red", "green", "refactor"]}
+          }
+        },
+        "red": {"type": "object", "minProperties": 1},
+        "green": {"type": "object", "minProperties": 1},
+        "refactor": {"type": "object", "minProperties": 1},
+        "verification": {
+          "type": "object",
+          "required": ["required", "passing_tests_alone_are_sufficient"],
+          "properties": {
+            "required": {"const": true},
+            "passing_tests_alone_are_sufficient": {"const": false}
+          }
+        }
+      }
+    }
+  }
+}

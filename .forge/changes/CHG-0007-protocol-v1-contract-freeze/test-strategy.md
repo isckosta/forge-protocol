@@ -47,7 +47,7 @@ Each automatable behavioral defect receives its own valid RED before a fix.
 - Draft 2020-12 meta-schema validity;
 - catalog/file closure and identity agreement;
 - canonical YAML validation by declared schema;
-- invalid Adapter interval rejection;
+- invalid Adapter interval rejection through schema plus semantic validation;
 - common Flow completion and behavioral RED Gates;
 - preservation of CHG-0004 task/acceptance facts.
 

@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://forge.dev/schemas/policy-review.schema.json",
+  "title": "Forge Review Policy",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "review"],
+  "properties": {
+    "schema": {"const": "forge/policy/review@1"},
+    "review": {
+      "type": "object",
+      "minProperties": 1,
+      "required": ["required", "strict", "adversarial", "blocking"],
+      "properties": {
+        "required": {"const": true},
+        "strict": {"const": true},
+        "adversarial": {"const": true},
+        "blocking": {
+          "type": "array",
+          "contains": {"const": "blocker"},
+          "items": {"enum": ["blocker", "major", "minor", "observation"]},
+          "uniqueItems": true
+        }
+      }
+    }
+  }
+}

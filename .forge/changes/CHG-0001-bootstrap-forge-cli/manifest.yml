@@ -52,7 +52,6 @@ review:
 documentation:
   impact_evaluated: true
   update_required: true
-  status: complete
   reason: >
     README, Changelog, Verification, Review, and Knowledge Capture now reflect
     the implemented bootstrap CLI and durable architectural decisions.

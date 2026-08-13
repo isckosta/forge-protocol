@@ -1,5 +1,30 @@
 schema: forge/tdd-evidence@1
 change: CHG-0007
 status: active
-cycle_count: 0
-cycles: []
+cycle_count: 2
+cycles:
+  - id: TDD-001
+    title: Supported Schema Catalog Closure
+    requirements: [FR-002, FR-007, FR-008, FR-010, NFR-001, INV-001]
+    behavior: resolve every supported schema through a portable valid catalog
+    red:
+      valid: true
+      result: 1 failed
+      reason: contract test failed because protocol/schemas/catalog.yml was absent
+    green:
+      result: focused contract test passed; full suite 142 passed
+
+  - id: TDD-002
+    title: Canonical Repository Artifact Validation
+    requirements: [FR-009, FR-013, NFR-001, INV-002]
+    behavior: validate canonical YAML instances without losing historical mappings
+    red:
+      valid: true
+      result: 1 failed, 3 passed
+      reason: five obsolete manifest properties, old CHG-0004 traceability shape, and one misparsed CHG-0002 note were exposed
+    green:
+      result: 12 focused tests passed; full suite 142 passed
+      notes:
+        - obsolete fields were removed without changing lifecycle outcomes
+        - CHG-0004 task and acceptance mappings remain identical
+        - CHG-0002 note text is unchanged and now parses as text

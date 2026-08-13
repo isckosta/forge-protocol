@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://forge.dev/schemas/policy-security.schema.json",
+  "title": "Forge Security Policy",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "security"],
+  "properties": {
+    "schema": {"const": "forge/policy/security@1"},
+    "security": {"type": "object", "minProperties": 1}
+  }
+}

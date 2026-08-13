@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://forge.dev/schemas/policy-architecture.schema.json",
+  "title": "Forge Architecture Policy",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "architecture"],
+  "properties": {
+    "schema": {"const": "forge/policy/architecture@1"},
+    "architecture": {"type": "object", "minProperties": 1}
+  }
+}

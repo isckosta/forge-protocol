@@ -4,7 +4,7 @@ forge:
   schema: 1
 change: CHG-0007
 status: passed
-iteration: 2
+iteration: 3
 ---
 
 # Adversarial Specification Review — Protocol v1 Contract Freeze
@@ -57,3 +57,15 @@ scope, explicit historical integrity, deterministic validation, and testable
 acceptance scenarios. No blocker or major finding remains.
 
 Decision: PASS.
+
+## Iteration 3 — Pre-implementation feasibility correction
+
+### SR-005 — MAJOR — Standard JSON Schema cannot compare interval fields
+
+The implementation plan incorrectly assigned `min < max_exclusive` entirely
+to Draft 2020-12 JSON Schema. The standard has no portable cross-field numeric
+comparison keyword. AC-004 now assigns type/bound checks to JSON Schema and
+ordering to the existing deterministic Adapter manifest validator. This keeps
+the acceptance behavior while avoiding a non-standard extension.
+
+Resolution: accepted before production implementation. Decision remains PASS.

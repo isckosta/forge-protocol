@@ -83,6 +83,6 @@ cycles:
 notes:
   - Invalid collection/import failures observed during earlier cycles are not counted as RED evidence.
   - T-011 wheel/schema coverage started GREEN because protocol resources were already force-included; it is Verification evidence, not fabricated TDD evidence.
-  - FR-031, FR-032, and FR-033 were closed by the dedicated CLI/state boundary audit: lifecycle commands remain absent and installation state rejects lifecycle fields.
+  - "FR-031, FR-032, and FR-033 were closed by the dedicated CLI/state boundary audit: lifecycle commands remain absent and installation state rejects lifecycle fields."
   - TDD-010 intentionally refuses delete_generated publication because safe deletion was not required for Foundation publication and has no dedicated RED/GREEN cycle.
   - No Harness-specific SDK or AI-provider dependency was introduced.

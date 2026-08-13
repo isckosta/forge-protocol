@@ -38,5 +38,4 @@ review:
 documentation:
   impact_evaluated: true
   update_required: false
-  status: complete
   reason: CI trigger correction only.

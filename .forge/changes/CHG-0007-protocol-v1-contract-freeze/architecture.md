@@ -48,6 +48,11 @@ Contract tests enforce:
 4. every supported schema file is cataloged;
 5. canonical YAML instances validate by their declared identifier.
 
+Relational constraints between two instance fields remain semantic validation.
+In particular, Adapter JSON Schema validates integer bounds while the existing
+manifest parser enforces `min < max_exclusive`; Draft 2020-12 has no portable
+cross-field numeric comparison keyword.
+
 ## Validation boundary
 
 The validator lives in contract tests because this Change establishes a
@@ -67,7 +72,8 @@ Migration is limited to:
 
 - deleting the obsolete, redundant `documentation.status` field;
 - wrapping existing CHG-0004 traceability arrays in requirement objects;
-- retaining acceptance mappings as additional requirement metadata.
+- retaining its acceptance map unchanged in an optional schema field.
+- quoting one CHG-0002 note so YAML preserves its existing textual meaning.
 
 No evidence value or lifecycle outcome changes.
 

@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://forge.dev/schemas/policy-documentation.schema.json",
+  "title": "Forge Documentation Policy",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "documentation"],
+  "properties": {
+    "schema": {"const": "forge/policy/documentation@1"},
+    "documentation": {"type": "object", "minProperties": 1}
+  }
+}

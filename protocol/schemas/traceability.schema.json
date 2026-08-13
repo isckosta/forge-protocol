@@ -8,6 +8,7 @@
   "properties": {
     "schema": {"const": "forge/traceability@1"},
     "change": {"type": "string", "pattern": "^CHG-[0-9]{4,}$"},
-    "requirements": {"type": "object", "additionalProperties": {"type": "object", "additionalProperties": true, "properties": {"tasks": {"type": "array", "items": {"type": "string"}}, "test_strategy": {"type": "string"}}}}
+    "requirements": {"type": "object", "additionalProperties": {"type": "object", "additionalProperties": true, "properties": {"tasks": {"type": "array", "items": {"type": "string"}}, "test_strategy": {"type": "string"}}}},
+    "acceptance": {"type": "object", "additionalProperties": {"type": "array", "items": {"type": "string"}}}
   }
 }

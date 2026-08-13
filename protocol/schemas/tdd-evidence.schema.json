@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://forge.dev/schemas/tdd-evidence.schema.json",
+  "title": "Forge TDD Evidence",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "change", "status", "cycle_count", "cycles"],
+  "properties": {
+    "schema": {"const": "forge/tdd-evidence@1"},
+    "change": {"type": "string", "pattern": "^CHG-[0-9]{4,}$"},
+    "status": {"enum": ["active", "compliant", "complete", "not_applicable", "exception"]},
+    "cycle_count": {"type": "integer", "minimum": 0},
+    "cycles": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id"],
+        "properties": {
+          "id": {"type": "string", "pattern": "^TDD-[0-9]{3,}[A-Z]?$"},
+          "title": {"type": "string", "minLength": 1},
+          "requirements": {
+            "type": "array",
+            "items": {"type": "string", "minLength": 1},
+            "uniqueItems": true
+          },
+          "behavior": {"type": "string", "minLength": 1},
+          "origin": {"type": "string", "minLength": 1},
+          "red": {"$ref": "#/$defs/evidence"},
+          "intermediate_green": {"$ref": "#/$defs/evidence"},
+          "green": {"$ref": "#/$defs/evidence"},
+          "notes": {"type": "array", "items": {"type": "string"}}
+        }
+      }
+    },
+    "notes": {"type": "array", "items": {"type": "string"}}
+  },
+  "$defs": {
+    "evidence": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {
+        "type": ["string", "integer", "boolean", "array"],
+        "items": {"type": ["string", "integer", "boolean"]}
+      }
+    }
+  }
+}

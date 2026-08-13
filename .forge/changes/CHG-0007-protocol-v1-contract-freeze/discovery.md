@@ -39,7 +39,9 @@ corresponding cataloged schema. There is no portable registry relating a
 supported identifier to its schema file.
 
 All existing JSON Schemas are Draft 2020-12 documents. Adapter interval
-ordering is enforced by Python parsing but not by the schema alone.
+ordering is enforced by Python parsing but not by the schema alone. Draft
+2020-12 has no portable keyword for comparing two arbitrary instance fields,
+so stable validation keeps this deliberate schema-plus-semantic split.
 
 ## Repository drift findings
 
@@ -49,12 +51,14 @@ Read-only validation found:
   `documentation.status`, prohibited by `forge/change@1`;
 - CHG-0004 traceability uses requirement arrays and a top-level `acceptance`
   map from an earlier shape, prohibited by `forge/traceability@1`;
+- one CHG-0002 evidence note contains an unquoted colon and therefore parses as
+  a YAML map rather than the intended text;
 - CHG-0006 already uses the current manifest and traceability shapes.
 
 These are structural discrepancies. Removing the obsolete status property and
 wrapping existing task mappings in the current requirement object shape does
-not change any historical outcome. Acceptance mappings can be retained inside
-the relevant requirement entries as additional traceability metadata.
+not change any historical outcome. The stable traceability schema can add an
+optional top-level acceptance map and retain those mappings exactly.
 
 ## Flow consistency findings
 

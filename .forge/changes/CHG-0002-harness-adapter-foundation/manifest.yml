@@ -54,6 +54,5 @@ review:
 documentation:
   impact_evaluated: true
   update_required: true
-  status: complete
   reason: >
     Harness Adapter semantics are documented in canonical public documentation.

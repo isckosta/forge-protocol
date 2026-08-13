@@ -21,7 +21,8 @@ Requirements: FR-002, FR-007, FR-008, FR-010, NFR-001, INV-001
 
 Create the contract test first, observe missing-catalog RED, then add the
 catalog and Flow, Policy, and TDD-evidence schemas. Tighten Adapter interval
-ordering and prove catalog identity/file closure.
+field bounds, retain semantic cross-field ordering validation, and prove
+catalog identity/file closure.
 
 ## T-003 — TDD canonical-instance audit and migration
 
