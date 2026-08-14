@@ -39,6 +39,13 @@ class ValidationResult:
 
 
 def _validate_reviewer_resolver_separation(project_root: Path) -> list[ValidationFinding]:
+    """Apply semantic C-026 checks after JSON Schema structural validation.
+
+    The Change schema owns structural requirements such as requiring a complete
+    reviewer_identity object for FULL Changes. This validator intentionally owns
+    only semantic consistency/strength checks that JSON Schema cannot express
+    safely as mere field presence and type constraints.
+    """
     findings: list[ValidationFinding] = []
     changes_dir = project_root / ".forge" / "changes"
     if not changes_dir.is_dir():
@@ -55,12 +62,18 @@ def _validate_reviewer_resolver_separation(project_root: Path) -> list[Validatio
         flow = manifest.get("flow") or {}
         review = manifest.get("review") or {}
         identity = review.get("reviewer_identity") or {}
-        if (
+        if not (
             isinstance(flow, dict)
             and flow.get("current") == "full"
             and isinstance(identity, dict)
-            and identity.get("actor_type") == "agent_same_session"
         ):
+            continue
+
+        actor_type = identity.get("actor_type")
+        session_ref = identity.get("session_ref")
+        resolver_session_ref = identity.get("resolver_session_ref")
+
+        if actor_type == "agent_same_session":
             findings.append(
                 ValidationFinding(
                     code="C-026",
@@ -69,6 +82,25 @@ def _validate_reviewer_resolver_separation(project_root: Path) -> list[Validatio
                     message=(
                         "FULL review cannot use reviewer_identity.actor_type=agent_same_session; "
                         "use a human reviewer or an isolated agent session and record independent session evidence."
+                    ),
+                )
+            )
+            continue
+
+        if (
+            actor_type != "agent_same_session"
+            and isinstance(session_ref, str)
+            and isinstance(resolver_session_ref, str)
+            and session_ref == resolver_session_ref
+        ):
+            findings.append(
+                ValidationFinding(
+                    code="C-026",
+                    artifact=str(manifest_path.relative_to(project_root)),
+                    path=manifest_path,
+                    message=(
+                        "FULL review claims independent execution but reviewer_identity.session_ref and "
+                        "resolver_session_ref are identical; record distinct session references."
                     ),
                 )
             )
