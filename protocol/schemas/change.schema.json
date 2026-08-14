@@ -24,9 +24,13 @@
           "flow": {
             "properties": {"current": {"const": "full"}},
             "required": ["current"]
+          },
+          "state": {
+            "properties": {"current": {"not": {"const": "complete"}}},
+            "required": ["current"]
           }
         },
-        "required": ["flow"]
+        "required": ["flow", "state"]
       },
       "then": {
         "properties": {
