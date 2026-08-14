@@ -10,7 +10,7 @@ CLI releases will follow Semantic Versioning when releases begin. Protocol versi
 
 Breaking:
 
-- FULL Change manifests now require `review.reviewer_identity` with recorded reviewer and resolver session evidence;
+- active FULL Review execution now requires `review.reviewer_identity` with recorded reviewer and resolver session evidence; pending Reviews and already-completed historical Changes are not rewritten to fabricate evidence;
 - Review policy minimums now distinguish FAST same-session review, STANDARD isolated-session review, and FULL human review with an explicit isolated-agent fallback;
 - `forge validate` rejects FULL Changes that record `agent_same_session`, naming C-026;
 - Codex STANDARD/FULL projections instruct the harness to use independent review execution and record session references.
