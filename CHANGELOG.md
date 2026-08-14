@@ -10,10 +10,10 @@ CLI releases will follow Semantic Versioning when releases begin. Protocol versi
 
 Breaking:
 
-- active FULL Review execution now requires `review.reviewer_identity` with recorded reviewer and resolver session evidence; pending Reviews and already-completed historical Changes are not rewritten to fabricate evidence;
+- every FULL Change manifest (`flow.current == full`) now structurally requires `review.reviewer_identity` with `actor_type`, `session_ref`, and `resolver_session_ref`; this is a breaking change for previously valid FULL `forge/change@1` instances and creates a Protocol 1 compatibility conflict that must be resolved before completion;
 - Review policy minimums now distinguish FAST same-session review, STANDARD isolated-session review, and FULL human review with an explicit isolated-agent fallback;
-- `forge validate` rejects FULL Changes that record `agent_same_session`, naming C-026;
-- Codex STANDARD/FULL projections instruct the harness to use independent review execution and record session references.
+- `forge validate` rejects FULL Changes that record `agent_same_session` and rejects claimed independent execution backed by identical reviewer/resolver session references, naming C-026;
+- Codex STANDARD/FULL projections instruct the harness to use independent review execution and record distinct session references.
 
 ### Protocol 1 Contract Freeze
 
