@@ -79,6 +79,23 @@ class AdapterTargetUnavailableError(AdapterServiceError):
     code = "E_FORGE_ADAPTER_TARGET_UNAVAILABLE"
 
 
+def require_valid_installation_identity(
+    record: AdapterInstallationRecord,
+    driver: HarnessDriver,
+) -> None:
+    """Reject installation state that cannot belong to the selected Adapter."""
+    manifest = driver.manifest
+    if record.adapter_id != manifest.adapter_id or record.harness != manifest.harness:
+        raise InvalidAdapterInstallationError(
+            "Adapter installation record identity does not match the selected Adapter."
+        )
+    paths = tuple(artifact.path for artifact in record.generated_artifacts)
+    if len(paths) != len(set(paths)):
+        raise InvalidAdapterInstallationError(
+            "Adapter installation record contains duplicate generated artifact paths."
+        )
+
+
 def _passed_check(check_id: str, message: str) -> AdapterCheck:
     return AdapterCheck(id=check_id, status="passed", code="OK", message=message)
 
@@ -302,7 +319,7 @@ class AdapterService:
                     )
                 )
             else:
-                self._require_valid_identity(candidate_record, driver)
+                require_valid_installation_identity(candidate_record, driver)
                 if candidate_record.adapter_version != manifest.version:
                     checks.append(
                         _failed_check(
@@ -471,7 +488,7 @@ class AdapterService:
             return self._mutation_result(prepared.result, mutated=False)
 
         if prepared.record is not None:
-            self._require_valid_identity(prepared.record, prepared.driver)
+            require_valid_installation_identity(prepared.record, prepared.driver)
             if prepared.record.adapter_version != prepared.result.current_version:
                 raise AdapterAlreadyInstalledError(
                     "Adapter is already installed at a different version; use update."
@@ -503,7 +520,7 @@ class AdapterService:
             raise AdapterInstallationRequiredError(
                 "Adapter update requires an existing installation record."
             )
-        self._require_valid_identity(prepared.record, prepared.driver)
+        require_valid_installation_identity(prepared.record, prepared.driver)
         self._reject_drift(prepared)
         self._reject_conflicts(prepared.result.plan)
         if dry_run or (
@@ -549,7 +566,7 @@ class AdapterService:
         except InvalidAdapterRepositoryRecordError as error:
             raise InvalidAdapterInstallationError(str(error)) from error
         if record is not None:
-            self._require_valid_identity(record, driver)
+            require_valid_installation_identity(record, driver)
 
         desired_paths = {artifact.path for artifact in projection.artifacts}
         recorded_paths = (
@@ -636,19 +653,6 @@ class AdapterService:
                 raise AdapterServiceError(f"Duplicate enabled canonical Flow: {canonical_id}.")
             flows[canonical_id] = yaml.safe_dump(canonical, sort_keys=False, allow_unicode=True)
         return tuple(sorted(flows.items()))
-
-    @staticmethod
-    def _require_valid_identity(record: AdapterInstallationRecord, driver: HarnessDriver) -> None:
-        manifest = driver.manifest
-        if record.adapter_id != manifest.adapter_id or record.harness != manifest.harness:
-            raise InvalidAdapterInstallationError(
-                "Adapter installation record identity does not match the selected Adapter."
-            )
-        paths = tuple(artifact.path for artifact in record.generated_artifacts)
-        if len(paths) != len(set(paths)):
-            raise InvalidAdapterInstallationError(
-                "Adapter installation record contains duplicate generated artifact paths."
-            )
 
     @staticmethod
     def _reject_conflicts(plan: AdapterPlan) -> None:

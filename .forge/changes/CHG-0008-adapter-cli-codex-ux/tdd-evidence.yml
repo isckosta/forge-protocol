@@ -1,7 +1,7 @@
 schema: forge/tdd-evidence@1
 change: CHG-0008
 status: active
-cycle_count: 35
+cycle_count: 37
 cycles:
   - id: TDD-001A
     title: Registry stable ordering
@@ -435,6 +435,30 @@ cycles:
       - A focused RED/GREEN conflict cycle proved a planned Typer exit must bypass the generic exception mapper; otherwise it surfaced as E_FORGE_INTERNAL_ERROR with exit 70.
       - A separate RED/GREEN cycle confirmed adapter list treats an unsupported project Protocol as unknown compatibility rather than crashing.
       - The CLI tests exercise configuration target persistence, packaged discovery state, plan/install dry-run parity, safe collision failure, idempotent no-op timestamps, validation/doctor output, update precondition, unknown Adapter, and Git environment exit behavior.
+  - id: TDD-007A
+    title: Adapter command preparation error boundary
+    requirements: [FR-023]
+    behavior: unexpected failures in command preparation and packaged registry construction produce only the stable internal error output and exit 70, while Typer exits remain unmodified
+    red:
+      valid: true
+      command: .venv/bin/python -m pytest tests/cli/test_adapter_commands.py::test_adapter_command_maps_unexpected_project_preparation_failure_to_internal_error tests/cli/test_adapter_commands.py::test_adapter_list_maps_unexpected_registry_preparation_failure_to_internal_error -v
+      result: 2 failed
+      reason: validate_project and build_packaged_registry ran before any command error boundary, so their RuntimeError escaped through Typer with exit 1.
+    green:
+      command: .venv/bin/python -m pytest tests/cli/test_adapter_commands.py::test_adapter_command_maps_unexpected_project_preparation_failure_to_internal_error tests/cli/test_adapter_commands.py::test_adapter_list_maps_unexpected_registry_preparation_failure_to_internal_error -v
+      result: 2 passed
+  - id: TDD-007B
+    title: Adapter list installation identity validation
+    requirements: [FR-002, FR-023]
+    behavior: list reports a schema-valid installation record with a mismatched Adapter id or Harness as invalid without modifying repository bytes
+    red:
+      valid: true
+      command: .venv/bin/python -m pytest tests/cli/test_adapter_commands.py::test_adapter_list_reports_mismatched_installation_identity_as_invalid -v
+      result: 2 failed
+      reason: list classified every schema-valid record at the selected Adapter path as installed without checking the record identity against the packaged manifest.
+    green:
+      command: .venv/bin/python -m pytest tests/cli/test_adapter_commands.py::test_adapter_list_reports_mismatched_installation_identity_as_invalid -v
+      result: 2 passed
 notes:
   - Focused regression command `.venv/bin/python -m pytest tests/unit/test_adapter_registry.py tests/unit/test_codex_adapter_descriptor.py -v` passed 11 tests.
   - 'rg -n "codex" src/forge_cli/adapters/driver.py src/forge_cli/adapters/registry.py returned no matches.'

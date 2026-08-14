@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from functools import wraps
 from pathlib import Path
 from typing import Annotated
 
@@ -20,7 +21,11 @@ from forge_cli.adapters.repository import (
     AdapterRepositoryError,
     load_optional_installation_record,
 )
-from forge_cli.adapters.service import AdapterService
+from forge_cli.adapters.service import (
+    AdapterService,
+    InvalidAdapterInstallationError,
+    require_valid_installation_identity,
+)
 from forge_cli.configuration import (
     InvalidProjectConfigurationError,
     UnsupportedProtocolVersionError,
@@ -87,6 +92,20 @@ def _handle_adapter_error(error: Exception) -> None:
     _echo_error("E_FORGE_INTERNAL_ERROR", str(error), exit_code=INTERNAL_ERROR_EXIT_CODE)
 
 
+def _command_boundary(command):
+    """Map every Adapter command's preparation and execution failures."""
+    @wraps(command)
+    def wrapped(*args, **kwargs):
+        try:
+            return command(*args, **kwargs)
+        except typer.Exit:
+            raise
+        except Exception as error:
+            _handle_adapter_error(error)
+
+    return wrapped
+
+
 def _emit_plan_and_fail_conflicts(plan) -> None:
     for line in plan_lines(plan):
         typer.echo(line)
@@ -95,6 +114,7 @@ def _emit_plan_and_fail_conflicts(plan) -> None:
 
 
 @adapter_app.command("list")
+@_command_boundary
 def list_adapters() -> None:
     """List packaged Adapters and observed repository installation state."""
     registry, _ = _service()
@@ -126,7 +146,9 @@ def list_adapters() -> None:
         if project_root is not None:
             try:
                 record = load_optional_installation_record(project_root, manifest.adapter_id)
-            except AdapterRepositoryError:
+                if record is not None:
+                    require_valid_installation_identity(record, driver)
+            except (AdapterRepositoryError, InvalidAdapterInstallationError):
                 installation = "invalid"
             else:
                 if record is not None:
@@ -141,6 +163,7 @@ def list_adapters() -> None:
 
 
 @adapter_app.command()
+@_command_boundary
 def configure(
     adapter_id: Annotated[str, typer.Argument(metavar="ADAPTER")],
     target: Annotated[str | None, typer.Option("--target")] = None,
@@ -160,6 +183,7 @@ def configure(
 
 
 @adapter_app.command()
+@_command_boundary
 def plan(
     adapter_id: Annotated[str, typer.Argument(metavar="ADAPTER")],
     target: Annotated[str | None, typer.Option("--target")] = None,
@@ -175,6 +199,7 @@ def plan(
 
 
 @adapter_app.command()
+@_command_boundary
 def install(
     adapter_id: Annotated[str, typer.Argument(metavar="ADAPTER")],
     target: Annotated[str | None, typer.Option("--target")] = None,
@@ -196,6 +221,7 @@ def install(
 
 
 @adapter_app.command()
+@_command_boundary
 def validate(adapter_id: Annotated[str, typer.Argument(metavar="ADAPTER")]) -> None:
     """Validate Adapter installation state without modifying it."""
     root = _initialized_project_root()
@@ -213,6 +239,7 @@ def validate(adapter_id: Annotated[str, typer.Argument(metavar="ADAPTER")]) -> N
 
 
 @adapter_app.command()
+@_command_boundary
 def doctor(adapter_id: Annotated[str, typer.Argument(metavar="ADAPTER")]) -> None:
     """Diagnose Adapter installation state without modifying it."""
     root = _initialized_project_root()
@@ -228,6 +255,7 @@ def doctor(adapter_id: Annotated[str, typer.Argument(metavar="ADAPTER")]) -> Non
 
 
 @adapter_app.command()
+@_command_boundary
 def update(
     adapter_id: Annotated[str, typer.Argument(metavar="ADAPTER")],
     target: Annotated[str | None, typer.Option("--target")] = None,

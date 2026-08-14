@@ -1,9 +1,11 @@
 from pathlib import Path
 import subprocess
 
+import pytest
 from typer.testing import CliRunner
 
 import forge_cli.adapter_cli as adapter_cli
+from forge_cli.adapters.state import AdapterInstallationRecord, write_installation_record
 from forge_cli.app import app
 from forge_cli.git import GitUnavailableError
 
@@ -83,6 +85,40 @@ def test_adapter_list_treats_unsupported_project_protocol_as_unknown_compatibili
 
     assert result.exit_code == 0
     assert "compatibility=unknown" in result.stdout
+
+
+@pytest.mark.parametrize(
+    ("record_adapter_id", "record_harness"),
+    (("other", "codex"), ("codex", "other")),
+    ids=("adapter-id", "harness"),
+)
+def test_adapter_list_reports_mismatched_installation_identity_as_invalid(
+    tmp_path: Path,
+    monkeypatch,
+    record_adapter_id: str,
+    record_harness: str,
+) -> None:
+    _initialize_project(tmp_path, monkeypatch)
+    record_path = tmp_path / ".forge" / "adapters" / "codex" / "installation.yml"
+    write_installation_record(
+        record_path,
+        AdapterInstallationRecord(
+            adapter_id=record_adapter_id,
+            adapter_version="0.1.0",
+            harness=record_harness,
+            protocol_min=1,
+            protocol_max_exclusive=2,
+            generated_artifacts=(),
+            limitations=(),
+        ),
+    )
+    before = record_path.read_bytes()
+
+    result = runner.invoke(app, ["adapter", "list"])
+
+    assert result.exit_code == 0
+    assert "installation=invalid" in result.stdout
+    assert record_path.read_bytes() == before
 
 
 def test_adapter_install_is_idempotent_and_reports_unchanged_operations(
@@ -172,3 +208,35 @@ def test_adapter_git_environment_failure_uses_exit_code_three(tmp_path: Path, mo
 
     assert result.exit_code == 3
     assert "E_FORGE_GIT_UNAVAILABLE: Git executable is unavailable." in result.stdout
+
+
+def test_adapter_command_maps_unexpected_project_preparation_failure_to_internal_error(
+    tmp_path: Path, monkeypatch
+) -> None:
+    _initialize_project(tmp_path, monkeypatch)
+
+    def explode(*_args, **_kwargs):
+        raise RuntimeError("project preparation exploded")
+
+    monkeypatch.setattr(adapter_cli, "validate_project", explode)
+    result = runner.invoke(app, ["adapter", "plan", "codex"])
+
+    assert result.exit_code == 70
+    assert result.stdout == "E_FORGE_INTERNAL_ERROR: project preparation exploded\n"
+    assert not isinstance(result.exception, RuntimeError)
+
+
+def test_adapter_list_maps_unexpected_registry_preparation_failure_to_internal_error(
+    tmp_path: Path, monkeypatch
+) -> None:
+    monkeypatch.chdir(tmp_path)
+
+    def explode():
+        raise RuntimeError("registry preparation exploded")
+
+    monkeypatch.setattr(adapter_cli, "build_packaged_registry", explode)
+    result = runner.invoke(app, ["adapter", "list"])
+
+    assert result.exit_code == 70
+    assert result.stdout == "E_FORGE_INTERNAL_ERROR: registry preparation exploded\n"
+    assert not isinstance(result.exception, RuntimeError)
