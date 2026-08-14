@@ -88,6 +88,19 @@ def test_full_same_session_red_fixture_is_structurally_valid() -> None:
     Draft202012Validator(schema).validate(manifest)
 
 
+def test_full_pending_review_without_reviewer_identity_is_structurally_invalid() -> None:
+    # Structural layer: every FULL manifest requires a complete reviewer_identity object,
+    # independent of review status. Semantic independence strength is checked separately.
+    schema = json.loads(CHANGE_SCHEMA.read_text(encoding="utf-8"))
+    manifest = yaml.safe_load((FIXTURES / "full-change-agent-same-session.yml").read_text(encoding="utf-8"))
+    manifest["review"]["status"] = "pending"
+    manifest["review"].pop("reviewer_identity")
+
+    errors = list(Draft202012Validator(schema).iter_errors(manifest))
+
+    assert any(error.validator == "required" and "reviewer_identity" in error.message for error in errors)
+
+
 def test_validate_rejects_full_change_reviewed_in_same_session(tmp_path: Path, monkeypatch) -> None:
     _init_git_repository(tmp_path)
     _write_valid_project_configuration(tmp_path)
