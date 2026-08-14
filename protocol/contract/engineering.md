@@ -80,7 +80,7 @@ Reviewer SHOULD verify TDD evidence when TDD applies.
 BLOCKER and MAJOR Findings MUST include sufficient evidence.
 
 ## C-026 — Reviewer/Resolver separation
-Reviewer and Resolver execution MUST satisfy the minimum separation required by the active Review Policy and MUST record independent execution evidence in `review.reviewer_identity`. For FULL Changes, `review_passed` MUST NOT be asserted unless compliant reviewer identity and session evidence are recorded; `agent_same_session` is never compliant for FULL.
+Reviewer and Resolver MUST remain distinct Roles, and this separation MUST be backed by recorded, verifiable evidence of independent execution — not by assertion alone. The required strength of that evidence is Flow-proportional and defined in policy. `review_passed` MUST NOT be asserted for a Change whose evidence does not meet its Flow's required separation strength.
 
 ## C-027 — Blocking review evidence blocks Completion
 Unresolved BLOCKER Findings MUST prevent Completion. When an active external review surface exists, unresolved threads containing findings classified as blocking MUST also prevent Completion. Without an external review surface, the thread condition is satisfied trivially.
