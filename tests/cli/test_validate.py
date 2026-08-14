@@ -1,3 +1,4 @@
+import shutil
 import subprocess
 from pathlib import Path
 
@@ -7,6 +8,7 @@ from forge_cli.app import app
 
 
 runner = CliRunner()
+FIXTURES = Path(__file__).resolve().parents[1] / "fixtures"
 
 
 def _init_git_repository(path: Path) -> None:
@@ -36,6 +38,12 @@ def _write_valid_project_configuration(project_root: Path) -> None:
     )
 
 
+def _write_full_same_session_change(project_root: Path) -> None:
+    change_dir = project_root / ".forge" / "changes" / "CHG-9999-invalid-same-session-review"
+    change_dir.mkdir(parents=True)
+    shutil.copyfile(FIXTURES / "full-change-agent-same-session.yml", change_dir / "manifest.yml")
+
+
 def test_validate_reports_success_for_valid_forge_project(tmp_path: Path, monkeypatch) -> None:
     _init_git_repository(tmp_path)
     _write_valid_project_configuration(tmp_path)
@@ -56,3 +64,16 @@ def test_validate_reports_not_initialized_with_exit_code_two(tmp_path: Path, mon
     assert result.exit_code == 2
     assert "E_FORGE_NOT_INITIALIZED" in result.stdout
     assert ".forge/" in result.stdout
+
+
+def test_validate_rejects_full_change_reviewed_in_same_session(tmp_path: Path, monkeypatch) -> None:
+    _init_git_repository(tmp_path)
+    _write_valid_project_configuration(tmp_path)
+    _write_full_same_session_change(tmp_path)
+    monkeypatch.chdir(tmp_path)
+
+    result = runner.invoke(app, ["validate"])
+
+    assert result.exit_code == 2
+    assert "C-026" in result.stdout
+    assert "agent_same_session" in result.stdout
