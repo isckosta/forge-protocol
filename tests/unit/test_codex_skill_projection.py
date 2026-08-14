@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from hashlib import sha256
+import re
 
 import yaml
 
@@ -75,6 +76,27 @@ def test_codex_projection_keeps_effective_inputs_in_references_and_is_determinis
         ".agents/skills/forge/references/engineering-contract.md"
     ]
     assert "id: full" in first_by_path[".agents/skills/forge/references/flows/full.yml"]
+
+
+def test_codex_skill_links_only_the_effective_contract_and_flows_deterministically() -> None:
+    """Removing a skill reference link must make its generated artifact unreachable."""
+    first = CodexDriver().project(_context(flows=("standard", "full")))
+    reordered = CodexDriver().project(_context(flows=("full", "standard")))
+    first_skill = next(item.content for item in first.artifacts if item.path.endswith("SKILL.md"))
+    reordered_skill = next(item.content for item in reordered.artifacts if item.path.endswith("SKILL.md"))
+
+    assert first_skill == reordered_skill
+    assert """## Effective Forge references
+
+- [Engineering Contract](references/engineering-contract.md)
+- [Flow `full`](references/flows/full.yml)
+- [Flow `standard`](references/flows/standard.yml)
+""" in first_skill
+    assert re.findall(r"\[[^]]+\]\((references/[^)]+)\)", first_skill) == [
+        "references/engineering-contract.md",
+        "references/flows/full.yml",
+        "references/flows/standard.yml",
+    ]
 
 
 def test_codex_projection_reports_skill_only_gates_as_generic_limitations() -> None:

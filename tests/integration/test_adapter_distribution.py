@@ -15,6 +15,7 @@ import yaml
 REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
 
 _RUNTIME_ENVIRONMENT_KEYS = {
+    "FORGE_WHEEL_GUARD_MARKER",
     "GIT_CONFIG_GLOBAL",
     "GIT_CONFIG_NOSYSTEM",
     "GIT_TERMINAL_PROMPT",
@@ -31,6 +32,8 @@ _RUNTIME_ENVIRONMENT_KEYS = {
 }
 
 _NETWORK_GUARD = """
+import os
+from pathlib import Path
 import socket
 import sys
 
@@ -49,6 +52,9 @@ def _audit(event, _args):
         raise RuntimeError(_MESSAGE)
 
 sys.addaudithook(_audit)
+
+if marker := os.environ.get("FORGE_WHEEL_GUARD_MARKER"):
+    Path(marker).write_text("loaded\\n", encoding="utf-8")
 """.lstrip()
 
 
@@ -118,6 +124,7 @@ def _isolated_runtime_environment(tmp_path: Path) -> dict[str, str]:
         "GIT_CONFIG_NOSYSTEM": "1",
         "GIT_CONFIG_GLOBAL": os.devnull,
         "GIT_TERMINAL_PROMPT": "0",
+        "FORGE_WHEEL_GUARD_MARKER": str(temp_directory / "sitecustomize-loaded"),
     }
     assert set(environment) == _RUNTIME_ENVIRONMENT_KEYS
     assert not any(
@@ -269,6 +276,7 @@ def test_installed_wheel_runs_the_codex_adapter_golden_path_offline(tmp_path: Pa
         ).stdout.strip()
     )
     (site_packages / "sitecustomize.py").write_text(_NETWORK_GUARD, encoding="utf-8")
+    guard_marker = Path(install_environment["FORGE_WHEEL_GUARD_MARKER"])
     network_guard = _run(
         [
             str(installed_python),
@@ -285,6 +293,7 @@ def test_installed_wheel_runs_the_codex_adapter_golden_path_offline(tmp_path: Pa
         environment=install_environment,
     )
     assert network_guard.stdout == ""
+    assert guard_marker.read_text(encoding="utf-8") == "loaded\n"
     probe = tmp_path / "adapter_cli_wheel_probe.py"
     shutil.copy2(Path(__file__).with_name("adapter_cli_wheel_probe.py"), probe)
     _run(
@@ -295,6 +304,7 @@ def test_installed_wheel_runs_the_codex_adapter_golden_path_offline(tmp_path: Pa
             str(repository),
             str(expected_protocol),
             str(expected_effective_flows),
+            str(guard_marker),
         ],
         cwd=tmp_path,
         environment=install_environment,

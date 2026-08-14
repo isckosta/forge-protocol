@@ -83,8 +83,19 @@ def _gate_instructions(flows: Iterable[tuple[str, str]]) -> str:
     return "\n\n".join(sections)
 
 
+def _reference_links(flows: Iterable[tuple[str, str]]) -> str:
+    flow_ids = tuple(sorted(flow_id for flow_id, _ in flows))
+    return "\n".join((
+        "## Effective Forge references",
+        "",
+        "- [Engineering Contract](references/engineering-contract.md)",
+        *(f"- [Flow `{flow_id}`](references/flows/{flow_id}.yml)" for flow_id in flow_ids),
+    ))
+
+
 def _skill_content(flows: Iterable[tuple[str, str]]) -> str:
-    gate_instructions = _gate_instructions(flows)
+    effective_flows = tuple(flows)
+    gate_instructions = _gate_instructions(effective_flows)
     return "\n".join((
         "---",
         "name: forge",
@@ -92,6 +103,8 @@ def _skill_content(flows: Iterable[tuple[str, str]]) -> str:
         "---",
         "",
         load_workflow_skill_template(),
+        "",
+        _reference_links(effective_flows),
         "",
         gate_instructions,
     ))

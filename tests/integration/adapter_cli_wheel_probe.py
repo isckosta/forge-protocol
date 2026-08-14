@@ -19,6 +19,7 @@ _RUNTIME_ENVIRONMENT_KEYS = {
     "GIT_CONFIG_GLOBAL",
     "GIT_CONFIG_NOSYSTEM",
     "GIT_TERMINAL_PROMPT",
+    "FORGE_WHEEL_GUARD_MARKER",
     "HOME",
     "LANG",
     "LC_ALL",
@@ -72,7 +73,9 @@ def _operation_lines(output: str) -> list[str]:
 
 
 def _tree_snapshot(root: Path) -> dict[str, tuple[str, bytes | None, int]]:
-    snapshot: dict[str, tuple[str, bytes | None, int]] = {}
+    snapshot: dict[str, tuple[str, bytes | None, int]] = {
+        ".": ("directory", None, root.stat().st_mtime_ns),
+    }
     for path in sorted(root.rglob("*")):
         relative_path = path.relative_to(root).as_posix()
         if path.is_symlink():
@@ -150,24 +153,52 @@ def _runtime_environment() -> dict[str, str]:
     return environment
 
 
+def _effective_reference_links(skill: str, skill_root: Path) -> dict[str, Path]:
+    section = re.search(
+        r"(?ms)^## Effective Forge references\n\n(?P<links>(?:- \[[^]]+\]\([^)]+\)\n)+)",
+        skill,
+    )
+    assert section is not None, "SKILL.md must contain effective Forge links"
+    links = re.findall(r"- \[[^]]+\]\(([^)]+)\)", section.group("links"))
+    expected = [
+        "references/engineering-contract.md",
+        "references/flows/fast.yml",
+        "references/flows/full.yml",
+        "references/flows/standard.yml",
+    ]
+    assert links == expected
+    resolved: dict[str, Path] = {}
+    for link in links:
+        target = (skill_root / link).resolve()
+        assert target.is_relative_to(skill_root.resolve()), link
+        assert target.is_file(), link
+        resolved[link] = target
+    return resolved
+
+
 def main(
     forge_argument: str,
     repository_argument: str,
     expected_protocol_argument: str,
     expected_flows_argument: str,
+    guard_marker_argument: str,
 ) -> None:
     forge = Path(forge_argument).resolve()
     repository = Path(repository_argument).resolve()
     expected_protocol = Path(expected_protocol_argument).resolve()
     expected_flows = Path(expected_flows_argument).resolve()
+    guard_marker = Path(guard_marker_argument).resolve()
     assert forge.is_file(), forge
     assert repository.is_dir(), repository
     assert (expected_protocol / "contract" / "engineering.md").is_file()
     assert expected_flows.is_dir()
 
     environment = _runtime_environment()
+    assert environment["FORGE_WHEEL_GUARD_MARKER"] == str(guard_marker)
+    guard_marker.unlink(missing_ok=True)
     initialized = _run(forge, repository, environment, "init")
     assert initialized.stdout == f"Forge initialized at {repository / '.forge'}\n"
+    assert guard_marker.read_text(encoding="utf-8") == "loaded\n"
 
     flow_directory = repository / ".forge" / "flows"
     project_flow_paths = sorted(flow_directory.glob("*.yml"))
@@ -219,7 +250,8 @@ def main(
     skill_bytes = skill_path.read_bytes()
     skill = skill_bytes.decode("utf-8")
     _assert_skill_frontmatter(skill)
-    contract = skill_root / "references" / "engineering-contract.md"
+    resolved_references = _effective_reference_links(skill, skill_root)
+    contract = resolved_references["references/engineering-contract.md"]
     assert contract.read_bytes() == (expected_protocol / "contract" / "engineering.md").read_bytes()
 
     generated_flow_paths = {
@@ -228,7 +260,7 @@ def main(
     }
     assert generated_flow_paths == enabled_canonical_flows
     for flow_id in enabled_canonical_flows:
-        reference = skill_root / "references" / "flows" / f"{flow_id}.yml"
+        reference = resolved_references[f"references/flows/{flow_id}.yml"]
         expected = expected_flows / f"{flow_id}.yml"
         assert reference.read_bytes() == expected.read_bytes()
         reference_text = reference.read_text(encoding="utf-8")
@@ -262,10 +294,10 @@ def main(
     assert _tree_snapshot(repository) == before_drift_update
 
     skill_path.write_bytes(skill_bytes)
-    restored_before_update = _snapshot([*generated_paths, record])
+    restored_before_update = _tree_snapshot(repository)
     restored_update = _run(forge, repository, environment, "adapter", "update", "codex")
     assert "No changes required." in restored_update.stdout
-    assert _snapshot([*generated_paths, record]) == restored_before_update
+    assert _tree_snapshot(repository) == restored_before_update
     assert {
         path: path.read_bytes() for path in [*generated_paths, record]
     } == {path: bytes_and_mtime[0] for path, bytes_and_mtime in before_reinstall.items()}
@@ -283,9 +315,9 @@ def main(
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 5:
+    if len(sys.argv) != 6:
         raise SystemExit(
             "usage: adapter_cli_wheel_probe.py FORGE_EXECUTABLE GIT_REPOSITORY "
-            "EXPECTED_PROTOCOL_ROOT EXPECTED_EFFECTIVE_FLOW_ROOT"
+            "EXPECTED_PROTOCOL_ROOT EXPECTED_EFFECTIVE_FLOW_ROOT GUARD_MARKER"
         )
-    main(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4])
+    main(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5])
