@@ -14,10 +14,11 @@ cycles:
       result: 1 failed, 162 passed
       reason: test_validate_rejects_full_change_reviewed_in_same_session expected exit code 2 but forge validate returned 0
     green:
-      commit: pending-final-green
+      commit: 105229d7fe24f24a48e5376f0d55782b793e8510
       command: pytest -q
-      result: pending final verification
+      result: 164 passed in 3.23s
 notes:
   - Fixture commit 6b756da4d48f510eddc7507df1d1a8e4f31d9421 preceded the test-only RED commit.
   - GitHub Actions run 31851211926 is durable RED evidence; the only failing test was the new C-026 behavior test.
-  - Intermediate implementation commit 21711a79c0ffe69ae2a2bbc18ad41bfb48f3b1fd made the behavioral test GREEN but exposed canonical schema compatibility failures in the full contract suite; those are remediation evidence, not a second RED cycle.
+  - Intermediate implementation commit 21711a79c0ffe69ae2a2bbc18ad41bfb48f3b1fd made the behavioral target GREEN but exposed canonical schema compatibility failures in the full suite; those were remediated without changing completed historical Changes.
+  - GitHub Actions run 31851509590 is the final GREEN full-suite evidence for the artifact-bearing commit.
