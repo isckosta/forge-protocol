@@ -4,6 +4,10 @@ from pathlib import Path
 import pytest
 
 from forge_cli.adapters.manifest import AdapterManifest
+from forge_cli.adapters.ownership import (
+    InvalidAdapterPublicationOwnershipError,
+    require_publication_root_ownership,
+)
 from forge_cli.adapters.plan import AdapterPlan, OperationIntent, OwnershipMode, digest_content
 from forge_cli.adapters.planner import (
     EffectiveAdapterConfiguration,
@@ -555,6 +559,112 @@ def test_publisher_rejects_recorded_canonical_path_outside_publication_root(
         )
 
     assert {path: path.read_bytes() for path in before} == before
+
+
+def test_publisher_rejects_shared_update_of_canonical_forge_state(
+    tmp_path: Path,
+) -> None:
+    publisher = publisher_module()
+    canonical = tmp_path / ".forge/forge.yml"
+    canonical.parent.mkdir(parents=True)
+    canonical.write_text("canonical\n", encoding="utf-8")
+    canonical.chmod(0o640)
+    canonical_stat = canonical.stat()
+    before = (
+        canonical.read_bytes(),
+        canonical_stat.st_mode,
+        canonical_stat.st_mtime_ns,
+    )
+    record_path = tmp_path / ".forge/adapters/example/installation.yml"
+    plan = plan_adapter(
+        manifest=_manifest(),
+        effective_configuration=EffectiveAdapterConfiguration(1, ()),
+        projections=(
+            ProjectedArtifact(
+                path=".forge/forge.yml",
+                ownership=OwnershipMode.SHARED,
+                content="ignored projection\n",
+                merge_result="shared overwrite\n",
+                merge_strategy_id="test-merge-v1",
+            ),
+        ),
+        repository_state=(
+            RepositoryArtifactState(
+                path=".forge/forge.yml",
+                exists=True,
+                current_digest=digest_content("canonical\n"),
+                expected_digest=None,
+            ),
+        ),
+    )
+    assert plan.conflicts == ()
+    assert plan.operations[0].intent is OperationIntent.UPDATE
+    assert plan.operations[0].ownership is OwnershipMode.SHARED
+
+    caught: Exception | None = None
+    try:
+        publisher.publish_adapter_plan(
+            tmp_path,
+            plan,
+            _record(publication_root=".agents/skills/forge"),
+        )
+    except publisher.AdapterPublicationError as error:
+        caught = error
+
+    observed_stat = canonical.stat()
+    observed = (
+        canonical.read_bytes(),
+        observed_stat.st_mode,
+        observed_stat.st_mtime_ns,
+    )
+    assert (caught is not None, observed, record_path.exists()) == (
+        True,
+        before,
+        False,
+    )
+
+
+def test_publication_root_itself_is_not_an_owned_artifact_or_publishable_target(
+    tmp_path: Path,
+) -> None:
+    publisher = publisher_module()
+    ownership_error: InvalidAdapterPublicationOwnershipError | None = None
+    try:
+        require_publication_root_ownership("bundle", ("bundle",))
+    except InvalidAdapterPublicationOwnershipError as error:
+        ownership_error = error
+
+    plan = plan_adapter(
+        manifest=_manifest(),
+        effective_configuration=EffectiveAdapterConfiguration(1, ()),
+        projections=(
+            ProjectedArtifact(
+                path="bundle",
+                ownership=OwnershipMode.FORGE_OWNED,
+                content="generated\n",
+            ),
+        ),
+        repository_state=(),
+    )
+    publication_error: Exception | None = None
+    try:
+        publisher.publish_adapter_plan(
+            tmp_path,
+            plan,
+            _record(
+                ("bundle", digest_content("generated\n")),
+                publication_root="bundle",
+            ),
+        )
+    except publisher.AdapterPublicationError as error:
+        publication_error = error
+
+    assert (
+        ownership_error is not None,
+        publication_error is not None,
+        (tmp_path / "bundle").exists(),
+        (tmp_path / ".forge/adapters/example/installation.yml").exists(),
+    ) == (True, True, False, False)
 
 
 def test_incomplete_rollback_reports_generic_publication_failure_and_target(
