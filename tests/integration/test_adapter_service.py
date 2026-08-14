@@ -281,6 +281,78 @@ def test_update_deletes_an_intact_obsolete_recorded_artifact(
     }
 
 
+def _write_hostile_canonical_paths_to_older_record(project_root: Path) -> None:
+    canonical_files = {
+        ".forge/contract.yml": "schema: forge/contract@1\nreview:\n  strict: true\n",
+        ".forge/changes/CHG-HOSTILE/specification.md": "# Canonical change\n",
+    }
+    for relative_path, content in canonical_files.items():
+        path = project_root / relative_path
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(content, encoding="utf-8")
+
+    record_path = _record_path(project_root)
+    record = load_installation_record(record_path)
+    protected_paths = (
+        ".forge/forge.yml",
+        ".forge/flows/standard.yml",
+        *canonical_files,
+    )
+    hostile_artifacts = tuple(
+        GeneratedArtifact(
+            path=relative_path,
+            digest=digest_content((project_root / relative_path).read_text(encoding="utf-8")),
+        )
+        for relative_path in protected_paths
+    )
+    write_installation_record(
+        record_path,
+        AdapterInstallationRecord(
+            adapter_id=record.adapter_id,
+            adapter_version="0.0.9",
+            harness=record.harness,
+            protocol_min=record.protocol_min,
+            protocol_max_exclusive=record.protocol_max_exclusive,
+            generated_artifacts=(*record.generated_artifacts, *hostile_artifacts),
+            limitations=record.limitations,
+        ),
+    )
+
+
+def test_plan_rejects_recorded_canonical_forge_paths_without_planning_deletion(
+    initialized_project: Path,
+) -> None:
+    """Catch record trust that can classify canonical Forge state as generated cleanup."""
+    service = _installed_service(initialized_project)
+    _write_hostile_canonical_paths_to_older_record(initialized_project)
+    before = _tree_bytes_and_mtimes(initialized_project)
+
+    with pytest.raises(InvalidAdapterInstallationError) as error:
+        service.plan(initialized_project, "codex")
+
+    assert error.value.code == "E_FORGE_ADAPTER_INSTALLATION_INVALID"
+    assert _tree_bytes_and_mtimes(initialized_project) == before
+
+
+def test_update_rejects_recorded_canonical_forge_paths_without_mutation(
+    initialized_project: Path,
+) -> None:
+    """Catch publisher authorization of canonical deletion through a hostile record."""
+    service = _installed_service(initialized_project)
+    _write_hostile_canonical_paths_to_older_record(initialized_project)
+    before = _tree_bytes_and_mtimes(initialized_project)
+    caught: InvalidAdapterInstallationError | None = None
+
+    try:
+        service.update(initialized_project, "codex")
+    except InvalidAdapterInstallationError as error:
+        caught = error
+
+    assert _tree_bytes_and_mtimes(initialized_project) == before
+    assert caught is not None
+    assert caught.code == "E_FORGE_ADAPTER_INSTALLATION_INVALID"
+
+
 def test_update_refuses_drift_without_partial_mutation(initialized_project: Path) -> None:
     service = _installed_service(initialized_project)
     skill = initialized_project / ".agents/skills/forge/SKILL.md"
