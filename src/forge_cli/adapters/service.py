@@ -206,15 +206,12 @@ class AdapterService:
             project_configuration = load_project_configuration(root / ".forge" / "forge.yml")
             project_protocol = project_configuration["forge"]["protocol"]
         except UnsupportedProtocolVersionError as error:
-            if isinstance(error.protocol, int):
-                project_protocol = error.protocol
-            else:
-                configuration_failure = _failed_check(
-                    "configuration",
-                    error.code,
-                    str(error),
-                    "Set `.forge/forge.yml` to a supported Forge Protocol, then rerun diagnostics.",
-                )
+            configuration_failure = _failed_check(
+                "configuration",
+                error.code,
+                str(error),
+                "Set `.forge/forge.yml` to a supported Forge Protocol, then rerun diagnostics.",
+            )
         except InvalidProjectConfigurationError as error:
             configuration_failure = _failed_check(
                 "configuration",

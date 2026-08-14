@@ -407,6 +407,48 @@ def test_incompatible_protocol_fails_before_install_mutation(initialized_project
     assert _tree_bytes_and_mtimes(initialized_project) == before
 
 
+def test_doctor_rejects_unsupported_project_protocol_even_when_driver_range_includes_it(
+    initialized_project: Path,
+) -> None:
+    configuration_path = initialized_project / ".forge" / "forge.yml"
+    configuration_path.write_text(
+        configuration_path.read_text(encoding="utf-8").replace("protocol: 1", "protocol: 99"),
+        encoding="utf-8",
+    )
+
+    class NumericallyCompatibleDriver:
+        manifest = AdapterManifest(
+            adapter_id="wide-range",
+            version="1.0.0",
+            harness="fixture",
+            protocol_min=1,
+            protocol_max_exclusive=100,
+            capabilities={},
+        )
+        default_target = "generated/fixture"
+
+        def project(self, context: object) -> AdapterProjection:
+            raise AssertionError("Unsupported project configuration must not reach projection.")
+
+    service = AdapterService(AdapterRegistry((NumericallyCompatibleDriver(),)))
+    before = _tree_bytes_and_mtimes(initialized_project)
+
+    doctor = service.doctor(initialized_project, "wide-range")
+    validation = service.validate(initialized_project, "wide-range")
+
+    configuration = next(item for item in doctor.checks if item.id == "configuration")
+    compatibility = next(item for item in doctor.checks if item.id == "compatibility")
+    assert configuration.status == "failed"
+    assert configuration.code == "E_FORGE_UNSUPPORTED_PROTOCOL"
+    assert "Set `.forge/forge.yml` to a supported Forge Protocol" in configuration.remediation
+    assert compatibility.status == "warning"
+    assert compatibility.code == "W_FORGE_ADAPTER_COMPATIBILITY_UNAVAILABLE"
+    assert doctor.passed is False
+    assert validation.passed is False
+    assert validation.findings[0].id == "configuration"
+    assert _tree_bytes_and_mtimes(initialized_project) == before
+
+
 def test_install_dry_run_is_read_only_and_returns_the_install_plan(initialized_project: Path) -> None:
     before = _tree_bytes_and_mtimes(initialized_project)
 
