@@ -1,6 +1,6 @@
 """Black-box installed-wheel acceptance probe for the Codex Adapter.
 
-This module deliberately uses only the standard library.  It imports no
+This module deliberately uses only the standard library. It imports no
 checkout helpers and interacts with Forge exclusively through the supplied
 installed ``forge`` executable.
 """
@@ -13,6 +13,23 @@ from pathlib import Path
 import re
 import subprocess
 import sys
+
+
+_RUNTIME_ENVIRONMENT_KEYS = {
+    "GIT_CONFIG_GLOBAL",
+    "GIT_CONFIG_NOSYSTEM",
+    "GIT_TERMINAL_PROMPT",
+    "HOME",
+    "LANG",
+    "LC_ALL",
+    "PATH",
+    "PIP_CONFIG_FILE",
+    "PIP_DISABLE_PIP_VERSION_CHECK",
+    "PIP_NO_INDEX",
+    "PYTHONNOUSERSITE",
+    "TMPDIR",
+    "XDG_CONFIG_HOME",
+}
 
 
 def _run(
@@ -54,6 +71,21 @@ def _operation_lines(output: str) -> list[str]:
     ]
 
 
+def _tree_snapshot(root: Path) -> dict[str, tuple[str, bytes | None, int]]:
+    snapshot: dict[str, tuple[str, bytes | None, int]] = {}
+    for path in sorted(root.rglob("*")):
+        relative_path = path.relative_to(root).as_posix()
+        if path.is_symlink():
+            snapshot[relative_path] = ("symlink", os.readlink(path).encode(), path.lstat().st_mtime_ns)
+        elif path.is_dir():
+            snapshot[relative_path] = ("directory", None, path.stat().st_mtime_ns)
+        elif path.is_file():
+            snapshot[relative_path] = ("file", path.read_bytes(), path.stat().st_mtime_ns)
+        else:
+            raise AssertionError(f"unexpected repository entry: {path}")
+    return snapshot
+
+
 def _snapshot(paths: list[Path]) -> dict[Path, tuple[bytes, int]]:
     return {path: (path.read_bytes(), path.stat().st_mtime_ns) for path in paths}
 
@@ -65,7 +97,20 @@ def _recorded_artifacts(record: Path) -> dict[str, str]:
         flags=re.MULTILINE,
     )
     assert pairs, "installation record has no generated artifacts"
+    paths = [path for path, _ in pairs]
+    assert len(paths) == len(set(paths)), "installation record has duplicate generated paths"
     return dict(pairs)
+
+
+def _with_duplicate_recorded_artifact(record_bytes: bytes) -> bytes:
+    artifact = re.search(
+        rb"(?m)^- path: [^\n]+\n  digest: [0-9a-f]{64}\n",
+        record_bytes,
+    )
+    assert artifact is not None, "installation record has no artifact to duplicate"
+    marker = b"limitations:\n"
+    assert marker in record_bytes
+    return record_bytes.replace(marker, artifact.group(0) + marker, 1)
 
 
 def _assert_skill_frontmatter(skill: str) -> None:
@@ -76,40 +121,80 @@ def _assert_skill_frontmatter(skill: str) -> None:
         for line in frontmatter.splitlines()
         if ": " in line
     )
-    assert fields.get("name") == "forge"
-    assert fields.get("description")
+    assert fields == {
+        "name": "forge",
+        "description": "Use for Forge-governed engineering Changes in this repository.",
+    }
 
 
-def main(forge_argument: str, repository_argument: str) -> None:
+def _project_flow_configuration(path: Path) -> tuple[str, bool]:
+    content = path.read_text(encoding="utf-8")
+    assert "schema: forge/project-flow@1\n" in content
+    canonical = re.search(r"^  canonical: ([^\n]+)$", content, flags=re.MULTILINE)
+    enabled = re.search(r"^  enabled: (true|false)$", content, flags=re.MULTILINE)
+    assert canonical is not None, f"missing canonical Flow in {path}"
+    assert enabled is not None, f"missing enabled state in {path}"
+    return canonical.group(1), enabled.group(1) == "true"
+
+
+def _runtime_environment() -> dict[str, str]:
+    assert not os.environ.get("PYTHONPATH"), "probe runtime must not inherit PYTHONPATH"
+    assert not any(
+        "proxy" in key.lower() or "credential" in key.lower() or "token" in key.lower()
+        for key in os.environ
+    ), "probe runtime must not inherit proxy or credential variables"
+    environment = {
+        key: value for key, value in os.environ.items() if key in _RUNTIME_ENVIRONMENT_KEYS
+    }
+    assert set(environment) <= _RUNTIME_ENVIRONMENT_KEYS
+    return environment
+
+
+def main(
+    forge_argument: str,
+    repository_argument: str,
+    expected_protocol_argument: str,
+    expected_flows_argument: str,
+) -> None:
     forge = Path(forge_argument).resolve()
     repository = Path(repository_argument).resolve()
+    expected_protocol = Path(expected_protocol_argument).resolve()
+    expected_flows = Path(expected_flows_argument).resolve()
     assert forge.is_file(), forge
     assert repository.is_dir(), repository
+    assert (expected_protocol / "contract" / "engineering.md").is_file()
+    assert expected_flows.is_dir()
 
-    environment = os.environ.copy()
-    environment.pop("PYTHONPATH", None)
-    environment.pop("VIRTUAL_ENV", None)
-    environment["PYTHONNOUSERSITE"] = "1"
-    environment["PIP_NO_INDEX"] = "1"
-    environment["PIP_DISABLE_PIP_VERSION_CHECK"] = "1"
-    environment["PIP_CONFIG_FILE"] = os.devnull
-
+    environment = _runtime_environment()
     initialized = _run(forge, repository, environment, "init")
-    assert "Forge initialized at" in initialized.stdout
-    canonical_paths = [
-        repository / ".forge" / "forge.yml",
-        *(sorted((repository / ".forge" / "flows").glob("*.yml"))),
-    ]
-    canonical_before = {path: path.read_bytes() for path in canonical_paths}
+    assert initialized.stdout == f"Forge initialized at {repository / '.forge'}\n"
+
+    flow_directory = repository / ".forge" / "flows"
+    project_flow_paths = sorted(flow_directory.glob("*.yml"))
+    assert {path.stem for path in project_flow_paths} == {"fast", "standard", "full"}
+    project_flows = {
+        path.stem: _project_flow_configuration(path) for path in project_flow_paths
+    }
+    enabled_canonical_flows = {
+        canonical_id for canonical_id, enabled in project_flows.values() if enabled
+    }
+    assert enabled_canonical_flows == {"fast", "standard", "full"}
+    assert all(enabled for _, enabled in project_flows.values())
+    canonical_paths = [repository / ".forge" / "forge.yml", *project_flow_paths]
+    canonical_before = _snapshot(canonical_paths)
 
     listed = _run(forge, repository, environment, "adapter", "list")
     assert "codex version=0.1.0 harness=codex" in listed.stdout
     assert "compatibility=compatible installation=not_installed" in listed.stdout
 
+    before_plan = _tree_snapshot(repository)
     planned = _run(forge, repository, environment, "adapter", "plan", "codex")
+    assert _tree_snapshot(repository) == before_plan
+    before_dry_run = _tree_snapshot(repository)
     dry_run = _run(
         forge, repository, environment, "adapter", "install", "codex", "--dry-run"
     )
+    assert _tree_snapshot(repository) == before_dry_run
     assert _operation_lines(planned.stdout) == _operation_lines(dry_run.stdout)
     assert _operation_lines(planned.stdout)
     assert not (repository / ".agents").exists()
@@ -121,25 +206,33 @@ def main(forge_argument: str, repository_argument: str) -> None:
     artifacts = _recorded_artifacts(record)
     generated_paths = [repository / relative_path for relative_path in artifacts]
     assert all(path.is_file() for path in generated_paths)
+    skill_root = repository / ".agents" / "skills" / "forge"
     assert {
-        ".agents/skills/forge/" + path.relative_to(repository / ".agents" / "skills" / "forge").as_posix()
-        for path in (repository / ".agents" / "skills" / "forge").rglob("*")
+        ".agents/skills/forge/" + path.relative_to(skill_root).as_posix()
+        for path in skill_root.rglob("*")
         if path.is_file()
     } == set(artifacts)
     for relative_path, digest in artifacts.items():
         assert sha256((repository / relative_path).read_bytes()).hexdigest() == digest
 
-    skill_path = repository / ".agents" / "skills" / "forge" / "SKILL.md"
+    skill_path = skill_root / "SKILL.md"
     skill_bytes = skill_path.read_bytes()
     skill = skill_bytes.decode("utf-8")
     _assert_skill_frontmatter(skill)
-    assert "references/engineering-contract.md" not in skill
-    contract = repository / ".agents" / "skills" / "forge" / "references" / "engineering-contract.md"
-    assert "Status: Canonical Protocol 1 Contract" in contract.read_text(encoding="utf-8")
-    for flow_id in ("fast", "standard", "full"):
-        flow = repository / ".agents" / "skills" / "forge" / "references" / "flows" / f"{flow_id}.yml"
-        assert flow.is_file()
-        assert f"id: {flow_id}" in flow.read_text(encoding="utf-8")
+    contract = skill_root / "references" / "engineering-contract.md"
+    assert contract.read_bytes() == (expected_protocol / "contract" / "engineering.md").read_bytes()
+
+    generated_flow_paths = {
+        path.relative_to(skill_root / "references" / "flows").with_suffix("").as_posix()
+        for path in (skill_root / "references" / "flows").glob("*.yml")
+    }
+    assert generated_flow_paths == enabled_canonical_flows
+    for flow_id in enabled_canonical_flows:
+        reference = skill_root / "references" / "flows" / f"{flow_id}.yml"
+        expected = expected_flows / f"{flow_id}.yml"
+        assert reference.read_bytes() == expected.read_bytes()
+        reference_text = reference.read_text(encoding="utf-8")
+        assert f"flow:\n  id: {flow_id}\n" in reference_text
         assert f"### Flow `{flow_id}` gate obligations" in skill
 
     before_reinstall = _snapshot([*generated_paths, record])
@@ -155,16 +248,18 @@ def main(forge_argument: str, repository_argument: str) -> None:
     assert "PASS conformance:" in diagnosed.stdout
 
     skill_path.write_bytes(skill_bytes + b"\n# deliberate generated drift\n")
-    drift_snapshot = _snapshot([*generated_paths, record])
+    drift_snapshot = _tree_snapshot(repository)
     drift_validation = _run(
         forge, repository, environment, "adapter", "validate", "codex", expected_exit_code=2
     )
     assert "E_FORGE_ADAPTER_DRIFT:" in drift_validation.stdout
+    assert _tree_snapshot(repository) == drift_snapshot
+    before_drift_update = _tree_snapshot(repository)
     drift_update = _run(
         forge, repository, environment, "adapter", "update", "codex", expected_exit_code=2
     )
     assert "E_FORGE_ADAPTER_CONFLICT:" in drift_update.stdout
-    assert _snapshot([*generated_paths, record]) == drift_snapshot
+    assert _tree_snapshot(repository) == before_drift_update
 
     skill_path.write_bytes(skill_bytes)
     restored_before_update = _snapshot([*generated_paths, record])
@@ -174,11 +269,23 @@ def main(forge_argument: str, repository_argument: str) -> None:
     assert {
         path: path.read_bytes() for path in [*generated_paths, record]
     } == {path: bytes_and_mtime[0] for path, bytes_and_mtime in before_reinstall.items()}
-    assert {path: path.read_bytes() for path in canonical_paths} == canonical_before
+    record_bytes = record.read_bytes()
+    record.write_bytes(_with_duplicate_recorded_artifact(record_bytes))
+    duplicate_record_snapshot = _tree_snapshot(repository)
+    duplicate_record_validation = _run(
+        forge, repository, environment, "adapter", "validate", "codex", expected_exit_code=2
+    )
+    assert "E_FORGE_ADAPTER_INSTALLATION_INVALID:" in duplicate_record_validation.stdout
+    assert _tree_snapshot(repository) == duplicate_record_snapshot
+    record.write_bytes(record_bytes)
+    assert _snapshot(canonical_paths) == canonical_before
     assert not (repository / ".codex").exists()
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 3:
-        raise SystemExit("usage: adapter_cli_wheel_probe.py FORGE_EXECUTABLE GIT_REPOSITORY")
-    main(sys.argv[1], sys.argv[2])
+    if len(sys.argv) != 5:
+        raise SystemExit(
+            "usage: adapter_cli_wheel_probe.py FORGE_EXECUTABLE GIT_REPOSITORY "
+            "EXPECTED_PROTOCOL_ROOT EXPECTED_EFFECTIVE_FLOW_ROOT"
+        )
+    main(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4])

@@ -469,4 +469,4 @@ notes:
   - TDD-003A focused suite passed 17 tests; approved-network full suite command `.venv/bin/python -m pytest -q` passed 210 tests.
   - TDD-003B focused suite passed 18 tests; full suite command `.venv/bin/python -m pytest -q` passed 211 tests.
   - AC-012 is deferred from the pure TDD-003 projection boundary to TDD-004 publisher cleanup and TDD-008 distribution verification.
-  - Task 8 distribution verification added no TDD-008 cycle: after correcting probe-only path and timestamp assertions, the isolated installed-wheel golden path passed without a product or packaging change.
+  - "Task 8 distribution verification added no TDD-008 cycle. The hardened isolated installed-wheel probe passed with wheel-derived contract and Flow references, full repository read-only snapshots, and a venv-local Python network guard; no product or packaging change was required."
