@@ -1,0 +1,31 @@
+schema: forge/change@1
+change:
+  id: CHG-9999
+  title: Invalid same-session FULL review
+  kind: infrastructure
+flow:
+  initial: full
+  current: full
+state:
+  current: strict_review
+artifacts: {}
+tdd:
+  status: compliant
+  cycles: 1
+verification:
+  status: passed
+review:
+  status: active
+  iteration: 1
+  blockers: 0
+  majors: 0
+  minors: 0
+  observations: 0
+  reviewer_identity:
+    actor_type: agent_same_session
+    session_ref: resolver-session
+    resolver_session_ref: resolver-session
+documentation:
+  impact_evaluated: true
+  update_required: false
+  reason: No documentation impact in validation fixture.
