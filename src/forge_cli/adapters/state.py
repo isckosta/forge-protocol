@@ -30,6 +30,7 @@ class AdapterInstallationRecord:
     harness: str
     protocol_min: int
     protocol_max_exclusive: int
+    publication_root: str | None
     generated_artifacts: tuple[GeneratedArtifact, ...]
     limitations: tuple[str, ...]
 
@@ -43,6 +44,7 @@ class AdapterInstallationRecord:
         protocol_max_exclusive: int,
         generated_artifacts: Iterable[GeneratedArtifact],
         limitations: Iterable[str],
+        publication_root: str | None = None,
     ) -> None:
         if protocol_min >= protocol_max_exclusive:
             raise InvalidAdapterInstallationRecordError(
@@ -53,6 +55,7 @@ class AdapterInstallationRecord:
         object.__setattr__(self, "harness", harness)
         object.__setattr__(self, "protocol_min", protocol_min)
         object.__setattr__(self, "protocol_max_exclusive", protocol_max_exclusive)
+        object.__setattr__(self, "publication_root", publication_root)
         object.__setattr__(
             self,
             "generated_artifacts",
@@ -61,14 +64,29 @@ class AdapterInstallationRecord:
         object.__setattr__(self, "limitations", tuple(sorted(limitations)))
 
 
-def _schema() -> dict:
-    path = resolve_protocol_root() / "schemas" / "adapter-installation.schema.json"
+def _schema(identifier: str) -> dict:
+    filenames = {
+        "forge/adapter-installation@1": "adapter-installation.schema.json",
+        "forge/adapter-installation@2": "adapter-installation-v2.schema.json",
+    }
+    try:
+        filename = filenames[identifier]
+    except KeyError as exc:
+        raise InvalidAdapterInstallationRecordError(
+            f"Unsupported Adapter installation record schema: {identifier!r}."
+        ) from exc
+    path = resolve_protocol_root() / "schemas" / filename
     return json.loads(path.read_text(encoding="utf-8"))
 
 
 def _payload(record: AdapterInstallationRecord) -> dict:
-    return {
-        "schema": "forge/adapter-installation@1",
+    schema = (
+        "forge/adapter-installation@2"
+        if record.publication_root is not None
+        else "forge/adapter-installation@1"
+    )
+    payload: dict = {
+        "schema": schema,
         "adapter": {
             "id": record.adapter_id,
             "version": record.adapter_version,
@@ -78,18 +96,21 @@ def _payload(record: AdapterInstallationRecord) -> dict:
             "min": record.protocol_min,
             "max_exclusive": record.protocol_max_exclusive,
         },
-        "generated_artifacts": [
-            {"path": artifact.path, "digest": artifact.digest}
-            for artifact in record.generated_artifacts
-        ],
-        "limitations": list(record.limitations),
     }
+    if record.publication_root is not None:
+        payload["publication"] = {"root": record.publication_root}
+    payload["generated_artifacts"] = [
+        {"path": artifact.path, "digest": artifact.digest}
+        for artifact in record.generated_artifacts
+    ]
+    payload["limitations"] = list(record.limitations)
+    return payload
 
 
 def write_installation_record(path: Path, record: AdapterInstallationRecord) -> None:
     payload = _payload(record)
     try:
-        validate(instance=payload, schema=_schema())
+        validate(instance=payload, schema=_schema(payload["schema"]))
     except ValidationError as exc:
         raise InvalidAdapterInstallationRecordError(exc.message) from exc
 
@@ -103,20 +124,34 @@ def write_installation_record(path: Path, record: AdapterInstallationRecord) -> 
 def load_installation_record(path: Path) -> AdapterInstallationRecord:
     try:
         payload = yaml.safe_load(path.read_text(encoding="utf-8"))
-        validate(instance=payload, schema=_schema())
+        if not isinstance(payload, dict):
+            raise InvalidAdapterInstallationRecordError(
+                "Adapter installation record must be a mapping."
+            )
+        validate(instance=payload, schema=_schema(payload.get("schema")))
         protocol = payload["protocol"]
+        publication = payload.get("publication")
         return AdapterInstallationRecord(
             adapter_id=payload["adapter"]["id"],
             adapter_version=payload["adapter"]["version"],
             harness=payload["adapter"]["harness"],
             protocol_min=protocol["min"],
             protocol_max_exclusive=protocol["max_exclusive"],
+            publication_root=(
+                publication["root"] if publication is not None else None
+            ),
             generated_artifacts=(
                 GeneratedArtifact(path=item["path"], digest=item["digest"])
                 for item in payload["generated_artifacts"]
             ),
             limitations=payload["limitations"],
         )
-    except (OSError, TypeError, KeyError, ValidationError, yaml.YAMLError) as exc:
+    except (
+        OSError,
+        TypeError,
+        KeyError,
+        ValidationError,
+        yaml.YAMLError,
+    ) as exc:
         message = exc.message if isinstance(exc, ValidationError) else str(exc)
         raise InvalidAdapterInstallationRecordError(message) from exc

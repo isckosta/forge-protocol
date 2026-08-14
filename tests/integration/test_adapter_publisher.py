@@ -43,15 +43,31 @@ def _manifest() -> AdapterManifest:
     )
 
 
-def _record(*artifacts: tuple[str, str], adapter_id: str = "example") -> AdapterInstallationRecord:
+def _record(
+    *artifacts: tuple[str, str],
+    adapter_id: str = "example",
+    publication_root: str = ".",
+) -> AdapterInstallationRecord:
     return AdapterInstallationRecord(
         adapter_id=adapter_id,
         adapter_version="1.0.0",
         harness="example-harness",
         protocol_min=1,
         protocol_max_exclusive=2,
+        publication_root=publication_root,
         generated_artifacts=(GeneratedArtifact(path=path, digest=digest) for path, digest in artifacts),
         limitations=(),
+    )
+
+
+def _write_prior_record(
+    root: Path,
+    *artifacts: tuple[str, str],
+    publication_root: str = ".",
+) -> None:
+    write_installation_record(
+        root / ".forge/adapters/example/installation.yml",
+        _record(*artifacts, publication_root=publication_root),
     )
 
 
@@ -87,6 +103,9 @@ def test_user_owned_preserve_operation_never_overwrites_existing_content(tmp_pat
 def test_forge_owned_update_revalidates_planning_precondition_before_write(tmp_path: Path) -> None:
     target = tmp_path / "generated.md"
     target.write_text("old", encoding="utf-8")
+    _write_prior_record(tmp_path, ("generated.md", digest_content("old")))
+    installation_path = tmp_path / ".forge/adapters/example/installation.yml"
+    installation_before = installation_path.read_bytes()
     plan = plan_adapter(
         manifest=_manifest(),
         effective_configuration=EffectiveAdapterConfiguration(1, ()),
@@ -104,7 +123,7 @@ def test_forge_owned_update_revalidates_planning_precondition_before_write(tmp_p
         publisher.publish_adapter_plan(tmp_path, plan, _record(("generated.md", digest_content("new"))))
 
     assert target.read_text(encoding="utf-8") == "changed-after-plan"
-    assert not (tmp_path / ".forge/adapters/example/installation.yml").exists()
+    assert installation_path.read_bytes() == installation_before
 
 
 def test_create_publishes_content_and_installation_record_last(tmp_path: Path) -> None:
@@ -277,6 +296,7 @@ def test_unchanged_forge_owned_content_is_skipped_and_remains_in_the_record(
     publisher = publisher_module()
     target = tmp_path / "generated.md"
     target.write_text("same", encoding="utf-8")
+    _write_prior_record(tmp_path, ("generated.md", digest_content("same")))
     plan = plan_adapter(
         manifest=_manifest(),
         effective_configuration=EffectiveAdapterConfiguration(1, ()),
@@ -458,6 +478,11 @@ def test_deleting_generated_tree_leaves_separate_canonical_forge_tree_byte_ident
     generated_path = generated_root / ".agents/skills/forge/SKILL.md"
     generated_path.parent.mkdir(parents=True)
     generated_path.write_text("generated skill", encoding="utf-8")
+    _write_prior_record(
+        generated_root,
+        (".agents/skills/forge/SKILL.md", digest_content("generated skill")),
+        publication_root=".agents/skills/forge",
+    )
     plan = plan_adapter(
         manifest=_manifest(),
         effective_configuration=EffectiveAdapterConfiguration(1, ()),
@@ -478,11 +503,58 @@ def test_deleting_generated_tree_leaves_separate_canonical_forge_tree_byte_ident
         ),
     )
 
-    publisher.publish_adapter_plan(generated_root, plan, _record())
+    publisher.publish_adapter_plan(
+        generated_root,
+        plan,
+        _record(publication_root=".agents/skills/forge"),
+    )
 
     assert not generated_path.exists()
     assert generated_root.exists()
     assert {path: path.read_bytes() for path in canonical_files} == canonical_before
+
+
+def test_publisher_rejects_recorded_canonical_path_outside_publication_root(
+    tmp_path: Path,
+) -> None:
+    publisher = publisher_module()
+    canonical = tmp_path / ".forge/forge.yml"
+    canonical.parent.mkdir(parents=True)
+    canonical.write_text("canonical\n", encoding="utf-8")
+    digest = digest_content("canonical\n")
+    prior = _record(
+        (".forge/forge.yml", digest),
+        publication_root=".agents/skills/forge",
+    )
+    installation_path = tmp_path / ".forge/adapters/example/installation.yml"
+    write_installation_record(installation_path, prior)
+    before = {
+        canonical: canonical.read_bytes(),
+        installation_path: installation_path.read_bytes(),
+    }
+    plan = plan_adapter(
+        manifest=_manifest(),
+        effective_configuration=EffectiveAdapterConfiguration(1, ()),
+        projections=(),
+        repository_state=(
+            RepositoryArtifactState(
+                path=".forge/forge.yml",
+                exists=True,
+                current_digest=digest,
+                expected_digest=digest,
+            ),
+        ),
+        previous_generated=(GeneratedArtifact(".forge/forge.yml", digest),),
+    )
+
+    with pytest.raises(publisher.AdapterPublicationError):
+        publisher.publish_adapter_plan(
+            tmp_path,
+            plan,
+            _record(publication_root=".agents/skills/forge"),
+        )
+
+    assert {path: path.read_bytes() for path in before} == before
 
 
 def test_incomplete_rollback_reports_generic_publication_failure_and_target(
@@ -538,6 +610,7 @@ def test_incomplete_rollback_preserves_late_conflict_as_the_public_cause(
     created = tmp_path / "a-created.md"
     updated = tmp_path / "b-updated.md"
     updated.write_text("old", encoding="utf-8")
+    _write_prior_record(tmp_path, ("b-updated.md", digest_content("old")))
     plan = plan_adapter(
         manifest=_manifest(),
         effective_configuration=EffectiveAdapterConfiguration(1, ()),
@@ -563,6 +636,7 @@ def test_incomplete_rollback_preserves_late_conflict_as_the_public_cause(
         ),
     )
     original_replace = publisher._replace_file
+    original_restore = publisher._restore_bytes
 
     def create_then_drift(path: Path, content: str) -> None:
         original_replace(path, content)
@@ -570,7 +644,9 @@ def test_incomplete_rollback_preserves_late_conflict_as_the_public_cause(
             updated.write_text("changed after planning", encoding="utf-8")
 
     def fail_restore(path: Path, content: bytes | None) -> None:
-        raise OSError("simulated restore failure")
+        if path == created:
+            raise OSError("simulated restore failure")
+        original_restore(path, content)
 
     monkeypatch.setattr(publisher, "_replace_file", create_then_drift)
     monkeypatch.setattr(publisher, "_restore_bytes", fail_restore)

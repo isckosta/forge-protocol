@@ -35,4 +35,6 @@ class HarnessDriver(Protocol):
     def default_target(self) -> str | None:
         raise NotImplementedError
 
+    def validate_publication_root(self, publication_root: str) -> None: ...
+
     def project(self, context: AdapterProjectionContext) -> AdapterProjection: ...

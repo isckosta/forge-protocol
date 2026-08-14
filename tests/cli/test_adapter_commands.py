@@ -108,6 +108,7 @@ def test_adapter_list_reports_mismatched_installation_identity_as_invalid(
             harness=record_harness,
             protocol_min=1,
             protocol_max_exclusive=2,
+            publication_root=".agents/skills/forge",
             generated_artifacts=(),
             limitations=(),
         ),

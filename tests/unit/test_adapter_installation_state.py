@@ -20,6 +20,7 @@ def test_installation_record_round_trips_deterministically(tmp_path: Path) -> No
         harness="cursor",
         protocol_min=1,
         protocol_max_exclusive=2,
+        publication_root=".cursor",
         generated_artifacts=(
             module.GeneratedArtifact(path=".cursor/rules/forge.md", digest="b" * 64),
             module.GeneratedArtifact(path=".cursor/commands/forge.md", digest="a" * 64),
@@ -35,6 +36,8 @@ def test_installation_record_round_trips_deterministically(tmp_path: Path) -> No
     second = path.read_text(encoding="utf-8")
 
     assert loaded == record
+    assert yaml.safe_load(first)["schema"] == "forge/adapter-installation@2"
+    assert loaded.publication_root == ".cursor"
     assert first == second
     assert [artifact.path for artifact in loaded.generated_artifacts] == [
         ".cursor/commands/forge.md",
@@ -50,6 +53,7 @@ def test_installation_record_contains_only_derived_adapter_state(tmp_path: Path)
         harness="codex",
         protocol_min=1,
         protocol_max_exclusive=2,
+        publication_root=".agents/skills/forge",
         generated_artifacts=(),
         limitations=(),
     )
@@ -60,7 +64,40 @@ def test_installation_record_contains_only_derived_adapter_state(tmp_path: Path)
 
     forbidden = {"change", "state", "stage", "status", "tdd", "verification", "review", "completion"}
     assert forbidden.isdisjoint(payload.keys())
-    assert set(payload.keys()) == {"schema", "adapter", "protocol", "generated_artifacts", "limitations"}
+    assert set(payload.keys()) == {
+        "schema",
+        "adapter",
+        "protocol",
+        "publication",
+        "generated_artifacts",
+        "limitations",
+    }
+    assert payload["publication"] == {"root": ".agents/skills/forge"}
+
+
+def test_loading_legacy_record_preserves_missing_publication_ownership(
+    tmp_path: Path,
+) -> None:
+    module = state_module()
+    path = tmp_path / "installation.yml"
+    path.write_text(
+        """schema: forge/adapter-installation@1
+adapter:
+  id: codex
+  version: 0.0.9
+  harness: codex
+protocol:
+  min: 1
+  max_exclusive: 2
+generated_artifacts: []
+limitations: []
+""",
+        encoding="utf-8",
+    )
+
+    record = module.load_installation_record(path)
+
+    assert record.publication_root is None
 
 
 def test_loading_rejects_change_lifecycle_fields(tmp_path: Path) -> None:

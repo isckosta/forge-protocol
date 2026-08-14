@@ -15,8 +15,13 @@ from forge_cli.adapters.plan import (
     OwnershipMode,
     digest_content,
 )
+from forge_cli.adapters.ownership import (
+    InvalidAdapterPublicationOwnershipError,
+    require_recorded_publication_ownership,
+)
 from forge_cli.adapters.state import (
     AdapterInstallationRecord,
+    InvalidAdapterInstallationRecordError,
     load_installation_record,
     write_installation_record,
 )
@@ -158,6 +163,13 @@ def _validate_record_matches_plan(
     plan: AdapterPlan,
     record: AdapterInstallationRecord,
 ) -> None:
+    try:
+        require_recorded_publication_ownership(record)
+    except InvalidAdapterPublicationOwnershipError as error:
+        raise AdapterPublicationError(
+            f"Installation record has invalid publication ownership: {error}"
+        ) from error
+
     if record.adapter_id != plan.adapter_id:
         raise AdapterPublicationError(
             "Installation record Adapter id does not match the Adapter plan."
@@ -177,11 +189,88 @@ def _validate_record_matches_plan(
     recorded_generated = {
         artifact.path: artifact.digest for artifact in record.generated_artifacts
     }
+    if len(recorded_generated) != len(record.generated_artifacts):
+        raise AdapterPublicationError(
+            "Installation record contains duplicate generated artifact paths."
+        )
 
     if planned_generated != recorded_generated:
         raise AdapterPublicationError(
             "Installation record generated artifact digests do not match the Adapter plan."
         )
+
+
+def _load_prior_installation_record(
+    path: Path,
+) -> AdapterInstallationRecord | None:
+    if not path.exists():
+        return None
+    if path.is_symlink() or not path.is_file():
+        raise AdapterPublicationError(
+            "Existing Adapter installation record is not a safe regular file."
+        )
+    try:
+        record = load_installation_record(path)
+        require_recorded_publication_ownership(record)
+        return record
+    except (
+        InvalidAdapterInstallationRecordError,
+        InvalidAdapterPublicationOwnershipError,
+    ) as error:
+        raise AdapterPublicationError(
+            f"Existing Adapter installation record is invalid: {error}"
+        ) from error
+
+
+def _validate_prior_record_authorizes_plan(
+    plan: AdapterPlan,
+    next_record: AdapterInstallationRecord,
+    prior_record: AdapterInstallationRecord | None,
+) -> None:
+    if prior_record is not None and (
+        prior_record.adapter_id != plan.adapter_id
+        or prior_record.harness != next_record.harness
+        or prior_record.publication_root != next_record.publication_root
+    ):
+        raise AdapterPublicationError(
+            "Existing installation record identity or publication root does not "
+            "authorize this Adapter plan."
+        )
+
+    prior_generated = (
+        {artifact.path: artifact.digest for artifact in prior_record.generated_artifacts}
+        if prior_record is not None
+        else {}
+    )
+    if prior_record is not None and len(prior_generated) != len(
+        prior_record.generated_artifacts
+    ):
+        raise AdapterPublicationError(
+            "Existing installation record contains duplicate generated artifact paths."
+        )
+
+    for operation in plan.operations:
+        if operation.ownership is not OwnershipMode.FORGE_OWNED:
+            continue
+        recorded_digest = prior_generated.get(operation.path)
+        if operation.intent is OperationIntent.CREATE:
+            if recorded_digest is not None:
+                raise AdapterPublicationError(
+                    f"Adapter create path remains recorded as generated: {operation.path}."
+                )
+            continue
+        if operation.intent in {
+            OperationIntent.UPDATE,
+            OperationIntent.UNCHANGED,
+            OperationIntent.DELETE_GENERATED,
+        } and (
+            recorded_digest is None
+            or operation.expected_current_digest != recorded_digest
+        ):
+            raise AdapterPublicationError(
+                f"Existing installation record does not authorize {operation.intent.value} "
+                f"for {operation.path}."
+            )
 
 
 def _preflight_operation(root: Path, operation: AdapterOperation) -> Path:
@@ -328,6 +417,8 @@ def publish_adapter_plan(
         targets[operation.path] = _preflight_operation(root, operation)
 
     _validate_record_matches_plan(plan, installation_record)
+    prior_record = _load_prior_installation_record(installation_path)
+    _validate_prior_record_authorizes_plan(plan, installation_record, prior_record)
 
     applied: list[tuple[Path, bytes | None]] = []
     prior_installation = installation_path.read_bytes() if installation_path.exists() else None

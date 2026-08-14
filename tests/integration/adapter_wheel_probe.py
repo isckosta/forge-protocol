@@ -77,6 +77,7 @@ with tempfile.TemporaryDirectory() as directory:
         harness="example",
         protocol_min=1,
         protocol_max_exclusive=2,
+        publication_root=".",
         generated_artifacts=(GeneratedArtifact(path="generated.md", digest="a" * 64),),
         limitations=(),
     )
@@ -106,7 +107,11 @@ plan = plan_codex_projection(
     capability_requirements=(),
     repository_state=(),
 )
-record = build_codex_installation_record(descriptor=descriptor, plan=plan)
+record = build_codex_installation_record(
+    descriptor=descriptor,
+    plan=plan,
+    target=target,
+)
 observed = {artifact.path: artifact.digest for artifact in record.generated_artifacts}
 assert detect_codex_drift(record=record, observed_digests=observed) == ()
 

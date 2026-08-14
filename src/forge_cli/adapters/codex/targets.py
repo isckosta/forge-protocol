@@ -38,6 +38,11 @@ def _checked(path: str) -> str:
     return value
 
 
+def validate_publication_root(publication_root: str) -> None:
+    """Apply Codex-owned policy to a resolved publication root."""
+    _checked(publication_root)
+
+
 def load_packaged_publication_target() -> str:
     resource = files("forge_cli.adapters.codex").joinpath("resources", "publication.yml")
     try:

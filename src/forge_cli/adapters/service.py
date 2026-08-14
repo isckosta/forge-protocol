@@ -21,7 +21,12 @@ from forge_cli.adapters.diagnostics import (
 )
 from forge_cli.adapters.driver import AdapterProjectionContext, HarnessDriver
 from forge_cli.adapters.manifest import is_protocol_compatible
-from forge_cli.adapters.ownership import detect_generated_drift
+from forge_cli.adapters.ownership import (
+    InvalidAdapterPublicationOwnershipError,
+    detect_generated_drift,
+    require_publication_root_ownership,
+    require_recorded_publication_ownership,
+)
 from forge_cli.adapters.plan import AdapterPlan, OperationIntent, OwnershipMode
 from forge_cli.adapters.planner import (
     EffectiveAdapterConfiguration,
@@ -94,6 +99,14 @@ def require_valid_installation_identity(
         raise InvalidAdapterInstallationError(
             "Adapter installation record contains duplicate generated artifact paths."
         )
+    try:
+        require_recorded_publication_ownership(record)
+        assert record.publication_root is not None
+        driver.validate_publication_root(record.publication_root)
+    except (InvalidAdapterPublicationOwnershipError, TypeError, ValueError) as error:
+        raise InvalidAdapterInstallationError(
+            f"Adapter installation record has invalid publication ownership: {error}"
+        ) from error
 
 
 def _passed_check(check_id: str, message: str) -> AdapterCheck:
@@ -307,6 +320,7 @@ class AdapterService:
                 _passed_check("target", f"Adapter target is `{target}`."))
 
         record: AdapterInstallationRecord | None = None
+        installation_failure: AdapterCheck | None = None
         try:
             candidate_record = load_optional_installation_record(root, adapter_id)
             if candidate_record is None:
@@ -320,6 +334,11 @@ class AdapterService:
                 )
             else:
                 require_valid_installation_identity(candidate_record, driver)
+                if target is not None and candidate_record.publication_root != target:
+                    raise InvalidAdapterInstallationError(
+                        "Adapter installation record publication root does not match "
+                        "the resolved Adapter target."
+                    )
                 if candidate_record.adapter_version != manifest.version:
                     checks.append(
                         _failed_check(
@@ -335,23 +354,33 @@ class AdapterService:
                     )
                 record = candidate_record
         except (AdapterRepositoryError, InvalidAdapterInstallationError) as error:
-            checks.append(
-                _failed_check(
-                    "installation",
-                    "E_FORGE_ADAPTER_INSTALLATION_INVALID",
-                    f"Adapter installation state is invalid: {error}",
-                    f"Repair or remove the invalid installation record, then run `forge adapter install {adapter_id}`.",
-                )
+            installation_failure = _failed_check(
+                "installation",
+                "E_FORGE_ADAPTER_INSTALLATION_INVALID",
+                f"Adapter installation state is invalid: {error}",
+                f"Repair or remove the invalid installation record, then run `forge adapter install {adapter_id}`.",
             )
+            checks.append(installation_failure)
 
         if record is None:
-            checks.append(
-                _warning_check(
-                    "generated_drift",
-                    "W_FORGE_ADAPTER_DRIFT_UNAVAILABLE",
-                    "Generated drift cannot be checked until a valid installation record is available.",
+            if installation_failure is None:
+                checks.append(
+                    _warning_check(
+                        "generated_drift",
+                        "W_FORGE_ADAPTER_DRIFT_UNAVAILABLE",
+                        "Generated drift cannot be checked until a valid installation record is available.",
+                    )
                 )
-            )
+            else:
+                checks.append(
+                    _failed_check(
+                        "generated_drift",
+                        "E_FORGE_ADAPTER_INSTALLATION_INVALID",
+                        "Unsafe recorded generated paths cannot be read safely: "
+                        f"{installation_failure.message}",
+                        f"Repair or remove the invalid installation record, then run `forge adapter install {adapter_id}`.",
+                    )
+                )
         else:
             try:
                 snapshot = snapshot_repository_artifacts(
@@ -504,7 +533,11 @@ class AdapterService:
         publish_adapter_plan(
             project_root,
             prepared.result.plan,
-            self._installation_record(prepared.driver, prepared.result.plan),
+            self._installation_record(
+                prepared.driver,
+                prepared.result.plan,
+                prepared.result.target,
+            ),
         )
         return self._mutation_result(prepared.result, mutated=True)
 
@@ -532,7 +565,11 @@ class AdapterService:
         publish_adapter_plan(
             project_root,
             prepared.result.plan,
-            self._installation_record(prepared.driver, prepared.result.plan),
+            self._installation_record(
+                prepared.driver,
+                prepared.result.plan,
+                prepared.result.target,
+            ),
         )
         return self._mutation_result(prepared.result, mutated=True)
 
@@ -560,6 +597,15 @@ class AdapterService:
                 target=target,
             )
         )
+        try:
+            require_publication_root_ownership(
+                target,
+                (artifact.path for artifact in projection.artifacts),
+            )
+        except InvalidAdapterPublicationOwnershipError as error:
+            raise AdapterServiceError(
+                f"Adapter projection violates its publication root: {error}"
+            ) from error
 
         try:
             record = load_optional_installation_record(root, adapter_id)
@@ -567,6 +613,11 @@ class AdapterService:
             raise InvalidAdapterInstallationError(str(error)) from error
         if record is not None:
             require_valid_installation_identity(record, driver)
+            if record.publication_root != target:
+                raise InvalidAdapterInstallationError(
+                    "Adapter installation record publication root does not match "
+                    "the resolved Adapter target."
+                )
 
         desired_paths = {artifact.path for artifact in projection.artifacts}
         recorded_paths = (
@@ -631,12 +682,33 @@ class AdapterService:
         driver: HarnessDriver,
     ) -> tuple[str, str]:
         if explicit_target is not None:
-            return AdapterConfiguration(adapter_id=adapter_id, target=explicit_target).target or "", "explicit"
-        if configuration is not None and configuration.target is not None:
-            return configuration.target, "configuration"
-        if driver.default_target is None:
-            raise AdapterTargetUnavailableError("Adapter has no packaged publication target.")
-        return AdapterConfiguration(adapter_id=adapter_id, target=driver.default_target).target or "", "evidence"
+            target = AdapterConfiguration(
+                adapter_id=adapter_id,
+                target=explicit_target,
+            ).target or ""
+            source = "explicit"
+        elif configuration is not None and configuration.target is not None:
+            target = configuration.target
+            source = "configuration"
+        else:
+            if driver.default_target is None:
+                raise AdapterTargetUnavailableError(
+                    "Adapter has no packaged publication target."
+                )
+            target = AdapterConfiguration(
+                adapter_id=adapter_id,
+                target=driver.default_target,
+            ).target or ""
+            source = "evidence"
+
+        try:
+            driver.validate_publication_root(target)
+            require_publication_root_ownership(target, ())
+        except (TypeError, ValueError) as error:
+            raise InvalidAdapterConfigurationError(
+                f"Adapter publication target is invalid for its Harness: {target!r}."
+            ) from error
+        return target, source
 
     @staticmethod
     def _effective_flows(project_root: Path) -> tuple[tuple[str, str], ...]:
@@ -664,7 +736,11 @@ class AdapterService:
         return all(operation.intent is OperationIntent.UNCHANGED for operation in plan.operations)
 
     @staticmethod
-    def _installation_record(driver: HarnessDriver, plan: AdapterPlan) -> AdapterInstallationRecord:
+    def _installation_record(
+        driver: HarnessDriver,
+        plan: AdapterPlan,
+        publication_root: str,
+    ) -> AdapterInstallationRecord:
         manifest = driver.manifest
         generated = (
             GeneratedArtifact(path=operation.path, digest=operation.content_digest)
@@ -679,6 +755,7 @@ class AdapterService:
             harness=manifest.harness,
             protocol_min=manifest.protocol_min,
             protocol_max_exclusive=manifest.protocol_max_exclusive,
+            publication_root=publication_root,
             generated_artifacts=generated,
             limitations=plan.limitations,
         )

@@ -114,6 +114,7 @@ def test_represented_invariant_limitation_survives_plan_and_installation_record(
     record = build_codex_installation_record(
         descriptor=load_codex_adapter_descriptor(),
         plan=plan,
+        target=target,
     )
     expected = ("INV-TDD: capability skills cannot be enforced (FR-016)",)
 
@@ -130,7 +131,11 @@ def test_installation_record_uses_forge_owned_planned_artifacts() -> None:
         bundle=_bundle(), target=target, project_protocol=1,
         capability_requirements=(), repository_state=(),
     )
-    record = build_codex_installation_record(descriptor=descriptor, plan=plan)
+    record = build_codex_installation_record(
+        descriptor=descriptor,
+        plan=plan,
+        target=target,
+    )
     assert record.adapter_id == "codex"
     assert [item.path for item in record.generated_artifacts] == [
         "tools/codex/SKILL.md",
@@ -151,7 +156,11 @@ def test_recorded_generated_drift_reuses_generic_detection() -> None:
         bundle=_bundle(), target=target, project_protocol=1,
         capability_requirements=(), repository_state=(),
     )
-    record = build_codex_installation_record(descriptor=descriptor, plan=plan)
+    record = build_codex_installation_record(
+        descriptor=descriptor,
+        plan=plan,
+        target=target,
+    )
     observed = {item.path: item.digest for item in record.generated_artifacts}
     changed_path = record.generated_artifacts[0].path
     observed[changed_path] = sha256(b"changed").hexdigest()

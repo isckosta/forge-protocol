@@ -11,7 +11,10 @@ from forge_cli.adapters.capabilities import CapabilityLimitation
 from forge_cli.adapters.codex.descriptor import load_codex_adapter_descriptor
 from forge_cli.adapters.codex.assessment import assess_invariant, to_generic_limitation
 from forge_cli.adapters.codex.projection import generate_codex_skill_bundle
-from forge_cli.adapters.codex.targets import load_packaged_publication_target
+from forge_cli.adapters.codex.targets import (
+    load_packaged_publication_target,
+    validate_publication_root,
+)
 from forge_cli.adapters.driver import (
     AdapterProjection,
     AdapterProjectionContext,
@@ -31,6 +34,9 @@ class CodexDriver:
     @property
     def default_target(self) -> str | None:
         return load_packaged_publication_target()
+
+    def validate_publication_root(self, publication_root: str) -> None:
+        validate_publication_root(publication_root)
 
     def project(self, context: AdapterProjectionContext) -> AdapterProjection:
         bundle = generate_codex_skill_bundle(

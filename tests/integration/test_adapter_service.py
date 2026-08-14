@@ -94,6 +94,10 @@ class _EmptyDriver:
     )
     default_target = "empty"
 
+    def validate_publication_root(self, publication_root: str) -> None:
+        if publication_root != self.default_target:
+            raise ValueError(publication_root)
+
     def project(self, context: object) -> AdapterProjection:
         return AdapterProjection(
             artifacts=(),
@@ -206,6 +210,7 @@ def test_install_rejects_an_existing_different_adapter_version_without_mutation(
             harness=record.harness,
             protocol_min=record.protocol_min,
             protocol_max_exclusive=record.protocol_max_exclusive,
+            publication_root=record.publication_root,
             generated_artifacts=record.generated_artifacts,
             limitations=record.limitations,
         ),
@@ -233,6 +238,7 @@ def test_update_refreshes_an_older_record_even_when_all_artifacts_are_unchanged(
             harness=record.harness,
             protocol_min=record.protocol_min,
             protocol_max_exclusive=record.protocol_max_exclusive,
+            publication_root=record.publication_root,
             generated_artifacts=record.generated_artifacts,
             limitations=record.limitations,
         ),
@@ -260,6 +266,7 @@ def test_update_deletes_an_intact_obsolete_recorded_artifact(
             harness=record.harness,
             protocol_min=record.protocol_min,
             protocol_max_exclusive=record.protocol_max_exclusive,
+            publication_root=record.publication_root,
             generated_artifacts=(
                 *record.generated_artifacts,
                 GeneratedArtifact(
@@ -279,6 +286,56 @@ def test_update_deletes_an_intact_obsolete_recorded_artifact(
     assert ".agents/skills/forge/obsolete.md" not in {
         artifact.path for artifact in updated.generated_artifacts
     }
+
+
+def test_update_rejects_explicitly_rooted_record_claiming_canonical_forge_state(
+    initialized_project: Path,
+) -> None:
+    service = _installed_service(initialized_project)
+    record_path = _record_path(initialized_project)
+    record = load_installation_record(record_path)
+    canonical = initialized_project / ".forge/forge.yml"
+    write_installation_record(
+        record_path,
+        AdapterInstallationRecord(
+            adapter_id=record.adapter_id,
+            adapter_version="0.0.9",
+            harness=record.harness,
+            protocol_min=record.protocol_min,
+            protocol_max_exclusive=record.protocol_max_exclusive,
+            publication_root=record.publication_root,
+            generated_artifacts=(
+                *record.generated_artifacts,
+                GeneratedArtifact(
+                    path=".forge/forge.yml",
+                    digest=digest_content(canonical.read_text(encoding="utf-8")),
+                ),
+            ),
+            limitations=record.limitations,
+        ),
+    )
+    before = _tree_bytes_and_mtimes(initialized_project)
+
+    with pytest.raises(InvalidAdapterInstallationError):
+        service.update(initialized_project, "codex")
+
+    assert _tree_bytes_and_mtimes(initialized_project) == before
+
+
+def test_plan_rejects_installed_publication_root_mismatch_without_cleanup(
+    initialized_project: Path,
+) -> None:
+    service = _installed_service(initialized_project)
+    before = _tree_bytes_and_mtimes(initialized_project)
+
+    with pytest.raises(InvalidAdapterInstallationError):
+        service.plan(
+            initialized_project,
+            "codex",
+            explicit_target="another/codex-root",
+        )
+
+    assert _tree_bytes_and_mtimes(initialized_project) == before
 
 
 def _write_hostile_canonical_paths_to_older_record(project_root: Path) -> None:
@@ -388,6 +445,7 @@ def test_update_rejects_wrong_record_identity_without_mutation(initialized_proje
             harness=record.harness,
             protocol_min=record.protocol_min,
             protocol_max_exclusive=record.protocol_max_exclusive,
+            publication_root=record.publication_root,
             generated_artifacts=record.generated_artifacts,
             limitations=record.limitations,
         ),
@@ -414,6 +472,7 @@ def test_update_rejects_an_unsafe_recorded_path_as_invalid_state_without_mutatio
             harness="codex",
             protocol_min=1,
             protocol_max_exclusive=2,
+            publication_root=".agents/skills/forge",
             generated_artifacts=(GeneratedArtifact(path="../outside.md", digest="a" * 64),),
             limitations=(),
         ),
@@ -440,6 +499,7 @@ def test_update_rejects_duplicate_recorded_paths_without_mutation(
             harness="codex",
             protocol_min=1,
             protocol_max_exclusive=2,
+            publication_root=".agents/skills/forge",
             generated_artifacts=(
                 GeneratedArtifact(path=".agents/skills/forge/SKILL.md", digest="a" * 64),
                 GeneratedArtifact(path=".agents/skills/forge/SKILL.md", digest="b" * 64),
@@ -467,6 +527,10 @@ def test_incompatible_protocol_fails_before_install_mutation(initialized_project
             capabilities={},
         )
         default_target = ".agents/skills/forge"
+
+        def validate_publication_root(self, publication_root: str) -> None:
+            if publication_root != self.default_target:
+                raise ValueError(publication_root)
 
         def project(self, context: object) -> object:
             return CodexDriver().project(context)  # type: ignore[arg-type]
@@ -498,6 +562,10 @@ def test_doctor_rejects_unsupported_project_protocol_even_when_driver_range_incl
             capabilities={},
         )
         default_target = "generated/fixture"
+
+        def validate_publication_root(self, publication_root: str) -> None:
+            if publication_root != self.default_target:
+                raise ValueError(publication_root)
 
         def project(self, context: object) -> AdapterProjection:
             raise AssertionError("Unsupported project configuration must not reach projection.")
@@ -617,6 +685,10 @@ def test_validate_reports_generic_conformance_failure_without_mutating(
         )
         default_target = "generated/fixture"
 
+        def validate_publication_root(self, publication_root: str) -> None:
+            if publication_root != self.default_target:
+                raise ValueError(publication_root)
+
         def project(self, context: object) -> AdapterProjection:
             return AdapterProjection(
                 artifacts=(),
@@ -656,6 +728,7 @@ def test_doctor_reports_unsafe_recorded_generated_paths_without_mutating(
             harness="codex",
             protocol_min=1,
             protocol_max_exclusive=2,
+            publication_root=".agents/skills/forge",
             generated_artifacts=(GeneratedArtifact(path="../outside.md", digest="a" * 64),),
             limitations=(),
         ),

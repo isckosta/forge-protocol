@@ -54,7 +54,6 @@ def test_adapter_configuration_schema_has_one_catalog_mapping() -> None:
         for entry in catalog["schemas"]
         if entry["id"] == "forge/adapter-configuration@1"
     ]
-
     assert mappings == [
         {
             "id": "forge/adapter-configuration@1",
@@ -62,6 +61,23 @@ def test_adapter_configuration_schema_has_one_catalog_mapping() -> None:
         }
     ]
 
+
+def test_adapter_installation_v2_schema_requires_publication_root_ownership() -> None:
+    schemas = _catalog_schemas()
+    schema = schemas["forge/adapter-installation@2"]
+    record = {
+        "schema": "forge/adapter-installation@2",
+        "adapter": {"id": "codex", "version": "0.1.0", "harness": "codex"},
+        "protocol": {"min": 1, "max_exclusive": 2},
+        "publication": {"root": ".agents/skills/forge"},
+        "generated_artifacts": [],
+        "limitations": [],
+    }
+
+    Draft202012Validator(schema).validate(record)
+    del record["publication"]
+    with pytest.raises(ValidationError):
+        Draft202012Validator(schema).validate(record)
 
 @pytest.mark.parametrize(
     "target",
