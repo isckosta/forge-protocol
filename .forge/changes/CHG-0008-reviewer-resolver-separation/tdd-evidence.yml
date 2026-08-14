@@ -1,0 +1,23 @@
+schema: forge/tdd-evidence@1
+change: CHG-0008
+status: compliant
+cycle_count: 1
+cycles:
+  - id: TDD-001
+    title: Reject FULL same-session Reviewer execution
+    requirements: [FR-006]
+    behavior: forge validate rejects a FULL Change reviewed by agent_same_session and names C-026
+    red:
+      valid: true
+      commit: 1f83d498124d028fccf8ae3a01bd18a1d068a758
+      command: pytest -q
+      result: 1 failed, 162 passed
+      reason: test_validate_rejects_full_change_reviewed_in_same_session expected exit code 2 but forge validate returned 0
+    green:
+      commit: pending-final-green
+      command: pytest -q
+      result: pending final verification
+notes:
+  - Fixture commit 6b756da4d48f510eddc7507df1d1a8e4f31d9421 preceded the test-only RED commit.
+  - GitHub Actions run 31851211926 is durable RED evidence; the only failing test was the new C-026 behavior test.
+  - Intermediate implementation commit 21711a79c0ffe69ae2a2bbc18ad41bfb48f3b1fd made the behavioral test GREEN but exposed canonical schema compatibility failures in the full contract suite; those are remediation evidence, not a second RED cycle.

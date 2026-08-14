@@ -1,0 +1,58 @@
+schema: forge/change@1
+
+change:
+  id: CHG-0008
+  title: Verifiable Reviewer/Resolver Separation
+  kind: feature
+
+flow:
+  initial: full
+  current: full
+  escalations: []
+
+state:
+  current: strict_review
+
+artifacts:
+  intent: complete
+  discovery: complete
+  specification: complete
+  specification_review: complete
+  architecture: complete
+  test_strategy: approved
+  plan: approved
+  tasks: active
+  traceability: complete
+  tdd_evidence: active
+  implementation: complete
+  verification: active
+  review: pending
+  documentation: complete
+  knowledge_capture: complete
+
+requirements:
+  total: 12
+  implemented: 12
+  verified: 11
+
+tdd:
+  status: compliant
+  cycles: 1
+
+verification:
+  status: active
+
+review:
+  status: pending
+  iteration: 0
+  blockers: 0
+  majors: 0
+  minors: 0
+  observations: 0
+
+documentation:
+  impact_evaluated: true
+  update_required: true
+  reason: >
+    The Change modifies canonical Contract and Specification prose, Review Policy,
+    schema behavior, Codex projection instructions, ADR knowledge, and CHANGELOG.

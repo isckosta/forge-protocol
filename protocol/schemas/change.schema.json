@@ -21,22 +21,13 @@
     {
       "if": {
         "properties": {
-          "flow": {
-            "properties": {"current": {"const": "full"}},
-            "required": ["current"]
-          },
-          "state": {
-            "properties": {"current": {"not": {"const": "complete"}}},
-            "required": ["current"]
-          }
+          "flow": {"properties": {"current": {"const": "full"}}, "required": ["current"]},
+          "state": {"properties": {"current": {"not": {"const": "complete"}}}, "required": ["current"]},
+          "review": {"properties": {"status": {"not": {"const": "pending"}}}, "required": ["status"]}
         },
-        "required": ["flow", "state"]
+        "required": ["flow", "state", "review"]
       },
-      "then": {
-        "properties": {
-          "review": {"required": ["reviewer_identity"]}
-        }
-      }
+      "then": {"properties": {"review": {"required": ["reviewer_identity"]}}}
     }
   ]
 }
