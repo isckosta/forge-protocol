@@ -1,5 +1,7 @@
 import importlib.util
 
+import pytest
+
 
 def _projection_module():
     module_spec = importlib.util.find_spec("forge_cli.adapters.codex.projection")
@@ -70,3 +72,19 @@ def test_projection_resources_are_immutable() -> None:
         assert isinstance(error, (AttributeError, TypeError))
     else:
         raise AssertionError("Projection bundle must be immutable")
+
+
+def test_projection_bundle_rejects_conflicting_duplicate_effective_flow_ids() -> None:
+    """Duplicate IDs must fail before the public renderer can emit any links."""
+    projection = _projection_module()
+
+    with pytest.raises(ValueError) as error:
+        projection.generate_codex_skill_bundle(
+            contract_content="canonical contract",
+            flows=(
+                ("full", "flow: {id: full, name: first}"),
+                ("full", "flow: {id: full, name: conflicting}"),
+            ),
+        )
+
+    assert str(error.value) == "Duplicate effective Codex Flow: full"

@@ -469,8 +469,8 @@ cycles:
       result: 1 failed
       reason: Strict review identified that SKILL.md contained only generic reference prose; the focused projection assertion collected successfully and failed because the required effective-reference links were absent. The original installed-wheel scenario had passed before this review finding.
     green:
-      command: .venv/bin/python -m pytest tests/unit/test_codex_skill_projection.py::test_codex_skill_links_only_the_effective_contract_and_flows_deterministically tests/unit/test_codex_skill_projection.py tests/unit/test_codex_projection_gates.py tests/unit/test_codex_projection_bundle.py -v
-      result: 1 passed; 16 passed
+      command: .venv/bin/python -m pytest tests/unit/test_codex_skill_projection.py::test_codex_skill_links_only_the_effective_contract_and_flows_deterministically -v
+      result: 1 passed
 notes:
   - Focused regression command `.venv/bin/python -m pytest tests/unit/test_adapter_registry.py tests/unit/test_codex_adapter_descriptor.py -v` passed 11 tests.
   - 'rg -n "codex" src/forge_cli/adapters/driver.py src/forge_cli/adapters/registry.py returned no matches.'
@@ -482,3 +482,6 @@ notes:
   - TDD-003B focused suite passed 18 tests; full suite command `.venv/bin/python -m pytest -q` passed 211 tests.
   - AC-012 is deferred from the pure TDD-003 projection boundary to TDD-004 publisher cleanup and TDD-008 distribution verification.
   - "Task 8 began as distribution Verification. Strict review then exposed an FR-009 effective-reference reachability gap, which is remediated as TDD-008; the hardened isolated installed-wheel probe now verifies the explicit links, wheel-derived references, full repository read-only snapshots, and a venv-local Python network guard."
+  - "TDD-008 broad projection regression `.venv/bin/python -m pytest tests/unit/test_codex_skill_projection.py tests/unit/test_codex_projection_gates.py tests/unit/test_codex_projection_bundle.py -v` passed 16 tests."
+  - "Duplicate effective Flow characterization `.venv/bin/python -m pytest tests/unit/test_codex_projection_bundle.py::test_projection_bundle_rejects_conflicting_duplicate_effective_flow_ids -v` passed 1 test: public generation rejects the second conflicting id before SKILL.md rendering."
+  - "Current combined projection regression `.venv/bin/python -m pytest tests/unit/test_codex_skill_projection.py tests/unit/test_codex_projection_gates.py tests/unit/test_codex_projection_bundle.py -v` passed 17 tests after adding the duplicate-rejection characterization."
