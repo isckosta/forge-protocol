@@ -114,7 +114,7 @@ Initial severities are BLOCKER, MAJOR, MINOR, and OBSERVATION. BLOCKER MUST prev
 
 ## 25. Reviewer and Resolver
 
-Reviewer and Resolver are separate conceptual Roles. Blocking Findings SHOULD be re-reviewed after Resolution.
+Reviewer and Resolver execution MUST satisfy the active Review Policy minimum for the selected Flow and MUST be recorded in `review.reviewer_identity` using an actor type plus reviewer and resolver session references. FAST permits same-session review as its minimum. STANDARD requires an isolated agent review session or stronger separation. FULL requires a human reviewer when available and permits an isolated agent session only as an explicit fallback; FULL MUST never silently accept `agent_same_session`. A FULL Change MUST NOT assert `review_passed` without compliant recorded reviewer identity evidence. Isolated sessions reduce context contamination but do not by themselves eliminate correlated model bias. Blocking Findings SHOULD be re-reviewed after Resolution.
 
 ## 26. Documentation Impact
 

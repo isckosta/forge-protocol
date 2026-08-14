@@ -5,6 +5,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from pathlib import Path
 
+import yaml
+
 from forge_cli.configuration import (
     InvalidProjectConfigurationError,
     UnsupportedProtocolVersionError,
@@ -34,6 +36,44 @@ class ValidationResult:
     @property
     def passed(self) -> bool:
         return not self.findings
+
+
+def _validate_reviewer_resolver_separation(project_root: Path) -> list[ValidationFinding]:
+    findings: list[ValidationFinding] = []
+    changes_dir = project_root / ".forge" / "changes"
+    if not changes_dir.is_dir():
+        return findings
+
+    for manifest_path in sorted(changes_dir.glob("*/manifest.yml")):
+        try:
+            manifest = yaml.safe_load(manifest_path.read_text(encoding="utf-8")) or {}
+        except (OSError, yaml.YAMLError):
+            continue
+        if not isinstance(manifest, dict):
+            continue
+
+        flow = manifest.get("flow") or {}
+        review = manifest.get("review") or {}
+        identity = review.get("reviewer_identity") or {}
+        if (
+            isinstance(flow, dict)
+            and flow.get("current") == "full"
+            and isinstance(identity, dict)
+            and identity.get("actor_type") == "agent_same_session"
+        ):
+            findings.append(
+                ValidationFinding(
+                    code="C-026",
+                    artifact=str(manifest_path.relative_to(project_root)),
+                    path=manifest_path,
+                    message=(
+                        "FULL review cannot use reviewer_identity.actor_type=agent_same_session; "
+                        "use a human reviewer or an isolated agent session and record independent session evidence."
+                    ),
+                )
+            )
+
+    return findings
 
 
 def validate_project(project_root: Path, protocol_root: Path) -> ValidationResult:
@@ -113,5 +153,7 @@ def validate_project(project_root: Path, protocol_root: Path) -> ValidationResul
                 message=str(error),
             )
         )
+
+    findings.extend(_validate_reviewer_resolver_separation(project_root))
 
     return ValidationResult(findings=tuple(findings))

@@ -41,7 +41,14 @@ review:
   evidence:
     required_for: [blocker, major]
   reviewer_resolver_separation:
-    required: true
+    minimum:
+      fast: agent_same_session
+      standard: agent_isolated_session
+      full: human
+    fallback:
+      full: agent_isolated_session
+    forbidden:
+      full: [agent_same_session]
   diff_only_review:
     allowed: false
   passing_tests_are_sufficient:

@@ -29,14 +29,23 @@ def _require_behavior() -> None:
     assert detect_codex_drift is not None
 
 
-def _bundle():
+def _bundle(flow_id: str = "full"):
     return generate_codex_projection_bundle(
         CodexProjectionInput(
-            flow_id="full",
+            flow_id=flow_id,
             flow_content="stages: [verification, strict_review]",
             contract_content="canonical contract",
         )
     )
+
+
+def test_standard_and_full_projection_require_isolated_review_session_evidence() -> None:
+    for flow_id in ("standard", "full"):
+        bundle = _bundle(flow_id)
+        flow_resource = next(item for item in bundle.resources if item.name == "forge-flow.md")
+        assert "Do not perform Strict Review in the Resolver session" in flow_resource.content
+        assert "review.reviewer_identity.session_ref" in flow_resource.content
+        assert "resolver_session_ref" in flow_resource.content
 
 
 def test_bundle_resources_become_forge_owned_generic_operations() -> None:

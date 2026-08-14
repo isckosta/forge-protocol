@@ -51,7 +51,7 @@ def _label(stage_id: str) -> str:
     return known.get(stage_id, stage_id.replace("_", " ").title())
 
 
-def _instructions(flow_content: str) -> str:
+def _instructions(flow_id: str, flow_content: str) -> str:
     data = yaml.safe_load(flow_content) or {}
     stages = data.get("stages") or []
     gates = data.get("gates") or {}
@@ -65,23 +65,35 @@ def _instructions(flow_content: str) -> str:
 
     checks = set((gates.get("before_behavioral_implementation") or {}).get("checks") or [])
     if "red_executed" in checks:
-        lines.append("- " + "RED must be executed.")
+        lines.append("- RED must be executed.")
     if "red_failed_for_expected_reason" in checks:
-        lines.append("- " + "RED must fail for the expected reason.")
+        lines.append("- RED must fail for the expected reason.")
     if {"red_executed", "red_failed_for_expected_reason"}.issubset(checks):
-        lines.append("- " + "Behavioral implementation requires valid RED.")
+        lines.append("- Behavioral implementation requires valid RED.")
     if checks:
         lines.append("")
 
     required = set((gates.get("before_completion") or {}).get("require") or [])
     if "verification_passed" in required:
-        lines.append("- Completion requires " + "Verification to pass.")
+        lines.append("- Completion requires Verification to pass.")
     if "review_passed" in required:
-        lines.append("- Completion requires " + "Strict Review to pass.")
+        lines.append("- Completion requires Strict Review to pass.")
     if "blocking_review_threads_resolved" in required:
         lines.append(
             "- Completion requires all blocking review threads on any active "
             "external review surface to be resolved."
+        )
+
+    if flow_id in {"standard", "full"}:
+        lines.extend(
+            (
+                "",
+                "### Reviewer/Resolver separation",
+                "",
+                "- Do not perform Strict Review in the Resolver session.",
+                "- Open or use an isolated review session (or a human review surface when policy requires) for Strict Review.",
+                "- Record `review.reviewer_identity.session_ref` for the Reviewer and `resolver_session_ref` for the Resolver.",
+            )
         )
 
     return "\n".join(lines).rstrip()
@@ -98,7 +110,7 @@ def generate_codex_projection_bundle(canonical: CodexProjectionInput) -> CodexPr
             "This resource is a derived Forge projection for Codex.",
             "Repository-native Forge state remains authoritative.",
             "",
-            _instructions(canonical.flow_content),
+            _instructions(canonical.flow_id, canonical.flow_content),
             "",
             "## Canonical Flow",
             "",
