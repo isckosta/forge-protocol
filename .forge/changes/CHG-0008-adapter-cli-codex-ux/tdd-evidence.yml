@@ -1,7 +1,7 @@
 schema: forge/tdd-evidence@1
 change: CHG-0008
 status: active
-cycle_count: 39
+cycle_count: 40
 cycles:
   - id: TDD-001A
     title: Registry stable ordering
@@ -474,7 +474,7 @@ cycles:
   - id: TDD-009A
     title: Publication-root-bound generated ownership
     requirements: [FR-010, FR-017, FR-018, FR-019, FR-020, NFR-002, NFR-003, INV-001, INV-004, AC-006, AC-011, AC-012]
-    behavior: installation records cannot authorize planning or deletion of canonical Forge state because every generated path is bound to an explicit driver-validated publication root and publisher authorization is revalidated before mutation
+    behavior: installation records cannot authorize planning or deletion of canonical Forge-owned generated state because every recorded generated path is bound to an explicit driver-validated publication root and its prior digest authorization is revalidated before mutation
     origin: Task 9 Strict Review C-001
     red:
       valid: true
@@ -487,7 +487,24 @@ cycles:
       result: 2 passed
     notes:
       - New installation records use forge/adapter-installation@2 and persist publication.root; legacy @1 records remain parseable but cannot authorize planning or publication.
-      - Focused state, ownership, target, service, publisher, and contract regression command passed 111 tests, including explicit v2 canonical-path rejection and publisher-boundary defense in depth.
+      - Focused state, ownership, target, service, publisher, and contract regression command passed 111 tests, including explicit v2 canonical recorded-path rejection and Forge-owned publisher-boundary defense in depth.
+  - id: TDD-009B
+    title: All-operation publication-root confinement
+    requirements: [FR-010, FR-017, NFR-002, NFR-003, INV-001, INV-004, AC-006, AC-012]
+    behavior: publisher authorization rejects every operation path outside or equal to the next publication root, including SHARED and PRESERVE paths, before filesystem preflight; valid paths must be strict component-wise descendants
+    origin: Task 9 C-001 scoped re-review
+    red:
+      valid: true
+      revision: 8c3716fa8bf4a9efc65176a2c67ad721a8641db6
+      command: .venv/bin/python -m pytest tests/integration/test_adapter_publisher.py::test_publisher_rejects_shared_update_of_canonical_forge_state tests/integration/test_adapter_publisher.py::test_publication_root_itself_is_not_an_owned_artifact_or_publishable_target -v
+      result: 2 failed
+      reason: After successful collection, a planner-valid SHARED UPDATE overwrote canonical .forge/forge.yml and wrote a record, while artifact path bundle equal to publication.root was accepted by ownership validation and direct publication created both the root file and record.
+    green:
+      command: .venv/bin/python -m pytest tests/integration/test_adapter_publisher.py::test_publisher_rejects_shared_update_of_canonical_forge_state tests/integration/test_adapter_publisher.py::test_publication_root_itself_is_not_an_owned_artifact_or_publishable_target -v
+      result: 2 passed
+    notes:
+      - PRESERVE remains exempt from generated-record membership because it is non-mutating, but its path is still root-confined before publisher preflight resolves or inspects it.
+      - Focused publisher, ownership, service, state, and contract regression command passed 96 tests.
 notes:
   - Focused regression command `.venv/bin/python -m pytest tests/unit/test_adapter_registry.py tests/unit/test_codex_adapter_descriptor.py -v` passed 11 tests.
   - 'rg -n "codex" src/forge_cli/adapters/driver.py src/forge_cli/adapters/registry.py returned no matches.'

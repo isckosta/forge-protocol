@@ -17,6 +17,7 @@ from forge_cli.adapters.plan import (
 )
 from forge_cli.adapters.ownership import (
     InvalidAdapterPublicationOwnershipError,
+    require_publication_root_ownership,
     require_recorded_publication_ownership,
 )
 from forge_cli.adapters.state import (
@@ -198,6 +199,27 @@ def _validate_record_matches_plan(
         raise AdapterPublicationError(
             "Installation record generated artifact digests do not match the Adapter plan."
         )
+
+
+def _validate_plan_publication_ownership(
+    plan: AdapterPlan,
+    record: AdapterInstallationRecord,
+) -> None:
+    """Confine every operation to the next record's publication root.
+
+    PRESERVE remains exempt from generated-record membership because it cannot
+    mutate content, but it is still root-confined before publisher preflight
+    resolves or inspects its path.
+    """
+    try:
+        require_publication_root_ownership(
+            record.publication_root,
+            (operation.path for operation in plan.operations),
+        )
+    except InvalidAdapterPublicationOwnershipError as error:
+        raise UnsafeAdapterPathError(
+            f"Adapter plan violates publication ownership: {error}"
+        ) from error
 
 
 def _load_prior_installation_record(
@@ -400,9 +422,10 @@ def publish_adapter_plan(
     installation_record: AdapterInstallationRecord,
 ) -> None:
     """Publish a precomputed Adapter plan without silently overwriting user state."""
-    root = repository_root.resolve()
     _validate_adapter_id(plan.adapter_id)
     _validate_adapter_id(installation_record.adapter_id)
+    _validate_plan_publication_ownership(plan, installation_record)
+    root = repository_root.resolve()
 
     if plan.conflicts:
         raise AdapterPublicationConflictError(

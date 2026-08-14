@@ -65,7 +65,7 @@ def require_publication_root_ownership(
     publication_root: str | None,
     artifact_paths: Iterable[str],
 ) -> None:
-    """Require every generated path to remain in one explicit non-canonical root."""
+    """Require every artifact to be a strict descendant of a non-canonical root."""
     if publication_root is None:
         raise InvalidAdapterPublicationOwnershipError(
             "Adapter installation record has no publication-root ownership metadata."
@@ -79,9 +79,9 @@ def require_publication_root_ownership(
             allow_repository_root=False,
         )
         _reject_canonical_forge_path(artifact)
-        if publication_root != "." and artifact != root and root not in artifact.parents:
+        if root not in artifact.parents:
             raise InvalidAdapterPublicationOwnershipError(
-                f"Generated Adapter path {artifact_path!r} is outside recorded "
+                f"Generated Adapter path {artifact_path!r} is not below recorded "
                 f"publication root {publication_root!r}."
             )
 
