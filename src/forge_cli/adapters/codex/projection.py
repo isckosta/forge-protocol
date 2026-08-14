@@ -92,7 +92,7 @@ def _instructions(flow_id: str, flow_content: str) -> str:
                 "",
                 "- Do not perform Strict Review in the Resolver session.",
                 "- Open or use an isolated review session (or a human review surface when policy requires) for Strict Review.",
-                "- Record `review.reviewer_identity.session_ref` for the Reviewer and `resolver_session_ref` for the Resolver.",
+                "- Record `review.reviewer_identity.session_ref` for the Reviewer and `resolver_session_ref` for the Resolver; `session_ref` must be distinct from `resolver_session_ref`.",
             )
         )
 
