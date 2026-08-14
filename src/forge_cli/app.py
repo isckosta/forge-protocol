@@ -3,6 +3,7 @@ from pathlib import Path
 import typer
 import yaml
 
+from forge_cli.adapter_cli import adapter_app
 from forge_cli.doctor import diagnose
 from forge_cli.git import GitUnavailableError, NotGitRepositoryError, resolve_project_root
 from forge_cli.protocol_resources import resolve_protocol_root
@@ -14,6 +15,7 @@ from forge_cli.workspace import WorkspaceAlreadyInitializedError, initialize_wor
 INTERNAL_ERROR_EXIT_CODE = 70
 
 app = typer.Typer()
+app.add_typer(adapter_app, name="adapter")
 
 
 def _protocol_root() -> Path:

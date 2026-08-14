@@ -19,7 +19,7 @@ def test_cli_exposes_only_infrastructure_commands() -> None:
     result = runner.invoke(app_module.app, ["--help"])
 
     assert result.exit_code == 0
-    for command in ("version", "init", "validate", "doctor"):
+    for command in ("version", "init", "validate", "doctor", "adapter"):
         assert command in result.stdout
 
     for forbidden in ("change", "specify", "test-design", "implement", "verify", "review", "resolve", "complete"):
