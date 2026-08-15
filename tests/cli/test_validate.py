@@ -44,16 +44,12 @@ def _write_valid_project_configuration(project_root: Path) -> None:
     )
 
 
-def _write_full_same_session_change(project_root: Path) -> None:
-    change_dir = project_root / ".forge" / "changes" / "CHG-9999-invalid-same-session-review"
-    change_dir.mkdir(parents=True)
-    shutil.copyfile(FIXTURES / "full-change-agent-same-session.yml", change_dir / "manifest.yml")
+def _base_execution_context_manifest() -> dict:
+    return yaml.safe_load((FIXTURES / "full-change-agent-same-session.yml").read_text(encoding="utf-8"))
 
 
-def _write_full_isolated_actor_with_identical_session_refs(project_root: Path) -> None:
-    manifest = yaml.safe_load((FIXTURES / "full-change-agent-same-session.yml").read_text(encoding="utf-8"))
-    manifest["review"]["reviewer_identity"]["actor_type"] = "agent_isolated_session"
-    change_dir = project_root / ".forge" / "changes" / "CHG-9998-invalid-identical-session-refs"
+def _write_change(project_root: Path, manifest: dict, slug: str) -> None:
+    change_dir = project_root / ".forge" / "changes" / slug
     change_dir.mkdir(parents=True)
     (change_dir / "manifest.yml").write_text(yaml.safe_dump(manifest, sort_keys=False), encoding="utf-8")
 
@@ -80,23 +76,18 @@ def test_validate_reports_not_initialized_with_exit_code_two(tmp_path: Path, mon
     assert ".forge/" in result.stdout
 
 
-def test_full_same_session_red_fixture_is_structurally_valid() -> None:
-    # Structural layer: JSON Schema checks presence/types only. This exact RED fixture must pass here
-    # so its forge validate failure proves the independent semantic C-026 layer is what rejected it.
-    # The fixture declares forge/change@2: the schema suffix that carries the mandatory FULL
-    # reviewer_identity requirement (see compatibility.md). forge/change@1 is untouched so that
-    # every previously valid Change manifest, including historical ones, remains valid.
+def test_full_execution_context_fixture_is_structurally_valid() -> None:
+    # Structural layer: forge/change@2 owns the provider-independent execution/context
+    # evidence shape. Semantic C-026 equality checks belong to forge validate.
     schema = json.loads(CHANGE_SCHEMA_V2.read_text(encoding="utf-8"))
-    manifest = yaml.safe_load((FIXTURES / "full-change-agent-same-session.yml").read_text(encoding="utf-8"))
+    manifest = _base_execution_context_manifest()
 
     Draft202012Validator(schema).validate(manifest)
 
 
 def test_full_pending_review_without_reviewer_identity_is_structurally_invalid() -> None:
-    # Structural layer: every forge/change@2 FULL manifest requires a complete reviewer_identity
-    # object, independent of review status. Semantic independence strength is checked separately.
     schema = json.loads(CHANGE_SCHEMA_V2.read_text(encoding="utf-8"))
-    manifest = yaml.safe_load((FIXTURES / "full-change-agent-same-session.yml").read_text(encoding="utf-8"))
+    manifest = _base_execution_context_manifest()
     manifest["review"]["status"] = "pending"
     manifest["review"].pop("reviewer_identity")
 
@@ -106,40 +97,58 @@ def test_full_pending_review_without_reviewer_identity_is_structurally_invalid()
 
 
 def test_forge_change_v1_does_not_require_reviewer_identity_for_full() -> None:
-    # Regression guard: forge/change@1 MUST stay backward compatible per compatibility.md
-    # ("optional fields... whose absence preserves existing meaning"). A FULL manifest with no
-    # reviewer_identity and no review evidence at all must remain structurally valid under v1,
-    # or every historical FULL Change manifest becomes retroactively invalid (forbidden by
-    # FR-012/INV-001 and by C-045/C-046).
     schema = json.loads(CHANGE_SCHEMA.read_text(encoding="utf-8"))
-    manifest = yaml.safe_load((FIXTURES / "full-change-agent-same-session.yml").read_text(encoding="utf-8"))
+    manifest = _base_execution_context_manifest()
     manifest["schema"] = "forge/change@1"
     manifest["review"].pop("reviewer_identity")
 
     Draft202012Validator(schema).validate(manifest)
 
 
-def test_validate_rejects_full_change_reviewed_in_same_session(tmp_path: Path, monkeypatch) -> None:
+def test_validate_rejects_distinct_execution_ids_that_share_context(tmp_path: Path, monkeypatch) -> None:
     _init_git_repository(tmp_path)
     _write_valid_project_configuration(tmp_path)
-    _write_full_same_session_change(tmp_path)
+    manifest = _base_execution_context_manifest()
+    _write_change(tmp_path, manifest, "CHG-9999-invalid-shared-context")
     monkeypatch.chdir(tmp_path)
 
     result = runner.invoke(app, ["validate"])
 
     assert result.exit_code == 2
     assert "C-026" in result.stdout
-    assert "agent_same_session" in result.stdout
+    assert "context" in result.stdout.lower()
 
 
-def test_validate_rejects_claimed_isolation_with_identical_session_refs(tmp_path: Path, monkeypatch) -> None:
+def test_validate_rejects_shared_execution_even_with_distinct_context_ids(tmp_path: Path, monkeypatch) -> None:
     _init_git_repository(tmp_path)
     _write_valid_project_configuration(tmp_path)
-    _write_full_isolated_actor_with_identical_session_refs(tmp_path)
+    manifest = _base_execution_context_manifest()
+    identity = manifest["review"]["reviewer_identity"]
+    identity["context_id"] = "review-context-001"
+    identity["resolver_context_id"] = "resolver-context-001"
+    identity["execution_id"] = "shared-execution-001"
+    identity["resolver_execution_id"] = "shared-execution-001"
+    _write_change(tmp_path, manifest, "CHG-9998-invalid-shared-execution")
     monkeypatch.chdir(tmp_path)
 
     result = runner.invoke(app, ["validate"])
 
     assert result.exit_code == 2
     assert "C-026" in result.stdout
-    assert "identical" in result.stdout
+    assert "execution" in result.stdout.lower()
+
+
+def test_validate_accepts_independent_execution_and_context(tmp_path: Path, monkeypatch) -> None:
+    _init_git_repository(tmp_path)
+    _write_valid_project_configuration(tmp_path)
+    manifest = _base_execution_context_manifest()
+    identity = manifest["review"]["reviewer_identity"]
+    identity["context_id"] = "review-context-001"
+    identity["resolver_context_id"] = "resolver-context-001"
+    _write_change(tmp_path, manifest, "CHG-9997-valid-independent-review")
+    monkeypatch.chdir(tmp_path)
+
+    result = runner.invoke(app, ["validate"])
+
+    assert result.exit_code == 0
+    assert "Forge project is valid" in result.stdout
