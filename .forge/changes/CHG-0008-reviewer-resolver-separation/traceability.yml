@@ -1,25 +1,25 @@
 schema: forge/traceability@1
 change: CHG-0008
 requirements:
-  FR-001: {tasks: [T-020, T-024, T-025], tests: [TDD-006], evidence: protocol_1_2_boundary}
-  FR-002: {tasks: [T-024, T-025, T-026], tests: [TDD-006], evidence: version_axes}
-  FR-003: {tasks: [T-024, T-027], tests: [TDD-006], evidence: historical_compatibility}
-  FR-004: {tasks: [T-025, T-027, T-028], tests: [TDD-006], evidence: protocol_resolution}
-  FR-005: {tasks: [T-026, T-030], tests: [TDD-006], evidence: execution_provenance_schema}
-  FR-006: {tasks: [T-020, T-025, T-026, T-031], tests: [TDD-006], evidence: assurance_levels}
-  FR-007: {tasks: [T-026, T-027], tests: [TDD-006], evidence: minimum_recorded_assurance}
-  FR-008: {tasks: [T-026, T-027], tests: [TDD-006], evidence: revision_binding}
-  FR-009: {tasks: [T-027], tests: [TDD-006], evidence: execution_independence}
-  FR-010: {tasks: [T-027], tests: [TDD-006], evidence: context_independence}
-  FR-011: {tasks: [T-022, T-027], tests: [TDD-006], evidence: all_flow_regressions}
-  FR-012: {tasks: [T-026, T-027], tests: [TDD-006], evidence: iteration_aware_review}
-  FR-013: {tasks: [T-025, T-031], evidence: protocol2_contract}
-  FR-014: {tasks: [T-022, T-027], tests: [TDD-006], evidence: forged_evidence_regression}
-  FR-015: {tasks: [T-022, T-027], tests: [TDD-006], evidence: downgrade_regression}
-  FR-016: {tasks: [T-023, T-029], tests: [TDD-007], evidence: adapter_protocol_boundary}
-  FR-017: {tasks: [T-025, T-026, T-029], evidence: provider_independent_local_core}
-  FR-018: {tasks: [T-002, T-030, T-035], evidence: resolution_provenance_and_pending_rereview}
-  INV-001: {tasks: [T-002, T-030], evidence: explicit_historical_gap}
-  INV-002: {tasks: [T-022, T-027], tests: [TDD-006], evidence: provenance_reference_validation}
-  INV-003: {tasks: [T-024, T-025], tests: [TDD-006, TDD-007], evidence: protocol1_preservation}
-  INV-004: {tasks: [T-035, T-036], evidence: pending_independent_rereview}
+  FR-001: {tasks: [T-020], tests: [TDD-006], evidence: protocol_1_2_boundary}
+  FR-002: {tasks: [T-020], tests: [TDD-006], evidence: version_axes}
+  FR-003: {tasks: [T-046], tests: [TDD-006, TDD-008], evidence: protocol1_compatibility}
+  FR-004: {tasks: [T-020], tests: [TDD-006], evidence: protocol_resolution}
+  FR-005: {tasks: [T-042], tests: [TDD-006, TDD-008], evidence: execution_provenance_schema}
+  FR-006: {tasks: [T-042], tests: [TDD-006], evidence: assurance_levels}
+  FR-007: {tasks: [T-043], tests: [TDD-006], evidence: minimum_recorded_assurance}
+  FR-008: {tasks: [T-041, T-042, T-043, T-044, T-045], tests: [TDD-008], evidence: concrete_immutable_revision_binding}
+  FR-009: {tasks: [T-043], tests: [TDD-006, TDD-008], evidence: execution_independence}
+  FR-010: {tasks: [T-043], tests: [TDD-006, TDD-008], evidence: context_independence}
+  FR-011: {tasks: [T-046], tests: [TDD-006, TDD-008], evidence: all_flow_regressions}
+  FR-012: {tasks: [T-042, T-043, T-045], tests: [TDD-008], evidence: frozen_iteration_subject}
+  FR-013: {tasks: [T-047], evidence: protocol2_contract}
+  FR-014: {tasks: [T-043], tests: [TDD-006, TDD-008], evidence: forged_evidence_regression}
+  FR-015: {tasks: [T-046], tests: [TDD-006], evidence: downgrade_regression}
+  FR-016: {tasks: [T-047], tests: [TDD-007, TDD-008], evidence: adapter_freeze_guidance}
+  FR-017: {tasks: [T-044], tests: [TDD-008], evidence: local_git_binding_no_remote_api}
+  FR-018: {tasks: [T-049, T-050], tests: [TDD-008], evidence: resolution002_pending_iteration3}
+  INV-001: {tasks: [T-002], evidence: historical_gap_preserved}
+  INV-002: {tasks: [T-043, T-044], tests: [TDD-008], evidence: provenance_reference_and_immutable_validation}
+  INV-003: {tasks: [T-046], tests: [TDD-008], evidence: protocol1_preservation}
+  INV-004: {tasks: [T-050], evidence: pending_independent_rereview}
