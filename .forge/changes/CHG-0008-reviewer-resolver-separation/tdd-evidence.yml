@@ -1,7 +1,7 @@
 schema: forge/tdd-evidence@1
 change: CHG-0008
 status: active
-cycle_count: 3
+cycle_count: 4
 cycles:
   - id: TDD-001
     title: Reject FULL same-session Reviewer execution
@@ -47,7 +47,34 @@ cycles:
       commit: 666cf96f88faaf2445ba8313ee715cad306db6c0
       command: pytest -q
       result: schema now requires reviewer_identity whenever flow.current is full; repository-wide suite exposes historical forge/change@1 incompatibility
+  - id: TDD-004
+    title: Resolve FULL reviewer identity requirement without breaking forge/change@1 compatibility
+    requirements: [FR-002, FR-012, INV-001]
+    behavior: forge/change@1 stays backward compatible while forge/change@2 carries the mandatory FULL reviewer_identity requirement
+    red:
+      valid: true
+      commit: uncommitted (local working tree, second Resolver session)
+      command: pytest -q
+      result: "1 failed, 166 passed"
+      reason: "test_canonical_yaml_instances_satisfy_their_declared_schemas failed for CHG-0001, CHG-0002, CHG-0004, CHG-0006, CHG-0007, and CHG-0008's own manifest, all missing reviewer_identity under forge/change@1 — this is the pre-existing RED this cycle resolves, not a newly authored one"
+      structural_validity: pre-existing failure reproduced from the PR #9 branch tip (commit 4a6b5d64be0ccc7b26456fe5b8b9d06170a7bd63) before this cycle's changes
+    green:
+      commit: uncommitted (local working tree, second Resolver session)
+      command: pytest -q
+      result: "168 passed, 0 failed"
+    notes:
+      - >-
+        This cycle's RED was not freshly authored test-first in the strict sense — it is the
+        pre-existing compatibility-conflict failure the prior Resolver session left recorded in
+        verification.md and reproduced independently before this fix. The fix is schema/catalog
+        restructuring (forge/change@1 restored to backward-compatible shape; forge/change@2
+        added) plus one new regression test
+        (test_forge_change_v1_does_not_require_reviewer_identity_for_full) and two structural
+        tests repointed at forge/change@2.
+      - This evidence has not yet been pushed through CI; no GitHub Actions run number exists
+        for it, unlike TDD-001 through TDD-003.
 notes:
   - TDD-001 is the mandatory exact-fixture RED required by the Change and satisfies C-011 because its fixture was structurally valid and the observed failure was the missing semantic C-026 behavior.
   - TDD-002 and TDD-003 were added RED-before-GREEN during the revised Resolver session.
-  - TDD status remains active rather than compliant because final repository-wide GREEN cannot be claimed while the literal breaking schema requirement conflicts with historical canonical forge/change@1 instances and C-045/C-046.
+  - TDD-004 resolves the compatibility conflict TDD-003's GREEN exposed, via schema versioning rather than weakening the canonical compatibility test or fabricating reviewer evidence.
+  - "TDD status remains active rather than compliant because Strict Review by a genuinely independent session (T-014) has not yet occurred; only that session may set review.status to passed."

@@ -3,7 +3,7 @@ forge:
   artifact: verification
   schema: 1
 change: CHG-0008
-status: failed
+status: passed
 ---
 
 # Verification — Verifiable Reviewer/Resolver Separation
@@ -34,13 +34,32 @@ Commit `7f21439e2cc4517a423f99efd1f4b0f817ca3d7e` added the structural regressio
 - CHANGELOG records the literal FULL schema requirement as breaking.
 - No completed historical Change was modified, and CHG-0008 `review.md` remains absent.
 
-## Repository-wide verification failure
+## Repository-wide compatibility conflict — resolved
 
-The literal revised schema requirement cannot currently produce repository-wide GREEN under Protocol 1. `tests/contract/test_protocol_contract.py::test_canonical_yaml_instances_satisfy_their_declared_schemas` validates every historical `.forge/changes/*/manifest.yml` against the current schema identified as `forge/change@1`. Historical FULL manifests do not contain `reviewer_identity`, and this Change explicitly forbids retroactively adding fabricated evidence.
+An earlier revision of this Change made the FULL structural requirement apply unconditionally
+under the existing `forge/change@1` identifier, which broke
+`test_canonical_yaml_instances_satisfy_their_declared_schemas` for every historical FULL
+manifest and, self-referentially, for CHG-0008's own manifest. This Change forbids
+retroactively adding fabricated evidence to historical records, and forbids this Resolver
+session from fabricating its own Reviewer evidence, so neither of those was an acceptable fix.
 
-This is also a direct compatibility conflict with C-045/C-046: changing the same Protocol/schema identity so that previously valid conforming instances become invalid requires a new compatibility boundary. Weakening the canonical test, rewriting completed Changes, or inventing Reviewer evidence would hide rather than solve that conflict.
+Resolution: per `protocol/compatibility.md`'s existing schema-versioning rule ("An individual
+artifact shape may instead require a new schema suffix when the break is limited to that
+artifact"), the structural requirement now lives only under a new suffix, `forge/change@2`.
+`forge/change@1` is restored to its original, backward-compatible shape. No Protocol version
+bump was required — Protocol, Schema, CLI, and Adapter versions are independent axes.
 
-The CHG-0008 manifest itself is likewise FULL and has Review pending. Under the revised schema it cannot be structurally valid without a `reviewer_identity`; this Resolver session cannot truthfully supply Reviewer evidence before independent Strict Review.
+- Historical manifests (CHG-0001, CHG-0002, CHG-0004, CHG-0006, CHG-0007) remain on
+  `forge/change@1`, unmodified, and structurally valid.
+- CHG-0008's own manifest remains on `forge/change@1` while its Strict Review is pending. It
+  has not claimed compliance with the discipline it introduces, and truthfully cannot until a
+  genuinely independent Reviewer session records real `reviewer_identity` evidence (T-014).
+- The RED fixture and its structural tests declare `schema: forge/change@2` to exercise the
+  new mandatory behavior; a new regression test pins the unchanged `forge/change@1` behavior so
+  the two schemas cannot silently reconverge.
+
+Independently reproduced: `pytest -q` → **168 passed, 0 failed**. `jsonschema` validation of
+every `.forge/changes/CHG-*/manifest.yml` against its own declared `schema` identifier passes.
 
 ## Distribution verification
 
@@ -52,4 +71,11 @@ PENDING EXTERNAL REVIEW. This Resolver session has not performed independent Str
 
 ## Result
 
-Verification is **failed/blocked**, not passed. The requested semantic behavior is implemented, but CHG-0008 cannot truthfully satisfy both the literal mandatory-FULL schema requirement and the existing Protocol 1 compatibility/historical-preservation obligations. A versioning or migration decision is required before full-suite GREEN, repository schema validity, `forge validate` success, and Completion can be claimed.
+Verification **passed**. The requested semantic behavior is implemented and the compatibility
+conflict is resolved via schema versioning without fabricated evidence or historical rewrites.
+Full-suite GREEN, repository schema validity, and `forge validate` success are all confirmed.
+
+This does not complete the Change. Strict Review (T-014) remains genuinely pending, performed
+by nobody in this Resolver session, and `review.md` remains absent. Completion still requires
+an independent Reviewer session to execute Strict Review and, if it passes, to record real
+`reviewer_identity` evidence before CHG-0008 itself migrates to `forge/change@2`.

@@ -19,7 +19,7 @@ status: active
 - [x] T-009 Update Codex STANDARD/FULL projection to require isolated execution and distinct session references.
 - [x] T-010 Add/update ADR and CHANGELOG with operational-independence limits and breaking-change disclosure.
 - [x] T-011 Preserve completed historical Change files without retroactive reviewer evidence.
-- [ ] T-012 Resolve the incompatibility between the new mandatory FULL field and Protocol 1 C-045/C-046/canonical historical manifests without weakening tests or fabricating evidence.
-- [ ] T-013 Restore full-suite and repository `forge validate` success after T-012 is resolved.
+- [x] T-012 Resolve the incompatibility between the new mandatory FULL field and Protocol 1 C-045/C-046/canonical historical manifests without weakening tests or fabricating evidence. Resolved via schema versioning (`forge/change@2`) per `protocol/compatibility.md`; `forge/change@1` restored to backward-compatible shape.
+- [x] T-013 Restore full-suite and repository `forge validate` success after T-012 is resolved. `pytest -q` → 168 passed, 0 failed.
 - [ ] T-014 Obtain independent Strict Review; only that execution may create `review.md` and record compliant reviewer identity evidence.
 - [ ] T-015 Resolve any blocking findings and complete the Change only after compliant re-review.

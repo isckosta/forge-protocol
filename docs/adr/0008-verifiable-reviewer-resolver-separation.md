@@ -24,11 +24,25 @@ This mechanism improves inspectability and operational separation. It does not p
 
 `agent_different_model` is future work only and is not introduced by CHG-0008.
 
-## Compatibility conflict requiring independent review
+## Compatibility conflict and its resolution
 
-The revised requirement that every FULL `forge/change@1` instance contain `reviewer_identity` is a breaking schema change: historical FULL manifests that were valid under the same schema identifier become invalid without retroactive mutation. That conflicts with Protocol 1 C-045/C-046, while CHG-0008's non-goals also forbid rewriting completed historical Changes.
+An earlier revision of this decision would have made every FULL `forge/change@1` instance
+require `reviewer_identity`, a breaking schema change: historical FULL manifests valid under
+that same schema identifier would become invalid without retroactive mutation, conflicting
+with Protocol 1 C-045/C-046, while CHG-0008's own non-goals forbid rewriting completed
+historical Changes.
 
-The Resolver therefore does not fabricate reviewer evidence, rewrite historical Changes, weaken canonical contract tests, or claim this compatibility conflict is resolved. Independent Strict Review must decide whether the requirement needs a new schema/Protocol version or another explicitly governed migration boundary before CHG-0008 can complete.
+This is resolved without a Protocol version bump, using the schema-versioning mechanism
+`protocol/compatibility.md` already defines: the requirement lives only under a new artifact
+schema suffix, `forge/change@2`. `forge/change@1` is restored to its original, backward
+compatible shape. No historical Change, and no other in-flight Change, is forced onto the new
+requirement; a Change adopts `forge/change@2` when it is ready to truthfully record reviewer
+identity. CHG-0008's own manifest stays on `forge/change@1` until its own Strict Review
+actually happens — recording identity before that would be self-certification, which INV-002
+forbids regardless of how the schema is versioned.
+
+This was resolved by a second Resolver-role pass, not by the independent Reviewer session this
+Change requires. It is disclosed here as such and remains subject to that Review.
 
 ## Consequences
 

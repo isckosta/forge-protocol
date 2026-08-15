@@ -8,9 +8,14 @@ CLI releases will follow Semantic Versioning when releases begin. Protocol versi
 
 ### Verifiable Reviewer/Resolver Separation
 
-Breaking:
+Added:
 
-- every FULL Change manifest (`flow.current == full`) now structurally requires `review.reviewer_identity` with `actor_type`, `session_ref`, and `resolver_session_ref`; this is a breaking change for previously valid FULL `forge/change@1` instances and creates a Protocol 1 compatibility conflict that must be resolved before completion;
+- a new schema, `forge/change@2`, that structurally requires `review.reviewer_identity`
+  (`actor_type`, `session_ref`, `resolver_session_ref`) for any FULL Change manifest
+  (`flow.current == full`), regardless of review status. `forge/change@1` is unchanged and
+  remains backward compatible — no existing conforming instance is invalidated, per
+  `protocol/compatibility.md`. Projects and historical Changes adopt the requirement by opting
+  in to `forge/change@2` when they are prepared to record real reviewer identity evidence;
 - Review policy minimums now distinguish FAST same-session review, STANDARD isolated-session review, and FULL human review with an explicit isolated-agent fallback;
 - `forge validate` rejects FULL Changes that record `agent_same_session` and rejects claimed independent execution backed by identical reviewer/resolver session references, naming C-026;
 - Codex STANDARD/FULL projections instruct the harness to use independent review execution and record distinct session references.

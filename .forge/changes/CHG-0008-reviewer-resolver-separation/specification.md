@@ -70,6 +70,32 @@ All durable evidence required for handoff MUST be stored in the repository rathe
 - AC-009: `review.md` is absent and Strict Review remains pending for independent execution.
 - AC-010: the complete canonical test suite and `forge validate` pass only if the revised schema requirement can coexist with Protocol 1 compatibility obligations without fabricated evidence or historical rewrites.
 
-## Known contract conflict
+## Known contract conflict (resolved)
 
-FR-002 and FR-012 are simultaneously incompatible with the current Protocol 1 compatibility invariants C-045/C-046 and the canonical test that validates every historical `forge/change@1` manifest against the current schema. This conflict is not waived by the Resolver. It requires an independent decision about schema/Protocol versioning or migration boundaries before CHG-0008 can satisfy AC-010 and complete.
+FR-002 and FR-012 were originally simultaneously incompatible with Protocol 1 compatibility
+invariants C-045/C-046 and the canonical test that validates every historical `forge/change@1`
+manifest against the current schema: the literal FR-002 wording made the requirement apply to
+every FULL manifest regardless of which schema suffix it declared, which retroactively
+invalidated historical FULL Changes and, self-referentially, CHG-0008's own in-progress
+manifest.
+
+This is resolved per `protocol/compatibility.md`'s existing schema-versioning mechanism, which
+was already canonical and did not require a Protocol version bump: `forge/change@1` is
+restored to its original shape (the `reviewer_identity` property remains defined but optional,
+which is compatible per compatibility.md's "optional fields... whose absence preserves
+existing meaning"). A new schema suffix, `forge/change@2`, carries the structural requirement
+that FULL manifests declare a complete `reviewer_identity` object regardless of review status.
+FR-002 is amended to read: *"Whenever a Change manifest declares `schema: forge/change@2` and
+`flow.current == full`, JSON Schema MUST structurally require the entire `reviewer_identity`
+object."* No historical manifest declares `forge/change@2`, so none are retroactively
+invalidated, satisfying FR-012/INV-001/AC-008 without fabricating evidence or weakening the
+canonical compatibility test.
+
+CHG-0008's own manifest remains on `forge/change@1` while its own Strict Review is pending —
+it has not claimed compliance with the discipline it introduces, and it will only be truthful
+to migrate to `forge/change@2` once a genuinely independent Reviewer session has executed and
+recorded real `reviewer_identity` evidence (T-014). Migrating it preemptively to satisfy its
+own new rule before that Review happens would itself violate INV-002.
+
+AC-010 is satisfied: the full canonical test suite and `forge validate` pass
+(`pytest -q` → 168 passed, 0 failed) without fabricated evidence or historical rewrites.

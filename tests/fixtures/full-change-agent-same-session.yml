@@ -1,4 +1,4 @@
-schema: forge/change@1
+schema: forge/change@2
 change:
   id: CHG-9999
   title: Invalid same-session FULL review

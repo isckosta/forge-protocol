@@ -14,6 +14,7 @@ runner = CliRunner()
 FIXTURES = Path(__file__).resolve().parents[1] / "fixtures"
 REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
 CHANGE_SCHEMA = REPOSITORY_ROOT / "protocol" / "schemas" / "change.schema.json"
+CHANGE_SCHEMA_V2 = REPOSITORY_ROOT / "protocol" / "schemas" / "change-v2.schema.json"
 
 
 def _init_git_repository(path: Path) -> None:
@@ -82,16 +83,19 @@ def test_validate_reports_not_initialized_with_exit_code_two(tmp_path: Path, mon
 def test_full_same_session_red_fixture_is_structurally_valid() -> None:
     # Structural layer: JSON Schema checks presence/types only. This exact RED fixture must pass here
     # so its forge validate failure proves the independent semantic C-026 layer is what rejected it.
-    schema = json.loads(CHANGE_SCHEMA.read_text(encoding="utf-8"))
+    # The fixture declares forge/change@2: the schema suffix that carries the mandatory FULL
+    # reviewer_identity requirement (see compatibility.md). forge/change@1 is untouched so that
+    # every previously valid Change manifest, including historical ones, remains valid.
+    schema = json.loads(CHANGE_SCHEMA_V2.read_text(encoding="utf-8"))
     manifest = yaml.safe_load((FIXTURES / "full-change-agent-same-session.yml").read_text(encoding="utf-8"))
 
     Draft202012Validator(schema).validate(manifest)
 
 
 def test_full_pending_review_without_reviewer_identity_is_structurally_invalid() -> None:
-    # Structural layer: every FULL manifest requires a complete reviewer_identity object,
-    # independent of review status. Semantic independence strength is checked separately.
-    schema = json.loads(CHANGE_SCHEMA.read_text(encoding="utf-8"))
+    # Structural layer: every forge/change@2 FULL manifest requires a complete reviewer_identity
+    # object, independent of review status. Semantic independence strength is checked separately.
+    schema = json.loads(CHANGE_SCHEMA_V2.read_text(encoding="utf-8"))
     manifest = yaml.safe_load((FIXTURES / "full-change-agent-same-session.yml").read_text(encoding="utf-8"))
     manifest["review"]["status"] = "pending"
     manifest["review"].pop("reviewer_identity")
@@ -99,6 +103,20 @@ def test_full_pending_review_without_reviewer_identity_is_structurally_invalid()
     errors = list(Draft202012Validator(schema).iter_errors(manifest))
 
     assert any(error.validator == "required" and "reviewer_identity" in error.message for error in errors)
+
+
+def test_forge_change_v1_does_not_require_reviewer_identity_for_full() -> None:
+    # Regression guard: forge/change@1 MUST stay backward compatible per compatibility.md
+    # ("optional fields... whose absence preserves existing meaning"). A FULL manifest with no
+    # reviewer_identity and no review evidence at all must remain structurally valid under v1,
+    # or every historical FULL Change manifest becomes retroactively invalid (forbidden by
+    # FR-012/INV-001 and by C-045/C-046).
+    schema = json.loads(CHANGE_SCHEMA.read_text(encoding="utf-8"))
+    manifest = yaml.safe_load((FIXTURES / "full-change-agent-same-session.yml").read_text(encoding="utf-8"))
+    manifest["schema"] = "forge/change@1"
+    manifest["review"].pop("reviewer_identity")
+
+    Draft202012Validator(schema).validate(manifest)
 
 
 def test_validate_rejects_full_change_reviewed_in_same_session(tmp_path: Path, monkeypatch) -> None:

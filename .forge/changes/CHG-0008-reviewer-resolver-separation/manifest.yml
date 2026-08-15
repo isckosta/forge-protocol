@@ -25,27 +25,27 @@ artifacts:
   traceability: complete
   tdd_evidence: active
   implementation: complete
-  verification: failed
+  verification: passed
   review: pending
   documentation: complete
   knowledge_capture: complete
 
 requirements:
   total: 15
-  implemented: 12
-  verified: 11
+  implemented: 14
+  verified: 13
 
 tdd:
   status: active
-  cycles: 3
+  cycles: 4
 
 verification:
-  status: failed
+  status: passed
 
 review:
   status: pending
   iteration: 0
-  blockers: 1
+  blockers: 0
   majors: 0
   minors: 0
   observations: 0
@@ -55,6 +55,7 @@ documentation:
   update_required: true
   reason: >
     The Change modifies canonical Contract and Specification prose, Review Policy,
-    schema behavior, Codex projection instructions, ADR knowledge, and CHANGELOG.
-    Verification is blocked by the incompatibility between the literal mandatory
-    FULL reviewer identity field and existing Protocol 1 historical compatibility.
+    schema behavior (including a new forge/change@2 schema and catalog entry), Codex
+    projection instructions, ADR knowledge, and CHANGELOG. The Protocol 1 compatibility
+    conflict is resolved via schema versioning per protocol/compatibility.md; Strict
+    Review by a genuinely independent session remains the only outstanding gate.
