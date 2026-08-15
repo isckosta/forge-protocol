@@ -105,7 +105,7 @@ def _anchored_change(tmp_path: Path) -> tuple[Path, str]:
 
 
 def test_rewriting_frozen_subject_provenance_cannot_move_baseline(tmp_path, monkeypatch):
-    change, _ = _anchored_change(tmp_path)
+    _, _ = _anchored_change(tmp_path)
     subject = tmp_path / "subject.txt"
     subject.write_text("reviewable mutation B\n", encoding="utf-8")
     moved = _commit(tmp_path, "reviewable mutation B")
@@ -184,3 +184,14 @@ def test_shallow_history_fails_closed_for_anchored_subject(tmp_path, monkeypatch
     result = _validate(clone, monkeypatch)
     assert result.exit_code == 2
     assert "authority" in result.stdout.lower()
+
+
+def test_malformed_history_after_first_anchor_does_not_erase_authority(tmp_path, monkeypatch):
+    change, frozen = _anchored_change(tmp_path)
+    # A later malformed historical manifest must not invalidate an authority that
+    # was already established in an earlier committed representation.
+    (change / "manifest.yml").write_text("review: [broken\n", encoding="utf-8")
+    _commit(tmp_path, "malformed later review metadata")
+    _write_change(tmp_path, frozen, passed=True)
+    result = _validate(tmp_path, monkeypatch)
+    assert result.exit_code == 0, result.stdout
