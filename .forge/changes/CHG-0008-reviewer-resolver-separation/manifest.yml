@@ -21,14 +21,14 @@ artifacts:
   review: complete
   documentation: complete
   knowledge_capture: complete
-requirements: {total: 18, implemented: 18, verified: 18}
-tdd: {status: compliant, cycles: 8}
+requirements: {total: 19, implemented: 19, verified: 19}
+tdd: {status: compliant, cycles: 9}
 verification: {status: passed}
 review:
-  status: failed
-  iteration: 3
+  status: pending
+  iteration: 4
   blockers: 0
-  majors: 1
+  majors: 0
   minors: 0
   observations: 0
   iterations:
@@ -50,7 +50,16 @@ review:
       evidence_gap: >-
         CHG-0008-R006 MAJOR: review-subject freeze detects committed post-freeze subject changes
         but ignores uncommitted, staged, and untracked reviewable mutations.
+    - id: review-004
+      revision: chg-0008-resolution-003
+      subject_provenance: resolution-003
+      status: pending
+      evidence_gap: >-
+        Strict Review Iteration 4 has not been executed. Independent Reviewer provenance does
+        not exist yet and must be recorded by the future Reviewer against resolution-003.
 documentation:
   impact_evaluated: true
   update_required: true
-  reason: Protocol 2 now distinguishes logical revision identity from concrete immutable review-subject binding and defines subject-freeze semantics.
+  reason: >-
+    Protocol 2 now distinguishes logical revision identity from concrete immutable subject
+    binding and validates the effective reviewable Git workspace against the frozen subject.
