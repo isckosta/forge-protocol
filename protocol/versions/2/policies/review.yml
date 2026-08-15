@@ -23,6 +23,10 @@ review:
     immutable_revision_binding_required: true
     review_subject_freeze_required: true
     post_freeze_subject_mutation_invalidates_binding: true
+    subject_provenance_append_only_after_first_commit: true
+    review_iteration_subject_binding_append_only_after_first_commit: true
+    mutable_review_metadata_must_not_redefine_frozen_subject: true
+    complete_git_history_required_for_history_anchor: true
     effective_workspace_delta_sources: [committed, staged, unstaged, untracked]
     git_ignored_paths_excluded_from_workspace_delta: true
     review_metadata_commits_may_follow_freeze: true
