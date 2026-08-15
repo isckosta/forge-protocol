@@ -55,6 +55,10 @@ def test_similar_review_metadata_path_is_not_allowed(tmp_path,monkeypatch):
  init(tmp_path);a=commit(tmp_path,"freeze");d=write(tmp_path,a,None,status="pending");(d/"review.md.bak").write_text("not control metadata\n");assert validate(tmp_path,monkeypatch).exit_code==2
 def test_symlink_at_review_control_path_is_not_allowed(tmp_path,monkeypatch):
  init(tmp_path);target=tmp_path/"subject.txt";target.write_text("frozen");a=commit(tmp_path,"freeze");d=write(tmp_path,a,None,status="pending");(d/"review.md").symlink_to(target);assert validate(tmp_path,monkeypatch).exit_code==2
+def test_directory_named_review_md_is_not_allowed(tmp_path,monkeypatch):
+ init(tmp_path);a=commit(tmp_path,"freeze");d=write(tmp_path,a,None,status="pending");(d/"review.md").mkdir();((d/"review.md")/"payload.txt").write_text("reviewable\n");assert validate(tmp_path,monkeypatch).exit_code==2
+def test_same_basename_outside_change_is_not_allowed(tmp_path,monkeypatch):
+ init(tmp_path);a=commit(tmp_path,"freeze");write(tmp_path,a,None,status="pending");(tmp_path/"review.md").write_text("outside change\n");assert validate(tmp_path,monkeypatch).exit_code==2
 @pytest.mark.parametrize("flow",["fast","standard","full"])
 def test_all_flows_pass_with_binding(tmp_path,monkeypatch,flow):init(tmp_path);a=commit(tmp_path,"a");write(tmp_path,a,a,flow=flow);assert validate(tmp_path,monkeypatch).exit_code==0
 def test_protocol1_compatibility(tmp_path,monkeypatch):init(tmp_path,1);assert validate(tmp_path,monkeypatch).exit_code==0
