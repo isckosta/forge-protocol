@@ -1,15 +1,18 @@
 schema: forge/traceability@1
 change: CHG-0008
 requirements:
-  FR-001: {tasks: [T-005], test_strategy: contract}
-  FR-002: {tasks: [T-005], test_strategy: contract_and_history_compatibility}
-  FR-003: {tasks: [T-005], test_strategy: contract}
-  FR-004: {tasks: [T-006], test_strategy: documentation_review}
-  FR-005: {tasks: [T-006], test_strategy: documentation_review}
-  FR-006: {tasks: [T-002, T-003, T-004], test_strategy: cli_tdd}
-  FR-007: {tasks: [T-007], test_strategy: unit}
-  FR-008: {tasks: [T-008], test_strategy: documentation_review}
-  FR-009: {tasks: [T-008], test_strategy: documentation_review}
-  INV-001: {tasks: [T-005], test_strategy: canonical_instance_validation}
-  INV-002: {tasks: [T-010, T-011], test_strategy: external_strict_review}
-  INV-003: {tasks: [T-001, T-009], test_strategy: artifact_audit}
+  FR-001: {tasks: [T-006], test_strategy: schema_contract}
+  FR-002: {tasks: [T-006], test_strategy: structural_schema_tdd}
+  FR-003: {tasks: [T-007], test_strategy: policy_contract}
+  FR-004: {tasks: [T-008], test_strategy: documentation_review}
+  FR-005: {tasks: [T-008], test_strategy: documentation_review}
+  FR-006: {tasks: [T-002, T-003, T-005], test_strategy: cli_tdd}
+  FR-007: {tasks: [T-004, T-005], test_strategy: cli_tdd}
+  FR-008: {tasks: [T-002, T-003, T-004, T-005, T-006], test_strategy: layered_validation_tests}
+  FR-009: {tasks: [T-009], test_strategy: codex_unit}
+  FR-010: {tasks: [T-010], test_strategy: documentation_review}
+  FR-011: {tasks: [T-010], test_strategy: documentation_review}
+  FR-012: {tasks: [T-011, T-012], test_strategy: repository_history_audit}
+  INV-001: {tasks: [T-011, T-012], test_strategy: historical_file_audit}
+  INV-002: {tasks: [T-014, T-015], test_strategy: external_strict_review}
+  INV-003: {tasks: [T-001, T-013], test_strategy: artifact_audit}
