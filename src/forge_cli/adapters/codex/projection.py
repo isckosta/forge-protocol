@@ -14,6 +14,7 @@ class CodexProjectionInput:
     flow_id: str
     flow_content: str
     contract_content: str
+    protocol_id: int = 1
 
 
 @dataclass(frozen=True)
@@ -51,7 +52,7 @@ def _label(stage_id: str) -> str:
     return known.get(stage_id, stage_id.replace("_", " ").title())
 
 
-def _instructions(flow_id: str, flow_content: str) -> str:
+def _instructions(protocol_id: int, flow_id: str, flow_content: str) -> str:
     data = yaml.safe_load(flow_content) or {}
     stages = data.get("stages") or []
     gates = data.get("gates") or {}
@@ -84,17 +85,19 @@ def _instructions(flow_id: str, flow_content: str) -> str:
             "external review surface to be resolved."
         )
 
-    if flow_id in {"standard", "full"}:
+    if protocol_id >= 2 and flow_id in {"fast", "standard", "full"}:
         lines.extend(
             (
                 "",
                 "### Reviewer/Resolver independence",
                 "",
-                "- Strict Review must run in an Execution and Execution Context independent from the implementation or resolution being reviewed.",
-                "- Merely changing Role inside the same conversation, thread, session, or reasoning context does not satisfy Strict Review independence.",
-                "- Record `review.reviewer_identity.execution_id` and `context_id` for the Reviewer, plus `resolver_execution_id` and `resolver_context_id` for the implementation/resolution execution.",
-                "- Both Reviewer identifiers must differ from their Resolver counterparts; distinct execution IDs do not rescue a shared context, and distinct context IDs do not rescue a shared execution.",
-                "- After blocking findings are resolved, re-review must again run independently from the Resolution Execution. Self-review may improve quality but never satisfies Strict Review.",
+                "- Under Protocol 2, Strict Review must run in an Execution and Execution Context independent from the implementation or resolution that produced the revision under review.",
+                "- Merely changing Role inside the same conversation, thread, session, or reasoning context is self-review and cannot satisfy Strict Review.",
+                "- Record implementation/resolution and review executions in repository-native `provenance.yml`; a passed Review Iteration references them through `subject_provenance` and `reviewer_provenance`.",
+                "- Both provenance records must bind to the same revision. Pairwise-distinct invented strings without matching provenance records are not evidence.",
+                "- `claimed` identity is insufficient for `review_passed`; Core requires at least `recorded` provenance and treats `verified` provenance as the stronger observer-backed level.",
+                "- Reviewer execution and context identifiers must both differ from the subject record. Distinct executions do not rescue a shared context, and distinct contexts do not rescue a shared execution.",
+                "- After blocking findings are resolved, re-review must target the resolved revision and be independent from the Resolution provenance that produced it.",
             )
         )
 
@@ -112,7 +115,7 @@ def generate_codex_projection_bundle(canonical: CodexProjectionInput) -> CodexPr
             "This resource is a derived Forge projection for Codex.",
             "Repository-native Forge state remains authoritative.",
             "",
-            _instructions(canonical.flow_id, canonical.flow_content),
+            _instructions(canonical.protocol_id, canonical.flow_id, canonical.flow_content),
             "",
             "## Canonical Flow",
             "",

@@ -1,8 +1,8 @@
 # Forge Engineering Contract
 
-Status: Canonical Protocol 1 Contract
+Status: Canonical Protocol 2 Contract
 
-These rules are non-negotiable Forge engineering invariants. Projects may become stricter. They may not weaken these invariants while claiming canonical Forge compliance.
+Protocol 2 inherits C-001 through C-025 and C-027 through C-046 from Protocol 1 without weakening them. The only intentional breaking strengthening introduced by Protocol 2 is the C-026 review-independence obligation defined below. Where this file repeats an inherited invariant, its meaning is unchanged from Protocol 1.
 
 ## C-001 — Explicit Intent
 Every Change MUST have explicit Intent before Implementation.
@@ -79,8 +79,16 @@ Reviewer SHOULD verify TDD evidence when TDD applies.
 ## C-025 — Findings require evidence
 BLOCKER and MAJOR Findings MUST include sufficient evidence.
 
-## C-026 — Reviewer/Resolver separation
-Reviewer and Resolver MUST remain distinct conceptual Roles.
+## C-026 — Verifiable Reviewer/Resolver independence
+Strict Review MUST execute in an Execution and Execution Context independent from the Implementation or Resolution that produced the revision under review. Changing Role inside one Execution or transient conversational/reasoning context is self-review and MUST NOT satisfy Strict Review.
+
+Every passed Review Iteration MUST reference repository-native provenance records for both the subject execution and the Reviewer execution, and both records MUST bind to the same revision identifier being reviewed. The subject record MUST represent `implementation` or `resolution`; the Reviewer record MUST represent `review`. Shared execution identifiers or shared context identifiers violate this invariant for FAST, STANDARD, and FULL.
+
+Provenance assurance has three levels: `claimed`, `recorded`, and `verified`. A claim is an identifier declaration only and is insufficient for `review_passed`. Recorded provenance is durable repository-native execution evidence captured for the execution and is the minimum Core requirement for `review_passed`. Verified provenance is stronger evidence observed by a Harness, Adapter, operator, or equivalent mechanism. Core validation verifies record existence, revision linkage, role linkage, assurance level, and execution/context separation; it MUST NOT describe self-recorded identifiers as cryptographic or external proof.
+
+After blocking Findings are resolved, acceptance MUST use a new Review Iteration referencing the Resolution provenance for the resolved revision and Reviewer provenance independent from that Resolution Execution and Context. A Resolver MUST NOT resolve blocking Findings in the Reviewer's Execution Context.
+
+The same Harness, provider, model, or agent implementation MAY perform multiple Roles when real execution/context boundaries exist. Core MUST remain provider-independent and MUST NOT require remote infrastructure to establish the repository-native provenance ledger.
 
 ## C-027 — Blocking review evidence blocks Completion
 Unresolved BLOCKER Findings MUST prevent Completion. When an active external review surface exists, unresolved threads containing findings classified as blocking MUST also prevent Completion. Without an external review surface, the thread condition is satisfied trivially.
@@ -137,10 +145,7 @@ Harness Adapters MUST NOT redefine canonical or effective Forge semantics.
 Material development of Forge itself MUST use Forge.
 
 ## C-045 — Compatible Protocol evolution
-Changes that retain an integer Protocol identifier MUST preserve the meaning
-and minimum obligations of existing valid instances under that identifier.
+Changes that retain an integer Protocol identifier MUST preserve the meaning and minimum obligations of existing valid instances under that identifier.
 
 ## C-046 — Breaking changes require a new Protocol identifier
-Removing or weakening an invariant, changing an existing required field or Gate
-meaning, or invalidating a previously valid conforming instance MUST require a
-new integer Protocol identifier.
+Removing or weakening an invariant, changing an existing required field or Gate meaning, or invalidating a previously valid conforming instance MUST require a new integer Protocol identifier.

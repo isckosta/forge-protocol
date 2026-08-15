@@ -1,4 +1,4 @@
-schema: forge/policy/review@1
+schema: forge/policy/review@2
 
 review:
   required: true
@@ -41,10 +41,24 @@ review:
   evidence:
     required_for: [blocker, major]
   reviewer_resolver_separation:
-    required: true
+    independence:
+      fast: execution_context
+      standard: execution_context
+      full: execution_context
+    same_execution_forbidden: true
+    same_context_forbidden: true
+    role_switch_is_independence: false
+    self_review_satisfies_strict_review: false
+    provenance_required_for_review_passed: true
+    minimum_assurance: recorded
+    revision_binding_required: true
+    same_harness_model_or_provider_allowed: true
+    human_preferred_for_full: true
   diff_only_review:
     allowed: false
   passing_tests_are_sufficient:
     value: false
   re_review:
     required_after_blocking_resolution: true
+    independent_from_resolution_execution: true
+    target_resolution_revision: true

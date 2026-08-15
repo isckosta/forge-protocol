@@ -102,8 +102,6 @@ Every Change MUST undergo Verification. Passing tests alone MUST NOT automatical
 
 Every Change MUST undergo adversarial Strict Review. Reviewer MUST attempt to identify plausible reasons the Implementation should not be accepted.
 
-Strict Review MUST be produced by an independent Review Execution. The Review Execution MUST NOT share the concrete Execution or transient Execution Context that produced or resolved the revision under review. A Role change inside the same conversation, thread, session, or reasoning context is self-review, not independent Strict Review. Self-review MAY improve quality but MUST NOT satisfy `review_passed`.
-
 When a pull request or equivalent external review surface is part of the Change, Review MUST reconcile all unresolved threads that contain BLOCKER findings, MAJOR findings when project policy makes MAJOR blocking, or any other finding explicitly classified as blocking. `review_passed` MUST NOT be asserted while such a thread remains unresolved. If no external review surface exists, this condition is satisfied trivially.
 
 ## 23. TDD Review
@@ -116,13 +114,7 @@ Initial severities are BLOCKER, MAJOR, MINOR, and OBSERVATION. BLOCKER MUST prev
 
 ## 25. Reviewer and Resolver
 
-Reviewer and Resolver are distinct Roles whose required independence is defined by Execution boundaries, not by Role declaration alone. An Execution is one concrete invocation performing Forge work. An Execution Context is the transient conversational, reasoning, or equivalent non-repository context available to that Execution.
-
-The Reviewer Execution and Context MUST be distinct from the Implementation or Resolution Execution and Context for the revision being reviewed. Changing Role within the same Execution Context MUST NOT satisfy Reviewer independence. A Resolver MUST NOT resolve blocking Findings in the Reviewer's Execution Context. After blocking Findings are resolved, acceptance of the resolved revision MUST require an independent re-review Execution whose Execution and Context are distinct from the Resolution Execution.
-
-The same Harness, provider, model, or agent implementation MAY perform multiple Roles when each required independent stage runs in a genuinely separate Execution and Execution Context. Repository-native artifacts, source, tests, Verification evidence, previous Findings, and other explicit stage inputs MAY cross the context boundary; transient Resolver conversation/reasoning history MUST NOT be treated as required Reviewer input.
-
-`review.reviewer_identity` records provider-independent evidence using Reviewer `execution_id` and `context_id` plus `resolver_execution_id` and `resolver_context_id`. Harness Adapters MAY map these identifiers to native concepts such as runs, threads, conversations, sessions, invocations, or workspaces, but Harness terminology MUST NOT redefine the Core invariant.
+Reviewer and Resolver are separate conceptual Roles. Blocking Findings SHOULD be re-reviewed after Resolution.
 
 ## 26. Documentation Impact
 
@@ -130,7 +122,7 @@ Every Change MUST explicitly evaluate Documentation Impact.
 
 ## 27. Completion
 
-A Change MUST NOT complete when required stages remain incomplete; a blocking Gate has failed; unresolved BLOCKER Findings exist; required Verification is incomplete; required TDD evidence is missing without an explicit exception; Documentation Impact has not been evaluated; Manifest state contradicts repository reality; required Review independence cannot be demonstrated from repository-native evidence; or blocking review threads on an active external review surface remain unresolved.
+A Change MUST NOT complete when required stages remain incomplete; a blocking Gate has failed; unresolved BLOCKER Findings exist; required Verification is incomplete; required TDD evidence is missing without an explicit exception; Documentation Impact has not been evaluated; Manifest state contradicts repository reality; or blocking review threads on an active external review surface remain unresolved.
 
 ## 28. Repository-native state
 
