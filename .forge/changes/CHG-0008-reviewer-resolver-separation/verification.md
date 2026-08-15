@@ -6,76 +6,66 @@ change: CHG-0008
 status: passed
 ---
 
-# Verification — Verifiable Reviewer/Resolver Separation
+# Verification — Verifiable Review Independence
 
 ## Scope
 
-Verification covers the Change schema, Review Policy and policy schema, C-026, Specification §25, structural/semantic validation separation, Codex projection behavior, ADR, CHANGELOG, historical Change preservation, TDD evidence, and repository-wide regression behavior.
+Verification covers the accepted Specification Drift, `forge/change@1` compatibility, `forge/change@2` review-evidence structure, C-026 semantic validation, Review Policy, canonical Contract/Specification, Codex projection, ADR, distribution packaging, and historical Change preservation.
 
-## Valid RED evidence
+## Stress-test evidence
 
-The mandatory exact same-session fixture was established as structurally valid before semantic enforcement. Historical TDD-001 evidence records a test-only state where `forge validate` returned success and the new C-026 assertion failed for the expected missing-behavior reason, not because of malformed input or schema failure.
+The Laravel Forge stress test demonstrated the defect in the previous model: one conversational context was able to act as Resolver, switch to Reviewer, resolve its own findings, switch back to Reviewer, and approve the remediation. This established that Role declaration and session-shaped identity were insufficient proxies for independence.
 
-During the revised Resolver pass, commit `8a3099d5044ef802869748c02fe122a8412ed927` added the second semantic expectation for an `agent_isolated_session` claim with identical reviewer/resolver references before production support. GitHub Actions run `31852012708` failed on that test-only state. Commit `518629c8ae07f18e82dcac5fa382ffd6af8c86a5` then added the semantic identical-reference C-026 check.
+`specification-drift.md` records the corrected invariant at commit `4ff1295011b5f41f89ed7e47a903f9b2330f86ec`, before the amended executable regression tests and implementation.
 
-Commit `7f21439e2cc4517a423f99efd1f4b0f817ca3d7e` added the structural regression requiring `reviewer_identity` even for pending FULL Review before commit `666cf96f88faaf2445ba8313ee715cad306db6c0` changed the schema to the literal revised requirement.
+## TDD-005 RED
 
-## Implemented behavior
+Commit `3d4883d0a0329a629026f22e4c314ffa04b2bfed` introduced the provider-independent execution/context expectations before implementation.
 
-- `review.reviewer_identity` is a closed object with all three inner fields required.
-- FULL structurally requires the entire object solely from `flow.current == full`.
-- CLI semantic validation names C-026 for FULL `agent_same_session`.
-- CLI semantic validation names C-026 for a claimed independent actor whose Reviewer and Resolver session references are identical.
-- Code comments/tests distinguish structural schema responsibility from semantic CLI responsibility.
-- Review Policy defines FAST/ STANDARD/ FULL minimums and the explicit FULL isolated-agent fallback.
-- C-026 uses the required recorded/verifiable, Flow-proportional wording.
-- Codex STANDARD/FULL projection requires separate review execution and distinct session references.
-- ADR documents increasing operational independence without claiming epistemic independence; `agent_different_model` remains future work only.
-- CHANGELOG records the literal FULL schema requirement as breaking.
-- No completed historical Change was modified, and CHG-0008 `review.md` remains absent.
+- Tests run: `31899409371`
+- Job: `95047717053`
+- Command: `pytest -q`
+- Result: **3 failed, 166 passed**
 
-## Repository-wide compatibility conflict — resolved
+The failures were causal:
 
-An earlier revision of this Change made the FULL structural requirement apply unconditionally
-under the existing `forge/change@1` identifier, which broke
-`test_canonical_yaml_instances_satisfy_their_declared_schemas` for every historical FULL
-manifest and, self-referentially, for CHG-0008's own manifest. This Change forbids
-retroactively adding fabricated evidence to historical records, and forbids this Resolver
-session from fabricating its own Reviewer evidence, so neither of those was an acceptable fix.
+1. `forge/change@2` still rejected `execution_id`, `context_id`, `resolver_execution_id`, and `resolver_context_id` because the schema still expected session-shaped fields.
+2. `forge validate` incorrectly accepted distinct execution IDs that shared the same context.
+3. `forge validate` incorrectly accepted one shared execution with superficially distinct context IDs.
 
-Resolution: per `protocol/compatibility.md`'s existing schema-versioning rule ("An individual
-artifact shape may instead require a new schema suffix when the break is limited to that
-artifact"), the structural requirement now lives only under a new suffix, `forge/change@2`.
-`forge/change@1` is restored to its original, backward-compatible shape. No Protocol version
-bump was required — Protocol, Schema, CLI, and Adapter versions are independent axes.
+Dependency/setup and the remaining 166 tests succeeded, so this is valid RED evidence rather than an environment failure.
 
-- Historical manifests (CHG-0001, CHG-0002, CHG-0004, CHG-0006, CHG-0007) remain on
-  `forge/change@1`, unmodified, and structurally valid.
-- CHG-0008's own manifest remains on `forge/change@1` while its Strict Review is pending. It
-  has not claimed compliance with the discipline it introduces, and truthfully cannot until a
-  genuinely independent Reviewer session records real `reviewer_identity` evidence (T-014).
-- The RED fixture and its structural tests declare `schema: forge/change@2` to exercise the
-  new mandatory behavior; a new regression test pins the unchanged `forge/change@1` behavior so
-  the two schemas cannot silently reconverge.
+## GREEN
 
-Independently reproduced: `pytest -q` → **168 passed, 0 failed**. `jsonschema` validation of
-every `.forge/changes/CHG-*/manifest.yml` against its own declared `schema` identifier passes.
+The final model implements:
 
-## Distribution verification
+- closed provider-independent `reviewer_identity` evidence using actor, Execution, and Execution Context identifiers;
+- C-026 rejection when Reviewer and Resolver share an `execution_id`;
+- independent C-026 rejection when Reviewer and Resolver share a `context_id`;
+- explicit canonical rule that Role switching in one conversation/reasoning context is self-review, not Strict Review;
+- self-review permitted as a quality activity but prohibited from satisfying the Strict Review Gate;
+- blocking-finding Resolution outside the Reviewer context;
+- independent re-review after blocking Resolution;
+- same Harness/provider/model/agent permitted only when real Execution/Context boundaries exist;
+- provider-independent Core terminology with Harness Adapter mapping to native run/thread/session/conversation/workspace concepts;
+- Completion blocked when required Review independence cannot be durably demonstrated.
 
-Distribution Verification remained successful on the semantic-validator implementation commit while the Tests workflow failed, confirming the observed blocker is in canonical schema/Change compatibility rather than package build/install infrastructure.
+At commit `fec5ac22c3ef62c213526ae3675f105a2a1afd45`:
 
-## Strict Review
+- Tests run `31899652483`, job `95048292204`: **169 passed in 3.79s**.
+- Distribution Verification run `31899652482`, job `95048292167`: **PASS**.
+- Isolated-wheel verification passed CLI version, `init`/`validate`/`doctor`, Adapter schema/load probes, and runtime dependency inspection.
 
-PENDING EXTERNAL REVIEW. This Resolver session has not performed independent Strict Review, has not created `review.md`, has not recorded a fictional reviewer identity, and does not assert `review_passed`.
+## Compatibility
+
+`forge/change@1` remains backward compatible and historical completed Changes are not modified. The structurally mandatory FULL evidence remains isolated to `forge/change@2`, so no historical review identity is fabricated.
+
+## Strict Review boundary
+
+Strict Review is intentionally **PENDING**. This Resolver Execution cannot satisfy the newly implemented C-026 invariant by switching its Role to Reviewer. It therefore does not create `review.md`, does not invent `reviewer_identity`, and does not assert `review_passed`.
+
+The next valid step requires a genuinely independent Review Execution and Execution Context. If that review produces blocking Findings, Resolution must occur outside the Reviewer context and acceptance must then undergo an independent re-review from that Resolution Execution.
 
 ## Result
 
-Verification **passed**. The requested semantic behavior is implemented and the compatibility
-conflict is resolved via schema versioning without fabricated evidence or historical rewrites.
-Full-suite GREEN, repository schema validity, and `forge validate` success are all confirmed.
-
-This does not complete the Change. Strict Review (T-014) remains genuinely pending, performed
-by nobody in this Resolver session, and `review.md` remains absent. Completion still requires
-an independent Reviewer session to execute Strict Review and, if it passes, to record real
-`reviewer_identity` evidence before CHG-0008 itself migrates to `forge/change@2`.
+Verification **PASSED**. All implementation requirements introduced by the accepted drift are implemented and verified, the canonical test suite is green, and distribution verification is green. CHG-0008 is ready for — but not through — the independent Strict Review Gate.
