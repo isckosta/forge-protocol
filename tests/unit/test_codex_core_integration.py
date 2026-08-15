@@ -29,27 +29,37 @@ def _require_behavior() -> None:
     assert detect_codex_drift is not None
 
 
-def _bundle(flow_id: str = "full"):
+def _bundle(flow_id: str = "full", protocol_id: int = 1):
     return generate_codex_projection_bundle(
         CodexProjectionInput(
             flow_id=flow_id,
             flow_content="stages: [verification, strict_review]",
             contract_content="canonical contract",
+            protocol_id=protocol_id,
         )
     )
 
 
-def test_standard_and_full_projection_require_independent_review_execution_context() -> None:
-    for flow_id in ("standard", "full"):
-        bundle = _bundle(flow_id)
+def test_protocol1_projection_does_not_retroactively_project_protocol2_provenance() -> None:
+    bundle = _bundle("full", protocol_id=1)
+    flow_resource = next(item for item in bundle.resources if item.name == "forge-flow.md")
+
+    assert "provenance.yml" not in flow_resource.content
+    assert "subject_provenance" not in flow_resource.content
+
+
+def test_protocol2_all_flows_projection_require_review_provenance_boundary() -> None:
+    for flow_id in ("fast", "standard", "full"):
+        bundle = _bundle(flow_id, protocol_id=2)
         flow_resource = next(item for item in bundle.resources if item.name == "forge-flow.md")
         assert "Execution and Execution Context independent" in flow_resource.content
         assert "changing Role inside the same conversation" in flow_resource.content
-        assert "review.reviewer_identity.execution_id" in flow_resource.content
-        assert "context_id" in flow_resource.content
-        assert "resolver_execution_id" in flow_resource.content
-        assert "resolver_context_id" in flow_resource.content
-        assert "Self-review" in flow_resource.content
+        assert "provenance.yml" in flow_resource.content
+        assert "subject_provenance" in flow_resource.content
+        assert "reviewer_provenance" in flow_resource.content
+        assert "claimed" in flow_resource.content
+        assert "recorded" in flow_resource.content
+        assert "self-review" in flow_resource.content.lower()
 
 
 def test_bundle_resources_become_forge_owned_generic_operations() -> None:

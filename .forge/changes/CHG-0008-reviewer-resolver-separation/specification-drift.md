@@ -1,42 +1,67 @@
 # Specification Drift — CHG-0008
 
 Date: 2026-08-15
-Status: accepted before Strict Review
+Status: accepted before Resolution implementation
 
-## Trigger
+## Historical drift retained
 
-The Laravel Forge stress test demonstrated that a single conversational context could implement a Change, switch its declared Role to Reviewer, issue findings, switch back to Resolver, and then switch again to Reviewer to approve its own remediation. The existing CHG-0008 design based on `actor_type` plus Harness-shaped `session_ref` values does not model the actual property at risk: context contamination.
+The Laravel Forge stress test demonstrated that a single conversational context could implement a Change, switch its declared Role to Reviewer, issue findings, switch back to Resolver, and then switch again to Reviewer to approve its own remediation. The original session-shaped design therefore drifted to provider-independent **Execution** and **Execution Context** as the property at risk.
 
-## Corrected invariant
+That historical finding remains valid, but Strict Review Iteration 1 identified that the first correction was still architecturally incomplete.
 
-Strict Review independence is defined by **Execution** and **Execution Context**, not by a Role label and not by a Harness-specific session concept.
+## Resolution drift — Strict Review Iteration 1
 
-- An Execution is one concrete invocation performing Forge work.
-- An Execution Context is the transient conversational/reasoning context available to that Execution.
-- Changing Role inside the same Execution Context MUST NOT satisfy Strict Review independence.
-- A Strict Review Execution MUST have both an `execution_id` and a `context_id` distinct from the Execution and Context that produced or resolved the revision under review.
-- A Resolver MUST NOT resolve blocking findings in the Reviewer's Execution Context.
-- After blocking findings are resolved, `review_passed` requires an independent re-review Execution whose Execution and Context are distinct from the Resolution Execution.
-- The same Harness, provider, model, or agent implementation MAY perform both roles when the required execution/context boundaries are real and durably evidenced.
-- Self-review remains allowed but MUST NOT satisfy Strict Review.
+Strict Review findings CHG-0008-R001 through R004 require the specification to change before further production implementation.
 
-## Schema amendment
+### R001 — integer Protocol boundary
 
-`forge/change@2` MUST replace Harness-shaped `session_ref` evidence with provider-independent execution/context evidence:
+The stronger invariant is not a compatible clarification of Protocol 1. Protocol 1 historically required conceptual Reviewer/Resolver Role separation. Making independent Execution and independent Execution Context mandatory invalidates previously valid Protocol 1 instances and therefore crosses C-045/C-046.
 
-```yaml
-reviewer_identity:
-  actor_type: agent | human
-  execution_id: <review execution>
-  context_id: <review context>
-  resolver_execution_id: <implementation-or-resolution execution>
-  resolver_context_id: <implementation-or-resolution context>
-```
+Accepted correction:
 
-The semantic validator MUST reject equality of either execution IDs or context IDs with C-026. Distinct execution IDs do not rescue a shared context; distinct context IDs do not rescue a shared execution.
+- restore Protocol 1 C-026 and Specification review semantics to their pre-CHG-0008 meaning;
+- introduce integer **Protocol 2** for the stronger Strict Review obligation;
+- keep Protocol version and artifact schema version explicitly independent;
+- do not retroactively migrate or reinterpret completed Protocol 1 Changes.
 
-## Impact on existing CHG-0008 work
+### R002 — provenance must pre-exist Review
 
-The previous `agent_same_session | agent_isolated_session | human` hierarchy is superseded. `actor_type` is descriptive (`agent | human`); independence is proven by execution/context evidence rather than asserted by actor classification. Review Policy and Codex projection must express the same invariant. Existing `forge/change@1` compatibility remains unchanged.
+`reviewer_identity` must not invent the Implementation/Resolution half of the evidence after the fact. Protocol 2 therefore uses a separate repository-native execution provenance ledger captured for Implementation, Resolution, and Review executions.
 
-This drift is recorded before the amended production implementation and before Strict Review.
+A provenance record binds a Role and provider-independent Execution/Context identifiers to a revision identifier and records when and how that evidence was captured. Harness/Adapter-native references are optional source metadata, not Core field names.
+
+The implementation that originally produced CHG-0008 did not capture this evidence. That historical gap remains explicit and is not backfilled. This Resolution execution is the first CHG-0008 execution eligible to record new provenance prospectively.
+
+### R004 — assurance levels and verification boundary
+
+Pairwise-distinct strings are not evidence by themselves. Protocol 2 distinguishes:
+
+1. `claimed` — identity declaration only;
+2. `recorded` — durable repository-native provenance captured for the execution and linked to its revision;
+3. `verified` — provenance additionally observed by a Harness, Adapter, operator, attestation mechanism, or equivalent source.
+
+`review_passed` requires at least `recorded` provenance. Core validation resolves Review references against the ledger, checks Role and revision linkage, and checks execution/context separation. Core does **not** claim that a self-recorded ledger entry is cryptographic or external proof; `verified` is the stronger assurance level when a trustworthy observer exists.
+
+No hosted Forge service is required.
+
+### R003 — Flow and version semantics
+
+Protocol 2 applies the new Strict Review independence invariant to FAST, STANDARD, and FULL. FAST reduces ceremony, not quality. Protocol 1 does not receive the Protocol 2 rule retroactively.
+
+Validation must therefore resolve the project Protocol before applying C-026 provenance enforcement. An active Protocol 2 Change must not downgrade its Change schema to escape the Gate; completed historical Protocol 1 Change records may remain untouched.
+
+## Review Iteration model
+
+A single global Resolver identifier does not model repeated Review/Resolution cycles correctly. Protocol 2 Review is iteration-oriented:
+
+Implementation Execution → revision A → Review Iteration 1
+
+Resolution Execution → revision B → Review Iteration 2
+
+Each passed Review Iteration references the subject provenance that produced the revision being reviewed and Reviewer provenance for the Review Execution evaluating that same revision. Re-review of revision B must be independent from the Resolution Execution/Context that produced B.
+
+## Consequences for the prior CHG-0008 specification
+
+The prior requirements that placed reviewer and resolver execution identifiers together inside `review.reviewer_identity` are superseded. `forge/change@2` becomes the Protocol 2 Change shape with explicit Review Iterations; execution evidence moves to `forge/execution-provenance@1`.
+
+The original Strict Review Iteration 1 and its REQUEST CHANGES result remain historical evidence. This Resolution may mark findings resolved only with implementation and verification evidence; it must not replace Iteration 1 with PASS or perform the subsequent Strict Re-review.
