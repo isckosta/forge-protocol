@@ -1,49 +1,48 @@
-# ADR-0008 — Verifiable Reviewer/Resolver Separation
+# ADR-0008 — Verifiable Review Independence
 
 Status: Proposed pending CHG-0008 Strict Review
 
 ## Context
 
-C-026 and Protocol Specification §25 previously described Reviewer and Resolver as distinct conceptual Roles, but Forge stored no durable evidence identifying the review actor/session versus the resolver session. The Review Policy represented separation only as a boolean, and `forge validate` could not reject an explicitly same-session FULL review or an inconsistent claim of isolation backed by identical session references.
+C-026 and Protocol Specification §25 originally described Reviewer and Resolver as distinct conceptual Roles. The first CHG-0008 implementation strengthened that to Harness-shaped session evidence, but a Laravel stress test exposed a deeper flaw: one conversational context could implement, switch its declared Role to Reviewer, issue findings, switch back to Resolver, and then switch again to Reviewer to approve its own remediation.
+
+The actual risk is context contamination, not the label attached to a Role or session.
 
 ## Decision
 
-Forge will represent Reviewer/Resolver execution evidence in `review.reviewer_identity` with required `actor_type`, `session_ref`, and `resolver_session_ref` fields. For `flow.current == full`, the Change schema requires the entire object structurally.
+Forge defines two provider-independent concepts for review independence:
 
-The Review Policy defines minimum separation by Flow: FAST permits `agent_same_session`; STANDARD requires at least `agent_isolated_session`; FULL requires `human`, with `agent_isolated_session` as an explicit fallback only when no human reviewer is available. FULL never accepts `agent_same_session`.
+- **Execution** — one concrete invocation performing Forge work;
+- **Execution Context** — the transient conversational, reasoning, or equivalent non-repository context available to that Execution.
 
-The hierarchy `agent_same_session` → `agent_isolated_session` → `human` represents increasing strength of **operational independence**. The intended benefit is reduced context contamination from the Resolver's own execution trail and reduced confirmation bias from reusing the same reasoning context. It is not a claim of **epistemic independence**. A fresh session of the same underlying model can still reproduce correlated model errors, shared blind spots, and systematic reasoning failures.
+Strict Review MUST execute with both a distinct Execution and a distinct Execution Context from the Implementation or Resolution being reviewed. Changing Role inside one Execution or shared transient context is self-review and MUST NOT satisfy Strict Review.
 
-Structural JSON Schema validation owns presence and type constraints for FULL reviewer identity evidence. Semantic CLI validation owns C-026 consistency checks: FULL rejects `agent_same_session`, and a claimed independent actor with identical `session_ref` and `resolver_session_ref` is rejected as inconsistent evidence.
+`review.reviewer_identity` records:
 
-Codex STANDARD/FULL projections instruct the harness not to conduct Strict Review in the Resolver session, to open or use an isolated review execution context, and to record a Reviewer `session_ref` distinct from the Resolver `resolver_session_ref`.
+- `actor_type`: `human | agent`;
+- `execution_id` and `context_id` for the Reviewer;
+- `resolver_execution_id` and `resolver_context_id` for the implementation/resolution being reviewed.
+
+Equality of either Execution IDs or Context IDs is a C-026 violation. Different execution IDs cannot rescue a shared context; different context IDs cannot rescue a shared execution.
+
+After blocking Findings are resolved, acceptance requires an independent re-review Execution whose Execution and Context are distinct from the Resolution Execution. The original Reviewer actor may perform that re-review if it runs in a compliant independent context.
+
+The same Harness, provider, model, or agent implementation may perform multiple Roles. Forge is not requiring different vendors or models; it is requiring a real context boundary. A human reviewer is preferred for FULL where available, but human identity does not replace execution/context evidence.
+
+## Information boundary
+
+Independent Review may receive repository-native source, specification, requirements, architecture, tests, TDD/Verification evidence, previous Findings, and explicit review inputs. It should not require the Resolver's transient conversation or reasoning history. This approximates the human PR model: the reviewer sees the work product and durable engineering evidence rather than sharing the author's internal implementation context.
+
+## Schema and validation
+
+`forge/change@2` carries mandatory FULL review identity evidence. `forge/change@1` remains backward compatible and does not require the new field.
+
+JSON Schema owns the closed evidence shape and non-empty identifiers. `forge validate` owns semantic C-026 equality checks. Harness Adapters map Forge `execution_id`/`context_id` to native run/thread/session/conversation/workspace concepts without redefining the invariant.
 
 ## Limits
 
-This mechanism improves inspectability and operational separation. It does not prove that a review is correct, independent in the epistemic sense, or free from correlated model failure. The mechanism must not be presented as solving those stronger problems.
-
-`agent_different_model` is future work only and is not introduced by CHG-0008.
-
-## Compatibility conflict and its resolution
-
-An earlier revision of this decision would have made every FULL `forge/change@1` instance
-require `reviewer_identity`, a breaking schema change: historical FULL manifests valid under
-that same schema identifier would become invalid without retroactive mutation, conflicting
-with Protocol 1 C-045/C-046, while CHG-0008's own non-goals forbid rewriting completed
-historical Changes.
-
-This is resolved without a Protocol version bump, using the schema-versioning mechanism
-`protocol/compatibility.md` already defines: the requirement lives only under a new artifact
-schema suffix, `forge/change@2`. `forge/change@1` is restored to its original, backward
-compatible shape. No historical Change, and no other in-flight Change, is forced onto the new
-requirement; a Change adopts `forge/change@2` when it is ready to truthfully record reviewer
-identity. CHG-0008's own manifest stays on `forge/change@1` until its own Strict Review
-actually happens — recording identity before that would be self-certification, which INV-002
-forbids regardless of how the schema is versioned.
-
-This was resolved by a second Resolver-role pass, not by the independent Reviewer session this
-Change requires. It is disclosed here as such and remains subject to that Review.
+Execution-context separation reduces confirmation bias and context contamination; it does not prove epistemic independence. Two isolated executions of the same model can still share correlated blind spots. Different-model review may be added later as a stronger project policy, but it is not required by the Core invariant.
 
 ## Consequences
 
-Reviewer/Resolver separation becomes inspectable and partially machine-enforceable. FULL same-session review and inconsistent identical-session claims become deterministic C-026 validation failures once structurally valid evidence is present. Review identity becomes durable repository evidence. The change increases confidence against context contamination while leaving epistemic independence explicitly out of scope.
+Strict Review can no longer be satisfied by prompt-level Role switching in one session. Resolver self-review remains useful but non-authoritative. Resolution and re-review gain explicit context boundaries. The invariant becomes provider-independent and machine-checkable wherever a Harness can supply durable execution/context references.
