@@ -2,7 +2,7 @@ schema: forge/change@1
 
 change:
   id: CHG-0008
-  title: Verifiable Reviewer/Resolver Separation
+  title: Verifiable Review Independence
   kind: feature
 
 flow:
@@ -11,19 +11,20 @@ flow:
   escalations: []
 
 state:
-  current: verification
+  current: strict_review
 
 artifacts:
   intent: complete
   discovery: complete
   specification: complete
+  specification_drift: complete
   specification_review: complete
   architecture: complete
   test_strategy: approved
   plan: approved
   tasks: active
   traceability: complete
-  tdd_evidence: active
+  tdd_evidence: complete
   implementation: complete
   verification: passed
   review: pending
@@ -32,12 +33,12 @@ artifacts:
 
 requirements:
   total: 15
-  implemented: 14
-  verified: 13
+  implemented: 15
+  verified: 15
 
 tdd:
-  status: active
-  cycles: 4
+  status: compliant
+  cycles: 5
 
 verification:
   status: passed
@@ -54,8 +55,9 @@ documentation:
   impact_evaluated: true
   update_required: true
   reason: >
-    The Change modifies canonical Contract and Specification prose, Review Policy,
-    schema behavior (including a new forge/change@2 schema and catalog entry), Codex
-    projection instructions, ADR knowledge, and CHANGELOG. The Protocol 1 compatibility
-    conflict is resolved via schema versioning per protocol/compatibility.md; Strict
-    Review by a genuinely independent session remains the only outstanding gate.
+    CHG-0008 now defines Strict Review independence through provider-independent
+    Execution and Execution Context evidence, updates C-026 and canonical Specification,
+    changes forge/change@2, Review Policy, CLI validation and Codex projection, and
+    records the decision in ADR-0008 and CHANGELOG. Tests and isolated distribution
+    verification pass. Review remains intentionally pending because this Resolver
+    Execution cannot satisfy the independent Strict Review Gate by changing Role.
