@@ -79,4 +79,4 @@ def test_missing_canonical_contract_returns_actionable_finding(tmp_path: Path) -
 
     assert result.passed is False
     assert result.findings[0].code == "E_FORGE_CANONICAL_CONTRACT_UNAVAILABLE"
-    assert result.findings[0].artifact == "protocol/contract/engineering.md"
+    assert result.findings[0].artifact == "protocol/1/contract/engineering.md"

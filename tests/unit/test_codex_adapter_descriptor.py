@@ -19,7 +19,7 @@ def test_codex_descriptor_has_stable_identity_and_protocol_interval() -> None:
     assert descriptor.manifest.harness == "codex"
     assert descriptor.manifest.version == "0.1.0"
     assert descriptor.manifest.protocol_min == 1
-    assert descriptor.manifest.protocol_max_exclusive == 2
+    assert descriptor.manifest.protocol_max_exclusive == 3
 
 
 def test_codex_descriptor_only_claims_evidence_backed_initial_capabilities() -> None:
