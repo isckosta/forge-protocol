@@ -1,7 +1,7 @@
 schema: forge/tdd-evidence@1
 change: CHG-0008
 status: compliant
-cycle_count: 8
+cycle_count: 9
 cycles:
   - {id: TDD-001, title: Reject FULL same-session Reviewer execution, requirements: [historical-session-model], behavior: historical first-pass evidence, red: {valid: true, commit: 1f83d498124d028fccf8ae3a01bd18a1d068a758, command: pytest -q, result: '1 failed, 162 passed', reason: validator initially accepted same-session review}, green: {commit: 105229d7fe24f24a48e5376f0d55782b793e8510, command: pytest -q, result: '164 passed'}}
   - {id: TDD-002, title: Reject claimed isolation with identical session references, requirements: [historical-session-model], behavior: historical evidence, red: {valid: true, commit: 8a3099d5044ef802869748c02fe122a8412ed927, command: pytest -q, result: failed, reason: identical references were not rejected}, green: {commit: 518629c8ae07f18e82dcac5fa382ffd6af8c86a5, command: pytest -q, result: passed}}
@@ -30,8 +30,8 @@ cycles:
     requirements: [FR-008, FR-012, FR-018, CHG-0008-R004, CHG-0008-R005]
     behavior: >-
       Same logical revision with different concrete commits is rejected; explicit Git subjects
-      must exist locally; post-freeze subject mutation invalidates review binding; review-control
-      metadata may follow the freeze; Protocol 1 and all Protocol 2 Flows remain compatible.
+      must exist locally; committed post-freeze subject mutation invalidates review binding;
+      review-control metadata may follow the freeze; Protocol 1 and all Protocol 2 Flows remain compatible.
     red:
       valid: true
       commit: b565426abc2b1c04f322667635b3267373fb17a7
@@ -46,8 +46,38 @@ cycles:
       job_id: 95057114869
       command: pytest -q
       result: passed
+  - id: TDD-009
+    title: Reject effective reviewable workspace mutation after frozen subject
+    requirements: [FR-003, FR-008, FR-009, FR-010, FR-011, FR-012, FR-014, FR-015, FR-016, FR-017, FR-018, FR-019, INV-005, CHG-0008-R006]
+    behavior: >-
+      Protocol 2 Git subject freeze evaluates one effective reviewable workspace delta covering
+      committed, staged, unstaged, deletion/rename and Git-visible untracked state while keeping
+      an exact Change-local review-control metadata exception and preserving Protocol 1 and
+      existing R004/R005 independence/provenance regressions.
+    red:
+      valid: true
+      test_authored_before_production_commit: bf2746c8283e5596f29f86ad189f57b285d1c0b0
+      commit: d845f0a270648f10e7106184db4a6970bad8132b
+      workflow_run_id: 31904557628
+      job_id: 95060254120
+      command: pytest -q
+      result: '9 failed, 201 passed in 3.93s'
+      reason: >-
+        With the Iteration 3 YAML artifact repaired and only the validator restored to its
+        pre-R006 commit-only behavior, Core returned success for unstaged, staged, untracked,
+        deletion, rename, same-Change reviewable artifact, rename-to-allowlist, lookalike and
+        symlink mutation cases. The first test-only CI attempt was contaminated by the pre-existing
+        malformed manifest and is not represented as causal RED.
+    green:
+      commit: eaa6c481e5ea9a08c3f4e234feb6d1cbf871ee99
+      workflow_run_id: 31904623010
+      job_id: 95060410846
+      command: pytest -q
+      result: '210 passed in 4.95s'
+      distribution_workflow_run_id: 31904622991
+      distribution_result: passed
 notes:
-  - TDD-001 through TDD-007 are preserved as historical evidence.
-  - TDD-008 is the dedicated R004/R005 Resolution 2 cycle.
-  - Distribution Verification run 31903247492 passed on the GREEN revision.
-  - Strict Review Iterations 1 and 2 remain historical REQUEST CHANGES; Iteration 3 requires an independent Reviewer.
+  - TDD-001 through TDD-008 are preserved as historical evidence.
+  - TDD-009 is the dedicated R006 Resolution 3 cycle.
+  - The Iteration 3 CI failure was independently diagnosed as invalid YAML in the unquoted `evidence_gap` value; the canonical YAML contract test was retained unchanged.
+  - Strict Review Iterations 1, 2, and 3 remain historical REQUEST CHANGES; Iteration 4 must be executed independently after `resolution-003` is recorded.
