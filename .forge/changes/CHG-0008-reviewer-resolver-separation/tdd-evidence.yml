@@ -96,9 +96,11 @@ cycles:
         revision-aware Review Iterations, skipped FAST C-026 enforcement, and accepted arbitrary
         unequal reviewer/resolver strings.
     green:
-      commit: 5806346ab38e0f7b624c67e17981724bf2e90b44
+      commit: 538a77dcd77aed0db0505a288fc1cbea0e69def3
+      workflow_run_id: 31901397058
+      job_id: 95052623111
       command: pytest -q
-      result: pending final CI confirmation
+      result: 182 passed in 3.83s
   - id: TDD-007
     title: Preserve Adapter projection semantics across Protocol versions
     requirements: [FR-016]
@@ -110,11 +112,13 @@ cycles:
       result: expected failure because CodexProjectionInput had no protocol_id boundary
       reason: projection could not distinguish Protocol 1 from Protocol 2
     green:
-      commit: c25125ffc4bdf3ed9f6bf0f4bade5424ddc3c762
+      commit: 538a77dcd77aed0db0505a288fc1cbea0e69def3
+      workflow_run_id: 31901397058
+      job_id: 95052623111
       command: pytest -q
-      result: pending final CI confirmation
+      result: 182 passed in 3.83s
 notes:
   - TDD-001 through TDD-005 are retained as historical implementation evidence and are not rewritten as the final model.
   - TDD-006 and TDD-007 are the Resolution cycles for Strict Review Iteration 1.
-  - Final GREEN counts are recorded in verification.md after the final Resolution HEAD is executed.
+  - Distribution Verification run 31901397053 passed isolated wheel, validate/doctor, Adapter loader, and dependency checks on the GREEN revision.
   - TDD compliance does not satisfy Strict Re-review; Review Iteration 2 remains independent and pending.

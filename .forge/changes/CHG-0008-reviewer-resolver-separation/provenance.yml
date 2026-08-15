@@ -9,10 +9,12 @@ records:
     recorded_at: 2026-08-15T18:27:15Z
     revision:
       id: chg-0008-resolution-001
-      commit: 5806346ab38e0f7b624c67e17981724bf2e90b44
+      commit: 538a77dcd77aed0db0505a288fc1cbea0e69def3
       description: >-
-        Resolution implementation revision introducing Protocol 2, revision-bound
-        execution provenance, all-Flow C-026 enforcement, and protocol-aware Doctor.
+        GREEN Resolution revision after Protocol 2 implementation, provenance model,
+        all-Flow C-026 enforcement, protocol-aware diagnostics/Adapter projection,
+        Change evidence migration, and compatibility expectation alignment. Subsequent
+        commits only consolidate verification evidence for the same Resolution execution.
     source:
       assurance: recorded
       observed_by: self

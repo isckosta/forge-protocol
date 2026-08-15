@@ -1,30 +1,29 @@
 # Discovery — CHG-0008
 
-## Existing behavior
+## Protocol/versioning findings
 
-- `change.schema.json` had no `reviewer_identity` field.
-- `review.yml` represented separation as `required: true` only.
-- `policy-review.schema.json` encoded that same bare-boolean shape.
-- C-026 stated only that Reviewer and Resolver were distinct conceptual Roles.
-- Specification §25 repeated the conceptual distinction.
-- `validate_project` validated project configuration/flow/contract availability but did not inspect Change review identity.
-- Codex projection generation represented stages and Gates but did not instruct isolated Strict Review execution.
+The pre-Resolution branch strengthened C-026 and Strict Review under `Protocol version: 1` while relying on `forge/change@2` as the structural boundary. `protocol/compatibility.md`, C-045, and C-046 make that invalid because previously valid Protocol 1 instances would acquire new mandatory semantics. The correct boundary is integer Protocol 2.
 
-## Constraints found
+Protocol 1 canonical Contract, Specification, Review Policy, and `forge/change@1` therefore remain authoritative for historical Protocol 1 semantics. Protocol 2 resources are versioned separately under `protocol/versions/2/`.
 
-Completed FULL Changes CHG-0001, CHG-0002, CHG-0004, CHG-0006, and CHG-0007 legitimately lack the new evidence because it did not exist when they completed. The explicit non-goal forbids rewriting them.
+## Provenance findings
 
-C-045/C-046 constrain breaking Protocol 1 evolution. The implementation resolves this via
-`protocol/compatibility.md`'s schema-versioning mechanism: `forge/change@1` stays unchanged
-and backward compatible, and the new structural requirement lives only under a new suffix,
-`forge/change@2`. Historical manifests, and CHG-0008's own manifest while its Review remains
-pending, stay on `forge/change@1` and are unaffected.
+`review.reviewer_identity` incorrectly required Review to manufacture both Reviewer and Resolver identifiers after the fact. CHG-0008's original implementation did not capture suitable execution/context provenance, so that history cannot be truthfully reconstructed.
 
-Correction to an earlier draft of this note: the requirement is not conditioned on
-`review.status`. Under `forge/change@2`, `reviewer_identity` is required for every FULL
-manifest regardless of review status, including `pending` — this matches AC-004 as literally
-specified and is enforced by
-`test_full_pending_review_without_reviewer_identity_is_structurally_invalid`. What determines
-whether the requirement applies is the schema suffix a manifest declares (`@1` vs. `@2`), not
-its review status. A Change only migrates to `@2` once it is prepared to truthfully carry
-reviewer identity evidence.
+A separate repository-native provenance ledger is required. It must record Implementation, Resolution, and Review executions prospectively and bind them to revisions. Review state should reference those records rather than duplicate them.
+
+## Trust boundary
+
+String inequality is only a consistency condition. A durable record can still be self-asserted, so Core must distinguish `claimed`, `recorded`, and `verified` provenance. Core can prove that referenced repository records exist and are internally consistent; it cannot claim cryptographic/external truth unless an observer-backed source actually provides it.
+
+## Flow consistency
+
+C-031 means FAST cannot escape a quality invariant that is normative under its Protocol. Protocol 2 therefore applies the same Strict Review provenance boundary to FAST, STANDARD, and FULL. Protocol 1 remains unaffected.
+
+## Re-review lifecycle
+
+The durable model must support Implementation → revision A → Review → Resolution → revision B → Re-review. The Reviewer for revision B is compared against the Resolution execution that produced B, not against a global Resolver field.
+
+## Distribution/Adapter constraints
+
+Protocol resolution must work from source checkout and isolated wheel without network access. Codex projections must receive the selected Protocol explicitly so Protocol 2 semantics do not leak into Protocol 1. The Adapter may support both Protocols through its half-open compatibility interval.

@@ -28,7 +28,7 @@ artifacts:
   tdd_evidence: complete
   implementation: complete
   provenance: complete
-  verification: active
+  verification: complete
   review: pending
   documentation: complete
   knowledge_capture: complete
@@ -36,14 +36,14 @@ artifacts:
 requirements:
   total: 18
   implemented: 18
-  verified: 17
+  verified: 18
 
 tdd:
   status: compliant
   cycles: 7
 
 verification:
-  status: active
+  status: passed
 
 review:
   status: pending
