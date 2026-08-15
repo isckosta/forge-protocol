@@ -11,7 +11,7 @@ flow:
   escalations: []
 
 state:
-  current: strict_review
+  current: verification
 
 artifacts:
   intent: complete
@@ -23,29 +23,29 @@ artifacts:
   plan: approved
   tasks: active
   traceability: complete
-  tdd_evidence: complete
+  tdd_evidence: active
   implementation: complete
-  verification: complete
+  verification: failed
   review: pending
   documentation: complete
   knowledge_capture: complete
 
 requirements:
-  total: 12
+  total: 15
   implemented: 12
-  verified: 12
+  verified: 11
 
 tdd:
-  status: compliant
-  cycles: 1
+  status: active
+  cycles: 3
 
 verification:
-  status: passed
+  status: failed
 
 review:
   status: pending
   iteration: 0
-  blockers: 0
+  blockers: 1
   majors: 0
   minors: 0
   observations: 0
@@ -56,3 +56,5 @@ documentation:
   reason: >
     The Change modifies canonical Contract and Specification prose, Review Policy,
     schema behavior, Codex projection instructions, ADR knowledge, and CHANGELOG.
+    Verification is blocked by the incompatibility between the literal mandatory
+    FULL reviewer identity field and existing Protocol 1 historical compatibility.
