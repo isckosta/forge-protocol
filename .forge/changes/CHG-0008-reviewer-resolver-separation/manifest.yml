@@ -25,10 +25,10 @@ requirements: {total: 19, implemented: 19, verified: 19}
 tdd: {status: compliant, cycles: 10}
 verification: {status: passed}
 review:
-  status: pending
+  status: failed
   iteration: 5
   blockers: 0
-  majors: 0
+  majors: 1
   minors: 0
   observations: 0
   iterations:
@@ -58,6 +58,15 @@ review:
       evidence_gap: >-
         CHG-0008-R007 BLOCKER: mutable allowlisted provenance can rewrite the frozen subject
         immutable revision and thereby hide reviewable post-freeze committed mutations.
+    - id: review-005
+      revision: chg-0008-resolution-004
+      subject_provenance: resolution-004
+      reviewer_provenance: review-005
+      status: failed
+      evidence_gap: >-
+        CHG-0008-R008 MAJOR: committed Review Iteration subject authority is enforced only while
+        status is pending or passed; a historical failed Iteration can be rewritten to another
+        revision or subject_provenance without triggering the append-only history check.
 documentation:
   impact_evaluated: true
   update_required: true
