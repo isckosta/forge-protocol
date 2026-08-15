@@ -1,7 +1,7 @@
 schema: forge/tdd-evidence@1
 change: CHG-0008
 status: compliant
-cycle_count: 9
+cycle_count: 10
 cycles:
   - {id: TDD-001, title: Reject FULL same-session Reviewer execution, requirements: [historical-session-model], behavior: historical first-pass evidence, red: {valid: true, commit: 1f83d498124d028fccf8ae3a01bd18a1d068a758, command: pytest -q, result: '1 failed, 162 passed', reason: validator initially accepted same-session review}, green: {commit: 105229d7fe24f24a48e5376f0d55782b793e8510, command: pytest -q, result: '164 passed'}}
   - {id: TDD-002, title: Reject claimed isolation with identical session references, requirements: [historical-session-model], behavior: historical evidence, red: {valid: true, commit: 8a3099d5044ef802869748c02fe122a8412ed927, command: pytest -q, result: failed, reason: identical references were not rejected}, green: {commit: 518629c8ae07f18e82dcac5fa382ffd6af8c86a5, command: pytest -q, result: passed}}
@@ -66,8 +66,7 @@ cycles:
         With the Iteration 3 YAML artifact repaired and only the validator restored to its
         pre-R006 commit-only behavior, Core returned success for unstaged, staged, untracked,
         deletion, rename, same-Change reviewable artifact, rename-to-allowlist, lookalike and
-        symlink mutation cases. The first test-only CI attempt was contaminated by the pre-existing
-        malformed manifest and is not represented as causal RED.
+        symlink mutation cases.
     green:
       commit: eaa6c481e5ea9a08c3f4e234feb6d1cbf871ee99
       workflow_run_id: 31904623010
@@ -76,8 +75,33 @@ cycles:
       result: '210 passed in 4.95s'
       distribution_workflow_run_id: 31904622991
       distribution_result: passed
+  - id: TDD-010
+    title: Prevent mutable provenance from moving a frozen review subject
+    requirements: [FR-008, FR-012, FR-014, FR-017, FR-018, FR-019, INV-002, INV-005, CHG-0008-R007]
+    behavior: >-
+      Core anchors referenced subject provenance and historical Review Iteration subject bindings
+      to their first committed Git representation before using the current immutable reference as
+      a workspace baseline. Legitimate append-only review metadata remains possible; rewritten,
+      replaced, removed/recreated or shadowed subject authority and incomplete Git history fail closed.
+    red:
+      valid: true
+      commit: 73f865ff712647c24a0203c530703d69c2513ae8
+      workflow_run_id: 31906413392
+      job_id: 95064855880
+      command: pytest -q
+      result: '1 failed, 212 passed in 5.49s'
+      reason: >-
+        The causal CLI regression froze A, committed subject provenance for A, committed a reviewable
+        mutation B, then rewrote only allowlisted provenance so both subject and Reviewer coherently
+        claimed B. The vulnerable validator returned exit code 0 instead of rejecting the moved baseline.
+    green:
+      commit: 80292e6acc54a59e15bf4c4919b9286cc2ba5dd6
+      workflow_run_id: 31906638536
+      command: pytest -q
+      result: passed
+      distribution_workflow_run_id: 31906638462
+      distribution_result: passed
 notes:
-  - TDD-001 through TDD-008 are preserved as historical evidence.
-  - TDD-009 is the dedicated R006 Resolution 3 cycle.
-  - The Iteration 3 CI failure was independently diagnosed as invalid YAML in the unquoted `evidence_gap` value; the canonical YAML contract test was retained unchanged.
-  - Strict Review Iterations 1, 2, and 3 remain historical REQUEST CHANGES; Iteration 4 must be executed independently after `resolution-003` is recorded.
+  - TDD-001 through TDD-009 are preserved as historical evidence.
+  - TDD-010 is the dedicated R007 Resolution 4 cycle; subsequent tests expand the threat matrix without rewriting the causal RED/GREEN chronology.
+  - Strict Review Iterations 1 through 4 remain historical REQUEST CHANGES. Iteration 5 must be executed independently after `resolution-004` is recorded.
