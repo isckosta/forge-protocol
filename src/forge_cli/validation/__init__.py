@@ -7,172 +7,109 @@ from typing import Any
 import yaml
 from forge_cli.configuration import InvalidProjectConfigurationError, UnsupportedProtocolVersionError, load_project_configuration
 from forge_cli.protocol_resolution import CanonicalContractUnavailableError, InvalidProjectFlowConfigurationError, UnknownCanonicalFlowError, resolve_effective_contract, resolve_effective_flow
-
 @dataclass(frozen=True)
 class ValidationFinding:
-    code: str
-    artifact: str
-    message: str
-    path: Path | None = None
-
+    code:str; artifact:str; message:str; path:Path|None=None
 @dataclass(frozen=True)
 class ValidationResult:
-    findings: tuple[ValidationFinding, ...]
+    findings:tuple[ValidationFinding,...]
     @property
-    def passed(self) -> bool:
-        return not self.findings
-
-def _finding(root: Path, path: Path, message: str) -> ValidationFinding:
-    return ValidationFinding("C-026", str(path.relative_to(root)), message, path)
-
-def _load_mapping(path: Path) -> dict[str, Any] | None:
-    try:
-        data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
-    except (OSError, yaml.YAMLError):
-        return None
-    return data if isinstance(data, dict) else None
-
-def _record_fields(record: object) -> tuple[str, str, str, str, str, tuple[str, str]] | None:
-    if not isinstance(record, dict):
-        return None
-    execution, revision, source = record.get("execution"), record.get("revision"), record.get("source")
-    record_id, role = record.get("id"), record.get("role")
-    if not (isinstance(record_id, str) and record_id and role in {"implementation", "resolution", "review"} and isinstance(execution, dict) and isinstance(revision, dict) and isinstance(source, dict)):
-        return None
-    execution_id, context_id, revision_id = execution.get("id"), execution.get("context_id"), revision.get("id")
-    if not (isinstance(execution_id, str) and execution_id and isinstance(context_id, str) and context_id and isinstance(revision_id, str) and revision_id and source.get("assurance") in {"claimed", "recorded", "verified"}):
-        return None
-    immutable = revision.get("immutable_ref")
-    commit = revision.get("commit")
-    if immutable is None and isinstance(commit, str):
-        immutable = {"type": "git_commit", "value": commit}
-    if not isinstance(immutable, dict):
-        return None
-    ref_type, ref_value = immutable.get("type"), immutable.get("value")
-    if ref_type not in {"git_commit", "content_digest", "vcs_revision"} or not isinstance(ref_value, str) or not ref_value:
-        return None
-    if ref_type == "git_commit":
-        if len(ref_value) != 40 or any(c not in "0123456789abcdefABCDEF" for c in ref_value):
-            return None
-        ref_value = ref_value.lower()
-    if commit is not None and (ref_type != "git_commit" or not isinstance(commit, str) or commit.lower() != ref_value):
-        return None
-    return record_id, role, execution_id, context_id, revision_id, (ref_type, ref_value)
-
-def _git_commit_exists(root: Path, commit: str) -> bool:
-    return subprocess.run(["git", "cat-file", "-e", f"{commit}^{{commit}}"], cwd=root, capture_output=True, check=False).returncode == 0
-
-def _subject_changed_after_freeze(root: Path, manifest_path: Path, commit: str) -> bool:
-    result = subprocess.run(["git", "diff", "--name-only", f"{commit}..HEAD"], cwd=root, capture_output=True, text=True, check=False)
-    if result.returncode != 0:
-        return True
-    change_dir = manifest_path.parent.relative_to(root).as_posix()
-    allowed = {f"{change_dir}/manifest.yml", f"{change_dir}/provenance.yml", f"{change_dir}/review.md"}
-    return bool({line.strip() for line in result.stdout.splitlines() if line.strip()} - allowed)
-
-def _validate_protocol2_review_provenance(root: Path) -> list[ValidationFinding]:
-    findings: list[ValidationFinding] = []
-    changes = root / ".forge" / "changes"
-    if not changes.is_dir():
-        return findings
-    for manifest_path in sorted(changes.glob("*/manifest.yml")):
-        manifest = _load_mapping(manifest_path)
-        if manifest is None:
+    def passed(self)->bool:return not self.findings
+def _finding(r:Path,p:Path,m:str)->ValidationFinding:return ValidationFinding("C-026",str(p.relative_to(r)),m,p)
+def _load_mapping(p:Path)->dict[str,Any]|None:
+    try:d=yaml.safe_load(p.read_text(encoding="utf-8")) or {}
+    except (OSError,yaml.YAMLError):return None
+    return d if isinstance(d,dict) else None
+def _record_fields(x:object):
+    if not isinstance(x,dict):return None
+    e,v,s=x.get("execution"),x.get("revision"),x.get("source"); i,role=x.get("id"),x.get("role")
+    if not(isinstance(i,str)and i and role in{"implementation","resolution","review"}and isinstance(e,dict)and isinstance(v,dict)and isinstance(s,dict)):return None
+    ex,ctx,rid=e.get("id"),e.get("context_id"),v.get("id")
+    if not(isinstance(ex,str)and ex and isinstance(ctx,str)and ctx and isinstance(rid,str)and rid and s.get("assurance") in{"claimed","recorded","verified"}):return None
+    im,com=v.get("immutable_ref"),v.get("commit")
+    if im is None and isinstance(com,str):im={"type":"git_commit","value":com}
+    if not isinstance(im,dict):return None
+    typ,val=im.get("type"),im.get("value")
+    if typ not in{"git_commit","content_digest","vcs_revision"}or not isinstance(val,str)or not val:return None
+    if typ=="git_commit":
+        if len(val)!=40 or any(c not in"0123456789abcdefABCDEF" for c in val):return None
+        val=val.lower()
+    if com is not None and(typ!="git_commit"or not isinstance(com,str)or com.lower()!=val):return None
+    return i,role,ex,ctx,rid,(typ,val)
+def _git_exists(r:Path,c:str)->bool:return subprocess.run(["git","cat-file","-e",f"{c}^{{commit}}"],cwd=r,capture_output=True,check=False).returncode==0
+def _changed(r:Path,m:Path,c:str)->bool:
+    q=subprocess.run(["git","diff","--name-only",f"{c}..HEAD"],cwd=r,capture_output=True,text=True,check=False)
+    if q.returncode:return True
+    d=m.parent.relative_to(r).as_posix(); allowed={f"{d}/manifest.yml",f"{d}/provenance.yml",f"{d}/review.md"}
+    return bool({z.strip() for z in q.stdout.splitlines() if z.strip()}-allowed)
+def _validate_protocol2_review_provenance(r:Path)->list[ValidationFinding]:
+    out=[]; changes=r/".forge/changes"
+    if not changes.is_dir():return out
+    for mpath in sorted(changes.glob("*/manifest.yml")):
+        m=_load_mapping(mpath)
+        if m is None:continue
+        st=m.get("state")or{}
+        if m.get("schema")=="forge/change@1":
+            if not isinstance(st,dict)or st.get("current")!="complete":out.append(_finding(r,mpath,"Protocol 2 active Changes must use forge/change@2; forge/change@1 cannot bypass C-026."))
             continue
-        state = manifest.get("state") or {}
-        if manifest.get("schema") == "forge/change@1":
-            if not isinstance(state, dict) or state.get("current") != "complete":
-                findings.append(_finding(root, manifest_path, "Protocol 2 active Changes must use forge/change@2; forge/change@1 cannot bypass C-026."))
+        if m.get("schema")!="forge/change@2":continue
+        if m.get("protocol")!=2:out.append(_finding(r,mpath,"forge/change@2 must declare protocol: 2."));continue
+        rev=m.get("review")or{}
+        if not isinstance(rev,dict):continue
+        its=rev.get("iterations")
+        if not isinstance(its,list)or not its:
+            if rev.get("status")=="passed":out.append(_finding(r,mpath,"Protocol 2 review_passed requires a Review Iteration linked to provenance."))
             continue
-        if manifest.get("schema") != "forge/change@2":
-            continue
-        if manifest.get("protocol") != 2:
-            findings.append(_finding(root, manifest_path, "forge/change@2 must declare protocol: 2.")); continue
-        review = manifest.get("review") or {}
-        if not isinstance(review, dict):
-            continue
-        iterations = review.get("iterations")
-        if not isinstance(iterations, list) or not iterations:
-            if review.get("status") == "passed":
-                findings.append(_finding(root, manifest_path, "Protocol 2 review_passed requires a Review Iteration linked to provenance."))
-            continue
-        bound = [i for i in iterations if isinstance(i, dict) and i.get("subject_provenance")]
-        if not bound and review.get("status") != "passed":
-            continue
-        provenance_path = manifest_path.parent / "provenance.yml"
-        provenance = _load_mapping(provenance_path)
-        if provenance is None or provenance.get("schema") != "forge/execution-provenance@1":
-            findings.append(_finding(root, provenance_path if provenance_path.exists() else manifest_path, "Protocol 2 bound Review Iterations require supported repository-native provenance.")); continue
-        records = provenance.get("records")
-        if not isinstance(records, list):
-            findings.append(_finding(root, provenance_path, "Protocol 2 provenance records are missing.")); continue
-        index: dict[str, dict[str, Any]] = {}
-        invalid = False
-        for record in records:
-            fields = _record_fields(record)
-            if fields is None or fields[0] in index:
-                invalid = True; break
-            index[fields[0]] = record
-        if invalid:
-            findings.append(_finding(root, provenance_path, "Protocol 2 provenance contains a partial, duplicate, inconsistent, or incomplete immutable revision record.")); continue
-        for iteration in bound:
-            revision_id, subject_ref, reviewer_ref, status = iteration.get("revision"), iteration.get("subject_provenance"), iteration.get("reviewer_provenance"), iteration.get("status")
-            if not (isinstance(revision_id, str) and revision_id and isinstance(subject_ref, str) and subject_ref):
-                findings.append(_finding(root, manifest_path, "A bound Review Iteration requires revision and subject_provenance.")); continue
-            subject = index.get(subject_ref)
-            if subject is None:
-                findings.append(_finding(root, manifest_path, "Subject provenance was not found; invented IDs are not evidence.")); continue
-            sf = _record_fields(subject); assert sf is not None
-            _, srole, sexec, sctx, srevision, simmutable = sf
-            if srole not in {"implementation", "resolution"} or subject["source"].get("assurance") not in {"recorded", "verified"}:
-                findings.append(_finding(root, manifest_path, "Review subject must be recorded/verified implementation or resolution provenance.")); continue
-            if srevision != revision_id:
-                findings.append(_finding(root, manifest_path, "Review subject provenance does not bind to the logical revision under review."))
-            if simmutable[0] == "git_commit":
-                if not _git_commit_exists(root, simmutable[1]):
-                    findings.append(_finding(root, manifest_path, "C-026 review subject immutable git commit does not exist in the local repository."))
-                elif _subject_changed_after_freeze(root, manifest_path, simmutable[1]):
-                    findings.append(_finding(root, manifest_path, "C-026 review subject changed after its immutable revision freeze; create new subject provenance."))
-            if status != "passed":
-                continue
-            if not isinstance(reviewer_ref, str) or not reviewer_ref:
-                findings.append(_finding(root, manifest_path, "A passed Protocol 2 Review Iteration requires reviewer_provenance.")); continue
-            reviewer = index.get(reviewer_ref)
-            if reviewer is None:
-                findings.append(_finding(root, manifest_path, "Reviewer provenance was not found; invented IDs are not proof of independence.")); continue
-            rf = _record_fields(reviewer); assert rf is not None
-            _, rrole, rexec, rctx, rrevision, rimmutable = rf
-            if rrole != "review" or reviewer["source"].get("assurance") not in {"recorded", "verified"}:
-                findings.append(_finding(root, manifest_path, "Reviewer provenance must be recorded/verified review provenance.")); continue
-            if rrevision != revision_id:
-                findings.append(_finding(root, manifest_path, "Reviewer provenance does not bind to the logical revision under review."))
-            if rimmutable != simmutable:
-                findings.append(_finding(root, manifest_path, "C-026 concrete revision binding failed: subject and Reviewer provenance reference different immutable revisions."))
-            if sexec == rexec:
-                findings.append(_finding(root, manifest_path, "Strict Review is not independent: Reviewer and subject share the same Execution."))
-            if sctx == rctx:
-                findings.append(_finding(root, manifest_path, "Strict Review is context-contaminated: Reviewer and subject share the same Execution Context."))
-        if review.get("status") == "passed" and not any(isinstance(i, dict) and i.get("status") == "passed" for i in iterations):
-            findings.append(_finding(root, manifest_path, "review.status is passed but no Review Iteration is passed."))
-    return findings
-
-def validate_project(project_root: Path, protocol_root: Path) -> ValidationResult:
-    forge_dir = project_root / ".forge"
-    if not forge_dir.is_dir():
-        return ValidationResult((ValidationFinding("E_FORGE_NOT_INITIALIZED", ".forge/", "Forge is not initialized. Run `forge init` from this Git repository.", forge_dir),))
-    try:
-        config = load_project_configuration(forge_dir / "forge.yml")
-    except (UnsupportedProtocolVersionError, InvalidProjectConfigurationError) as error:
-        return ValidationResult((ValidationFinding(error.code, ".forge/forge.yml", str(error), forge_dir / "forge.yml"),))
-    protocol_id = config["forge"]["protocol"]
-    findings: list[ValidationFinding] = []
-    flow_dir = forge_dir / "flows"
-    if flow_dir.is_dir():
-        for flow_path in sorted(flow_dir.glob("*.yml")):
-            try: resolve_effective_flow(protocol_root, project_root, flow_path.stem, protocol_id)
-            except UnknownCanonicalFlowError as error: findings.append(ValidationFinding("E_FORGE_UNKNOWN_CANONICAL_FLOW", str(flow_path.relative_to(project_root)), str(error), flow_path))
-            except InvalidProjectFlowConfigurationError as error: findings.append(ValidationFinding("E_FORGE_INVALID_PROJECT_FLOW", str(flow_path.relative_to(project_root)), str(error), flow_path))
-    try: resolve_effective_contract(protocol_root, project_root, protocol_id)
-    except CanonicalContractUnavailableError as error: findings.append(ValidationFinding("E_FORGE_CANONICAL_CONTRACT_UNAVAILABLE", f"protocol/{protocol_id}/contract/engineering.md", str(error), protocol_root))
-    if protocol_id == 2: findings.extend(_validate_protocol2_review_provenance(project_root))
-    return ValidationResult(tuple(findings))
+        bound=[i for i in its if isinstance(i,dict)and i.get("subject_provenance")]
+        if not bound and rev.get("status")!="passed":continue
+        ppath=mpath.parent/"provenance.yml"; p=_load_mapping(ppath)
+        if p is None or p.get("schema")!="forge/execution-provenance@1":out.append(_finding(r,ppath if ppath.exists()else mpath,"Protocol 2 bound Review Iterations require supported repository-native provenance."));continue
+        records=p.get("records")
+        if not isinstance(records,list):out.append(_finding(r,ppath,"Protocol 2 provenance records are missing."));continue
+        idx={};bad=False
+        for rec in records:
+            f=_record_fields(rec)
+            if f is None or f[0] in idx:bad=True;break
+            idx[f[0]]=rec
+        if bad:out.append(_finding(r,ppath,"Protocol 2 provenance contains a partial, duplicate, inconsistent, or incomplete immutable revision record."));continue
+        for it in bound:
+            rid,sref,rref,status=it.get("revision"),it.get("subject_provenance"),it.get("reviewer_provenance"),it.get("status")
+            if not(isinstance(rid,str)and rid and isinstance(sref,str)and sref):out.append(_finding(r,mpath,"A bound Review Iteration requires revision and subject_provenance."));continue
+            sub=idx.get(sref)
+            if sub is None:out.append(_finding(r,mpath,"Subject provenance was not found; invented IDs are not evidence."));continue
+            sf=_record_fields(sub);assert sf is not None
+            _,srole,sex,sctx,srid,sim=sf
+            if srole not in{"implementation","resolution"}or sub["source"].get("assurance")not in{"recorded","verified"}:out.append(_finding(r,mpath,"Review subject must be recorded/verified implementation or resolution provenance."));continue
+            if srid!=rid:out.append(_finding(r,mpath,"Review subject provenance does not bind to the logical revision under review."))
+            explicit=isinstance(sub.get("revision"),dict)and sub["revision"].get("immutable_ref") is not None
+            if explicit and sim[0]=="git_commit":
+                if not _git_exists(r,sim[1]):out.append(_finding(r,mpath,"C-026 review subject immutable git commit does not exist in the local repository."))
+                elif _changed(r,mpath,sim[1]):out.append(_finding(r,mpath,"C-026 review subject changed after its immutable revision freeze; create new subject provenance."))
+            if status!="passed":continue
+            if not isinstance(rref,str)or not rref:out.append(_finding(r,mpath,"A passed Protocol 2 Review Iteration requires reviewer_provenance."));continue
+            reviewer=idx.get(rref)
+            if reviewer is None:out.append(_finding(r,mpath,"Reviewer provenance was not found; invented IDs are not proof of independence."));continue
+            rf=_record_fields(reviewer);assert rf is not None
+            _,rrole,rex,rctx,rrid,rim=rf
+            if rrole!="review"or reviewer["source"].get("assurance")not in{"recorded","verified"}:out.append(_finding(r,mpath,"Reviewer provenance must be recorded/verified review provenance."));continue
+            if rrid!=rid:out.append(_finding(r,mpath,"Reviewer provenance does not bind to the logical revision under review."))
+            if rim!=sim:out.append(_finding(r,mpath,"C-026 concrete revision binding failed: subject and Reviewer provenance reference different immutable revisions."))
+            if sex==rex:out.append(_finding(r,mpath,"Strict Review is not independent: Reviewer and subject share the same Execution."))
+            if sctx==rctx:out.append(_finding(r,mpath,"Strict Review is context-contaminated: Reviewer and subject share the same Execution Context."))
+        if rev.get("status")=="passed"and not any(isinstance(i,dict)and i.get("status")=="passed"for i in its):out.append(_finding(r,mpath,"review.status is passed but no Review Iteration is passed."))
+    return out
+def validate_project(project_root:Path,protocol_root:Path)->ValidationResult:
+    f=project_root/".forge"
+    if not f.is_dir():return ValidationResult((ValidationFinding("E_FORGE_NOT_INITIALIZED",".forge/","Forge is not initialized. Run `forge init` from this Git repository.",f),))
+    try:cfg=load_project_configuration(f/"forge.yml")
+    except(UnsupportedProtocolVersionError,InvalidProjectConfigurationError)as e:return ValidationResult((ValidationFinding(e.code,".forge/forge.yml",str(e),f/"forge.yml"),))
+    pid=cfg["forge"]["protocol"];out=[];fd=f/"flows"
+    if fd.is_dir():
+        for p in sorted(fd.glob("*.yml")):
+            try:resolve_effective_flow(protocol_root,project_root,p.stem,pid)
+            except UnknownCanonicalFlowError as e:out.append(ValidationFinding("E_FORGE_UNKNOWN_CANONICAL_FLOW",str(p.relative_to(project_root)),str(e),p))
+            except InvalidProjectFlowConfigurationError as e:out.append(ValidationFinding("E_FORGE_INVALID_PROJECT_FLOW",str(p.relative_to(project_root)),str(e),p))
+    try:resolve_effective_contract(protocol_root,project_root,pid)
+    except CanonicalContractUnavailableError as e:out.append(ValidationFinding("E_FORGE_CANONICAL_CONTRACT_UNAVAILABLE",f"protocol/{pid}/contract/engineering.md",str(e),protocol_root))
+    if pid==2:out.extend(_validate_protocol2_review_provenance(project_root))
+    return ValidationResult(tuple(out))
