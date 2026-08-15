@@ -1,124 +1,53 @@
 schema: forge/tdd-evidence@1
 change: CHG-0008
 status: compliant
-cycle_count: 7
+cycle_count: 8
 cycles:
-  - id: TDD-001
-    title: Reject FULL same-session Reviewer execution
-    requirements: [historical-session-model]
-    behavior: historical first-pass evidence that same-session review needed semantic rejection
-    red:
-      valid: true
-      commit: 1f83d498124d028fccf8ae3a01bd18a1d068a758
-      command: pytest -q
-      result: 1 failed, 162 passed
-      reason: forge validate returned success before the first C-026 semantic guard existed
-    green:
-      commit: 105229d7fe24f24a48e5376f0d55782b793e8510
-      command: pytest -q
-      result: 164 passed
-  - id: TDD-002
-    title: Reject claimed isolation with identical session references
-    requirements: [historical-session-model]
-    behavior: historical evidence that declared isolation needed semantic consistency checks
-    red:
-      valid: true
-      commit: 8a3099d5044ef802869748c02fe122a8412ed927
-      command: pytest -q
-      result: failed on newly introduced semantic expectation
-      reason: validator only rejected the explicit same-session actor type
-    green:
-      commit: 518629c8ae07f18e82dcac5fa382ffd6af8c86a5
-      command: pytest -q
-      result: identical-reference check implemented
-  - id: TDD-003
-    title: Require reviewer identity structurally for pending FULL manifests
-    requirements: [historical-pre-resolution-model]
-    behavior: historical cycle for the superseded reviewer_identity design
-    red:
-      valid: true
-      commit: 7f21439e2cc4517a423f99efd1f4b0f817ca3d7e
-      command: pytest -q
-      result: structural regression failed before requirement
-      reason: prior schema allowed the pending FULL identity shape
-    green:
-      commit: 666cf96f88faaf2445ba8313ee715cad306db6c0
-      command: pytest -q
-      result: historical identity behavior implemented
-  - id: TDD-004
-    title: Preserve forge/change@1 compatibility while introducing new evidence shape
-    requirements: [historical-pre-resolution-model]
-    behavior: historical schema-suffix compatibility attempt later superseded by R001
-    red:
-      valid: true
-      commit: 4a6b5d64be0ccc7b26456fe5b8b9d06170a7bd63
-      command: pytest -q
-      result: historical FULL manifests failed canonical schema validation
-      reason: mandatory evidence had been applied retroactively to forge/change@1
-    green:
-      commit: c2c0391b9381044449fcce45225f306f9bf57818
-      command: pytest -q
-      result: 168 passed
+  - {id: TDD-001, title: Reject FULL same-session Reviewer execution, requirements: [historical-session-model], behavior: historical first-pass evidence, red: {valid: true, commit: 1f83d498124d028fccf8ae3a01bd18a1d068a758, command: pytest -q, result: '1 failed, 162 passed', reason: validator initially accepted same-session review}, green: {commit: 105229d7fe24f24a48e5376f0d55782b793e8510, command: pytest -q, result: '164 passed'}}
+  - {id: TDD-002, title: Reject claimed isolation with identical session references, requirements: [historical-session-model], behavior: historical evidence, red: {valid: true, commit: 8a3099d5044ef802869748c02fe122a8412ed927, command: pytest -q, result: failed, reason: identical references were not rejected}, green: {commit: 518629c8ae07f18e82dcac5fa382ffd6af8c86a5, command: pytest -q, result: passed}}
+  - {id: TDD-003, title: Historical reviewer identity structure, requirements: [historical-pre-resolution-model], behavior: superseded model, red: {valid: true, commit: 7f21439e2cc4517a423f99efd1f4b0f817ca3d7e, command: pytest -q, result: failed, reason: prior schema allowed pending identity shape}, green: {commit: 666cf96f88faaf2445ba8313ee715cad306db6c0, command: pytest -q, result: passed}}
+  - {id: TDD-004, title: Preserve forge/change@1 compatibility, requirements: [historical-pre-resolution-model], behavior: historical compatibility attempt, red: {valid: true, commit: 4a6b5d64be0ccc7b26456fe5b8b9d06170a7bd63, command: pytest -q, result: failed, reason: mandatory evidence applied retroactively}, green: {commit: c2c0391b9381044449fcce45225f306f9bf57818, command: pytest -q, result: '168 passed'}}
   - id: TDD-005
     title: Reject contaminated Strict Review Execution and Execution Context
     requirements: [historical-pre-resolution-model]
-    behavior: historical cycle establishing execution/context as the independence property
-    red:
-      valid: true
-      commit: 3d4883d0a0329a629026f22e4c314ffa04b2bfed
-      workflow_run_id: 31899409371
-      job_id: 95047717053
-      command: pytest -q
-      result: 3 failed, 166 passed
-      reason: schema and validator did not yet enforce both provider-independent execution/context boundaries
-    green:
-      commit: fec5ac22c3ef62c213526ae3675f105a2a1afd45
-      workflow_run_id: 31899652483
-      job_id: 95048292204
-      command: pytest -q
-      result: 169 passed in 3.79s
+    behavior: historical execution/context independence cycle
+    red: {valid: true, commit: 3d4883d0a0329a629026f22e4c314ffa04b2bfed, workflow_run_id: 31899409371, job_id: 95047717053, command: pytest -q, result: '3 failed, 166 passed', reason: both boundaries were not enforced}
+    green: {commit: fec5ac22c3ef62c213526ae3675f105a2a1afd45, workflow_run_id: 31899652483, job_id: 95048292204, command: pytest -q, result: '169 passed in 3.79s'}
   - id: TDD-006
     title: Resolve Protocol boundary and provenance findings R001-R004
     requirements: [FR-001, FR-002, FR-003, FR-004, FR-005, FR-006, FR-007, FR-008, FR-009, FR-010, FR-011, FR-012, FR-014, FR-015]
-    behavior: >-
-      Protocol 1 remains historically valid; Protocol 2 requires revision-bound recorded
-      provenance across FAST/STANDARD/FULL and rejects forged, missing, partial, wrong-revision,
-      shared-boundary, contaminated re-review, and downgrade cases.
-    red:
-      valid: true
-      commit: d71435f9b2fca5c5829121ff45e0059e67526d84
-      workflow_run_id: 31900774999
-      job_id: 95051092652
-      command: pytest -q
-      result: failed in Run tests; environment/setup steps passed
-      reason: >-
-        Production still supported only Protocol 1, had no execution provenance schema or
-        revision-aware Review Iterations, skipped FAST C-026 enforcement, and accepted arbitrary
-        unequal reviewer/resolver strings.
-    green:
-      commit: 538a77dcd77aed0db0505a288fc1cbea0e69def3
-      workflow_run_id: 31901397058
-      job_id: 95052623111
-      command: pytest -q
-      result: 182 passed in 3.83s
+    behavior: Protocol 1 compatibility and Protocol 2 provenance enforcement
+    red: {valid: true, commit: d71435f9b2fca5c5829121ff45e0059e67526d84, workflow_run_id: 31900774999, job_id: 95051092652, command: pytest -q, result: failed in Run tests, reason: Protocol 2 provenance model was absent}
+    green: {commit: 538a77dcd77aed0db0505a288fc1cbea0e69def3, workflow_run_id: 31901397058, job_id: 95052623111, command: pytest -q, result: '182 passed in 3.83s'}
   - id: TDD-007
     title: Preserve Adapter projection semantics across Protocol versions
     requirements: [FR-016]
-    behavior: Protocol 1 projection must not receive Protocol 2 provenance requirements; Protocol 2 applies them to every Flow
+    behavior: Protocol-aware Codex projection
+    red: {valid: true, commit: bb43fae06670e90f5ed07a63f154ec0f541c854d, command: pytest -q, result: expected failure, reason: projection had no protocol boundary}
+    green: {commit: 538a77dcd77aed0db0505a288fc1cbea0e69def3, workflow_run_id: 31901397058, job_id: 95052623111, command: pytest -q, result: '182 passed in 3.83s'}
+  - id: TDD-008
+    title: Enforce concrete immutable revision binding and review-subject freeze
+    requirements: [FR-008, FR-012, FR-018, CHG-0008-R004, CHG-0008-R005]
+    behavior: >-
+      Same logical revision with different concrete commits is rejected; explicit Git subjects
+      must exist locally; post-freeze subject mutation invalidates review binding; review-control
+      metadata may follow the freeze; Protocol 1 and all Protocol 2 Flows remain compatible.
     red:
       valid: true
-      commit: bb43fae06670e90f5ed07a63f154ec0f541c854d
+      commit: b565426abc2b1c04f322667635b3267373fb17a7
+      workflow_run_id: 31902858488
+      job_id: 95056158653
       command: pytest -q
-      result: expected failure because CodexProjectionInput had no protocol_id boundary
-      reason: projection could not distinguish Protocol 1 from Protocol 2
+      result: failed in Run tests after setup/dependency steps passed
+      reason: Core compared revision.id but did not compare concrete commit binding.
     green:
-      commit: 538a77dcd77aed0db0505a288fc1cbea0e69def3
-      workflow_run_id: 31901397058
-      job_id: 95052623111
+      commit: e360685531e2a4ee76890b1c636173f02ead1d3e
+      workflow_run_id: 31903247493
+      job_id: 95057114869
       command: pytest -q
-      result: 182 passed in 3.83s
+      result: passed
 notes:
-  - TDD-001 through TDD-005 are retained as historical implementation evidence and are not rewritten as the final model.
-  - TDD-006 and TDD-007 are the Resolution cycles for Strict Review Iteration 1.
-  - Distribution Verification run 31901397053 passed isolated wheel, validate/doctor, Adapter loader, and dependency checks on the GREEN revision.
-  - TDD compliance does not satisfy Strict Re-review; Review Iteration 2 remains independent and pending.
+  - TDD-001 through TDD-007 are preserved as historical evidence.
+  - TDD-008 is the dedicated R004/R005 Resolution 2 cycle.
+  - Distribution Verification run 31903247492 passed on the GREEN revision.
+  - Strict Review Iterations 1 and 2 remain historical REQUEST CHANGES; Iteration 3 requires an independent Reviewer.
