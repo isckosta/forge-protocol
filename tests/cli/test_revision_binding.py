@@ -24,6 +24,8 @@ def test_missing_all_immutable_refs_fails(tmp_path,monkeypatch):
 def test_wrong_subject_commit_fails(tmp_path,monkeypatch):init(tmp_path);commit(tmp_path,"a");write(tmp_path,"f"*40,"f"*40);assert validate(tmp_path,monkeypatch).exit_code==2
 def test_pending_subject_freeze_passes(tmp_path,monkeypatch):init(tmp_path);a=commit(tmp_path,"a");write(tmp_path,a,None,status="pending");assert validate(tmp_path,monkeypatch).exit_code==0
 def test_post_freeze_subject_change_fails(tmp_path,monkeypatch):init(tmp_path);a=commit(tmp_path,"a");write(tmp_path,a,None,status="pending");(tmp_path/"subject.txt").write_text("changed");commit(tmp_path,"changed");assert validate(tmp_path,monkeypatch).exit_code==2
+def test_unstaged_tracked_subject_change_fails(tmp_path,monkeypatch):
+ init(tmp_path);subject=tmp_path/"subject.txt";subject.write_text("frozen");a=commit(tmp_path,"a");write(tmp_path,a,None,status="pending");subject.write_text("changed");assert validate(tmp_path,monkeypatch).exit_code==2
 def test_review_metadata_after_freeze_passes(tmp_path,monkeypatch):init(tmp_path);a=commit(tmp_path,"a");d=write(tmp_path,a,None,status="pending");(d/"review.md").write_text("review");commit(tmp_path,"review metadata");assert validate(tmp_path,monkeypatch).exit_code==0
 @pytest.mark.parametrize("flow",["fast","standard","full"])
 def test_all_flows_pass_with_binding(tmp_path,monkeypatch,flow):init(tmp_path);a=commit(tmp_path,"a");write(tmp_path,a,a,flow=flow);assert validate(tmp_path,monkeypatch).exit_code==0
