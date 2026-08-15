@@ -5,30 +5,25 @@ forge:
 change: CHG-0008
 status: active
 ---
-
 # Tasks — Verifiable Review Independence
 
-## Historical implementation and Strict Review
+## Historical
+- [x] T-001 Preserve original CHG-0008 implementation/TDD history.
+- [x] T-002 Preserve Strict Review Iterations 1 and 2 and findings R001-R005.
 
-- [x] T-001 Preserve original CHG-0008 TDD and implementation history.
-- [x] T-002 Preserve Strict Review Iteration 1 REQUEST CHANGES and findings R001-R004.
+## Resolution 1
+- [x] T-020 through T-034: Protocol 2 boundary, provenance ledger, all-Flow validation, Adapter projection, verification and distribution evidence.
 
-## Resolution Iteration 1
-
-- [x] T-020 Record pre-implementation Specification Drift for R001-R004.
-- [x] T-021 Add RED regressions for Protocol 1 compatibility and Protocol 2 review provenance.
-- [x] T-022 Add adversarial regressions for all Flows, forged evidence, wrong revision, partial provenance, shared Execution/Context, re-review contamination, and downgrade resistance.
-- [x] T-023 Add RED regression preventing Protocol 2 semantics from leaking into Protocol 1 Codex projection.
-- [x] T-024 Restore Protocol 1 historical Contract/Specification/Policy/schema semantics.
-- [x] T-025 Introduce integer Protocol 2 canonical Specification/Contract/Review Policy resources.
-- [x] T-026 Introduce `forge/execution-provenance@1` and Protocol 2 iteration-aware `forge/change@2`.
-- [x] T-027 Implement Protocol-aware all-Flow C-026 validation and anti-downgrade behavior.
-- [x] T-028 Implement Protocol-aware Contract resolution in validator and Doctor.
-- [x] T-029 Make Codex projection Protocol-aware and support Protocols 1–2.
-- [x] T-030 Record this Resolution Execution prospectively as `resolution-001` without fabricating historical identifiers.
-- [x] T-031 Update canonical and Change documentation/evidence.
-- [x] T-032 Confirm final `pytest -q`: 182 passed in 3.83s on `538a77dcd77aed0db0505a288fc1cbea0e69def3`.
-- [x] T-033 Confirm isolated `forge validate` and `forge doctor`: PASS in Distribution Verification run `31901397053`.
-- [x] T-034 Confirm Distribution Verification, wheel-only installation, Adapter schema/loader probe, and runtime dependency audit: PASS in run `31901397053`.
-- [ ] T-035 Obtain independent Strict Re-review Iteration 2 from a Reviewer Execution and Execution Context independent from `resolution-001`.
-- [ ] T-036 Complete CHG-0008 only if that independent Reviewer accepts the Resolution and all Completion Gates are satisfied.
+## Resolution 2 — R004 remainder / R005
+- [x] T-040 Record Specification Drift for concrete revision binding before implementation.
+- [x] T-041 Create and observe dedicated RED: same `revision.id`, different commit.
+- [x] T-042 Model logical revision separately from concrete immutable revision reference.
+- [x] T-043 Enforce subject/Reviewer immutable-reference equality under C-026.
+- [x] T-044 Enforce explicit Git subject existence and post-freeze subject mutation detection locally.
+- [x] T-045 Preserve review-control metadata commits after freeze without allowing subject mutation.
+- [x] T-046 Preserve Protocol 1 and FAST/STANDARD/FULL Protocol 2 regressions.
+- [x] T-047 Update Protocol 2 Specification, Review Policy, schema, ADR, Architecture, Codex projection, evidence and knowledge capture.
+- [x] T-048 Verify GREEN in Tests run 31903247493 and Distribution Verification run 31903247492.
+- [ ] T-049 Freeze final Resolution 2 review subject and record `resolution-002` provenance.
+- [ ] T-050 Obtain independent Strict Review Iteration 3 against `resolution-002`.
+- [ ] T-051 Complete CHG-0008 only after independent acceptance and all Completion Gates.
