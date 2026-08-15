@@ -1,12 +1,12 @@
 schema: forge/tdd-evidence@1
 change: CHG-0008
 status: compliant
-cycle_count: 5
+cycle_count: 7
 cycles:
   - id: TDD-001
     title: Reject FULL same-session Reviewer execution
     requirements: [historical-session-model]
-    behavior: historical first-pass CHG-0008 evidence that same-session review needed semantic rejection
+    behavior: historical first-pass evidence that same-session review needed semantic rejection
     red:
       valid: true
       commit: 1f83d498124d028fccf8ae3a01bd18a1d068a758
@@ -17,59 +17,52 @@ cycles:
       commit: 105229d7fe24f24a48e5376f0d55782b793e8510
       command: pytest -q
       result: 164 passed
-    notes:
-      - Superseded in terminology by the execution/context model introduced after Specification Drift; preserved as historical evidence.
   - id: TDD-002
     title: Reject claimed isolation with identical session references
     requirements: [historical-session-model]
-    behavior: historical first-pass evidence that declared isolation needed durable semantic consistency checks
+    behavior: historical evidence that declared isolation needed semantic consistency checks
     red:
       valid: true
       commit: 8a3099d5044ef802869748c02fe122a8412ed927
-      workflow_run_id: 31852012708
       command: pytest -q
-      result: failed on the newly introduced semantic expectation
+      result: failed on newly introduced semantic expectation
       reason: validator only rejected the explicit same-session actor type
     green:
       commit: 518629c8ae07f18e82dcac5fa382ffd6af8c86a5
       command: pytest -q
-      result: semantic identical-reference check implemented
-    notes:
-      - Superseded in terminology by TDD-005; preserved as historical evidence.
+      result: identical-reference check implemented
   - id: TDD-003
     title: Require reviewer identity structurally for pending FULL manifests
-    requirements: [FR-002]
-    behavior: the new Change schema suffix structurally requires FULL review identity even before review is passed
+    requirements: [historical-pre-resolution-model]
+    behavior: historical cycle for the superseded reviewer_identity design
     red:
       valid: true
       commit: 7f21439e2cc4517a423f99efd1f4b0f817ca3d7e
       command: pytest -q
-      result: structural regression added before the literal FULL schema requirement
-      reason: prior schema allowed a pending FULL review to omit identity
+      result: structural regression failed before requirement
+      reason: prior schema allowed the pending FULL identity shape
     green:
       commit: 666cf96f88faaf2445ba8313ee715cad306db6c0
       command: pytest -q
-      result: mandatory FULL identity behavior implemented; exposed separate v1 compatibility conflict
+      result: historical identity behavior implemented
   - id: TDD-004
-    title: Preserve forge/change@1 compatibility while introducing mandatory FULL evidence
-    requirements: [FR-002, FR-014, INV-001]
-    behavior: forge/change@1 remains backward compatible while forge/change@2 carries mandatory FULL review evidence
+    title: Preserve forge/change@1 compatibility while introducing new evidence shape
+    requirements: [historical-pre-resolution-model]
+    behavior: historical schema-suffix compatibility attempt later superseded by R001
     red:
       valid: true
       commit: 4a6b5d64be0ccc7b26456fe5b8b9d06170a7bd63
       command: pytest -q
-      result: historical FULL forge/change@1 manifests failed canonical schema validation
-      reason: mandatory evidence had been applied retroactively to the existing schema identity
+      result: historical FULL manifests failed canonical schema validation
+      reason: mandatory evidence had been applied retroactively to forge/change@1
     green:
       commit: c2c0391b9381044449fcce45225f306f9bf57818
       command: pytest -q
       result: 168 passed
-    notes:
-      - Resolved by introducing forge/change@2 and preserving historical forge/change@1 instances without fabricated evidence.
   - id: TDD-005
     title: Reject contaminated Strict Review Execution and Execution Context
-    requirements: [FR-001, FR-003, FR-004, FR-005, FR-008, FR-009, FR-012]
-    behavior: Strict Review requires both a Reviewer Execution and Reviewer Execution Context distinct from the Implementation/Resolution execution and context
+    requirements: [historical-pre-resolution-model]
+    behavior: historical cycle establishing execution/context as the independence property
     red:
       valid: true
       commit: 3d4883d0a0329a629026f22e4c314ffa04b2bfed
@@ -77,23 +70,51 @@ cycles:
       job_id: 95047717053
       command: pytest -q
       result: 3 failed, 166 passed
-      reason: >-
-        forge/change@2 still rejected the provider-independent execution/context fields because
-        it expected session_ref fields; forge validate also incorrectly accepted distinct
-        execution IDs sharing one context and accepted a shared execution with superficially
-        distinct context IDs.
-      specification_drift_commit: 4ff1295011b5f41f89ed7e47a903f9b2330f86ec
+      reason: schema and validator did not yet enforce both provider-independent execution/context boundaries
     green:
       commit: fec5ac22c3ef62c213526ae3675f105a2a1afd45
       workflow_run_id: 31899652483
       job_id: 95048292204
       command: pytest -q
       result: 169 passed in 3.79s
-    notes:
-      - JSON Schema now owns the closed execution/context evidence shape.
-      - CLI semantic validation independently rejects equal execution IDs or equal context IDs with C-026.
-      - A Role switch inside one conversational/reasoning context therefore cannot satisfy Strict Review.
+  - id: TDD-006
+    title: Resolve Protocol boundary and provenance findings R001-R004
+    requirements: [FR-001, FR-002, FR-003, FR-004, FR-005, FR-006, FR-007, FR-008, FR-009, FR-010, FR-011, FR-012, FR-014, FR-015]
+    behavior: >-
+      Protocol 1 remains historically valid; Protocol 2 requires revision-bound recorded
+      provenance across FAST/STANDARD/FULL and rejects forged, missing, partial, wrong-revision,
+      shared-boundary, contaminated re-review, and downgrade cases.
+    red:
+      valid: true
+      commit: d71435f9b2fca5c5829121ff45e0059e67526d84
+      workflow_run_id: 31900774999
+      job_id: 95051092652
+      command: pytest -q
+      result: failed in Run tests; environment/setup steps passed
+      reason: >-
+        Production still supported only Protocol 1, had no execution provenance schema or
+        revision-aware Review Iterations, skipped FAST C-026 enforcement, and accepted arbitrary
+        unequal reviewer/resolver strings.
+    green:
+      commit: 5806346ab38e0f7b624c67e17981724bf2e90b44
+      command: pytest -q
+      result: pending final CI confirmation
+  - id: TDD-007
+    title: Preserve Adapter projection semantics across Protocol versions
+    requirements: [FR-016]
+    behavior: Protocol 1 projection must not receive Protocol 2 provenance requirements; Protocol 2 applies them to every Flow
+    red:
+      valid: true
+      commit: bb43fae06670e90f5ed07a63f154ec0f541c854d
+      command: pytest -q
+      result: expected failure because CodexProjectionInput had no protocol_id boundary
+      reason: projection could not distinguish Protocol 1 from Protocol 2
+    green:
+      commit: c25125ffc4bdf3ed9f6bf0f4bade5424ddc3c762
+      command: pytest -q
+      result: pending final CI confirmation
 notes:
-  - TDD-001 and TDD-002 remain as historical evidence from CHG-0008's superseded session-shaped design; they are not represented as the final invariant.
-  - TDD-005 is the regression cycle for the accepted Specification Drift discovered by the Laravel stress test.
-  - TDD compliance covers implementation behavior only. Strict Review remains a separate mandatory Gate and is intentionally pending for an independent Execution Context.
+  - TDD-001 through TDD-005 are retained as historical implementation evidence and are not rewritten as the final model.
+  - TDD-006 and TDD-007 are the Resolution cycles for Strict Review Iteration 1.
+  - Final GREEN counts are recorded in verification.md after the final Resolution HEAD is executed.
+  - TDD compliance does not satisfy Strict Re-review; Review Iteration 2 remains independent and pending.

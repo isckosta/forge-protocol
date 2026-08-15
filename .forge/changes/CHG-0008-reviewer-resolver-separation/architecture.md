@@ -6,50 +6,30 @@ change: CHG-0008
 status: complete
 ---
 
-# Architecture — Verifiable Review Independence
+# Architecture — Protocol 2 Review Provenance
 
-## Decision boundaries
+## Version boundary
 
-Canonical semantics remain in the Protocol schema, Review Policy, Engineering Contract, and Specification. The CLI adds semantic C-026 guards at the existing validation boundary rather than creating a lifecycle engine. Harness Adapters project the invariant into native execution terminology but do not redefine it.
+Protocol 1 remains rooted at `protocol/specification.md`, `protocol/contract/engineering.md`, and `protocol/policies/review.yml` with its historical conceptual Role-separation meaning. Protocol 2 canonical resources live under `protocol/versions/2/`. The CLI resolves `.forge/forge.yml -> forge.protocol` before selecting version-specific Contract semantics. Shared Flow definitions remain shared where their lifecycle shape did not change.
 
-## Core model
+## Provenance ledger
 
-Forge models review independence with provider-independent concepts:
+Protocol 2 adds `.forge/changes/<change>/provenance.yml` using `forge/execution-provenance@1`. Records are provider-independent and contain Role, Execution ID, Context ID, capture time, revision binding, and source metadata. Harness-native identifiers are optional `source` references rather than Core field names.
 
-- **Execution**: one concrete invocation performing work;
-- **Execution Context**: transient conversational, reasoning, or equivalent non-repository state visible to that Execution.
+Assurance is explicit: `claimed` is a declaration, `recorded` is durable repository-native provenance, and `verified` adds observation by a Harness/Adapter/operator or equivalent mechanism. `review_passed` requires at least `recorded`. The Core verifies consistency and linkage; it does not claim cryptographic truth for a self-recorded record.
 
-`review.reviewer_identity` is a closed object containing:
+## Review iterations
 
-- `actor_type`: `human | agent`;
-- `execution_id`: durable Reviewer execution reference;
-- `context_id`: durable Reviewer context reference;
-- `resolver_execution_id`: Implementation/Resolution execution reference;
-- `resolver_context_id`: Implementation/Resolution context reference.
+`forge/change@2` is the active Protocol 2 Change shape and records `review.iterations[]`. A passed iteration references `subject_provenance` and `reviewer_provenance` for the same revision. The subject is the Implementation or Resolution that produced that revision. This replaces the incorrect global Resolver fields and supports repeated Review → Resolution → Re-review cycles.
 
-`forge/change@2` requires the complete object for FULL Changes. `forge/change@1` keeps it optional for compatibility.
+## Validation
 
-## Validation layers
+Protocol 2 C-026 validation applies equally to FAST, STANDARD, and FULL. It rejects missing provenance, nonexistent references, insufficient assurance, wrong Roles, wrong revision linkage, shared Execution, shared Context, partial records, and active schema downgrade. Completed historical Protocol 1 `forge/change@1` records are explicitly preserved.
 
-1. **Structural — JSON Schema.** Owns presence, closure, actor enum, identifier type, and non-empty values.
-2. **Semantic — CLI validator.** Owns C-026 independence checks. Equality of Reviewer/Resolver execution IDs is invalid. Equality of Reviewer/Resolver context IDs is independently invalid. One distinct identifier cannot compensate for equality of the other.
+## Adapter boundary
 
-This makes the failure mode explicit: `review-exec-2` using the Resolver's conversation context is still contaminated, while a claimed new context inside the same concrete execution is still self-review.
+Codex projection input now carries a Protocol identifier. Protocol 2 projects provenance/re-review instructions for every Flow; Protocol 1 does not receive those stronger semantics. The Adapter interval is widened to support Protocols 1 and 2 without redefining either.
 
-## Resolution and re-review
+## CHG-0008 historical gap
 
-The Resolver for blocking Findings must run outside the Reviewer's Execution Context. After resolution, acceptance requires a re-review Execution and Context independent from that Resolution. The same Reviewer actor may re-review in a fresh compliant context.
-
-## Adapter projection
-
-Codex STANDARD/FULL projections instruct the harness to create a real execution/context boundary, record all four identifiers, treat Role switching in the same conversation as self-review, and repeat the independence boundary for re-review after blocking Resolution.
-
-Harnesses may call these primitives runs, threads, sessions, conversations, invocations, or workspaces. Adapters map those native references into Forge `execution_id`/`context_id`; Core never depends on the Harness term "session".
-
-## Compatibility boundary
-
-The artifact-shape break remains isolated to `forge/change@2`. Historical `forge/change@1` manifests remain valid and are not retroactively edited. No historical reviewer evidence is fabricated.
-
-## Trade-offs
-
-Execution-context isolation reduces context contamination and confirmation bias but does not guarantee epistemic independence. Same-model isolated executions may retain correlated blind spots. Different-model or human-only review can be stricter project policy, not a Core requirement.
+No provenance is fabricated for the original Implementation or Strict Review Iteration 1. This Resolution records a new `resolution-001` record prospectively. Review Iteration 2 references that subject record but remains pending until a distinct Reviewer Execution/Context records its own provenance.

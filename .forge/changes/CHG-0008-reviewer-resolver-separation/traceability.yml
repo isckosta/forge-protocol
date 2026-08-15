@@ -1,21 +1,25 @@
 schema: forge/traceability@1
 change: CHG-0008
 requirements:
-  FR-001: {tasks: [T-009], tests: [TDD-005], evidence: change_v2_schema}
-  FR-002: {tasks: [T-003, T-004, T-009], tests: [TDD-003, TDD-004, TDD-005], evidence: schema_compatibility}
-  FR-003: {tasks: [T-007, T-008, T-010], tests: [TDD-005], evidence: cli_c026_execution_check}
-  FR-004: {tasks: [T-007, T-008, T-010], tests: [TDD-005], evidence: cli_c026_context_check}
-  FR-005: {tasks: [T-005, T-006, T-011], tests: [TDD-005], evidence: contract_and_specification}
-  FR-006: {tasks: [T-011], evidence: contract_and_specification}
-  FR-007: {tasks: [T-011, T-012, T-013], evidence: policy_contract_projection}
-  FR-008: {tasks: [T-011, T-012], tests: [TDD-005], evidence: self_review_semantics}
-  FR-009: {tasks: [T-006, T-011, T-013], tests: [TDD-005], evidence: provider_independent_projection}
-  FR-010: {tasks: [T-012], evidence: review_policy_schema}
-  FR-011: {tasks: [T-013], tests: [TDD-005], evidence: codex_unit_projection}
-  FR-012: {tasks: [T-009, T-010], tests: [TDD-005], evidence: schema_cli_layering}
-  FR-013: {tasks: [T-014], evidence: adr_0008}
-  FR-014: {tasks: [T-003, T-004], tests: [TDD-004], evidence: historical_file_audit}
-  FR-015: {tasks: [T-011], evidence: specification_completion_rule}
-  INV-001: {tasks: [T-004, T-017], evidence: historical_and_review_identity_audit}
-  INV-002: {tasks: [T-017, T-018, T-019], evidence: independent_strict_review}
-  INV-003: {tasks: [T-014, T-016, T-017], evidence: repository_native_artifacts}
+  FR-001: {tasks: [T-020, T-024, T-025], tests: [TDD-006], evidence: protocol_1_2_boundary}
+  FR-002: {tasks: [T-024, T-025, T-026], tests: [TDD-006], evidence: version_axes}
+  FR-003: {tasks: [T-024, T-027], tests: [TDD-006], evidence: historical_compatibility}
+  FR-004: {tasks: [T-025, T-027, T-028], tests: [TDD-006], evidence: protocol_resolution}
+  FR-005: {tasks: [T-026, T-030], tests: [TDD-006], evidence: execution_provenance_schema}
+  FR-006: {tasks: [T-020, T-025, T-026, T-031], tests: [TDD-006], evidence: assurance_levels}
+  FR-007: {tasks: [T-026, T-027], tests: [TDD-006], evidence: minimum_recorded_assurance}
+  FR-008: {tasks: [T-026, T-027], tests: [TDD-006], evidence: revision_binding}
+  FR-009: {tasks: [T-027], tests: [TDD-006], evidence: execution_independence}
+  FR-010: {tasks: [T-027], tests: [TDD-006], evidence: context_independence}
+  FR-011: {tasks: [T-022, T-027], tests: [TDD-006], evidence: all_flow_regressions}
+  FR-012: {tasks: [T-026, T-027], tests: [TDD-006], evidence: iteration_aware_review}
+  FR-013: {tasks: [T-025, T-031], evidence: protocol2_contract}
+  FR-014: {tasks: [T-022, T-027], tests: [TDD-006], evidence: forged_evidence_regression}
+  FR-015: {tasks: [T-022, T-027], tests: [TDD-006], evidence: downgrade_regression}
+  FR-016: {tasks: [T-023, T-029], tests: [TDD-007], evidence: adapter_protocol_boundary}
+  FR-017: {tasks: [T-025, T-026, T-029], evidence: provider_independent_local_core}
+  FR-018: {tasks: [T-002, T-030, T-035], evidence: resolution_provenance_and_pending_rereview}
+  INV-001: {tasks: [T-002, T-030], evidence: explicit_historical_gap}
+  INV-002: {tasks: [T-022, T-027], tests: [TDD-006], evidence: provenance_reference_validation}
+  INV-003: {tasks: [T-024, T-025], tests: [TDD-006, TDD-007], evidence: protocol1_preservation}
+  INV-004: {tasks: [T-035, T-036], evidence: pending_independent_rereview}

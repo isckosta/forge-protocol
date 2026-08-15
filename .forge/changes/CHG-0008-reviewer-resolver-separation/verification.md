@@ -3,69 +3,39 @@ forge:
   artifact: verification
   schema: 1
 change: CHG-0008
-status: passed
+status: active
 ---
 
-# Verification — Verifiable Review Independence
+# Verification — Strict Review Iteration 1 Resolution
 
 ## Scope
 
-Verification covers the accepted Specification Drift, `forge/change@1` compatibility, `forge/change@2` review-evidence structure, C-026 semantic validation, Review Policy, canonical Contract/Specification, Codex projection, ADR, distribution packaging, and historical Change preservation.
+Verification covers R001-R004: integer Protocol versioning, Protocol 1 preservation, Protocol 2 provenance and assurance semantics, revision-aware Review Iterations, all-Flow C-026 enforcement, forged-evidence rejection, downgrade resistance, Protocol-aware Contract/Doctor resolution, and Protocol-aware Codex projection.
 
-## Stress-test evidence
+## RED evidence
 
-The Laravel Forge stress test demonstrated the defect in the previous model: one conversational context was able to act as Resolver, switch to Reviewer, resolve its own findings, switch back to Reviewer, and approve the remediation. This established that Role declaration and session-shaped identity were insufficient proxies for independence.
+TDD-006 test-only commit `d71435f9b2fca5c5829121ff45e0059e67526d84` produced GitHub Actions Tests run `31900774999`, job `95051092652`: **FAIL** at `Run tests`. Checkout, Python setup, pip upgrade, and test dependency installation all passed, so the failure is a valid behavioral RED rather than environment/setup failure. Distribution Verification run `31900775010` passed on the same test-only revision, further isolating the RED to the new expectations.
 
-`specification-drift.md` records the corrected invariant at commit `4ff1295011b5f41f89ed7e47a903f9b2330f86ec`, before the amended executable regression tests and implementation.
+TDD-007 test-only commit `bb43fae06670e90f5ed07a63f154ec0f541c854d` adds the Protocol-aware Adapter projection boundary before production support for `protocol_id` exists.
 
-## TDD-005 RED
+## Resolution implementation
 
-Commit `3d4883d0a0329a629026f22e4c314ffa04b2bfed` introduced the provider-independent execution/context expectations before implementation.
+Production revisions:
 
-- Tests run: `31899409371`
-- Job: `95047717053`
-- Command: `pytest -q`
-- Result: **3 failed, 166 passed**
+- `c25125ffc4bdf3ed9f6bf0f4bade5424ddc3c762` — Protocol 2, provenance ledger, revision-aware Review, validation and Adapter boundary;
+- `5806346ab38e0f7b624c67e17981724bf2e90b44` — Doctor resolves the configured Protocol Contract.
 
-The failures were causal:
+## Finding resolution evidence
 
-1. `forge/change@2` still rejected `execution_id`, `context_id`, `resolver_execution_id`, and `resolver_context_id` because the schema still expected session-shaped fields.
-2. `forge validate` incorrectly accepted distinct execution IDs that shared the same context.
-3. `forge validate` incorrectly accepted one shared execution with superficially distinct context IDs.
+- **R001:** Protocol 1 canonical Contract/Specification/Review Policy and `forge/change@1` are restored to historical semantics; Protocol 2 lives under `protocol/versions/2/`, CLI supports integer Protocols 1 and 2, and compatibility documentation states the breaking boundary explicitly.
+- **R002:** `forge/execution-provenance@1` provides durable provider-independent execution records. CHG-0008 does not backfill historical Implementation/Review identifiers; this Resolution prospectively records `resolution-001`.
+- **R003:** Protocol 2 C-026 enforcement is selected after project Protocol resolution and applies to FAST, STANDARD, and FULL. Active Protocol 2 schema downgrade is rejected; completed Protocol 1 history is preserved.
+- **R004:** arbitrary unequal strings no longer satisfy the Gate. Passed Review Iterations resolve subject/Reviewer references against `provenance.yml`, require at least `recorded` assurance, require correct Roles and revision binding, and reject shared Execution/Context. Documentation explicitly limits Core claims: self-recorded provenance is durable consistency evidence, not cryptographic/external proof; `verified` is the stronger observer-backed level.
 
-Dependency/setup and the remaining 166 tests succeeded, so this is valid RED evidence rather than an environment failure.
+## Final execution
 
-## GREEN
-
-The final model implements:
-
-- closed provider-independent `reviewer_identity` evidence using actor, Execution, and Execution Context identifiers;
-- C-026 rejection when Reviewer and Resolver share an `execution_id`;
-- independent C-026 rejection when Reviewer and Resolver share a `context_id`;
-- explicit canonical rule that Role switching in one conversation/reasoning context is self-review, not Strict Review;
-- self-review permitted as a quality activity but prohibited from satisfying the Strict Review Gate;
-- blocking-finding Resolution outside the Reviewer context;
-- independent re-review after blocking Resolution;
-- same Harness/provider/model/agent permitted only when real Execution/Context boundaries exist;
-- provider-independent Core terminology with Harness Adapter mapping to native run/thread/session/conversation/workspace concepts;
-- Completion blocked when required Review independence cannot be durably demonstrated.
-
-At commit `fec5ac22c3ef62c213526ae3675f105a2a1afd45`:
-
-- Tests run `31899652483`, job `95048292204`: **169 passed in 3.79s**.
-- Distribution Verification run `31899652482`, job `95048292167`: **PASS**.
-- Isolated-wheel verification passed CLI version, `init`/`validate`/`doctor`, Adapter schema/load probes, and runtime dependency inspection.
-
-## Compatibility
-
-`forge/change@1` remains backward compatible and historical completed Changes are not modified. The structurally mandatory FULL evidence remains isolated to `forge/change@2`, so no historical review identity is fabricated.
+Final `pytest -q`, `forge validate`, `forge doctor`, and Distribution Verification results are populated after this artifact set is committed and the final Resolution HEAD executes.
 
 ## Strict Review boundary
 
-Strict Review is intentionally **PENDING**. This Resolver Execution cannot satisfy the newly implemented C-026 invariant by switching its Role to Reviewer. It therefore does not create `review.md`, does not invent `reviewer_identity`, and does not assert `review_passed`.
-
-The next valid step requires a genuinely independent Review Execution and Execution Context. If that review produces blocking Findings, Resolution must occur outside the Reviewer context and acceptance must then undergo an independent re-review from that Resolution Execution.
-
-## Result
-
-Verification **PASSED**. All implementation requirements introduced by the accepted drift are implemented and verified, the canonical test suite is green, and distribution verification is green. CHG-0008 is ready for — but not through — the independent Strict Review Gate.
+Verification success, when obtained, will only establish that the Resolution implementation and distribution checks are green. It will not constitute Strict Re-review. Review Iteration 2 remains `pending` and must be executed in a Reviewer Execution/Context independent from `resolution-001`.

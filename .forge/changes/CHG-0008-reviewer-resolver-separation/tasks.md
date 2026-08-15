@@ -8,22 +8,27 @@ status: active
 
 # Tasks — Verifiable Review Independence
 
-- [x] T-001 Inspect canonical FULL flow, Review Policy, Change schemas, Contract, Specification, validator, Codex projection, and CHG-0007 structure.
-- [x] T-002 Establish initial Reviewer/Resolver separation RED evidence.
-- [x] T-003 Introduce `forge/change@2` so mandatory FULL review evidence does not invalidate historical `forge/change@1` Changes.
-- [x] T-004 Preserve completed historical Change files without fabricated reviewer evidence.
-- [x] T-005 Record Specification Drift from the Laravel stress test showing same-context Role switching can self-review.
-- [x] T-006 Define provider-independent Execution and Execution Context as the actual independence boundary.
-- [x] T-007 Add test-first regressions for shared context despite distinct executions and shared execution despite distinct context identifiers.
-- [x] T-008 Observe valid RED: run `31899409371`, job `95047717053`, `3 failed, 166 passed`.
-- [x] T-009 Replace session-shaped reviewer identity with `execution_id`, `context_id`, `resolver_execution_id`, and `resolver_context_id` evidence.
-- [x] T-010 Enforce C-026 independently for shared Execution and shared Execution Context.
-- [x] T-011 Define Role switching/self-review semantics and independent blocking-finding Resolution/re-review rules in Contract and Specification.
-- [x] T-012 Update Review Policy and its schema to require execution-context independence for every Flow.
-- [x] T-013 Update Codex projection to project the independent Execution/Context boundary without redefining Core semantics.
-- [x] T-014 Update ADR, Architecture, Specification, CHANGELOG, TDD evidence, and Verification for the corrected invariant.
-- [x] T-015 Confirm GREEN: Tests run `31899652483`, job `95048292204`, `169 passed`.
-- [x] T-016 Confirm Distribution Verification run `31899652482`, job `95048292167` passes from an isolated wheel.
-- [ ] T-017 Obtain Strict Review from an Execution and Execution Context independent from this Resolver execution; only that review may create `review.md` and real review identity evidence.
-- [ ] T-018 If blocking Findings exist, resolve them outside the Reviewer context and obtain an independent re-review from the Resolution Execution before acceptance.
-- [ ] T-019 Complete CHG-0008 only after compliant Review evidence is durably recorded.
+## Historical implementation and Strict Review
+
+- [x] T-001 Preserve original CHG-0008 TDD and implementation history.
+- [x] T-002 Preserve Strict Review Iteration 1 REQUEST CHANGES and findings R001-R004.
+
+## Resolution Iteration 1
+
+- [x] T-020 Record pre-implementation Specification Drift for R001-R004.
+- [x] T-021 Add RED regressions for Protocol 1 compatibility and Protocol 2 review provenance.
+- [x] T-022 Add RED regressions for FAST/STANDARD/FULL enforcement, forged evidence, wrong revision, partial provenance, shared Execution/Context, re-review contamination, and downgrade resistance.
+- [x] T-023 Add RED regression preventing Protocol 2 semantics from leaking into Protocol 1 Codex projection.
+- [x] T-024 Restore Protocol 1 Contract, Specification, Review Policy, and `forge/change@1` historical semantics.
+- [x] T-025 Introduce integer Protocol 2 canonical Specification/Contract/Review Policy resources.
+- [x] T-026 Introduce `forge/execution-provenance@1` and Protocol 2 iteration-aware `forge/change@2`.
+- [x] T-027 Implement Protocol-aware C-026 validation and anti-downgrade behavior for FAST/STANDARD/FULL.
+- [x] T-028 Implement Protocol-aware Contract resolution in validator and Doctor.
+- [x] T-029 Make Codex projection Protocol-aware and support Protocols 1–2.
+- [x] T-030 Record this Resolution Execution provenance prospectively as `resolution-001` without fabricating historical identifiers.
+- [x] T-031 Update Compatibility, ADR-0008, CHANGELOG, Specification, Architecture, Test Strategy, Plan, Traceability, and Knowledge Capture.
+- [ ] T-032 Confirm final `pytest -q` GREEN on Resolution HEAD.
+- [ ] T-033 Confirm final `forge validate` and `forge doctor` on Resolution HEAD.
+- [ ] T-034 Confirm final Distribution Verification / isolated wheel / Adapter loading on Resolution HEAD.
+- [ ] T-035 Obtain independent Strict Re-review Iteration 2 from a Reviewer Execution and Execution Context independent from `resolution-001`.
+- [ ] T-036 Complete CHG-0008 only if that independent Reviewer accepts the Resolution and all Completion Gates are satisfied.

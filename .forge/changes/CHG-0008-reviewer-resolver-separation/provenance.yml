@@ -1,0 +1,24 @@
+schema: forge/execution-provenance@1
+change: CHG-0008
+records:
+  - id: resolution-001
+    role: resolution
+    execution:
+      id: resolution-exec-chg0008-20260815-01
+      context_id: resolution-context-chg0008-20260815-01
+    recorded_at: 2026-08-15T18:27:15Z
+    revision:
+      id: chg-0008-resolution-001
+      commit: 5806346ab38e0f7b624c67e17981724bf2e90b44
+      description: >-
+        Resolution implementation revision introducing Protocol 2, revision-bound
+        execution provenance, all-Flow C-026 enforcement, and protocol-aware Doctor.
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: chatgpt
+      statement: >-
+        Core-local Forge execution and context identifiers were allocated and recorded
+        during this Resolution execution. No provider-native execution/context identifier
+        was exposed to the repository adapter, so this record is durable self-recorded
+        provenance, not external or cryptographic verification.

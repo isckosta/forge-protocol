@@ -6,39 +6,29 @@ change: CHG-0008
 status: approved
 ---
 
-# Test Strategy — Verifiable Reviewer/Resolver Separation
+# Test Strategy — Strict Review Iteration 1 Resolution
 
-## TDD targets
+## TDD cycles
 
-The mandatory behavioral RED uses `tests/fixtures/full-change-agent-same-session.yml` exactly as specified: `actor_type: agent_same_session`, `session_ref: resolver-session`, and `resolver_session_ref: resolver-session`. A dedicated structural assertion first validates this fixture successfully against `change.schema.json`; the CLI test then requires `forge validate` to exit 2 and name C-026.
+Resolution behavior is test-first. The primary RED commit `d71435f9b2fca5c5829121ff45e0059e67526d84` introduces Protocol 1 compatibility, Protocol 2 provenance, all-Flow enforcement, forged-evidence, revision-binding, shared-boundary, re-review, partial-provenance, and downgrade regressions before production implementation. GitHub Actions run `31900774999`, job `95051092652`, reached the test step and failed while environment/setup succeeded.
 
-A second semantic regression mutates only `actor_type` to `agent_isolated_session` while retaining identical session references. It remains structurally valid and MUST fail `forge validate` with C-026 because the claimed isolation is inconsistent with the evidence.
+A second test-first commit `bb43fae06670e90f5ed07a63f154ec0f541c854d` adds the Adapter version-boundary regression before `CodexProjectionInput` gains Protocol-aware behavior: Protocol 1 must not receive Protocol 2 provenance instructions; Protocol 2 must project them for FAST, STANDARD, and FULL.
 
-A structural regression removes `reviewer_identity` from a FULL manifest whose Review is still `pending`. JSON Schema MUST reject it, proving the FULL requirement does not depend on Review status.
+## Required adversarial coverage
 
-## RED validity
+- Protocol 1 remains valid under pre-CHG-0008 review semantics.
+- Protocol 2 passed Review without provenance fails for FAST, STANDARD, and FULL.
+- Pairwise-distinct fake identifiers with no provenance record fail.
+- Missing/partial provenance fails.
+- Provenance bound to the wrong revision fails.
+- Shared subject/Reviewer Execution fails.
+- Shared subject/Reviewer Context fails.
+- Re-review sharing Resolution Context fails.
+- Active Protocol 2 `forge/change@1` downgrade fails.
+- Completed historical Protocol 1 `forge/change@1` remains valid.
+- Independent recorded provenance succeeds for FAST, STANDARD, and FULL.
+- Protocol 1 Adapter projection remains free of Protocol 2 semantics.
 
-A valid semantic RED must fail at the behavioral assertion because the pre-change CLI validator accepts the structurally valid fixture. Schema errors, malformed YAML, fixture errors, import failures, dependency failures, and unrelated environment failures do not count as RED per C-011.
+## GREEN and verification
 
-The original exact-fixture RED is durably recorded by the test-only commit and failing GitHub Actions run. The additional identical-reference semantic case was also introduced before its production check and produced a failing CI run.
-
-## GREEN
-
-Implement only the semantic C-026 checks missing from the CLI validator while leaving structural presence/type enforcement to JSON Schema. Re-run targeted CLI tests and the complete suite.
-
-## Regression coverage
-
-- JSON Schema tests distinguish structural failure from semantic C-026 failure.
-- Contract tests validate canonical YAML instances against their declared schemas.
-- Review Policy schema coverage protects the Flow-proportional policy shape.
-- Codex unit coverage asserts STANDARD/FULL generated instructions contain isolated-review and distinct-session-reference requirements.
-- Distribution Verification protects packaged/offline behavior.
-- Full `pytest -q` protects unrelated CLI, Adapter, schema, and integration behavior.
-
-## Expected compatibility signal
-
-The literal revised FULL schema requirement is expected to make canonical-instance validation fail for historical FULL `forge/change@1` manifests that cannot be retroactively edited under the Change's non-goals. That failure is not to be suppressed or reclassified as success; it is evidence of the unresolved C-045/C-046 versioning conflict.
-
-## Manual/document review
-
-Verify exact C-026 wording, Specification §25 alignment, ADR operational-versus-epistemic language, CHANGELOG breaking note, and absence of `review.md` for CHG-0008.
+GREEN requires the complete `pytest -q` suite, then repository `forge validate`, `forge doctor`, and isolated Distribution Verification/wheel/Adapter loading on the final Resolution HEAD. Passing tests are necessary but are not treated as Strict Review acceptance.
