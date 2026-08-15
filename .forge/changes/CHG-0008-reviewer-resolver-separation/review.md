@@ -253,3 +253,77 @@ R005: **RESOLVED**.
 New finding: **CHG-0008-R006 — MAJOR**.
 
 Strict Review Iteration 3 therefore fails with **REQUEST CHANGES**. CHG-0008 remains in `strict_review`. A new independent Resolver execution must address R006; this Reviewer execution must not implement that Resolution or approve its own finding.
+
+---
+
+## Strict Review Iteration 4
+
+### Verdict
+
+**REQUEST CHANGES**
+
+Initial PR HEAD: `0881cb6cf2898e1f0850ec341248a74a11a99bb8`.
+
+Frozen Resolution 3 subject: `4df2af728eb9e0f6225bda87762dbaf236fd3671`.
+
+Logical revision: `chg-0008-resolution-003`.
+
+Reviewer provenance: `review-004`, Execution `review-exec-chg0008-20260815-04`, Execution Context `review-context-chg0008-20260815-04`, assurance `recorded`, observed by `self`.
+
+Subject provenance: `resolution-003`, Execution `resolution-exec-chg0008-20260815-03`, Execution Context `resolution-context-chg0008-20260815-03`, assurance `recorded`, observed by `self`.
+
+### Prior finding re-evaluation
+
+R001: **RESOLVED** — Protocol 1 compatibility boundary remains preserved by integer Protocol 2.
+
+R002: **RESOLVED** — prospective Resolution/Review provenance remains present without fabricating historical execution evidence.
+
+R003: **RESOLVED** — Protocol 2 enforcement remains Flow-independent across FAST/STANDARD/FULL.
+
+R004: **RESOLVED** — arbitrary unequal strings alone are insufficient; records, role, assurance, logical revision and Execution/Context separation remain enforced.
+
+R005: **RESOLVED** — subject and Reviewer immutable revision tuples and commit/immutable_ref consistency remain mechanically compared.
+
+R006: **RESOLVED for the dirty-workspace blind spot** — the validator now unions committed, staged, unstaged and Git-visible untracked deltas; rename/copy parsing preserves both source and destination; allowlisted paths must remain regular non-symlink files; Git errors fail closed through a `None` delta.
+
+### New finding
+
+#### CHG-0008-R007 — BLOCKER — Mutable allowlisted provenance can move the frozen subject and hide post-freeze reviewable mutations
+
+**Affected invariants:** C-026; Protocol 2 Review Policy `immutable_revision_binding_required`, `review_subject_freeze_required`, `post_freeze_subject_mutation_invalidates_binding`; concrete immutable revision binding; Completion integrity.
+
+**Location:** `src/forge_cli/validation/__init__.py::_validate_protocol2_review_provenance`, `_reviewable_workspace_delta`; review-control allowlist for `provenance.yml`.
+
+**Failure mode:** the validator loads the subject immutable Git commit from the current `provenance.yml` record and then computes the workspace delta from that commit. But `provenance.yml` itself is fully ignored by the review-control allowlist when it remains a regular non-symlink file. Existing subject provenance is therefore mechanically mutable after freeze. A post-freeze reviewable commit can be hidden by rewriting only allowlisted provenance so the subject record points to the newer commit; if Reviewer provenance is aligned to that newer commit, the concrete-binding comparison also passes.
+
+**Mechanical reproduction:** in a temporary Git repository, freeze subject `A`, commit a reviewable mutation to produce `B`, and run the exact helper semantics. With truthful `A`, `_reviewable_workspace_delta` reports `src/a.py`. Then modify only the allowlisted `provenance.yml` content to claim `B` as the subject and evaluate from `B`; the helper returns an empty delta. The provenance rewrite itself is ignored by the allowlist.
+
+**Impact:** the supposed immutable review subject is not immutable at the repository-native enforcement boundary. A Resolver or attacker can move the baseline forward after reviewable mutations and obtain a validator state that no longer proves the reviewed subject is the originally frozen Resolution. This can permit invalid Strict Review/Completion and directly defeats the central purpose of CHG-0008.
+
+**Required resolution:** review-control metadata may be appendable for new Review records, but existing subject provenance that defines a frozen immutable revision must itself be immutable or otherwise anchored to history in a way the validator verifies. The validator must reject any rewrite, replacement, deletion, or semantic mutation of the referenced subject provenance after its freeze. Add a causal RED/GREEN regression for provenance-baseline rewriting, including a case where both subject and Reviewer records are coherently forged forward.
+
+### Verification evidence before Reviewer-owned metadata
+
+- PR state: open, not merged, branch `feat/chg-0008-reviewer-resolver-separation`.
+- Initial HEAD `0881cb6cf2898e1f0850ec341248a74a11a99bb8` had `Tests` run `31904966498`: PASS.
+- Initial HEAD had `Distribution Verification` run `31904966494`: PASS; its job completed wheel build, isolated wheel-only install, offline CLI/version and `init -> validate -> doctor`, isolated Adapter schema/loader probe, and runtime dependency inspection successfully.
+- Commits after frozen subject and before Review changed only Change-local review-control metadata: `6449ad5667bb0a53e1de8ada512c3e4bc93160bb` modified `provenance.yml`; `0881cb6cf2898e1f0850ec341248a74a11a99bb8` prepared Iteration 4 metadata.
+- Local execution of the full repository `pytest -q`, `forge validate`, and `forge doctor` was not possible because this runtime has no mounted checkout and outbound DNS prevents cloning GitHub. A temporary local Git repository was used only for adversarial reproduction of the exact freeze helper semantics; no production code was modified.
+
+### Final Iteration 4 conclusion
+
+R001: **RESOLVED**.
+
+R002: **RESOLVED**.
+
+R003: **RESOLVED**.
+
+R004: **RESOLVED**.
+
+R005: **RESOLVED**.
+
+R006: **RESOLVED** for its original dirty-workspace defect.
+
+New finding: **CHG-0008-R007 — BLOCKER**.
+
+Strict Review Iteration 4 fails with **REQUEST CHANGES**. CHG-0008 remains in `strict_review`. A new independent Resolution Execution is required. This Reviewer execution does not alter implementation, Protocol, schemas, tests, workflows, or the frozen Resolution 3 subject and must not resolve or approve R007.
