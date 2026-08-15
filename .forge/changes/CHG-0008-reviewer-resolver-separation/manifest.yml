@@ -25,10 +25,10 @@ requirements: {total: 18, implemented: 18, verified: 18}
 tdd: {status: compliant, cycles: 8}
 verification: {status: passed}
 review:
-  status: pending
+  status: failed
   iteration: 3
   blockers: 0
-  majors: 0
+  majors: 1
   minors: 0
   observations: 0
   iterations:
@@ -45,8 +45,9 @@ review:
     - id: review-003
       revision: chg-0008-resolution-002
       subject_provenance: resolution-002
-      status: pending
-      evidence_gap: Independent Reviewer provenance does not exist yet; Strict Review Iteration 3 must review the frozen Resolution 2 subject.
+      reviewer_provenance: review-003
+      status: failed
+      evidence_gap: CHG-0008-R006 MAJOR: review-subject freeze detects committed post-freeze subject changes but ignores uncommitted, staged, and untracked reviewable mutations.
 documentation:
   impact_evaluated: true
   update_required: true
