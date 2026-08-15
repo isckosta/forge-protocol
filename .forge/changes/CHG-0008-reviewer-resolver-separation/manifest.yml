@@ -1,19 +1,8 @@
 schema: forge/change@2
 protocol: 2
-
-change:
-  id: CHG-0008
-  title: Verifiable Review Independence
-  kind: feature
-
-flow:
-  initial: full
-  current: full
-  escalations: []
-
-state:
-  current: strict_review
-
+change: {id: CHG-0008, title: Verifiable Review Independence, kind: feature}
+flow: {initial: full, current: full, escalations: []}
+state: {current: strict_review}
 artifacts:
   intent: complete
   discovery: complete
@@ -32,52 +21,33 @@ artifacts:
   review: complete
   documentation: complete
   knowledge_capture: complete
-
-requirements:
-  total: 18
-  implemented: 18
-  verified: 18
-
-tdd:
-  status: compliant
-  cycles: 7
-
-verification:
-  status: passed
-
+requirements: {total: 18, implemented: 18, verified: 18}
+tdd: {status: compliant, cycles: 8}
+verification: {status: passed}
 review:
-  status: failed
-  iteration: 2
+  status: pending
+  iteration: 3
   blockers: 0
-  majors: 2
+  majors: 0
   minors: 0
   observations: 0
   iterations:
     - id: review-001
       revision: 43170fa3eb0e16d9e848c3b26e44ef757906dffc
       status: failed
-      evidence_gap: >-
-        Strict Review Iteration 1 returned REQUEST CHANGES with R001-R004. Historical
-        Implementation/Resolver provenance was not captured when that revision was
-        produced, so no subject/reviewer provenance references are fabricated here.
+      evidence_gap: Strict Review Iteration 1 returned REQUEST CHANGES with R001-R004; historical provenance was not fabricated.
     - id: review-002
       revision: chg-0008-resolution-001
       subject_provenance: resolution-001
       reviewer_provenance: review-002
       status: failed
-      evidence_gap: >-
-        Strict Review Iteration 2 found that commit binding is not enforced by Core.
-        R004 is only partially resolved and CHG-0008-R005 is MAJOR: subject provenance
-        records commit 538a77dcd77aed0db0505a288fc1cbea0e69def3 while the reviewed Resolution
-        HEAD is f5a825917170ac684fefaa2b096a7ff83996d5cd, and the validator compares only
-        revision.id. A new independent Resolution and subsequent re-review are required.
-
+      evidence_gap: Strict Review Iteration 2 preserved R004 as partial and added R005 because logical revision binding did not enforce concrete commit equality.
+    - id: review-003
+      revision: chg-0008-resolution-002
+      subject_provenance: resolution-002
+      status: pending
+      evidence_gap: Independent Reviewer provenance does not exist yet; Strict Review Iteration 3 must review the frozen Resolution 2 subject.
 documentation:
   impact_evaluated: true
   update_required: true
-  reason: >-
-    Resolution introduces integer Protocol 2 for verifiable review independence while
-    restoring Protocol 1 historical semantics, adds a repository-native provenance
-    ledger and iteration-aware review model, and updates validation, Adapter projection,
-    compatibility, ADR, tests, and Change evidence. Strict Review Iteration 2 returned
-    REQUEST CHANGES because commit-level revision binding remains unenforced.
+  reason: Protocol 2 now distinguishes logical revision identity from concrete immutable review-subject binding and defines subject-freeze semantics.
