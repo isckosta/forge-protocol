@@ -88,11 +88,13 @@ def _instructions(flow_id: str, flow_content: str) -> str:
         lines.extend(
             (
                 "",
-                "### Reviewer/Resolver separation",
+                "### Reviewer/Resolver independence",
                 "",
-                "- Do not perform Strict Review in the Resolver session.",
-                "- Open or use an isolated review session (or a human review surface when policy requires) for Strict Review.",
-                "- Record `review.reviewer_identity.session_ref` for the Reviewer and `resolver_session_ref` for the Resolver; `session_ref` must be distinct from `resolver_session_ref`.",
+                "- Strict Review must run in an Execution and Execution Context independent from the implementation or resolution being reviewed.",
+                "- Merely changing Role inside the same conversation, thread, session, or reasoning context does not satisfy Strict Review independence.",
+                "- Record `review.reviewer_identity.execution_id` and `context_id` for the Reviewer, plus `resolver_execution_id` and `resolver_context_id` for the implementation/resolution execution.",
+                "- Both Reviewer identifiers must differ from their Resolver counterparts; distinct execution IDs do not rescue a shared context, and distinct context IDs do not rescue a shared execution.",
+                "- After blocking findings are resolved, re-review must again run independently from the Resolution Execution. Self-review may improve quality but never satisfies Strict Review.",
             )
         )
 
