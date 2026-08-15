@@ -6,62 +6,50 @@ change: CHG-0008
 status: complete
 ---
 
-# Architecture — Verifiable Reviewer/Resolver Separation
+# Architecture — Verifiable Review Independence
 
 ## Decision boundaries
 
-Canonical semantics remain in the Protocol schema, Review Policy, Engineering Contract, and Specification. The CLI adds semantic C-026 guards at the existing validation boundary rather than creating a new lifecycle engine. Codex remains a projection layer and emits execution instructions derived from Flow context; it does not redefine review policy.
+Canonical semantics remain in the Protocol schema, Review Policy, Engineering Contract, and Specification. The CLI adds semantic C-026 guards at the existing validation boundary rather than creating a lifecycle engine. Harness Adapters project the invariant into native execution terminology but do not redefine it.
 
-## Data model
+## Core model
 
-`review.reviewer_identity` is a closed object with three required fields:
+Forge models review independence with provider-independent concepts:
 
-- `actor_type`: `human | agent_isolated_session | agent_same_session`;
-- `session_ref`: non-empty durable Reviewer execution reference;
-- `resolver_session_ref`: non-empty durable Resolver execution reference.
+- **Execution**: one concrete invocation performing work;
+- **Execution Context**: transient conversational, reasoning, or equivalent non-repository state visible to that Execution.
 
-For every Change where `flow.current == full`, JSON Schema requires the complete object.
+`review.reviewer_identity` is a closed object containing:
+
+- `actor_type`: `human | agent`;
+- `execution_id`: durable Reviewer execution reference;
+- `context_id`: durable Reviewer context reference;
+- `resolver_execution_id`: Implementation/Resolution execution reference;
+- `resolver_context_id`: Implementation/Resolution context reference.
+
+`forge/change@2` requires the complete object for FULL Changes. `forge/change@1` keeps it optional for compatibility.
 
 ## Validation layers
 
-Validation is deliberately split into two responsibilities:
+1. **Structural — JSON Schema.** Owns presence, closure, actor enum, identifier type, and non-empty values.
+2. **Semantic — CLI validator.** Owns C-026 independence checks. Equality of Reviewer/Resolver execution IDs is invalid. Equality of Reviewer/Resolver context IDs is independently invalid. One distinct identifier cannot compensate for equality of the other.
 
-1. **Structural — JSON Schema.** `change.schema.json` owns presence, object closure, actor enum, string type, and non-empty session references. A FULL manifest with no `reviewer_identity`, or a partial identity object, fails here before semantic C-026 evaluation.
-2. **Semantic — CLI validator.** `forge validate` owns claims that are structurally representable but operationally inconsistent. For FULL, `agent_same_session` fails C-026. For any other actor type, identical `session_ref` and `resolver_session_ref` also fail C-026 because the evidence contradicts the claimed separation.
+This makes the failure mode explicit: `review-exec-2` using the Resolver's conversation context is still contaminated, while a claimed new context inside the same concrete execution is still self-review.
 
-The exact mandatory RED fixture is structurally valid, so its CLI failure is evidence of the semantic layer rather than malformed input.
+## Resolution and re-review
+
+The Resolver for blocking Findings must run outside the Reviewer's Execution Context. After resolution, acceptance requires a re-review Execution and Context independent from that Resolution. The same Reviewer actor may re-review in a fresh compliant context.
 
 ## Adapter projection
 
-The Codex projector receives `flow_id`. For STANDARD/FULL it appends reviewer/resolver instructions requiring a separate review execution and recorded session references, with Reviewer `session_ref` distinct from Resolver `resolver_session_ref`. FAST output is not changed by this behavior.
+Codex STANDARD/FULL projections instruct the harness to create a real execution/context boundary, record all four identifiers, treat Role switching in the same conversation as self-review, and repeat the independence boundary for re-review after blocking Resolution.
 
-## Compatibility boundary (resolved via schema versioning)
+Harnesses may call these primitives runs, threads, sessions, conversations, invocations, or workspaces. Adapters map those native references into Forge `execution_id`/`context_id`; Core never depends on the Harness term "session".
 
-The literal FULL structural requirement would have made previously valid historical FULL
-`forge/change@1` manifests invalid under the updated schema, conflicting with Protocol 1
-C-045/C-046 and with canonical-instance validation, since the Change forbids retroactively
-editing completed records.
+## Compatibility boundary
 
-This is resolved by isolating the break to a new schema suffix rather than the existing one,
-exactly as `protocol/compatibility.md` already prescribes ("An individual artifact shape may
-instead require a new schema suffix when the break is limited to that artifact"):
-
-- `protocol/schemas/change.schema.json` (`forge/change@1`) is restored to its pre-Change shape:
-  `reviewer_identity` remains a defined, optional property; no `allOf` forces its presence.
-  Every existing conforming instance — historical Changes and CHG-0008's own in-progress
-  manifest — stays valid.
-- `protocol/schemas/change-v2.schema.json` (`forge/change@2`) is new. It is byte-identical to
-  v1 except for the `schema` const and the `allOf`/`if`/`then` requiring `reviewer_identity`
-  whenever `flow.current == full`, unconditional on review status (matching AC-004 literally).
-- `protocol/schemas/catalog.yml` registers `forge/change@2` alongside `forge/change@1`.
-- The RED fixture (`tests/fixtures/full-change-agent-same-session.yml`) declares
-  `schema: forge/change@2`, since it exists specifically to exercise the new mandatory
-  behavior. A regression test (`test_forge_change_v1_does_not_require_reviewer_identity_for_full`)
-  pins the opposite behavior for v1 so the two schemas cannot silently reconverge.
-
-No Protocol version bump was needed: Protocol, Schema, CLI, and Adapter versions are
-independent axes per `compatibility.md`, and this break is limited to one artifact shape.
+The artifact-shape break remains isolated to `forge/change@2`. Historical `forge/change@1` manifests remain valid and are not retroactively edited. No historical reviewer evidence is fabricated.
 
 ## Trade-offs
 
-A separate same-model session improves operational independence by reducing context contamination and confirmation bias from the Resolver's execution trail. It does not provide epistemic independence or eliminate correlated model errors. `agent_different_model` remains future work.
+Execution-context isolation reduces context contamination and confirmation bias but does not guarantee epistemic independence. Same-model isolated executions may retain correlated blind spots. Different-model or human-only review can be stricter project policy, not a Core requirement.
