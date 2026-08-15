@@ -1,18 +1,21 @@
 schema: forge/traceability@1
 change: CHG-0008
 requirements:
-  FR-001: {tasks: [T-006], test_strategy: schema_contract}
-  FR-002: {tasks: [T-006], test_strategy: structural_schema_tdd}
-  FR-003: {tasks: [T-007], test_strategy: policy_contract}
-  FR-004: {tasks: [T-008], test_strategy: documentation_review}
-  FR-005: {tasks: [T-008], test_strategy: documentation_review}
-  FR-006: {tasks: [T-002, T-003, T-005], test_strategy: cli_tdd}
-  FR-007: {tasks: [T-004, T-005], test_strategy: cli_tdd}
-  FR-008: {tasks: [T-002, T-003, T-004, T-005, T-006], test_strategy: layered_validation_tests}
-  FR-009: {tasks: [T-009], test_strategy: codex_unit}
-  FR-010: {tasks: [T-010], test_strategy: documentation_review}
-  FR-011: {tasks: [T-010], test_strategy: documentation_review}
-  FR-012: {tasks: [T-011, T-012], test_strategy: repository_history_audit}
-  INV-001: {tasks: [T-011, T-012], test_strategy: historical_file_audit}
-  INV-002: {tasks: [T-014, T-015], test_strategy: external_strict_review}
-  INV-003: {tasks: [T-001, T-013], test_strategy: artifact_audit}
+  FR-001: {tasks: [T-009], tests: [TDD-005], evidence: change_v2_schema}
+  FR-002: {tasks: [T-003, T-004, T-009], tests: [TDD-003, TDD-004, TDD-005], evidence: schema_compatibility}
+  FR-003: {tasks: [T-007, T-008, T-010], tests: [TDD-005], evidence: cli_c026_execution_check}
+  FR-004: {tasks: [T-007, T-008, T-010], tests: [TDD-005], evidence: cli_c026_context_check}
+  FR-005: {tasks: [T-005, T-006, T-011], tests: [TDD-005], evidence: contract_and_specification}
+  FR-006: {tasks: [T-011], evidence: contract_and_specification}
+  FR-007: {tasks: [T-011, T-012, T-013], evidence: policy_contract_projection}
+  FR-008: {tasks: [T-011, T-012], tests: [TDD-005], evidence: self_review_semantics}
+  FR-009: {tasks: [T-006, T-011, T-013], tests: [TDD-005], evidence: provider_independent_projection}
+  FR-010: {tasks: [T-012], evidence: review_policy_schema}
+  FR-011: {tasks: [T-013], tests: [TDD-005], evidence: codex_unit_projection}
+  FR-012: {tasks: [T-009, T-010], tests: [TDD-005], evidence: schema_cli_layering}
+  FR-013: {tasks: [T-014], evidence: adr_0008}
+  FR-014: {tasks: [T-003, T-004], tests: [TDD-004], evidence: historical_file_audit}
+  FR-015: {tasks: [T-011], evidence: specification_completion_rule}
+  INV-001: {tasks: [T-004, T-017], evidence: historical_and_review_identity_audit}
+  INV-002: {tasks: [T-017, T-018, T-019], evidence: independent_strict_review}
+  INV-003: {tasks: [T-014, T-016, T-017], evidence: repository_native_artifacts}
