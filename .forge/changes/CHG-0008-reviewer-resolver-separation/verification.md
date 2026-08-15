@@ -3,48 +3,53 @@ forge:
   artifact: verification
   schema: 1
 change: CHG-0008
-status: passed
+status: failed
 ---
 
 # Verification — Verifiable Reviewer/Resolver Separation
 
 ## Scope
 
-Verification covers the Change schema, Review Policy and its schema, C-026, Specification §25, CLI semantic validation, Codex projection behavior, ADR, CHANGELOG, historical Change preservation, and TDD evidence.
+Verification covers the Change schema, Review Policy and policy schema, C-026, Specification §25, structural/semantic validation separation, Codex projection behavior, ADR, CHANGELOG, historical Change preservation, TDD evidence, and repository-wide regression behavior.
 
-## Durable RED evidence
+## Valid RED evidence
 
-Commit `1f83d498124d028fccf8ae3a01bd18a1d068a758` contains the test before production validation behavior. GitHub Actions run `31851211926` completed with `1 failed, 162 passed`. The sole failure was `test_validate_rejects_full_change_reviewed_in_same_session`: expected CLI exit code 2, actual exit code 0. This is the expected missing-behavior failure and not a fixture, syntax, dependency, or environment failure.
+The mandatory exact same-session fixture was established as structurally valid before semantic enforcement. Historical TDD-001 evidence records a test-only state where `forge validate` returned success and the new C-026 assertion failed for the expected missing-behavior reason, not because of malformed input or schema failure.
 
-## GREEN and remediation
+During the revised Resolver pass, commit `8a3099d5044ef802869748c02fe122a8412ed927` added the second semantic expectation for an `agent_isolated_session` claim with identical reviewer/resolver references before production support. GitHub Actions run `31852012708` failed on that test-only state. Commit `518629c8ae07f18e82dcac5fa382ffd6af8c86a5` then added the semantic identical-reference C-026 check.
 
-Commit `21711a79c0ffe69ae2a2bbc18ad41bfb48f3b1fd` implemented the semantic validator and Codex projection behavior. Its full suite exposed contract-schema fallout: completed historical FULL manifests lacked the new field and `policy-review.schema.json` still required the old boolean policy shape. No historical manifests were modified. Commit `6800f6fcaef20a1172113bfa25d9b2fc125d171f` remediated the policy schema and historical compatibility boundary; GitHub Actions run `31851422260` then passed all 164 tests and Distribution Verification run `31851422211` passed.
+Commit `7f21439e2cc4517a423f99efd1f4b0f817ca3d7e` added the structural regression requiring `reviewer_identity` even for pending FULL Review before commit `666cf96f88faaf2445ba8313ee715cad306db6c0` changed the schema to the literal revised requirement.
 
-## Final automated verification
+## Implemented behavior
 
-The artifact-bearing commit `105229d7fe24f24a48e5376f0d55782b793e8510` passed GitHub Actions Tests run `31851509590`:
+- `review.reviewer_identity` is a closed object with all three inner fields required.
+- FULL structurally requires the entire object solely from `flow.current == full`.
+- CLI semantic validation names C-026 for FULL `agent_same_session`.
+- CLI semantic validation names C-026 for a claimed independent actor whose Reviewer and Resolver session references are identical.
+- Code comments/tests distinguish structural schema responsibility from semantic CLI responsibility.
+- Review Policy defines FAST/ STANDARD/ FULL minimums and the explicit FULL isolated-agent fallback.
+- C-026 uses the required recorded/verifiable, Flow-proportional wording.
+- Codex STANDARD/FULL projection requires separate review execution and distinct session references.
+- ADR documents increasing operational independence without claiming epistemic independence; `agent_different_model` remains future work only.
+- CHANGELOG records the literal FULL schema requirement as breaking.
+- No completed historical Change was modified, and CHG-0008 `review.md` remains absent.
 
-```text
-pytest -q
-164 passed in 3.23s
-```
+## Repository-wide verification failure
 
-Distribution Verification run `31851509583` also passed, including isolated wheel build/install, offline CLI `init`/`validate`/`doctor`, packaged Adapter schema/loading probes, and runtime dependency inspection.
+The literal revised schema requirement cannot currently produce repository-wide GREEN under Protocol 1. `tests/contract/test_protocol_contract.py::test_canonical_yaml_instances_satisfy_their_declared_schemas` validates every historical `.forge/changes/*/manifest.yml` against the current schema identified as `forge/change@1`. Historical FULL manifests do not contain `reviewer_identity`, and this Change explicitly forbids retroactively adding fabricated evidence.
 
-The full suite includes the dedicated CLI assertion that FULL `agent_same_session` returns exit code 2 and names C-026, canonical YAML/schema validation, and Codex STANDARD/FULL projection coverage.
+This is also a direct compatibility conflict with C-045/C-046: changing the same Protocol/schema identity so that previously valid conforming instances become invalid requires a new compatibility boundary. Weakening the canonical test, rewriting completed Changes, or inventing Reviewer evidence would hide rather than solve that conflict.
 
-## Documentation verification
+The CHG-0008 manifest itself is likewise FULL and has Review pending. Under the revised schema it cannot be structurally valid without a `reviewer_identity`; this Resolver session cannot truthfully supply Reviewer evidence before independent Strict Review.
 
-ADR-0008 explicitly limits the guarantee of same-model isolated sessions to reduced context contamination and states that correlated model bias remains. `agent_different_model` is future work only. CHANGELOG records the evolution as breaking.
+## Distribution verification
 
-## Historical integrity
-
-Completed historical Change manifests were not modified. The schema preserves those completed records while requiring reviewer identity when a non-completed FULL Review actually leaves `pending`, avoiding fabricated reviewer evidence before review execution.
+Distribution Verification remained successful on the semantic-validator implementation commit while the Tests workflow failed, confirming the observed blocker is in canonical schema/Change compatibility rather than package build/install infrastructure.
 
 ## Strict Review
 
-PENDING EXTERNAL REVIEW. This Resolver session has not performed independent Strict Review, has not created `review.md`, and does not assert `review_passed`.
+PENDING EXTERNAL REVIEW. This Resolver session has not performed independent Strict Review, has not created `review.md`, has not recorded a fictional reviewer identity, and does not assert `review_passed`.
 
 ## Result
 
-Implementation Verification passed. Completion remains blocked on a compliant independent Strict Review and any required resolution/re-review cycle.
+Verification is **failed/blocked**, not passed. The requested semantic behavior is implemented, but CHG-0008 cannot truthfully satisfy both the literal mandatory-FULL schema requirement and the existing Protocol 1 compatibility/historical-preservation obligations. A versioning or migration decision is required before full-suite GREEN, repository schema validity, `forge validate` success, and Completion can be claimed.
