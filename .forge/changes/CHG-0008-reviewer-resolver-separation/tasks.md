@@ -32,13 +32,15 @@ status: active
 - [x] T-053 Add dedicated R006 regressions for unstaged, staged, untracked, deletion, rename, metadata allowlist, ignored paths, and adversarial path bypasses.
 - [x] T-054 Establish a causal RED against the pre-fix validator after repairing the unrelated malformed Iteration 3 YAML artifact.
 - [x] T-055 Replace commit-only freeze detection with one local reviewable workspace delta covering committed, staged, unstaged, and untracked Git state.
-- [x] T-056 Enforce exact Change-local review-control paths and reject rename/symlink/lookalike bypasses.
+- [x] T-056 Enforce exact Change-local review-control paths and reject rename/symlink/lookalike/directory/same-basename bypasses.
 - [x] T-057 Preserve R001-R005, Protocol 1, and FAST/STANDARD/FULL Protocol 2 regressions.
 - [x] T-058 Update Protocol 2 normative resources and Codex Adapter freeze guidance.
 - [x] T-059 Diagnose the `Tests` workflow failure as malformed YAML in the Iteration 3 `evidence_gap` and repair the artifact without weakening tests/workflows.
 - [x] T-060 Obtain causal GREEN: Tests run 31904623010 (`210 passed`) and Distribution Verification run 31904622991 pass on the restored R006 implementation.
-- [ ] T-061 Complete final Resolution 3 evidence, Verification, and reviewable subject freeze.
-- [ ] T-062 Record `resolution-003` against the frozen subject and prepare `review-004` pending without Reviewer provenance.
+- [x] T-061 Complete final pre-freeze Resolution 3 evidence and full regression checkpoint: Tests run 31904809568 (`212 passed`) and Distribution Verification run 31904809691 passed.
+- [ ] T-062 After the immutable subject is created, record `resolution-003` and prepare `review-004` pending using only review-control metadata.
 - [ ] T-063 Dogfood the freeze after review-control metadata and confirm final CI remains green.
 - [ ] T-064 Obtain independent Strict Review Iteration 4 against `resolution-003`.
 - [ ] T-051 Complete CHG-0008 only after independent acceptance and all Completion Gates.
+
+T-062/T-063 intentionally remain unchecked in this reviewable artifact because they occur only after this reviewable Resolution state is frozen. Their authoritative post-freeze state is represented by the allowed review-control metadata and final CI, not by mutating `tasks.md` after the freeze.
