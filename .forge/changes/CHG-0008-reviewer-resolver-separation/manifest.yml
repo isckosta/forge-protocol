@@ -29,7 +29,7 @@ artifacts:
   implementation: complete
   provenance: complete
   verification: complete
-  review: pending
+  review: complete
   documentation: complete
   knowledge_capture: complete
 
@@ -46,9 +46,9 @@ verification:
   status: passed
 
 review:
-  status: pending
+  status: failed
   iteration: 2
-  blockers: 2
+  blockers: 0
   majors: 2
   minors: 0
   observations: 0
@@ -63,11 +63,14 @@ review:
     - id: review-002
       revision: chg-0008-resolution-001
       subject_provenance: resolution-001
-      status: pending
+      reviewer_provenance: review-002
+      status: failed
       evidence_gap: >-
-        Independent Reviewer provenance does not exist yet. A new Review Execution and
-        Execution Context must review this Resolution revision and record its own
-        provenance before this iteration can pass.
+        Strict Review Iteration 2 found that commit binding is not enforced by Core.
+        R004 is only partially resolved and CHG-0008-R005 is MAJOR: subject provenance
+        records commit 538a77dcd77aed0db0505a288fc1cbea0e69def3 while the reviewed Resolution
+        HEAD is f5a825917170ac684fefaa2b096a7ff83996d5cd, and the validator compares only
+        revision.id. A new independent Resolution and subsequent re-review are required.
 
 documentation:
   impact_evaluated: true
@@ -76,4 +79,5 @@ documentation:
     Resolution introduces integer Protocol 2 for verifiable review independence while
     restoring Protocol 1 historical semantics, adds a repository-native provenance
     ledger and iteration-aware review model, and updates validation, Adapter projection,
-    compatibility, ADR, tests, and Change evidence. Strict re-review remains pending.
+    compatibility, ADR, tests, and Change evidence. Strict Review Iteration 2 returned
+    REQUEST CHANGES because commit-level revision binding remains unenforced.
