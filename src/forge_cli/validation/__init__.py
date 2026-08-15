@@ -41,10 +41,11 @@ class ValidationResult:
 def _validate_reviewer_resolver_separation(project_root: Path) -> list[ValidationFinding]:
     """Apply semantic C-026 checks after JSON Schema structural validation.
 
-    The Change schema owns structural requirements such as requiring a complete
-    reviewer_identity object for FULL Changes. This validator intentionally owns
-    only semantic consistency/strength checks that JSON Schema cannot express
-    safely as mere field presence and type constraints.
+    Change schemas own presence, closure, types, and non-empty execution/context
+    identifiers. This validator owns semantic independence: a Role rename does
+    not create independence when the Reviewer shares either the concrete
+    Execution or transient Execution Context with the implementation/resolution
+    being reviewed.
     """
     findings: list[ValidationFinding] = []
     changes_dir = project_root / ".forge" / "changes"
@@ -64,34 +65,20 @@ def _validate_reviewer_resolver_separation(project_root: Path) -> list[Validatio
         identity = review.get("reviewer_identity") or {}
         if not (
             isinstance(flow, dict)
-            and flow.get("current") == "full"
+            and flow.get("current") in {"standard", "full"}
             and isinstance(identity, dict)
         ):
             continue
 
-        actor_type = identity.get("actor_type")
-        session_ref = identity.get("session_ref")
-        resolver_session_ref = identity.get("resolver_session_ref")
-
-        if actor_type == "agent_same_session":
-            findings.append(
-                ValidationFinding(
-                    code="C-026",
-                    artifact=str(manifest_path.relative_to(project_root)),
-                    path=manifest_path,
-                    message=(
-                        "FULL review cannot use reviewer_identity.actor_type=agent_same_session; "
-                        "use a human reviewer or an isolated agent session and record independent session evidence."
-                    ),
-                )
-            )
-            continue
+        execution_id = identity.get("execution_id")
+        context_id = identity.get("context_id")
+        resolver_execution_id = identity.get("resolver_execution_id")
+        resolver_context_id = identity.get("resolver_context_id")
 
         if (
-            actor_type != "agent_same_session"
-            and isinstance(session_ref, str)
-            and isinstance(resolver_session_ref, str)
-            and session_ref == resolver_session_ref
+            isinstance(execution_id, str)
+            and isinstance(resolver_execution_id, str)
+            and execution_id == resolver_execution_id
         ):
             findings.append(
                 ValidationFinding(
@@ -99,8 +86,27 @@ def _validate_reviewer_resolver_separation(project_root: Path) -> list[Validatio
                     artifact=str(manifest_path.relative_to(project_root)),
                     path=manifest_path,
                     message=(
-                        "FULL review claims independent execution but reviewer_identity.session_ref and "
-                        "resolver_session_ref are identical; record distinct session references."
+                        "Strict Review is not independent: reviewer_identity.execution_id "
+                        "matches resolver_execution_id. Changing Role inside one Execution "
+                        "does not satisfy Reviewer independence."
+                    ),
+                )
+            )
+
+        if (
+            isinstance(context_id, str)
+            and isinstance(resolver_context_id, str)
+            and context_id == resolver_context_id
+        ):
+            findings.append(
+                ValidationFinding(
+                    code="C-026",
+                    artifact=str(manifest_path.relative_to(project_root)),
+                    path=manifest_path,
+                    message=(
+                        "Strict Review is context-contaminated: reviewer_identity.context_id "
+                        "matches resolver_context_id. A distinct Execution ID cannot make a "
+                        "shared conversational/reasoning context independent."
                     ),
                 )
             )
