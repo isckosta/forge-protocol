@@ -6,20 +6,24 @@ change: CHG-0008
 status: active
 ---
 
-# Tasks — Verifiable Reviewer/Resolver Separation
+# Tasks — Verifiable Review Independence
 
-- [x] T-001 Inspect canonical FULL flow, Review Policy, Change schema, Contract, Specification, validator, Codex projection, and CHG-0007 structure.
-- [x] T-002 Create/use the exact structurally valid FULL same-session fixture and RED CLI test.
-- [x] T-003 Observe valid RED for the missing C-026 semantic behavior.
-- [x] T-004 Add semantic regression for claimed isolation with identical session references and observe RED before implementation.
-- [x] T-005 Implement C-026 semantic CLI validation for same-session and inconsistent identical-reference evidence.
-- [x] T-006 Make FULL `reviewer_identity` structurally mandatory and preserve all three required inner fields.
-- [x] T-007 Update Review Policy minimums and supporting policy schema.
-- [x] T-008 Rewrite C-026 and align Protocol Specification §25 semantics.
-- [x] T-009 Update Codex STANDARD/FULL projection to require isolated execution and distinct session references.
-- [x] T-010 Add/update ADR and CHANGELOG with operational-independence limits and breaking-change disclosure.
-- [x] T-011 Preserve completed historical Change files without retroactive reviewer evidence.
-- [x] T-012 Resolve the incompatibility between the new mandatory FULL field and Protocol 1 C-045/C-046/canonical historical manifests without weakening tests or fabricating evidence. Resolved via schema versioning (`forge/change@2`) per `protocol/compatibility.md`; `forge/change@1` restored to backward-compatible shape.
-- [x] T-013 Restore full-suite and repository `forge validate` success after T-012 is resolved. `pytest -q` → 168 passed, 0 failed.
-- [ ] T-014 Obtain independent Strict Review; only that execution may create `review.md` and record compliant reviewer identity evidence.
-- [ ] T-015 Resolve any blocking findings and complete the Change only after compliant re-review.
+- [x] T-001 Inspect canonical FULL flow, Review Policy, Change schemas, Contract, Specification, validator, Codex projection, and CHG-0007 structure.
+- [x] T-002 Establish initial Reviewer/Resolver separation RED evidence.
+- [x] T-003 Introduce `forge/change@2` so mandatory FULL review evidence does not invalidate historical `forge/change@1` Changes.
+- [x] T-004 Preserve completed historical Change files without fabricated reviewer evidence.
+- [x] T-005 Record Specification Drift from the Laravel stress test showing same-context Role switching can self-review.
+- [x] T-006 Define provider-independent Execution and Execution Context as the actual independence boundary.
+- [x] T-007 Add test-first regressions for shared context despite distinct executions and shared execution despite distinct context identifiers.
+- [x] T-008 Observe valid RED: run `31899409371`, job `95047717053`, `3 failed, 166 passed`.
+- [x] T-009 Replace session-shaped reviewer identity with `execution_id`, `context_id`, `resolver_execution_id`, and `resolver_context_id` evidence.
+- [x] T-010 Enforce C-026 independently for shared Execution and shared Execution Context.
+- [x] T-011 Define Role switching/self-review semantics and independent blocking-finding Resolution/re-review rules in Contract and Specification.
+- [x] T-012 Update Review Policy and its schema to require execution-context independence for every Flow.
+- [x] T-013 Update Codex projection to project the independent Execution/Context boundary without redefining Core semantics.
+- [x] T-014 Update ADR, Architecture, Specification, CHANGELOG, TDD evidence, and Verification for the corrected invariant.
+- [x] T-015 Confirm GREEN: Tests run `31899652483`, job `95048292204`, `169 passed`.
+- [x] T-016 Confirm Distribution Verification run `31899652482`, job `95048292167` passes from an isolated wheel.
+- [ ] T-017 Obtain Strict Review from an Execution and Execution Context independent from this Resolver execution; only that review may create `review.md` and real review identity evidence.
+- [ ] T-018 If blocking Findings exist, resolve them outside the Reviewer context and obtain an independent re-review from the Resolution Execution before acceptance.
+- [ ] T-019 Complete CHG-0008 only after compliant Review evidence is durably recorded.
