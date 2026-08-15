@@ -22,12 +22,12 @@ artifacts:
   documentation: complete
   knowledge_capture: complete
 requirements: {total: 19, implemented: 19, verified: 19}
-tdd: {status: compliant, cycles: 9}
+tdd: {status: compliant, cycles: 10}
 verification: {status: passed}
 review:
-  status: failed
-  iteration: 4
-  blockers: 1
+  status: pending
+  iteration: 5
+  blockers: 0
   majors: 0
   minors: 0
   observations: 0
@@ -62,5 +62,6 @@ documentation:
   impact_evaluated: true
   update_required: true
   reason: >-
-    Protocol 2 now distinguishes logical revision identity from concrete immutable subject
-    binding and validates the effective reviewable Git workspace against the frozen subject.
+    Protocol 2 now anchors established subject provenance and live Review Iteration subject
+    bindings to committed Git history before using current metadata as a workspace baseline,
+    while preserving the R006 effective-workspace freeze and Protocol 1 compatibility.
