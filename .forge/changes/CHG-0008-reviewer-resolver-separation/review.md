@@ -179,3 +179,77 @@ R004: **PARTIALLY RESOLVED**.
 New finding: **CHG-0008-R005 — MAJOR**.
 
 Strict Review Iteration 2 therefore fails with **REQUEST CHANGES**. CHG-0008 remains in `strict_review`. A new independent Resolution Execution is required; this Reviewer execution must not implement that Resolution or approve its own finding.
+
+---
+
+## Strict Review Iteration 3
+
+### Verdict
+
+**REQUEST CHANGES**
+
+PR HEAD observed before Reviewer-owned metadata commits: `48b4cacaf48c2b7db9e01d10ea5051cf92663083`.
+
+Frozen Resolution 2 subject: `8642bb607a276139e91ec4030b7fb0a18ca1023b`.
+
+Logical revision: `chg-0008-resolution-002`.
+
+Reviewer provenance: `review-003`, Execution `review-exec-chg0008-20260815-03`, Execution Context `review-context-chg0008-20260815-03`, assurance `recorded`, observed by `self`.
+
+Subject provenance: `resolution-002`, Execution `resolution-exec-chg0008-20260815-02`, Execution Context `resolution-context-chg0008-20260815-02`, assurance `recorded`, observed by `self`.
+
+The Reviewer Execution and Context are distinct from the Resolution 2 Execution and Context. Both provenance records bind to logical revision `chg-0008-resolution-002` and immutable Git revision `8642bb607a276139e91ec4030b7fb0a18ca1023b`.
+
+### Review-subject freeze
+
+The frozen subject is an ancestor of the observed PR HEAD. Exactly two commits followed it before this Review began:
+
+- `f0a5144aac4a629177a3f564982783a1236d2511` changed only `.forge/changes/CHG-0008-reviewer-resolver-separation/provenance.yml`.
+- `48b4cacaf48c2b7db9e01d10ea5051cf92663083` changed only `.forge/changes/CHG-0008-reviewer-resolver-separation/manifest.yml`.
+
+Those paths are within the narrow review-control metadata exception. No post-freeze committed change to source, tests, schemas, normative Protocol resources, Verification, Architecture, Specification, Test Strategy, or other review-subject content was observed before the Reviewer-owned metadata commits.
+
+### R004 / R005 re-evaluation
+
+**CHG-0008-R004 — RESOLVED for concrete committed revision substitution.** Passed Protocol 2 iterations now resolve both subject and Reviewer provenance, validate roles/assurance/logical revision, compare normalized immutable revision tuples, and reject shared Execution/Context. A same logical revision with different immutable Git commits is mechanically rejected.
+
+**CHG-0008-R005 — RESOLVED for subject/reviewer immutable binding and commit/immutable_ref consistency.** `git_commit` immutable refs are normalized as 40-hex values; when `revision.commit` is also present it must match the immutable ref. The dedicated TDD-008 cycle records a causal RED for the prior logical-ID-only behavior and a GREEN after concrete binding enforcement.
+
+### New finding
+
+#### CHG-0008-R006 — MAJOR — Review-subject freeze ignores uncommitted, staged, and untracked subject mutation
+
+**Location:** `src/forge_cli/validation/__init__.py::_changed`; `tests/cli/test_revision_binding.py`.
+
+**Observed behavior:** `_changed` executes only `git diff --name-only <frozen_commit>..HEAD` and subtracts the three allowed review-control metadata paths. This comparison sees committed changes between the frozen commit and `HEAD`, but it does not inspect the working tree, index/staging area, or untracked files. The regression suite covers a post-freeze mutation only after committing it; it has no dirty-working-tree, staged-only, or untracked-file freeze regression.
+
+**Expected behavior:** Protocol 2 Review Policy states `post_freeze_subject_mutation_invalidates_binding: true`. A frozen review subject must therefore be rejected when reviewable source/spec/test/evidence content has mutated after the freeze even if that mutation has not yet become a commit. Review-control metadata must remain the only narrow exception.
+
+**Evidence/reproduction:** freeze subject commit A and record explicit `git_commit` provenance for A; then modify a reviewable tracked file without committing, or stage that change without committing, or create an untracked reviewable file; run `forge validate`. Because `HEAD` remains A (or contains only allowed review-control metadata commits), `git diff A..HEAD` reports no forbidden path and the validator can accept stale subject provenance despite the checkout no longer matching the frozen subject.
+
+**Affected requirements/constraints:** C-026 concrete review-subject binding; Protocol 2 Review Policy `review_subject_freeze_required` and `post_freeze_subject_mutation_invalidates_binding`; local-first repository authority; adversarial stale-provenance requirement.
+
+**Impact:** Strict Review can be marked passed against an immutable commit while the actual local material presented to the Reviewer differs from that commit. This breaks the central stale-provenance guarantee and creates different validation semantics for committed versus uncommitted mutations of the same subject content.
+
+### Verification observed
+
+- Tests workflow at observed HEAD: run `31903363688`, job `95057400911`, PASS at `48b4cacaf48c2b7db9e01d10ea5051cf92663083`.
+- Distribution Verification at observed HEAD: run `31903363768`, job `95057401295`, PASS. Wheel build, isolated wheel-only install, offline CLI version, offline `init -> validate -> doctor`, isolated Adapter schema/loader probe, and runtime dependency audit all passed.
+- Local `pytest -q`, `forge validate`, and `forge doctor` could not be executed in this Reviewer runtime because no repository checkout is mounted and outbound GitHub DNS/clone access is blocked. The current GitHub Actions workflows are therefore the executable evidence for the observed HEAD.
+- The green suite does not falsify R006 because `tests/cli/test_revision_binding.py` tests committed post-freeze mutation, not working-tree/index/untracked mutation.
+
+### Compatibility and Flow assessment
+
+Protocol 1 compatibility remains preserved by the Protocol-aware validation boundary; Protocol 1 does not retroactively require Protocol 2 provenance or immutable review subjects.
+
+Protocol 2 FAST, STANDARD, and FULL share the same provenance validation path, and the regression suite parameterizes all three Flows for valid immutable binding. No Flow-specific bypass was identified in the committed-revision checks. R006 applies equally to all Protocol 2 Flows because the working-tree blind spot is below the Flow boundary.
+
+### Final Iteration 3 conclusion
+
+R004: **RESOLVED**.
+
+R005: **RESOLVED**.
+
+New finding: **CHG-0008-R006 — MAJOR**.
+
+Strict Review Iteration 3 therefore fails with **REQUEST CHANGES**. CHG-0008 remains in `strict_review`. A new independent Resolver execution must address R006; this Reviewer execution must not implement that Resolution or approve its own finding.
