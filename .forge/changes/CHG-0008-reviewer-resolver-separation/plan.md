@@ -1,11 +1,21 @@
-# Plan — CHG-0008 Resolution of Strict Review Iteration 1
+# Plan — CHG-0008
 
-1. Preserve Strict Review Iteration 1 as normative REQUEST CHANGES input.
-2. Record Specification Drift before Resolution implementation: Protocol 2 boundary, provenance ledger, assurance levels, iteration-aware Review.
-3. Add test-first regressions for R001-R004, including all Flows, forged evidence, revision mismatch, re-review contamination, and downgrade resistance.
-4. Restore Protocol 1 historical semantics and schemas; introduce versioned Protocol 2 canonical resources.
-5. Add repository-native execution provenance and revision-bound Review Iterations.
-6. Make validation, Doctor, and Codex projection resolve the selected Protocol before applying version-specific semantics.
-7. Record this Resolution execution prospectively without fabricating historical Implementation/Review provenance.
-8. Run full tests, `forge validate`, `forge doctor`, and Distribution Verification on the final Resolution HEAD.
-9. Return CHG-0008 to `strict_review` with Review Iteration 2 pending. Do not perform or certify re-review in this Resolver execution.
+## Preserved historical plan
+1. Preserve Strict Review findings and verdicts as normative input rather than rewriting history.
+2. Keep Protocol 1 semantics frozen and place stronger review-independence semantics under integer Protocol 2.
+3. Maintain repository-native provenance with explicit assurance and logical/concrete revision binding.
+4. Preserve FAST/STANDARD/FULL quality invariants and provider-independent local operation.
+
+## Resolution 3 — Strict Review Iteration 3
+1. Confirm PR/branch/HEAD, `resolution-002`, `review-003`, frozen Resolution 2 subject, and workflow state.
+2. Record Specification Drift for R006 before finalizing the new behavior.
+3. Add a dedicated TDD cycle whose causal RED proves the pre-fix validator accepts a dirty reviewable workspace.
+4. Model a single effective reviewable workspace delta from committed, staged, unstaged, deletion/rename, and Git-visible untracked Git state.
+5. Keep the review-control exception exact and Change-local; adversarially test rename, symlink, lookalike, directory, and same-basename paths.
+6. Preserve Protocol 1 and R001-R005 regressions plus Protocol 2 FAST/STANDARD/FULL behavior.
+7. Diagnose the independent `Tests` CI regression without weakening tests or workflows and correct its root cause.
+8. Update Protocol 2 Specification, Engineering Contract, Review Policy, ADR-0008, Architecture, Codex projection, traceability, TDD evidence, Verification, CHANGELOG, and knowledge capture.
+9. Run full Tests and Distribution Verification, including wheel build, isolated install, offline init/validate/doctor, Adapter loading, and dependency audit.
+10. Finalize all reviewable Resolution 3 material, create a new immutable Git subject, and record it prospectively as `resolution-003` with `recorded` assurance.
+11. After the freeze, change only exact review-control metadata, prepare `review-004` pending without Reviewer provenance, and dogfood the dirty-subject validator plus final CI.
+12. Stop at the Resolver boundary. Do not perform, approve, merge, or certify Strict Review Iteration 4.
