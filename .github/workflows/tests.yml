@@ -27,3 +27,9 @@ jobs:
 
       - name: Run tests
         run: pytest -q
+
+      - name: Validate Forge repository
+        run: forge validate
+
+      - name: Doctor Forge repository
+        run: forge doctor
