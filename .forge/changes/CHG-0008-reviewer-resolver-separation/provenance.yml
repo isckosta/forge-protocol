@@ -120,3 +120,24 @@ records:
         This Resolver execution records repository-native self-observed provenance for the
         frozen Resolution 4 subject. The authority is local Git history and is not cryptographic
         or external attestation; no provider-native proof was available, so assurance is recorded.
+  - id: review-005
+    role: review
+    execution:
+      id: review-exec-chg0008-20260815-05
+      context_id: review-context-chg0008-20260815-05
+    recorded_at: 2026-08-15T20:43:00Z
+    revision:
+      id: chg-0008-resolution-004
+      immutable_ref:
+        type: git_commit
+        value: 87f0e169676df0ca8463a5620774d26af90b242a
+      commit: 87f0e169676df0ca8463a5620774d26af90b242a
+      description: Strict Review Iteration 5 against the frozen Resolution 4 review subject.
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: chatgpt
+      statement: >-
+        Independent Reviewer execution for Strict Review Iteration 5. Repository-native
+        self-recorded provenance only; no provider-native attestation or external proof was
+        available, so assurance is recorded rather than verified.
