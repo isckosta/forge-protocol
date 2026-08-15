@@ -1,24 +1,53 @@
 schema: forge/tdd-evidence@1
 change: CHG-0008
-status: compliant
-cycle_count: 1
+status: active
+cycle_count: 3
 cycles:
   - id: TDD-001
     title: Reject FULL same-session Reviewer execution
-    requirements: [FR-006]
-    behavior: forge validate rejects a FULL Change reviewed by agent_same_session and names C-026
+    requirements: [FR-006, FR-008]
+    behavior: forge validate rejects the exact structurally valid FULL agent_same_session fixture and names C-026
     red:
       valid: true
       commit: 1f83d498124d028fccf8ae3a01bd18a1d068a758
       command: pytest -q
       result: 1 failed, 162 passed
       reason: test_validate_rejects_full_change_reviewed_in_same_session expected exit code 2 but forge validate returned 0
+      structural_validity: exact fixture passed change.schema.json validation before semantic CLI assertion
     green:
       commit: 105229d7fe24f24a48e5376f0d55782b793e8510
       command: pytest -q
       result: 164 passed in 3.23s
+  - id: TDD-002
+    title: Reject claimed isolation with identical session references
+    requirements: [FR-007, FR-008]
+    behavior: forge validate rejects a structurally valid FULL agent_isolated_session claim whose reviewer and resolver session references are identical
+    red:
+      valid: true
+      commit: 8a3099d5044ef802869748c02fe122a8412ed927
+      command: pytest -q
+      result: GitHub Actions run 31852012708 failed on the test-only commit before the semantic identical-reference check existed
+      reason: the new semantic expectation was introduced while the validator only rejected actor_type agent_same_session
+      structural_validity: fixture derives from the schema-valid exact RED fixture and changes only actor_type to agent_isolated_session
+    green:
+      commit: 518629c8ae07f18e82dcac5fa382ffd6af8c86a5
+      command: pytest -q
+      result: semantic check implemented; full suite remains blocked by the separate breaking-schema compatibility conflict
+  - id: TDD-003
+    title: Require reviewer identity structurally for pending FULL manifests
+    requirements: [FR-002, FR-008]
+    behavior: change.schema.json rejects a FULL manifest with pending Review when reviewer_identity is absent
+    red:
+      valid: true
+      commit: 7f21439e2cc4517a423f99efd1f4b0f817ca3d7e
+      command: pytest -q
+      result: structural regression was added before the literal FULL schema requirement
+      reason: prior schema condition allowed pending FULL Review to omit reviewer_identity
+    green:
+      commit: 666cf96f88faaf2445ba8313ee715cad306db6c0
+      command: pytest -q
+      result: schema now requires reviewer_identity whenever flow.current is full; repository-wide suite exposes historical forge/change@1 incompatibility
 notes:
-  - Fixture commit 6b756da4d48f510eddc7507df1d1a8e4f31d9421 preceded the test-only RED commit.
-  - GitHub Actions run 31851211926 is durable RED evidence; the only failing test was the new C-026 behavior test.
-  - Intermediate implementation commit 21711a79c0ffe69ae2a2bbc18ad41bfb48f3b1fd made the behavioral target GREEN but exposed canonical schema compatibility failures in the full suite; those were remediated without changing completed historical Changes.
-  - GitHub Actions run 31851509590 is the final GREEN full-suite evidence for the artifact-bearing commit.
+  - TDD-001 is the mandatory exact-fixture RED required by the Change and satisfies C-011 because its fixture was structurally valid and the observed failure was the missing semantic C-026 behavior.
+  - TDD-002 and TDD-003 were added RED-before-GREEN during the revised Resolver session.
+  - TDD status remains active rather than compliant because final repository-wide GREEN cannot be claimed while the literal breaking schema requirement conflicts with historical canonical forge/change@1 instances and C-045/C-046.
