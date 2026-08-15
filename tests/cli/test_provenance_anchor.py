@@ -6,14 +6,11 @@ from typer.testing import CliRunner
 
 from forge_cli.app import app
 
-
 runner = CliRunner()
 
 
 def _git(root: Path, *args: str) -> subprocess.CompletedProcess[str]:
-    return subprocess.run(
-        ["git", *args], cwd=root, check=True, capture_output=True, text=True
-    )
+    return subprocess.run(["git", *args], cwd=root, check=True, capture_output=True, text=True)
 
 
 def _init(root: Path) -> None:
@@ -23,12 +20,9 @@ def _init(root: Path) -> None:
     forge = root / ".forge"
     forge.mkdir()
     (forge / "forge.yml").write_text(
-        "schema: forge/project@1\n"
-        "project:\n  name: t\n"
-        "forge:\n  protocol: 2\n"
+        "schema: forge/project@1\nproject:\n  name: t\nforge:\n  protocol: 2\n"
         "flows:\n  default: full\n  allow_fast: true\n  auto_escalation: true\n"
-        "testing:\n  approach: tdd_first\n"
-        "review:\n  strict: true\n"
+        "testing:\n  approach: tdd_first\nreview:\n  strict: true\n"
         "documentation:\n  impact_evaluation: required\n",
         encoding="utf-8",
     )
@@ -88,18 +82,9 @@ def _write_change(root: Path, commit: str, *, passed: bool) -> Path:
         },
         "documentation": {"impact_evaluated": True, "update_required": False},
     }
-    (change / "manifest.yml").write_text(
-        yaml.safe_dump(manifest, sort_keys=False), encoding="utf-8"
-    )
+    (change / "manifest.yml").write_text(yaml.safe_dump(manifest, sort_keys=False), encoding="utf-8")
     (change / "provenance.yml").write_text(
-        yaml.safe_dump(
-            {
-                "schema": "forge/execution-provenance@1",
-                "change": "CHG-9999",
-                "records": records,
-            },
-            sort_keys=False,
-        ),
+        yaml.safe_dump({"schema": "forge/execution-provenance@1", "change": "CHG-9999", "records": records}, sort_keys=False),
         encoding="utf-8",
     )
     return change
@@ -110,26 +95,92 @@ def _validate(root: Path, monkeypatch):
     return runner.invoke(app, ["validate"])
 
 
-def test_rewriting_frozen_subject_provenance_cannot_move_baseline(
-    tmp_path, monkeypatch
-):
+def _anchored_change(tmp_path: Path) -> tuple[Path, str]:
     _init(tmp_path)
-    subject = tmp_path / "subject.txt"
-    subject.write_text("frozen\n", encoding="utf-8")
+    (tmp_path / "subject.txt").write_text("frozen\n", encoding="utf-8")
     frozen = _commit(tmp_path, "freeze subject A")
-
-    _write_change(tmp_path, frozen, passed=False)
+    change = _write_change(tmp_path, frozen, passed=False)
     _commit(tmp_path, "record subject provenance for A")
+    return change, frozen
 
+
+def test_rewriting_frozen_subject_provenance_cannot_move_baseline(tmp_path, monkeypatch):
+    change, _ = _anchored_change(tmp_path)
+    subject = tmp_path / "subject.txt"
     subject.write_text("reviewable mutation B\n", encoding="utf-8")
     moved = _commit(tmp_path, "reviewable mutation B")
-
-    # Adversary rewrites the allowlisted provenance so both subject and Reviewer
-    # coherently claim B. The immutable authority must remain the first committed
-    # resolution-001 record, which bound the subject to A.
     _write_change(tmp_path, moved, passed=True)
-
     result = _validate(tmp_path, monkeypatch)
-
     assert result.exit_code == 2
     assert "immutable subject provenance" in result.stdout.lower()
+
+
+def test_mutating_anchored_subject_fields_fails(tmp_path, monkeypatch):
+    change, _ = _anchored_change(tmp_path)
+    path = change / "provenance.yml"
+    provenance = yaml.safe_load(path.read_text())
+    provenance["records"][0]["execution"]["id"] = "replacement-exec"
+    path.write_text(yaml.safe_dump(provenance, sort_keys=False))
+    result = _validate(tmp_path, monkeypatch)
+    assert result.exit_code == 2
+    assert "immutable subject provenance" in result.stdout.lower()
+
+
+def test_replacing_anchored_resolution_role_fails(tmp_path, monkeypatch):
+    change, _ = _anchored_change(tmp_path)
+    path = change / "provenance.yml"
+    provenance = yaml.safe_load(path.read_text())
+    provenance["records"][0]["role"] = "review"
+    path.write_text(yaml.safe_dump(provenance, sort_keys=False))
+    result = _validate(tmp_path, monkeypatch)
+    assert result.exit_code == 2
+    assert "immutable subject provenance" in result.stdout.lower()
+
+
+def test_historical_iteration_cannot_switch_subject_record(tmp_path, monkeypatch):
+    change, frozen = _anchored_change(tmp_path)
+    ppath = change / "provenance.yml"
+    provenance = yaml.safe_load(ppath.read_text())
+    provenance["records"].append(_record("resolution-002", "resolution", "revision-a", frozen))
+    ppath.write_text(yaml.safe_dump(provenance, sort_keys=False))
+    mpath = change / "manifest.yml"
+    manifest = yaml.safe_load(mpath.read_text())
+    manifest["review"]["iterations"][0]["subject_provenance"] = "resolution-002"
+    mpath.write_text(yaml.safe_dump(manifest, sort_keys=False))
+    result = _validate(tmp_path, monkeypatch)
+    assert result.exit_code == 2
+    assert "immutable review iteration subject binding" in result.stdout.lower()
+
+
+def test_legitimate_review_record_append_preserves_subject_anchor(tmp_path, monkeypatch):
+    _, frozen = _anchored_change(tmp_path)
+    _write_change(tmp_path, frozen, passed=True)
+    result = _validate(tmp_path, monkeypatch)
+    assert result.exit_code == 0, result.stdout
+
+
+def test_removing_anchored_subject_record_fails(tmp_path, monkeypatch):
+    change, _ = _anchored_change(tmp_path)
+    ppath = change / "provenance.yml"
+    provenance = yaml.safe_load(ppath.read_text())
+    provenance["records"] = []
+    ppath.write_text(yaml.safe_dump(provenance, sort_keys=False))
+    result = _validate(tmp_path, monkeypatch)
+    assert result.exit_code == 2
+    assert "subject provenance was not found" in result.stdout.lower()
+
+
+def test_shallow_history_fails_closed_for_anchored_subject(tmp_path, monkeypatch):
+    source = tmp_path / "source"
+    source.mkdir()
+    _anchored_change(source)
+    clone = tmp_path / "clone"
+    subprocess.run(
+        ["git", "clone", "--depth", "1", f"file://{source}", str(clone)],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    result = _validate(clone, monkeypatch)
+    assert result.exit_code == 2
+    assert "authority" in result.stdout.lower()
