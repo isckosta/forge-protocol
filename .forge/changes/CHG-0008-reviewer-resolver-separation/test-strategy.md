@@ -9,34 +9,25 @@ status: approved
 # Test Strategy — CHG-0008
 
 ## Historical cycles
-TDD-001 through TDD-008 remain preserved. TDD-006 covers the Protocol 1/2 provenance boundary, TDD-007 covers Protocol-aware Codex projection, and TDD-008 covers R004/R005 concrete immutable revision binding and committed post-freeze mutation.
+TDD-001 through TDD-009 remain preserved. TDD-006 covers the Protocol 1/2 provenance boundary, TDD-007 Protocol-aware projection, TDD-008 concrete immutable revision binding, and TDD-009 the R006 effective-workspace freeze.
 
-## TDD-009 — R006 effective reviewable workspace freeze
-R006 requires a dedicated behavioral cycle. The causal RED uses a valid Protocol 2 fixture with valid subject provenance and a frozen Git commit, mutates only reviewable working-tree material, and expects `forge validate` to reject C-026. Environment, dependency, schema, and fixture failures do not count as RED.
+## TDD-010 — R007 immutable provenance authority
+The causal RED exercises the real CLI boundary, not a text/helper assertion:
 
-The minimum causal case is an unstaged tracked modification. The expanded adversarial matrix covers:
+1. freeze reviewable subject A;
+2. commit `resolution-001` provenance binding to A;
+3. commit reviewable mutation B;
+4. rewrite only review-control metadata so subject and Reviewer provenance coherently claim B;
+5. require `forge validate` to reject the moved baseline.
 
-- clean frozen workspace → PASS;
-- committed reviewable mutation → FAIL;
-- unstaged tracked mutation → FAIL;
-- staged tracked mutation → FAIL;
-- Git-visible untracked reviewable file → FAIL;
-- tracked deletion → FAIL;
-- tracked rename → FAIL;
-- exact Change-local `manifest.yml`, `provenance.yml`, and `review.md` metadata mutation → PASS;
-- reviewable artifact inside the same Change → FAIL;
-- metadata belonging to another Change → FAIL;
-- Git-ignored temp/cache file → PASS;
-- rename of reviewable material to an allowlisted basename/path → FAIL;
-- lookalike metadata path such as `review.md.bak` → FAIL;
-- symlink substitution at a review-control path → FAIL.
+The threat matrix extends that causal case with mutation of immutable_ref/commit/logical revision and execution fields, Role replacement, removal/recreation, duplicate/shadow IDs, historical Review Iteration redirection, legitimate Reviewer-record append, shallow-history fail-closed behavior, and preservation of R006 committed/staged/unstaged/untracked/rename/symlink protections.
 
-The suite also preserves Protocol 1 compatibility; Protocol 2 FAST/STANDARD/FULL behavior; wrong immutable ref; wrong logical revision; forged provenance; shared Execution; shared Context; and R004/R005 regressions.
+Existing regressions remain authoritative for exact Change-local metadata paths, metadata lookalikes, another Change's metadata, tracked deletion/rename, Git-visible untracked paths, ignored paths, symlink/directory substitution, nested repository-root discovery, Protocol 1 compatibility, and FAST/STANDARD/FULL Protocol 2 behavior.
 
-## CI regression diagnosis
-The Iteration 3 `Tests` failure is investigated independently from R006. A failing canonical-YAML contract test must be fixed at the artifact that violates YAML/schema semantics; the test or workflow must not be weakened or skipped.
+## Expected lifecycle behavior
+A newly created subject record may be written prospectively after its reviewable subject commit. Once that record first appears in committed Git history, its semantic content is immutable. New Review provenance and legitimate `manifest.yml`/`review.md` state may be added without renewing the subject, provided neither the anchored subject record nor an existing Iteration's subject binding changes.
 
-## GREEN and verification
-GREEN requires the complete `pytest -q` suite plus Distribution Verification. Distribution Verification must continue to exercise wheel build, isolated install, offline init/validate/doctor, Adapter schema/loading, and dependency audit. Final review-control metadata must then be dogfooded by the same validator so the exact metadata allowlist does not invalidate the newly frozen subject.
+## Verification
+GREEN requires the complete `pytest -q` suite, direct `forge validate` and `forge doctor` against the repository with complete Git history, and Distribution Verification. Distribution Verification continues to exercise wheel build, isolated wheel-only install, offline init/validate/doctor, Adapter schema/loading, and runtime dependency audit.
 
 Passing Verification is Resolution evidence only. It is not Strict Review acceptance.
