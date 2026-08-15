@@ -47,7 +47,9 @@ review:
       subject_provenance: resolution-002
       reviewer_provenance: review-003
       status: failed
-      evidence_gap: CHG-0008-R006 MAJOR: review-subject freeze detects committed post-freeze subject changes but ignores uncommitted, staged, and untracked reviewable mutations.
+      evidence_gap: >-
+        CHG-0008-R006 MAJOR: review-subject freeze detects committed post-freeze subject changes
+        but ignores uncommitted, staged, and untracked reviewable mutations.
 documentation:
   impact_evaluated: true
   update_required: true
