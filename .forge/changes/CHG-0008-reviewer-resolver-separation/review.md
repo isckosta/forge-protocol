@@ -8,7 +8,9 @@ status: failed
 
 # Strict Review — CHG-0008
 
-## Verdict
+## Strict Review Iteration 1
+
+### Verdict
 
 **REQUEST CHANGES**
 
@@ -16,7 +18,7 @@ Reviewed revision: `43170fa3eb0e16d9e848c3b26e44ef757906dffc` (PR #9).
 
 This review was executed in an independent Reviewer context and did not modify implementation code. No Resolver role was assumed in this execution.
 
-## Verification observed
+### Verification observed
 
 - Current HEAD GitHub Actions `Tests` run `31899799013`: PASS.
 - Current HEAD `Distribution Verification` run `31899799005`: PASS.
@@ -25,9 +27,9 @@ This review was executed in an independent Reviewer context and did not modify i
 
 Green CI does not override the semantic findings below.
 
-## Findings
+### Findings
 
-### CHG-0008-R001 — BLOCKER — Protocol 1 compatibility contract is violated
+#### CHG-0008-R001 — BLOCKER — Protocol 1 compatibility contract is violated
 
 **Affected requirements/invariants:** C-045, C-046, `protocol/compatibility.md`, FR-002, FR-014.
 
@@ -41,7 +43,7 @@ Green CI does not override the semantic findings below.
 
 **Evidence/reproduction:** compare PR #9 changes to C-026 and Specification §25 against `protocol/compatibility.md` section “Breaking Protocol evolution”, especially the rule that a schema suffix is insufficient when Core semantic obligations also change.
 
-### CHG-0008-R002 — BLOCKER — Required Resolver execution/context evidence does not exist repository-natively
+#### CHG-0008-R002 — BLOCKER — Required Resolver execution/context evidence does not exist repository-natively
 
 **Affected requirements/invariants:** C-026, Protocol Specification §§25/27, INV-001, INV-003, AC-011.
 
@@ -55,7 +57,7 @@ Green CI does not override the semantic findings below.
 
 **Evidence/reproduction:** inspect `manifest.yml`: schema is `forge/change@1`, review is pending, and no `reviewer_identity` exists. Search the complete Change directory: no authoritative Resolver execution/context identifiers are recorded.
 
-### CHG-0008-R003 — MAJOR — C-026 validator does not enforce the policy consistently across Flows or review states
+#### CHG-0008-R003 — MAJOR — C-026 validator does not enforce the policy consistently across Flows or review states
 
 **Affected requirements/invariants:** C-026, C-031, FR-010, FR-015, Review Policy `reviewer_resolver_separation.independence`.
 
@@ -69,7 +71,7 @@ Green CI does not override the semantic findings below.
 
 **Evidence/reproduction:** inspect `_validate_reviewer_resolver_separation`: the flow guard is `in {"standard", "full"}`. Inspect `change-v2.schema.json`: the conditional `reviewer_identity` requirement applies only when `flow.current == full`.
 
-### CHG-0008-R004 — MAJOR — The implementation verifies string inequality, not actual independent executions
+#### CHG-0008-R004 — MAJOR — The implementation verifies string inequality, not actual independent executions
 
 **Affected requirements/invariants:** C-026, INV-001, FR-003, FR-004, FR-009, FR-015; adversarial case Q.
 
@@ -83,14 +85,97 @@ Green CI does not override the semantic findings below.
 
 **Evidence/reproduction:** create a FULL `forge/change@2` manifest with four invented, pairwise-distinct identifier strings and `review.status: passed`; current structural validation and C-026 equality checks accept it.
 
-## TDD review
+### TDD review
 
 The corrected TDD-005 RED is materially useful: removing either the execution comparison or the context comparison would cause one of the two semantic regressions to fail, and reverting the v2 execution/context shape would fail the structural fixture. Compatibility coverage also protects the narrow claim that `forge/change@1` remains structurally valid.
 
 However, regression coverage does not falsify the Core failures above: there is no FAST C-026 regression, no authoritative review-passed-without-evidence regression across schema boundaries, and no test capable of distinguishing a real independent execution from fabricated unequal identifiers.
 
-## Review evidence boundary
+### Review evidence boundary
 
 This Reviewer execution is independent from the Resolver context that produced PR #9, and no implementation changes were made here. However, the schema-defined `reviewer_identity` object cannot be truthfully written because the actual Resolver `execution_id` and `context_id` were not captured in repository-native state. This review therefore deliberately does **not** fabricate `reviewer_identity` values.
 
 A separate Resolver Execution Context is required to address these findings. This Reviewer execution stops here and must not resolve or approve its own findings.
+
+---
+
+## Strict Review Iteration 2
+
+### Verdict
+
+**REQUEST CHANGES**
+
+Subject HEAD reviewed: `f5a825917170ac684fefaa2b096a7ff83996d5cd` on PR #9, branch `feat/chg-0008-reviewer-resolver-separation`.
+
+Applicable Protocol: `2`.
+
+Reviewer provenance: `review-002`, Execution `review-exec-chg0008-20260815-02`, Execution Context `review-context-chg0008-20260815-02`, assurance `recorded`, observed by `self`. No provider-native execution/context ID or external attestation was available, so this review does not claim `verified` assurance.
+
+Subject provenance: `resolution-001`, Execution `resolution-exec-chg0008-20260815-01`, Execution Context `resolution-context-chg0008-20260815-01`, assurance `recorded`, observed by `self`.
+
+The Reviewer Execution and Context are distinct from the subject Execution and Context. This establishes the repository-native separation required at the `recorded` assurance level, but does not constitute cryptographic or externally attested proof.
+
+### Verification observed
+
+- GitHub Actions at subject HEAD `f5a825917170ac684fefaa2b096a7ff83996d5cd`: `Tests` run `31901504427` PASS.
+- GitHub Actions at subject HEAD: `Distribution Verification` run `31901504537` PASS.
+- Local repository execution was not possible in this Reviewer runtime because outbound DNS/network cloning of `github.com` is blocked. Source, tests, schemas, canonical resources, PR diff, commits, and CI were inspected through the repository-native GitHub connector.
+- Resolution TDD evidence records RED `d71435f9b2fca5c5829121ff45e0059e67526d84` and GREEN `538a77dcd77aed0db0505a288fc1cbea0e69def3` with `182 passed in 3.83s`.
+- Current regression coverage exercises FAST/STANDARD/FULL, missing provenance, nonexistent references, wrong revision ID, shared Execution, shared Context, partial records, re-review contamination, active schema downgrade, Protocol 1 compatibility, and valid independent provenance.
+- No regression was found that makes `revision.commit` disagree while keeping `revision.id` equal; the validator does not read `revision.commit` when enforcing C-026.
+
+### Iteration 1 finding re-evaluation
+
+#### CHG-0008-R001 — RESOLVED
+
+Protocol 1 semantic meaning is explicitly frozen. Protocol 2 has integer identifier `2`; the stronger C-026 obligation lives under `protocol/versions/2/`; `forge/change@2` is an artifact shape rather than a substitute for Protocol versioning; active Protocol 2 Changes cannot downgrade to `forge/change@1`; completed historical Protocol 1 Changes remain permitted without retroactive provenance. The compatibility document and Protocol 2 Contract preserve C-045/C-046 as the version boundary.
+
+#### CHG-0008-R002 — RESOLVED
+
+`provenance.yml` now contains prospective repository-native `resolution-001` provenance with Role, Execution, Execution Context, capture time, logical revision, commit, source and assurance. `review-002.subject_provenance` resolves to that record. No Implementation or Iteration 1 provenance was fabricated; the historical absence remains explicit.
+
+#### CHG-0008-R003 — RESOLVED
+
+Protocol 2 validation is applied project-wide and the passed-review gate does not branch by Flow. Regression tests explicitly parameterize FAST, STANDARD and FULL for both missing provenance rejection and valid provenance acceptance. Protocol 1 projects bypass the Protocol 2 C-026 gate, preserving the historical semantic boundary. Pending/failed reviews do not assert `review_passed`; Completion with a passed Protocol 2 review remains subject to the same validator.
+
+#### CHG-0008-R004 — PARTIALLY RESOLVED
+
+The original arbitrary-string vulnerability is materially reduced: passed iterations must resolve `subject_provenance` and `reviewer_provenance` to real ledger records, Role and assurance are checked, claimed provenance is insufficient, revision IDs must match, and shared Execution/Context is rejected. Documentation also correctly states that `recorded` is self-recorded repository evidence rather than cryptographic/external proof.
+
+However, the forged-evidence boundary is not fully closed because the validator ignores the optional-but-present `revision.commit`. A record can carry the expected logical revision ID while binding to a different commit, and C-026 validation still accepts it. This violates the claimed revision-bound evidence model when commit information is available.
+
+### New finding
+
+#### CHG-0008-R005 — MAJOR — Commit binding is recorded but not enforced
+
+**Affected requirements/invariants:** Protocol 2 Specification §§3, 5 and 8; C-026; Review Policy `revision_binding_required`; FR-004/FR-009/FR-015 as represented by the Resolution; repository-authority semantics.
+
+**Location:** `src/forge_cli/validation/__init__.py::_record_fields` and `_validate_protocol2_review_provenance`; `protocol/schemas/execution-provenance.schema.json`; `tests/cli/test_validate.py`; `.forge/changes/CHG-0008-reviewer-resolver-separation/provenance.yml`.
+
+**Failure mode:** provenance schema permits `revision.commit`, and CHG-0008 records it, but `_record_fields` returns only `revision.id`; C-026 validation compares only that logical ID. Two records with the same `revision.id` and different commit SHAs therefore satisfy the mechanical revision-linkage check. The current Change demonstrates the ambiguity directly: `resolution-001` binds `chg-0008-resolution-001` to `538a77dcd77aed0db0505a288fc1cbea0e69def3`, while the actual subject HEAD reviewed after the Resolver's final evidence commit is `f5a825917170ac684fefaa2b096a7ff83996d5cd`.
+
+**Impact:** Protocol 2 can report a passed Strict Review for a logical revision whose subject and Reviewer records identify different concrete commits. This weakens repository-native provenance exactly at the revision boundary the Change is intended to make auditable and permits commit-level evidence substitution.
+
+**Reproduction/evidence:** construct otherwise valid subject and Reviewer provenance with identical `revision.id`, independent Execution/Context, `recorded` assurance, but different 40-character `revision.commit` values. The current validator never reads or compares those commit values. Existing tests use matching synthetic commits and contain no mismatch regression.
+
+**Required resolution:** when commit binding is present/applicable, Core must validate it consistently with the reviewed revision and across subject/Reviewer provenance; the Resolution provenance for the revision actually submitted to re-review must identify the concrete subject commit. Add a valid RED that changes only commit binding, then GREEN enforcement. Preserve Protocol 1 compatibility and the `recorded`/`verified` trust distinction.
+
+### TDD audit — Iteration 2
+
+TDD-006 is credible evidence for the broad R001-R004 Resolution because its RED occurs before the consolidated GREEN and the CI metadata shows environment/setup succeeded before the test failure. TDD-007 separately covers Protocol-aware Adapter projection. The current suite is materially stronger than Iteration 1 and would detect several key regressions.
+
+TDD evidence is nevertheless incomplete for the commit-binding behavior now claimed by the provenance model. TDD-006 describes “revision-bound” provenance but the implemented tests establish logical revision-ID equality only; no RED/GREEN cycle demonstrates commit mismatch rejection. That gap supports R005 and prevents PASS.
+
+### Final Iteration 2 conclusion
+
+R001: **RESOLVED**.
+
+R002: **RESOLVED**.
+
+R003: **RESOLVED**.
+
+R004: **PARTIALLY RESOLVED**.
+
+New finding: **CHG-0008-R005 — MAJOR**.
+
+Strict Review Iteration 2 therefore fails with **REQUEST CHANGES**. CHG-0008 remains in `strict_review`. A new independent Resolution Execution is required; this Reviewer execution must not implement that Resolution or approve its own finding.
