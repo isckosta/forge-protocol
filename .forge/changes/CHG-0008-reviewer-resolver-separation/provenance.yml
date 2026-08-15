@@ -21,9 +21,7 @@ records:
     recorded_at: 2026-08-15T19:14:00Z
     revision:
       id: chg-0008-resolution-002
-      immutable_ref:
-        type: git_commit
-        value: 8642bb607a276139e91ec4030b7fb0a18ca1023b
+      immutable_ref: {type: git_commit, value: 8642bb607a276139e91ec4030b7fb0a18ca1023b}
       commit: 8642bb607a276139e91ec4030b7fb0a18ca1023b
       description: >-
         Frozen Resolution 2 review subject containing the R004/R005 implementation,
@@ -45,12 +43,9 @@ records:
     recorded_at: 2026-08-15T19:20:00Z
     revision:
       id: chg-0008-resolution-002
-      immutable_ref:
-        type: git_commit
-        value: 8642bb607a276139e91ec4030b7fb0a18ca1023b
+      immutable_ref: {type: git_commit, value: 8642bb607a276139e91ec4030b7fb0a18ca1023b}
       commit: 8642bb607a276139e91ec4030b7fb0a18ca1023b
-      description: >-
-        Strict Review Iteration 3 against the frozen Resolution 2 review subject.
+      description: Strict Review Iteration 3 against the frozen Resolution 2 review subject.
     source:
       assurance: recorded
       observed_by: self
@@ -67,9 +62,7 @@ records:
     recorded_at: 2026-08-15T19:48:16Z
     revision:
       id: chg-0008-resolution-003
-      immutable_ref:
-        type: git_commit
-        value: 4df2af728eb9e0f6225bda87762dbaf236fd3671
+      immutable_ref: {type: git_commit, value: 4df2af728eb9e0f6225bda87762dbaf236fd3671}
       commit: 4df2af728eb9e0f6225bda87762dbaf236fd3671
       description: >-
         Frozen Resolution 3 review subject containing the R006 effective-workspace freeze fix,
@@ -91,12 +84,9 @@ records:
     recorded_at: 2026-08-15T20:02:32Z
     revision:
       id: chg-0008-resolution-003
-      immutable_ref:
-        type: git_commit
-        value: 4df2af728eb9e0f6225bda87762dbaf236fd3671
+      immutable_ref: {type: git_commit, value: 4df2af728eb9e0f6225bda87762dbaf236fd3671}
       commit: 4df2af728eb9e0f6225bda87762dbaf236fd3671
-      description: >-
-        Strict Review Iteration 4 against the frozen Resolution 3 review subject.
+      description: Strict Review Iteration 4 against the frozen Resolution 3 review subject.
     source:
       assurance: recorded
       observed_by: self
@@ -105,3 +95,28 @@ records:
         Independent Reviewer execution for Strict Review Iteration 4. Repository-native
         self-recorded provenance only; no provider-native attestation or external proof was
         available, so assurance is recorded rather than verified.
+  - id: resolution-004
+    role: resolution
+    execution:
+      id: resolution-exec-chg0008-20260815-04
+      context_id: resolution-context-chg0008-20260815-04
+    recorded_at: 2026-08-15T20:35:57Z
+    revision:
+      id: chg-0008-resolution-004
+      immutable_ref:
+        type: git_commit
+        value: 87f0e169676df0ca8463a5620774d26af90b242a
+      commit: 87f0e169676df0ca8463a5620774d26af90b242a
+      description: >-
+        Frozen Resolution 4 review subject resolving R007 by anchoring established Protocol 2
+        subject provenance to its first complete committed representation, preserving live
+        Review Iteration subject bindings, and retaining the R006 effective-workspace freeze.
+        Tests run 31907092347 and Distribution Verification run 31907092231 passed for this subject.
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: chatgpt
+      statement: >-
+        This Resolver execution records repository-native self-observed provenance for the
+        frozen Resolution 4 subject. The authority is local Git history and is not cryptographic
+        or external attestation; no provider-native proof was available, so assurance is recorded.
