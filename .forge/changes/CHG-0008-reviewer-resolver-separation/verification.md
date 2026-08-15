@@ -5,62 +5,44 @@ forge:
 change: CHG-0008
 status: passed
 ---
-# Verification — Strict Review Iteration 3 Resolution
+# Verification — CHG-0008 Resolutions
 
-Resolution implementation and Verification are passed; this is not Strict Review acceptance.
+Verification evidence is Resolver evidence only; it is not Strict Review acceptance.
 
-## Scope
-This Resolution addresses CHG-0008-R006 and the unrelated `Tests` workflow regression observed after Strict Review Iteration 3. R001-R005 and all historical REQUEST CHANGES verdicts remain preserved.
+## Historical Resolution 3 — R006
+Resolution 3 established the effective reviewable workspace freeze: committed, staged, unstaged, deletion/rename, and Git-visible untracked state are combined from the Git repository root; exact Change-local `manifest.yml`, `provenance.yml`, and `review.md` are the only review-control path exceptions and must remain regular non-symlink files. Its causal GREEN was `eaa6c481e5ea9a08c3f4e234feb6d1cbf871ee99`, Tests run `31904623010`, with Distribution Verification run `31904622991`. Final Resolution 3 regressions passed at Tests run `31904809568` and Distribution Verification run `31904809691`. Strict Review Iteration 4 subsequently accepted R006 for its original dirty-workspace defect and found R007 instead.
 
-## R006 root cause
-The pre-Resolution freeze helper inspected only `git diff <frozen>..HEAD`. Consequently a frozen subject could diverge in the effective workspace without a new commit: staged, unstaged, deleted/renamed, and Git-visible untracked reviewable paths were invisible to C-026 validation.
+## Resolution 4 — R007 root cause
+The R006 allowlist protected the effective filesystem delta but left the source of the baseline mutable. `_validate_protocol2_review_provenance` loaded the subject immutable Git commit from the current `provenance.yml`; `_reviewable_workspace_delta` then excluded that same `provenance.yml`. A post-freeze reviewable commit B could therefore be hidden by rewriting the allowlisted subject and Reviewer records from frozen A to B.
 
-## CI `Tests` root cause
-The Iteration 3 review-control commit wrote the R006 description as a plain YAML scalar containing `MAJOR:`. PyYAML rejected the canonical `manifest.yml` with `ScannerError: mapping values are not allowed here`. The sole failing test in the diagnostic run was `test_canonical_yaml_instances_satisfy_their_declared_schemas`. The artifact was repaired with a block scalar; the contract test and workflow were not weakened, skipped, or removed.
+## TDD-010 causal RED
+RED commit `73f865ff712647c24a0203c530703d69c2513ae8`, Tests run `31906413392`, job `95064855880`:
 
-## TDD-009 causal RED
-The first R006 test was authored before the production fix, but that initial CI run was contaminated by the malformed historical manifest and is not counted as causal RED. After the manifest was repaired, the validator alone was temporarily restored to the pre-R006 commit-only implementation while the R006 tests remained unchanged.
-
-RED commit `d845f0a270648f10e7106184db4a6970bad8132b`, Tests run `31904557628`, job `95060254120`:
-
+- setup and dependency installation passed;
 - command: `pytest -q`;
-- result: `9 failed, 201 passed in 3.93s`;
-- causal failures: unstaged tracked mutation, staged tracked mutation, untracked reviewable file, tracked deletion, tracked rename, same-Change reviewable artifact, rename-to-allowlisted path, metadata lookalike, and symlink substitution;
-- causal reason: each mutation was accepted with validator exit code `0` when C-026 expected exit code `2`.
+- result: `1 failed, 212 passed in 5.49s`;
+- failing regression: `test_rewriting_frozen_subject_provenance_cannot_move_baseline`;
+- observed vulnerable behavior: `forge validate` returned exit code `0` after freeze A → reviewable commit B → coherent subject/Reviewer provenance rewrite to B.
 
-## Implementation
-Core now computes one `reviewable workspace delta since frozen subject` from the Git repository root. It unions machine-readable NUL-delimited results for:
+## Implementation and authority boundary
+Core now resolves committed history for the exact Change-local provenance and manifest paths before trusting current review-control metadata. The first committed representation of a referenced subject provenance record is the immutable repository-native authority for the full subject record. The first committed `revision`/`subject_provenance` pair for an existing Review Iteration is independently authoritative.
 
-- committed `<subject>..HEAD` delta;
-- staged/index delta;
-- unstaged working-tree delta;
-- Git-visible untracked paths via `git ls-files --others --exclude-standard`.
+Current metadata may append new provenance records and update legitimate review state, but it cannot mutate or redirect those anchored records. A differing Role, Execution, Context, logical revision, immutable reference/commit, source/assurance, record identity, or historical Iteration subject binding is rejected before the immutable commit is used for effective-workspace comparison. Missing referenced records and duplicate current IDs remain rejected by existing validation.
 
-Rename/copy parsing keeps both source and destination paths; tracked deletions remain visible. `.gitignore` is respected for untracked paths. The only excluded paths are the exact repository-root-relative `manifest.yml`, `provenance.yml`, and `review.md` of the Change whose subject is frozen, and only while those paths remain regular non-symlink files. Metadata in another Change, same-directory reviewable artifacts, lookalikes, rename targets, directory substitutions, same basenames outside the Change, and symlink substitutions remain reviewable.
+A repository with no `HEAD` has no historical authority yet and may establish its first record prospectively. Once an anchor exists, complete local Git history is required. Shallow history and Git/history lookup failures fail closed. GitHub or a hosted Forge backend is not required.
 
-The invariant is enforced by `forge validate`, not delegated to Doctor. Protocol 1 behavior is unchanged. Protocol 2 FAST, STANDARD, and FULL use the same rule.
+## GREEN and regression preservation
+Corrected implementation commit `80292e6acc54a59e15bf4c4919b9286cc2ba5dd6`:
 
-## Causal GREEN
-GREEN commit `eaa6c481e5ea9a08c3f4e234feb6d1cbf871ee99`:
+- Tests run `31906638536`: PASS;
+- Distribution Verification run `31906638462`: PASS.
 
-- Tests run `31904623010`, job `95060410846`: PASS, `210 passed in 4.95s`;
-- Distribution Verification run `31904622991`, job `95060410904`: PASS;
-- wheel build: PASS;
-- isolated wheel install: PASS;
-- offline `forge init`: PASS;
-- offline `forge validate`: PASS (`Forge project is valid`);
-- offline `forge doctor`: PASS for Git availability/repository, Forge initialization, project schema, Protocol 2 compatibility, canonical FAST/STANDARD/FULL Flows, and canonical Contract;
-- Adapter schema/loading probe: PASS;
-- runtime dependency audit: PASS.
+The R007 regression suite was subsequently expanded to cover subject-field mutation, Role replacement, historical Iteration redirection, legitimate Reviewer-record append, subject-record removal, and shallow-history fail-closed behavior. Existing R006 regressions continue to cover committed/staged/unstaged/untracked mutation, deletion, rename, exact metadata boundaries, symlink/directory substitution, and metadata lookalikes. Protocol 1 and FAST/STANDARD/FULL Protocol 2 coverage remain in the suite.
 
-## Final pre-freeze regression checkpoint
-After adding the two remaining explicit path-bypass regressions (`review.md/` directory and a same-basename `review.md` outside the Change), the complete reviewable Resolution 3 state was verified again:
+CI checkouts used by repository validation now use complete Git history (`fetch-depth: 0`), because a shallow clone cannot truthfully establish the first committed provenance authority. The Tests workflow also dogfoods `forge validate` and `forge doctor` against the repository itself after the full test suite.
 
-- Tests run `31904809568`, job `95060859894`: PASS, `212 passed in 4.24s`;
-- Distribution Verification run `31904809691`: PASS;
-- the suite preserves committed post-freeze failure, wrong immutable ref, wrong logical revision, forged provenance, same Execution, same Context, Protocol 1 compatibility, and FAST/STANDARD/FULL Protocol 2 regressions.
+## Assurance
+The new authority is recorded repository-native Git history. It detects semantic rewrites relative to the repository history available to Core, but it is not cryptographic/external attestation and does not claim protection against an actor who can rewrite Git history itself. `recorded` remains the correct assurance for this Resolver execution.
 
-## Frozen subject and provenance boundary
-All remaining reviewable Resolution 3 artifacts are finalized before the final freeze. The exact immutable freeze SHA cannot truthfully be embedded into this reviewable file because that would create commit self-reference. The final subject is therefore the commit containing this evidence and all other reviewable Resolution 3 material; its exact Git SHA is subsequently recorded authoritatively by `resolution-003` in `provenance.yml`.
-
-After that freeze, only Change-local review-control metadata may change. The final metadata state must be dogfooded with `forge validate`, `forge doctor`, the test suite, and final CI. `review-004` remains pending and receives no Reviewer provenance from this Resolver.
+## Resolution 4 freeze procedure
+All implementation, tests, Protocol 2 normative resources, architecture, strategy, TDD evidence, verification, traceability/knowledge changes and workflow changes belong to the Resolution 4 reviewable subject and must be finalized before freeze. After the final reviewable commit is green, that exact commit becomes `chg-0008-resolution-004`'s frozen subject. A subsequent Change-local `provenance.yml` metadata commit records `resolution-004` pointing back to it; that first committed record becomes the immutable provenance authority. Only legitimate review-control metadata may follow. No `review-005`, Strict Review PASS, Completion, or merge is produced by this Resolver.
