@@ -3,46 +3,37 @@ change: CHG-0008
 records:
   - id: resolution-001
     role: resolution
-    execution:
-      id: resolution-exec-chg0008-20260815-01
-      context_id: resolution-context-chg0008-20260815-01
+    execution: {id: resolution-exec-chg0008-20260815-01, context_id: resolution-context-chg0008-20260815-01}
     recorded_at: 2026-08-15T18:27:15Z
-    revision:
-      id: chg-0008-resolution-001
-      commit: 538a77dcd77aed0db0505a288fc1cbea0e69def3
-      description: >-
-        GREEN Resolution revision after Protocol 2 implementation, provenance model,
-        all-Flow C-026 enforcement, protocol-aware diagnostics/Adapter projection,
-        Change evidence migration, and compatibility expectation alignment. Subsequent
-        commits only consolidate verification evidence for the same Resolution execution.
-    source:
-      assurance: recorded
-      observed_by: self
-      harness: chatgpt
-      statement: >-
-        Core-local Forge execution and context identifiers were allocated and recorded
-        during this Resolution execution. No provider-native execution/context identifier
-        was exposed to the repository adapter, so this record is durable self-recorded
-        provenance, not external or cryptographic verification.
+    revision: {id: chg-0008-resolution-001, commit: 538a77dcd77aed0db0505a288fc1cbea0e69def3}
+    source: {assurance: recorded, observed_by: self, harness: chatgpt, statement: 'Historical Resolution 1 self-recorded provenance; not external proof.'}
   - id: review-002
     role: review
-    execution:
-      id: review-exec-chg0008-20260815-02
-      context_id: review-context-chg0008-20260815-02
+    execution: {id: review-exec-chg0008-20260815-02, context_id: review-context-chg0008-20260815-02}
     recorded_at: 2026-08-15T18:45:00Z
+    revision: {id: chg-0008-resolution-001, commit: f5a825917170ac684fefaa2b096a7ff83996d5cd}
+    source: {assurance: recorded, observed_by: self, harness: chatgpt, statement: 'Historical Strict Review Iteration 2 provenance; its commit mismatch is preserved as R005 evidence.'}
+  - id: resolution-002
+    role: resolution
+    execution:
+      id: resolution-exec-chg0008-20260815-02
+      context_id: resolution-context-chg0008-20260815-02
+    recorded_at: 2026-08-15T19:14:00Z
     revision:
-      id: chg-0008-resolution-001
-      commit: f5a825917170ac684fefaa2b096a7ff83996d5cd
+      id: chg-0008-resolution-002
+      immutable_ref:
+        type: git_commit
+        value: 8642bb607a276139e91ec4030b7fb0a18ca1023b
+      commit: 8642bb607a276139e91ec4030b7fb0a18ca1023b
       description: >-
-        Strict Review Iteration 2 subject HEAD observed before Reviewer-owned review
-        artifacts were written. This execution reviewed the Resolution and its subsequent
-        evidence/documentation commit without modifying implementation.
+        Frozen Resolution 2 review subject containing the R004/R005 implementation,
+        regressions, Protocol 2 normative updates, Adapter guidance and Verification evidence.
+        Subsequent commits are restricted to Change-local review-control metadata.
     source:
       assurance: recorded
       observed_by: self
       harness: chatgpt
       statement: >-
-        This Reviewer execution allocated and recorded provider-independent execution and
-        context identifiers in a separate conversation/execution from resolution-001. No
-        provider-native execution/context identifier or external attestation was exposed,
-        so assurance is recorded, not verified.
+        This Resolver execution records repository-native self-observed provenance for the
+        frozen subject. No provider-native attestation was available; assurance is recorded,
+        not verified or cryptographic/external proof.
