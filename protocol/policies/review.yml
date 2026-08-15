@@ -41,17 +41,20 @@ review:
   evidence:
     required_for: [blocker, major]
   reviewer_resolver_separation:
-    minimum:
-      fast: agent_same_session
-      standard: agent_isolated_session
-      full: human
-    fallback:
-      full: agent_isolated_session
-    forbidden:
-      full: [agent_same_session]
+    independence:
+      fast: execution_context
+      standard: execution_context
+      full: execution_context
+    same_execution_forbidden: true
+    same_context_forbidden: true
+    role_switch_is_independence: false
+    self_review_satisfies_strict_review: false
+    same_harness_model_or_provider_allowed: true
+    human_preferred_for_full: true
   diff_only_review:
     allowed: false
   passing_tests_are_sufficient:
     value: false
   re_review:
     required_after_blocking_resolution: true
+    independent_from_resolution_execution: true
