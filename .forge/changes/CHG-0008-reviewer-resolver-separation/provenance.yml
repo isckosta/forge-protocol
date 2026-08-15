@@ -24,3 +24,25 @@ records:
         during this Resolution execution. No provider-native execution/context identifier
         was exposed to the repository adapter, so this record is durable self-recorded
         provenance, not external or cryptographic verification.
+  - id: review-002
+    role: review
+    execution:
+      id: review-exec-chg0008-20260815-02
+      context_id: review-context-chg0008-20260815-02
+    recorded_at: 2026-08-15T18:45:00Z
+    revision:
+      id: chg-0008-resolution-001
+      commit: f5a825917170ac684fefaa2b096a7ff83996d5cd
+      description: >-
+        Strict Review Iteration 2 subject HEAD observed before Reviewer-owned review
+        artifacts were written. This execution reviewed the Resolution and its subsequent
+        evidence/documentation commit without modifying implementation.
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: chatgpt
+      statement: >-
+        This Reviewer execution allocated and recorded provider-independent execution and
+        context identifiers in a separate conversation/execution from resolution-001. No
+        provider-native execution/context identifier or external attestation was exposed,
+        so assurance is recorded, not verified.
