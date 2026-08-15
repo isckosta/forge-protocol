@@ -24,6 +24,6 @@ status: active
 - [x] T-046 Preserve Protocol 1 and FAST/STANDARD/FULL Protocol 2 regressions.
 - [x] T-047 Update Protocol 2 Specification, Review Policy, schema, ADR, Architecture, Codex projection, evidence and knowledge capture.
 - [x] T-048 Verify GREEN in Tests run 31903247493 and Distribution Verification run 31903247492.
-- [ ] T-049 Freeze final Resolution 2 review subject and record `resolution-002` provenance.
+- [x] T-049 Freeze the final Resolution 2 review subject; the following metadata commit records `resolution-002` against this immutable commit.
 - [ ] T-050 Obtain independent Strict Review Iteration 3 against `resolution-002`.
 - [ ] T-051 Complete CHG-0008 only after independent acceptance and all Completion Gates.
