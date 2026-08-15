@@ -5,31 +5,57 @@ forge:
 change: CHG-0008
 status: passed
 ---
-# Verification — Strict Review Iteration 2 Resolution
+# Verification — Strict Review Iteration 3 Resolution
 
 Resolution implementation and Verification are passed; this is not Strict Review acceptance.
 
 ## Scope
-This Resolution addresses the remainder of R004 and R005. R001-R003 remain preserved as resolved by the prior Resolution and were regression-protected.
+This Resolution addresses CHG-0008-R006 and the unrelated `Tests` workflow regression observed after Strict Review Iteration 3. R001-R005 and all historical REQUEST CHANGES verdicts remain preserved.
 
-## Dedicated RED
-Test-only commit `b565426abc2b1c04f322667635b3267373fb17a7` introduced the case required by R005: valid subject/Reviewer Roles and assurance, distinct Execution/Context, same logical `revision.id`, but different commits. Tests run `31902858488`, job `95056158653`, reached the test step after environment/dependency setup and failed because Core still accepted commit divergence.
+## R006 root cause
+The pre-Resolution freeze helper inspected only `git diff <frozen>..HEAD`. Consequently a frozen subject could diverge in the effective workspace without a new commit: staged, unstaged, deleted/renamed, and Git-visible untracked reviewable paths were invisible to C-026 validation.
+
+## CI `Tests` root cause
+The Iteration 3 review-control commit wrote the R006 description as a plain YAML scalar containing `MAJOR:`. PyYAML rejected the canonical `manifest.yml` with `ScannerError: mapping values are not allowed here`. The sole failing test in the diagnostic run was `test_canonical_yaml_instances_satisfy_their_declared_schemas`. The artifact was repaired with a block scalar; the contract test and workflow were not weakened, skipped, or removed.
+
+## TDD-009 causal RED
+The first R006 test was authored before the production fix, but that initial CI run was contaminated by the malformed historical manifest and is not counted as causal RED. After the manifest was repaired, the validator alone was temporarily restored to the pre-R006 commit-only implementation while the R006 tests remained unchanged.
+
+RED commit `d845f0a270648f10e7106184db4a6970bad8132b`, Tests run `31904557628`, job `95060254120`:
+
+- command: `pytest -q`;
+- result: `9 failed, 201 passed in 3.93s`;
+- causal failures: unstaged tracked mutation, staged tracked mutation, untracked reviewable file, tracked deletion, tracked rename, same-Change reviewable artifact, rename-to-allowlisted path, metadata lookalike, and symlink substitution;
+- causal reason: each mutation was accepted with validator exit code `0` when C-026 expected exit code `2`.
 
 ## Implementation
-Core now normalizes a concrete immutable revision reference. `revision.commit` remains compatible Git shorthand; `revision.immutable_ref` provides the generic representation. Subject and Reviewer provenance must match on logical and concrete revision. Explicit Git subjects must exist locally. Once frozen, any committed change outside Change-local `manifest.yml`, `provenance.yml`, and `review.md` invalidates the binding and requires new subject provenance.
+Core now computes one `reviewable workspace delta since frozen subject` from the Git repository root. It unions machine-readable NUL-delimited results for:
 
-This makes the review subject explicit without impossible commit self-reference: reviewable evidence is frozen first; provenance metadata is committed afterwards and points to the frozen subject.
+- committed `<subject>..HEAD` delta;
+- staged/index delta;
+- unstaged working-tree delta;
+- Git-visible untracked paths via `git ls-files --others --exclude-standard`.
 
-## GREEN
-GREEN revision `e360685531e2a4ee76890b1c636173f02ead1d3e`:
-- Tests run `31903247493`, job `95057114869`: PASS (`pytest -q`).
-- Distribution Verification run `31903247492`: PASS.
-- Distribution workflow covers wheel build, isolated wheel install, offline init/validate/doctor, Adapter schema/loading and dependency audit.
-- Protocol 1 compatibility and Protocol 2 FAST/STANDARD/FULL regressions are included.
-- Existing forged IDs, shared Execution, shared Context, wrong logical revision and downgrade regressions remain in the suite.
+Rename/copy parsing keeps both source and destination paths; tracked deletions remain visible. `.gitignore` is respected for untracked paths. The only excluded paths are the exact repository-root-relative `manifest.yml`, `provenance.yml`, and `review.md` of the Change whose subject is frozen, and only while those paths remain regular non-symlink files. Metadata in another Change, same-directory reviewable artifacts, lookalikes, rename targets, and symlink substitutions remain reviewable.
 
-## Assurance boundary
-`recorded` continues to mean repository-native self-recorded evidence. It is not external/cryptographic proof. `verified` remains stronger observer-backed evidence. Core now mechanically verifies concrete revision consistency in addition to the prior provenance relationships.
+The invariant is enforced by `forge validate`, not delegated to Doctor. Protocol 1 behavior is unchanged. Protocol 2 FAST, STANDARD, and FULL use the same rule.
 
-## Review boundary
-Strict Review Iterations 1 and 2 remain historical failures. This Resolver does not create Reviewer provenance for Iteration 3, does not approve the Resolution, and does not complete or merge CHG-0008. The final review-subject freeze and `resolution-002` record are established by the subsequent review-control metadata commit.
+## Causal GREEN
+GREEN commit `eaa6c481e5ea9a08c3f4e234feb6d1cbf871ee99`:
+
+- Tests run `31904623010`, job `95060410846`: PASS, `210 passed in 4.95s`;
+- Distribution Verification run `31904622991`, job `95060410904`: PASS;
+- wheel build: PASS;
+- isolated wheel install: PASS;
+- offline `forge init`: PASS;
+- offline `forge validate`: PASS (`Forge project is valid`);
+- offline `forge doctor`: PASS for Git availability/repository, Forge initialization, project schema, Protocol 2 compatibility, canonical FAST/STANDARD/FULL Flows, and canonical Contract;
+- Adapter schema/loading probe: PASS;
+- runtime dependency audit: PASS.
+
+The suite preserves committed post-freeze failure, wrong immutable ref, wrong logical revision, forged provenance, same Execution, same Context, Protocol 1 compatibility, and FAST/STANDARD/FULL Protocol 2 regressions.
+
+## Frozen subject and provenance boundary
+All remaining reviewable Resolution 3 artifacts are finalized before the final freeze. The exact immutable freeze SHA cannot truthfully be embedded into this reviewable file because that would create commit self-reference. The final subject is therefore the commit containing this evidence and all other reviewable Resolution 3 material; its exact Git SHA is subsequently recorded authoritatively by `resolution-003` in `provenance.yml`.
+
+After that freeze, only Change-local review-control metadata may change. The final metadata state must be dogfooded with `forge validate`, `forge doctor`, the test suite, and final CI. `review-004` remains pending and receives no Reviewer provenance from this Resolver.
