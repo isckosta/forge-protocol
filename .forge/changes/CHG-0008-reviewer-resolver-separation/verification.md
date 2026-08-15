@@ -36,7 +36,7 @@ Core now computes one `reviewable workspace delta since frozen subject` from the
 - unstaged working-tree delta;
 - Git-visible untracked paths via `git ls-files --others --exclude-standard`.
 
-Rename/copy parsing keeps both source and destination paths; tracked deletions remain visible. `.gitignore` is respected for untracked paths. The only excluded paths are the exact repository-root-relative `manifest.yml`, `provenance.yml`, and `review.md` of the Change whose subject is frozen, and only while those paths remain regular non-symlink files. Metadata in another Change, same-directory reviewable artifacts, lookalikes, rename targets, and symlink substitutions remain reviewable.
+Rename/copy parsing keeps both source and destination paths; tracked deletions remain visible. `.gitignore` is respected for untracked paths. The only excluded paths are the exact repository-root-relative `manifest.yml`, `provenance.yml`, and `review.md` of the Change whose subject is frozen, and only while those paths remain regular non-symlink files. Metadata in another Change, same-directory reviewable artifacts, lookalikes, rename targets, directory substitutions, same basenames outside the Change, and symlink substitutions remain reviewable.
 
 The invariant is enforced by `forge validate`, not delegated to Doctor. Protocol 1 behavior is unchanged. Protocol 2 FAST, STANDARD, and FULL use the same rule.
 
@@ -53,7 +53,12 @@ GREEN commit `eaa6c481e5ea9a08c3f4e234feb6d1cbf871ee99`:
 - Adapter schema/loading probe: PASS;
 - runtime dependency audit: PASS.
 
-The suite preserves committed post-freeze failure, wrong immutable ref, wrong logical revision, forged provenance, same Execution, same Context, Protocol 1 compatibility, and FAST/STANDARD/FULL Protocol 2 regressions.
+## Final pre-freeze regression checkpoint
+After adding the two remaining explicit path-bypass regressions (`review.md/` directory and a same-basename `review.md` outside the Change), the complete reviewable Resolution 3 state was verified again:
+
+- Tests run `31904809568`, job `95060859894`: PASS, `212 passed in 4.24s`;
+- Distribution Verification run `31904809691`: PASS;
+- the suite preserves committed post-freeze failure, wrong immutable ref, wrong logical revision, forged provenance, same Execution, same Context, Protocol 1 compatibility, and FAST/STANDARD/FULL Protocol 2 regressions.
 
 ## Frozen subject and provenance boundary
 All remaining reviewable Resolution 3 artifacts are finalized before the final freeze. The exact immutable freeze SHA cannot truthfully be embedded into this reviewable file because that would create commit self-reference. The final subject is therefore the commit containing this evidence and all other reviewable Resolution 3 material; its exact Git SHA is subsequently recorded authoritatively by `resolution-003` in `provenance.yml`.
