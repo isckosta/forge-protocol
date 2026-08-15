@@ -39,13 +39,17 @@ def _bundle(flow_id: str = "full"):
     )
 
 
-def test_standard_and_full_projection_require_isolated_review_session_evidence() -> None:
+def test_standard_and_full_projection_require_independent_review_execution_context() -> None:
     for flow_id in ("standard", "full"):
         bundle = _bundle(flow_id)
         flow_resource = next(item for item in bundle.resources if item.name == "forge-flow.md")
-        assert "Do not perform Strict Review in the Resolver session" in flow_resource.content
-        assert "review.reviewer_identity.session_ref" in flow_resource.content
-        assert "resolver_session_ref" in flow_resource.content
+        assert "Execution and Execution Context independent" in flow_resource.content
+        assert "changing Role inside the same conversation" in flow_resource.content
+        assert "review.reviewer_identity.execution_id" in flow_resource.content
+        assert "context_id" in flow_resource.content
+        assert "resolver_execution_id" in flow_resource.content
+        assert "resolver_context_id" in flow_resource.content
+        assert "Self-review" in flow_resource.content
 
 
 def test_bundle_resources_become_forge_owned_generic_operations() -> None:
