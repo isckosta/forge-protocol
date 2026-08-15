@@ -79,7 +79,7 @@ def _changed(r:Path,m:Path,c:str)->bool:
     delta=_reviewable_workspace_delta(r,m,c)
     return delta is None or bool(delta)
 _HISTORY_ERROR=object()
-def _committed_history_mappings(r:Path,path:Path)->list[dict[str,Any]]|None:
+def _committed_history_mappings(r:Path,path:Path)->list[object]|None:
     root=_git_root(r)
     if root is None:return None
     head=subprocess.run(["git","rev-parse","--verify","HEAD"],cwd=root,capture_output=True,text=True,check=False)
@@ -91,20 +91,25 @@ def _committed_history_mappings(r:Path,path:Path)->list[dict[str,Any]]|None:
     except(OSError,ValueError):return None
     history=subprocess.run(["git","log","--format=%H","--reverse","--diff-filter=AM","--",rel],cwd=root,capture_output=True,text=True,check=False)
     if history.returncode:return None
-    documents=[]
+    documents:list[object]=[]
     for commit in(line.strip() for line in history.stdout.splitlines()):
         if not commit:continue
         snapshot=subprocess.run(["git","show",f"{commit}:{rel}"],cwd=root,capture_output=True,check=False)
-        if snapshot.returncode:return None
+        if snapshot.returncode:
+            documents.append(_HISTORY_ERROR);continue
         try:loaded=yaml.safe_load(snapshot.stdout.decode("utf-8")) or {}
-        except(UnicodeDecodeError,yaml.YAMLError):return None
-        if not isinstance(loaded,dict):return None
+        except(UnicodeDecodeError,yaml.YAMLError):
+            documents.append(_HISTORY_ERROR);continue
+        if not isinstance(loaded,dict):
+            documents.append(_HISTORY_ERROR);continue
         documents.append(loaded)
     return documents
 def _first_committed_provenance_record(r:Path,path:Path,record_id:str):
     documents=_committed_history_mappings(r,path)
     if documents is None:return _HISTORY_ERROR
     for document in documents:
+        if document is _HISTORY_ERROR:return _HISTORY_ERROR
+        assert isinstance(document,dict)
         records=document.get("records")
         if not isinstance(records,list):continue
         matches=[record for record in records if isinstance(record,dict)and record.get("id")==record_id]
@@ -115,6 +120,8 @@ def _first_committed_review_iteration(r:Path,path:Path,iteration_id:str):
     documents=_committed_history_mappings(r,path)
     if documents is None:return _HISTORY_ERROR
     for document in documents:
+        if document is _HISTORY_ERROR:return _HISTORY_ERROR
+        assert isinstance(document,dict)
         review=document.get("review");iterations=review.get("iterations")if isinstance(review,dict)else None
         if not isinstance(iterations,list):continue
         matches=[iteration for iteration in iterations if isinstance(iteration,dict)and iteration.get("id")==iteration_id]
