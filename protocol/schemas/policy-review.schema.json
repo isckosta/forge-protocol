@@ -24,35 +24,29 @@
         "reviewer_resolver_separation": {
           "type": "object",
           "additionalProperties": false,
-          "required": ["minimum", "fallback", "forbidden"],
+          "required": ["independence", "same_execution_forbidden", "same_context_forbidden", "role_switch_is_independence", "self_review_satisfies_strict_review", "same_harness_model_or_provider_allowed", "human_preferred_for_full"],
           "properties": {
-            "minimum": {
+            "independence": {
               "type": "object",
               "additionalProperties": false,
               "required": ["fast", "standard", "full"],
               "properties": {
-                "fast": {"const": "agent_same_session"},
-                "standard": {"const": "agent_isolated_session"},
-                "full": {"const": "human"}
+                "fast": {"const": "execution_context"},
+                "standard": {"const": "execution_context"},
+                "full": {"const": "execution_context"}
               }
             },
-            "fallback": {
-              "type": "object",
-              "additionalProperties": false,
-              "required": ["full"],
-              "properties": {"full": {"const": "agent_isolated_session"}}
-            },
-            "forbidden": {
-              "type": "object",
-              "additionalProperties": false,
-              "required": ["full"],
-              "properties": {"full": {"const": ["agent_same_session"]}}
-            }
+            "same_execution_forbidden": {"const": true},
+            "same_context_forbidden": {"const": true},
+            "role_switch_is_independence": {"const": false},
+            "self_review_satisfies_strict_review": {"const": false},
+            "same_harness_model_or_provider_allowed": {"const": true},
+            "human_preferred_for_full": {"const": true}
           }
         },
         "diff_only_review": {"type": "object", "additionalProperties": false, "required": ["allowed"], "properties": {"allowed": {"const": false}}},
         "passing_tests_are_sufficient": {"type": "object", "additionalProperties": false, "required": ["value"], "properties": {"value": {"const": false}}},
-        "re_review": {"type": "object", "additionalProperties": false, "required": ["required_after_blocking_resolution"], "properties": {"required_after_blocking_resolution": {"const": true}}}
+        "re_review": {"type": "object", "additionalProperties": false, "required": ["required_after_blocking_resolution", "independent_from_resolution_execution"], "properties": {"required_after_blocking_resolution": {"const": true}, "independent_from_resolution_execution": {"const": true}}}
       }
     }
   }
