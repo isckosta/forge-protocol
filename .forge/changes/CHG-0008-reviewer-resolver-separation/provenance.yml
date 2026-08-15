@@ -59,3 +59,27 @@ records:
         This independent Reviewer execution records repository-native self-observed
         execution/context provenance for Strict Review Iteration 3. No provider-native
         attestation was available; assurance is recorded, not verified.
+  - id: resolution-003
+    role: resolution
+    execution:
+      id: resolution-exec-chg0008-20260815-03
+      context_id: resolution-context-chg0008-20260815-03
+    recorded_at: 2026-08-15T19:48:16Z
+    revision:
+      id: chg-0008-resolution-003
+      immutable_ref:
+        type: git_commit
+        value: 4df2af728eb9e0f6225bda87762dbaf236fd3671
+      commit: 4df2af728eb9e0f6225bda87762dbaf236fd3671
+      description: >-
+        Frozen Resolution 3 review subject containing the R006 effective-workspace freeze fix,
+        dedicated regressions, Protocol 2 normative updates, Codex Adapter guidance,
+        CI root-cause repair, traceability and Verification evidence.
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: chatgpt
+      statement: >-
+        This Resolver execution records repository-native self-observed provenance for the
+        frozen Resolution 3 subject. No provider-native attestation was available; assurance
+        is recorded, not verified or cryptographic/external proof.
