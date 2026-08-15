@@ -24,4 +24,11 @@ jobs:
         run: pip install -e '.[test]'
 
       - name: Run tests
-        run: pytest -q
+        run: pytest -q --junitxml=pytest.xml
+
+      - name: Upload pytest diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pytest-results
+          path: pytest.xml
