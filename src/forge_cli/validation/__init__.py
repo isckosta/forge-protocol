@@ -37,11 +37,47 @@ def _record_fields(x:object):
     if com is not None and(typ!="git_commit"or not isinstance(com,str)or com.lower()!=val):return None
     return i,role,ex,ctx,rid,(typ,val)
 def _git_exists(r:Path,c:str)->bool:return subprocess.run(["git","cat-file","-e",f"{c}^{{commit}}"],cwd=r,capture_output=True,check=False).returncode==0
+def _git_root(r:Path)->Path|None:
+    q=subprocess.run(["git","rev-parse","--show-toplevel"],cwd=r,capture_output=True,text=True,check=False)
+    if q.returncode:return None
+    try:return Path(q.stdout.strip()).resolve()
+    except OSError:return None
+def _decode_git_path(value:bytes)->str:return value.decode("utf-8","surrogateescape")
+def _name_status_paths(data:bytes)->set[str]|None:
+    parts=data.split(b"\0"); paths:set[str]=set();i=0
+    if parts and parts[-1]==b"":parts.pop()
+    while i<len(parts):
+        status=parts[i];i+=1
+        if not status:return None
+        count=2 if status[:1] in{b"R",b"C"}else 1
+        if i+count>len(parts):return None
+        for _ in range(count):paths.add(_decode_git_path(parts[i]));i+=1
+    return paths
+def _diff_paths(root:Path,*args:str)->set[str]|None:
+    q=subprocess.run(["git","diff","--name-status","-z","--find-renames",*args,"--"],cwd=root,capture_output=True,check=False)
+    return None if q.returncode else _name_status_paths(q.stdout)
+def _untracked_paths(root:Path)->set[str]|None:
+    q=subprocess.run(["git","ls-files","--others","--exclude-standard","-z","--"],cwd=root,capture_output=True,check=False)
+    if q.returncode:return None
+    return {_decode_git_path(p) for p in q.stdout.split(b"\0") if p}
+def _reviewable_workspace_delta(r:Path,m:Path,c:str)->set[str]|None:
+    root=_git_root(r)
+    if root is None:return None
+    committed=_diff_paths(root,f"{c}..HEAD");staged=_diff_paths(root,"--cached");unstaged=_diff_paths(root);untracked=_untracked_paths(root)
+    if any(x is None for x in(committed,staged,unstaged,untracked)):return None
+    changed=set().union(committed or set(),staged or set(),unstaged or set(),untracked or set())
+    try:d=m.parent.resolve().relative_to(root).as_posix()
+    except ValueError:return changed
+    allowed={f"{d}/manifest.yml",f"{d}/provenance.yml",f"{d}/review.md"};reviewable=set()
+    for path in changed:
+        if path not in allowed:
+            reviewable.add(path);continue
+        target=root/Path(path)
+        if not target.exists()or target.is_symlink()or not target.is_file():reviewable.add(path)
+    return reviewable
 def _changed(r:Path,m:Path,c:str)->bool:
-    q=subprocess.run(["git","diff","--name-only",f"{c}..HEAD"],cwd=r,capture_output=True,text=True,check=False)
-    if q.returncode:return True
-    d=m.parent.relative_to(r).as_posix(); allowed={f"{d}/manifest.yml",f"{d}/provenance.yml",f"{d}/review.md"}
-    return bool({z.strip() for z in q.stdout.splitlines() if z.strip()}-allowed)
+    delta=_reviewable_workspace_delta(r,m,c)
+    return delta is None or bool(delta)
 def _validate_protocol2_review_provenance(r:Path)->list[ValidationFinding]:
     out=[]; changes=r/".forge/changes"
     if not changes.is_dir():return out
