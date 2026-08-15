@@ -6,19 +6,16 @@ CLI releases will follow Semantic Versioning when releases begin. Protocol versi
 
 ## Unreleased
 
-### Verifiable Reviewer/Resolver Separation
+### Verifiable Review Independence
 
 Added:
 
-- a new schema, `forge/change@2`, that structurally requires `review.reviewer_identity`
-  (`actor_type`, `session_ref`, `resolver_session_ref`) for any FULL Change manifest
-  (`flow.current == full`), regardless of review status. `forge/change@1` is unchanged and
-  remains backward compatible — no existing conforming instance is invalidated, per
-  `protocol/compatibility.md`. Projects and historical Changes adopt the requirement by opting
-  in to `forge/change@2` when they are prepared to record real reviewer identity evidence;
-- Review policy minimums now distinguish FAST same-session review, STANDARD isolated-session review, and FULL human review with an explicit isolated-agent fallback;
-- `forge validate` rejects FULL Changes that record `agent_same_session` and rejects claimed independent execution backed by identical reviewer/resolver session references, naming C-026;
-- Codex STANDARD/FULL projections instruct the harness to use independent review execution and record distinct session references.
+- `forge/change@2` structurally requires `review.reviewer_identity` for FULL Changes with provider-independent `actor_type`, `execution_id`, `context_id`, `resolver_execution_id`, and `resolver_context_id`; `forge/change@1` remains backward compatible;
+- Strict Review now requires an Execution and Execution Context independent from the implementation or resolution being reviewed; changing Role inside one conversation/context is explicitly self-review and does not satisfy Strict Review;
+- `forge validate` rejects shared Reviewer/Resolver execution IDs and shared context IDs with C-026, including the case where executions differ but conversational/reasoning context is shared;
+- Review Policy requires execution-context independence for FAST, STANDARD, and FULL, keeps self-review non-authoritative, and requires re-review independent from blocking-finding Resolution;
+- Codex STANDARD/FULL projections instruct the harness to create a real execution/context boundary and record durable execution/context references;
+- ADR-0008 documents context contamination, the human PR analogy, provider independence, and the limits of isolated same-model review.
 
 ### Protocol 1 Contract Freeze
 
@@ -77,5 +74,3 @@ Added:
 - optional explicit/evidence-backed Codex publication targets without an invented vendor path;
 - generic Core reuse for Codex planning, ownership, collision protection, installation state, and drift detection;
 - isolated-wheel and offline Codex Adapter verification without a Codex/OpenAI SDK dependency.
-
-The bootstrap CLI and Adapter interfaces remain pre-release software. Codex is the first concrete Harness integration and remains governed by canonical repository-native Forge state.
