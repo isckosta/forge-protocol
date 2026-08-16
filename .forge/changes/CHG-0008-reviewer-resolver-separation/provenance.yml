@@ -141,3 +141,28 @@ records:
         Independent Reviewer execution for Strict Review Iteration 5. Repository-native
         self-recorded provenance only; no provider-native attestation or external proof was
         available, so assurance is recorded rather than verified.
+  - id: resolution-005
+    role: resolution
+    execution:
+      id: resolution-exec-chg0008-20260815-05
+      context_id: resolution-context-chg0008-20260815-05
+    recorded_at: 2026-08-16T00:49:41Z
+    revision:
+      id: chg-0008-resolution-005
+      immutable_ref:
+        type: git_commit
+        value: a6358394ad877bb011e86cc87b580d204a975b5f
+      commit: a6358394ad877bb011e86cc87b580d204a975b5f
+      description: >-
+        Frozen Resolution 5 review subject resolving R008 with status-independent historical
+        Review Iteration subject authority, preservation of committed bound Iteration IDs,
+        legitimate lifecycle-metadata evolution, and retained R005/R006/R007 protections.
+        Tests run 31918151814 and Distribution Verification run 31918151818 passed for this subject.
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: chatgpt
+      statement: >-
+        This Resolver execution records repository-native self-observed provenance for the
+        frozen Resolution 5 subject. No provider-native execution ID, external attestation or
+        stronger observer-backed proof was available; assurance is recorded, not verified.
