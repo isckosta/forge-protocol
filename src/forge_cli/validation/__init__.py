@@ -170,7 +170,7 @@ def _validate_protocol2_review_provenance(r:Path)->list[ValidationFinding]:
             rid,sref,rref,status=it.get("revision"),it.get("subject_provenance"),it.get("reviewer_provenance"),it.get("status")
             if not(isinstance(rid,str)and rid and isinstance(sref,str)and sref):out.append(_finding(r,mpath,"A bound Review Iteration requires revision and subject_provenance."));continue
             iid=it.get("id")
-            if isinstance(iid,str)and iid and status in{"pending","passed"}:
+            if isinstance(iid,str)and iid:
                 ia=_first_committed_review_iteration(r,mpath,iid)
                 if ia is _HISTORY_ERROR:out.append(_finding(r,mpath,"C-026 could not determine committed Review Iteration authority; validation fails closed."));continue
                 if ia is not None and(ia.get("revision")!=rid or ia.get("subject_provenance")!=sref):out.append(_finding(r,mpath,"C-026 immutable Review Iteration subject binding differs from its first committed authority."));continue
