@@ -119,19 +119,12 @@ cycles:
       command: pytest -q
       result: failed in Run tests after setup/dependency steps passed
       reason: >-
-        The pre-fix validator consulted committed Review Iteration authority only while the current
-        status was pending or passed, so a historical failed Iteration could redirect revision or
-        subject_provenance without the append-only history comparison.
-    supplemental_red:
-      valid: true
-      commit: 410dc2efe32e1b3c96aaf8f9378d052f7566b68b
-      workflow_run_id: 31917909131
-      command: pytest -q
-      result: failed in Run tests
-      reason: >-
-        After status-independent binding comparison was added, replacing the established Iteration
-        ID itself still escaped lookup by appearing to be a new identity. The tests-only commit
-        demonstrated that historical ID preservation was also required.
+        The primary tests-only RED proved that the pre-fix validator consulted committed Review
+        Iteration authority only while current status was pending or passed, allowing a historical
+        failed Iteration to redirect revision or subject_provenance. A supplemental tests-only RED
+        at commit 410dc2efe32e1b3c96aaf8f9378d052f7566b68b / Tests run 31917909131 then proved
+        that replacing the established Iteration ID itself still escaped lookup until committed
+        bound Iteration IDs were explicitly preserved.
     green:
       commit: 66c88be244617864f9e8aea54f044e4bc6eaaa91
       workflow_run_id: 31918012008
@@ -142,5 +135,5 @@ cycles:
       distribution_result: passed
 notes:
   - TDD-001 through TDD-010 are preserved as historical evidence.
-  - TDD-011 is the dedicated R008 Resolution 5 cycle. The supplemental RED closes the Iteration-ID replacement bypass without rewriting the causal R008 RED.
+  - TDD-011 is the dedicated R008 Resolution 5 cycle; its RED reason preserves the supplemental Iteration-ID bypass chronology without extending the schema.
   - Strict Review Iterations 1 through 5 remain historical REQUEST CHANGES. Iteration 6 must be executed independently after `resolution-005` is recorded.
