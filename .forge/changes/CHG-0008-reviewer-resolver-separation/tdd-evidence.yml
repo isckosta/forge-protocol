@@ -1,7 +1,7 @@
 schema: forge/tdd-evidence@1
 change: CHG-0008
 status: compliant
-cycle_count: 10
+cycle_count: 11
 cycles:
   - {id: TDD-001, title: Reject FULL same-session Reviewer execution, requirements: [historical-session-model], behavior: historical first-pass evidence, red: {valid: true, commit: 1f83d498124d028fccf8ae3a01bd18a1d068a758, command: pytest -q, result: '1 failed, 162 passed', reason: validator initially accepted same-session review}, green: {commit: 105229d7fe24f24a48e5376f0d55782b793e8510, command: pytest -q, result: '164 passed'}}
   - {id: TDD-002, title: Reject claimed isolation with identical session references, requirements: [historical-session-model], behavior: historical evidence, red: {valid: true, commit: 8a3099d5044ef802869748c02fe122a8412ed927, command: pytest -q, result: failed, reason: identical references were not rejected}, green: {commit: 518629c8ae07f18e82dcac5fa382ffd6af8c86a5, command: pytest -q, result: passed}}
@@ -101,7 +101,46 @@ cycles:
       result: passed
       distribution_workflow_run_id: 31906638462
       distribution_result: passed
+  - id: TDD-011
+    title: Preserve historical Review Iteration subject authority across verdicts
+    requirements: [FR-008, FR-012, FR-014, FR-017, FR-018, FR-019, INV-002, INV-005, CHG-0008-R008]
+    behavior: >-
+      A valid committed Protocol 2 Review Iteration permanently binds its Iteration ID, logical
+      revision and subject provenance independently of pending/passed/failed lifecycle state.
+      Revision-only, subject-provenance-only, simultaneous binding rewrites and Iteration ID
+      replacement are rejected; legitimate lifecycle/evidence metadata updates and new Iterations
+      remain allowed. R005 concrete binding, R006 effective-workspace freeze, R007 provenance
+      authority, Protocol 1 compatibility and FAST/STANDARD/FULL behavior remain covered.
+    red:
+      valid: true
+      commit: 1d70b1282b7c0dd2f5015439281fd493954ca87f
+      workflow_run_id: 31917557112
+      job_id: 95091910991
+      command: pytest -q
+      result: failed in Run tests after setup/dependency steps passed
+      reason: >-
+        The pre-fix validator consulted committed Review Iteration authority only while the current
+        status was pending or passed, so a historical failed Iteration could redirect revision or
+        subject_provenance without the append-only history comparison.
+    supplemental_red:
+      valid: true
+      commit: 410dc2efe32e1b3c96aaf8f9378d052f7566b68b
+      workflow_run_id: 31917909131
+      command: pytest -q
+      result: failed in Run tests
+      reason: >-
+        After status-independent binding comparison was added, replacing the established Iteration
+        ID itself still escaped lookup by appearing to be a new identity. The tests-only commit
+        demonstrated that historical ID preservation was also required.
+    green:
+      commit: 66c88be244617864f9e8aea54f044e4bc6eaaa91
+      workflow_run_id: 31918012008
+      job_id: 95093064159
+      command: pytest -q
+      result: '228 passed in 5.91s; forge validate PASS; forge doctor PASS'
+      distribution_workflow_run_id: 31918012004
+      distribution_result: passed
 notes:
-  - TDD-001 through TDD-009 are preserved as historical evidence.
-  - TDD-010 is the dedicated R007 Resolution 4 cycle; subsequent tests expand the threat matrix without rewriting the causal RED/GREEN chronology.
-  - Strict Review Iterations 1 through 4 remain historical REQUEST CHANGES. Iteration 5 must be executed independently after `resolution-004` is recorded.
+  - TDD-001 through TDD-010 are preserved as historical evidence.
+  - TDD-011 is the dedicated R008 Resolution 5 cycle. The supplemental RED closes the Iteration-ID replacement bypass without rewriting the causal R008 RED.
+  - Strict Review Iterations 1 through 5 remain historical REQUEST CHANGES. Iteration 6 must be executed independently after `resolution-005` is recorded.
