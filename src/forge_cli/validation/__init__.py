@@ -178,7 +178,7 @@ def _validate_protocol2_review_provenance(r:Path)->list[ValidationFinding]:
         if not bound and rev.get("status")!="passed":continue
         historical_ids=_committed_review_iteration_ids(r,mpath)
         if historical_ids is _HISTORY_ERROR:
-            out.append(_finding(r,mpath,"C-026 could not determine committed Review Iteration identities; validation fails closed."));continue
+            out.append(_finding(r,mpath,"C-026 could not determine committed Review Iteration identity authority; validation fails closed."));continue
         current_ids=[i.get("id") for i in bound if isinstance(i.get("id"),str)and i.get("id")]
         if len(current_ids)!=len(set(current_ids)):
             out.append(_finding(r,mpath,"C-026 Review Iteration identities are ambiguous or duplicated."));continue
