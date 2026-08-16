@@ -22,7 +22,7 @@ artifacts:
   documentation: complete
   knowledge_capture: complete
 requirements: {total: 19, implemented: 19, verified: 19}
-tdd: {status: compliant, cycles: 10}
+tdd: {status: compliant, cycles: 11}
 verification: {status: passed}
 review:
   status: failed
@@ -71,6 +71,6 @@ documentation:
   impact_evaluated: true
   update_required: true
   reason: >-
-    Protocol 2 now anchors established subject provenance and live Review Iteration subject
-    bindings to committed Git history before using current metadata as a workspace baseline,
-    while preserving the R006 effective-workspace freeze and Protocol 1 compatibility.
+    Protocol 2 now anchors established subject provenance and committed Review Iteration
+    identity/binding to local Git history independently of verdict status, while preserving
+    the R006 effective-workspace freeze, R007 provenance authority and Protocol 1 compatibility.
