@@ -139,6 +139,23 @@ def _first_committed_review_iteration(r:Path,path:Path,iteration_id:str):
         if not(isinstance(candidate.get("revision"),str)and candidate.get("revision") and isinstance(candidate.get("subject_provenance"),str)and candidate.get("subject_provenance")):continue
         return candidate
     return _HISTORY_ERROR if unresolved_history_error else None
+def _committed_review_iteration_ids(r:Path,path:Path):
+    documents=_committed_history_mappings(r,path)
+    if documents is None:return _HISTORY_ERROR
+    authorities:set[str]=set()
+    for document in documents:
+        if document is _HISTORY_ERROR:continue
+        assert isinstance(document,dict)
+        review=document.get("review");iterations=review.get("iterations")if isinstance(review,dict)else None
+        if not isinstance(iterations,list):continue
+        seen:set[str]=set()
+        for iteration in iterations:
+            if not isinstance(iteration,dict):continue
+            iid,rid,sref=iteration.get("id"),iteration.get("revision"),iteration.get("subject_provenance")
+            if not(isinstance(iid,str)and iid and isinstance(rid,str)and rid and isinstance(sref,str)and sref):continue
+            if iid in seen:return _HISTORY_ERROR
+            seen.add(iid);authorities.add(iid)
+    return authorities
 def _validate_protocol2_review_provenance(r:Path)->list[ValidationFinding]:
     out=[]; changes=r/".forge/changes"
     if not changes.is_dir():return out
@@ -159,6 +176,16 @@ def _validate_protocol2_review_provenance(r:Path)->list[ValidationFinding]:
             continue
         bound=[i for i in its if isinstance(i,dict)and i.get("subject_provenance")]
         if not bound and rev.get("status")!="passed":continue
+        historical_ids=_committed_review_iteration_ids(r,mpath)
+        if historical_ids is _HISTORY_ERROR:
+            out.append(_finding(r,mpath,"C-026 could not determine committed Review Iteration identities; validation fails closed."));continue
+        current_ids=[i.get("id") for i in bound if isinstance(i.get("id"),str)and i.get("id")]
+        if len(current_ids)!=len(set(current_ids)):
+            out.append(_finding(r,mpath,"C-026 Review Iteration identities are ambiguous or duplicated."));continue
+        missing_ids=set(historical_ids)-set(current_ids)
+        if missing_ids:
+            missing=", ".join(sorted(missing_ids))
+            out.append(_finding(r,mpath,f"C-026 immutable Review Iteration identity was removed or replaced: {missing}."));continue
         ppath=mpath.parent/"provenance.yml"; p=_load_mapping(ppath)
         if p is None or p.get("schema")!="forge/execution-provenance@1":out.append(_finding(r,ppath if ppath.exists()else mpath,"Protocol 2 bound Review Iterations require supported repository-native provenance."));continue
         records=p.get("records")
