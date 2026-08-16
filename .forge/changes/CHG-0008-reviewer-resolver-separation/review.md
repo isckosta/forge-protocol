@@ -9,7 +9,7 @@ iteration: 6
 
 # Strict Review — Verifiable Review Independence
 
-This artifact summarizes the complete Strict Review history of CHG-0008. Historical failed verdicts remain failed; the final PASS belongs only to Strict Review Iteration 6. Detailed historical evidence remains available in the repository history, `manifest.yml`, `provenance.yml`, TDD evidence, Verification evidence, and the commits that recorded each iteration.
+This artifact summarizes the complete Strict Review history of CHG-0008. Historical failed verdicts remain failed; the final PASS belongs only to Strict Review Iteration 6. Detailed historical evidence remains available in repository history, `manifest.yml`, `provenance.yml`, TDD evidence, Verification evidence, and the commits that recorded each iteration.
 
 ## Iteration 1 — REQUEST CHANGES
 
@@ -106,4 +106,4 @@ Reviewer and Resolver provenance are distinct in both Execution and Execution Co
 
 GitHub Actions for the final Review metadata HEAD completed successfully for both `Tests` and `Distribution Verification`.
 
-No implementation, Protocol, schema, test, or workflow correction was performed as part of this artifact synchronization. The Strict Review PASS was already established by independent `review-006`; this file records that repository-native result consistently.
+No implementation, Protocol, schema, test, or workflow correction was performed as part of the final artifact synchronization. The Strict Review PASS was already established by independent `review-006`; this file records that repository-native result consistently.
