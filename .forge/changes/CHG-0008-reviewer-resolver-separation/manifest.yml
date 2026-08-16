@@ -2,7 +2,7 @@ schema: forge/change@2
 protocol: 2
 change: {id: CHG-0008, title: Verifiable Review Independence, kind: feature}
 flow: {initial: full, current: full, escalations: []}
-state: {current: strict_review}
+state: {current: complete}
 artifacts:
   intent: complete
   discovery: complete
@@ -12,7 +12,7 @@ artifacts:
   architecture: complete
   test_strategy: approved
   plan: approved
-  tasks: active
+  tasks: approved
   traceability: complete
   tdd_evidence: complete
   implementation: complete
