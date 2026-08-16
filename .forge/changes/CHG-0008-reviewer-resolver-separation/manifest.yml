@@ -25,10 +25,10 @@ requirements: {total: 19, implemented: 19, verified: 19}
 tdd: {status: compliant, cycles: 11}
 verification: {status: passed}
 review:
-  status: failed
-  iteration: 5
+  status: passed
+  iteration: 6
   blockers: 0
-  majors: 1
+  majors: 0
   minors: 0
   observations: 0
   iterations:
@@ -67,6 +67,11 @@ review:
         CHG-0008-R008 MAJOR: committed Review Iteration subject authority is enforced only while
         status is pending or passed; a historical failed Iteration can be rewritten to another
         revision or subject_provenance without triggering the append-only history check.
+    - id: review-006
+      revision: chg-0008-resolution-005
+      subject_provenance: resolution-005
+      reviewer_provenance: review-006
+      status: passed
 documentation:
   impact_evaluated: true
   update_required: true
