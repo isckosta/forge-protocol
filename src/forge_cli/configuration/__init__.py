@@ -38,6 +38,9 @@ def load_project_configuration(path: Path) -> dict[str, Any]:
         raise InvalidProjectConfigurationError(str(error)) from error
 
     protocol = data["forge"]["protocol"]
+    if isinstance(protocol, str) and protocol.isdigit():
+        protocol = int(protocol)
+        data["forge"]["protocol"] = protocol
     if protocol not in SUPPORTED_PROTOCOL_IDS:
         raise UnsupportedProtocolVersionError(protocol)
 

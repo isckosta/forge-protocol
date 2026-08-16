@@ -4,10 +4,13 @@ schemas:
   - {id: forge/adapter-installation@1, file: adapter-installation.schema.json}
   - {id: forge/adapter@1, file: adapter.schema.json}
   - {id: forge/change@1, file: change.schema.json}
+  - {id: forge/change@2, file: change-v2.schema.json}
+  - {id: forge/execution-provenance@1, file: execution-provenance.schema.json}
   - {id: forge/flow@1, file: flow.schema.json}
   - {id: forge/policy/architecture@1, file: policy-architecture.schema.json}
   - {id: forge/policy/documentation@1, file: policy-documentation.schema.json}
   - {id: forge/policy/review@1, file: policy-review.schema.json}
+  - {id: forge/policy/review@2, file: policy-review-v2.schema.json}
   - {id: forge/policy/security@1, file: policy-security.schema.json}
   - {id: forge/policy/testing@1, file: policy-testing.schema.json}
   - {id: forge/project-flow@1, file: project-flow.schema.json}
