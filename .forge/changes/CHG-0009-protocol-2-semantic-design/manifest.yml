@@ -1,0 +1,46 @@
+schema: forge/change@1
+change:
+  id: CHG-0009
+  title: Protocol 2 Semantic Design and Compatibility Boundary
+  kind: feature
+flow:
+  initial: full
+  current: full
+  escalations: []
+state:
+  current: specification_review_pending
+artifacts:
+  intent: complete
+  discovery: complete
+  specification: complete
+  specification_review: pending
+  architecture: pending
+  test_strategy: pending
+  plan: pending
+  tasks: pending
+  implementation: pending
+  verification: pending
+  review: pending
+  documentation: pending
+  knowledge_capture: pending
+requirements:
+  total: 18
+  implemented: 0
+  verified: 0
+tdd:
+  status: not_applicable
+  reason: This phase is normative compatibility analysis with no executable production behavior; executable follow-up Changes must apply TDD where applicable.
+  cycles: 0
+verification:
+  status: pending
+review:
+  status: pending
+  iteration: 0
+  blockers: 0
+  majors: 0
+  minors: 0
+  observations: 0
+documentation:
+  impact_evaluated: false
+  update_required: false
+  reason: Pending post-review architecture and implementation boundary decision.
