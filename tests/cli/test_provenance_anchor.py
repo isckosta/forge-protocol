@@ -104,6 +104,22 @@ def _anchored_change(tmp_path: Path) -> tuple[Path, str]:
     return change, frozen
 
 
+def _failed_anchored_change(tmp_path: Path) -> tuple[Path, str]:
+    _init(tmp_path)
+    (tmp_path / "subject.txt").write_text("frozen\n", encoding="utf-8")
+    frozen = _commit(tmp_path, "freeze subject A")
+    change = _write_change(tmp_path, frozen, passed=False)
+    mpath = change / "manifest.yml"
+    manifest = yaml.safe_load(mpath.read_text())
+    manifest["review"]["status"] = "failed"
+    manifest["review"]["majors"] = 1
+    manifest["review"]["iterations"][0]["status"] = "failed"
+    manifest["review"]["iterations"][0]["evidence_gap"] = "blocking finding"
+    mpath.write_text(yaml.safe_dump(manifest, sort_keys=False), encoding="utf-8")
+    _commit(tmp_path, "record failed review subject binding")
+    return change, frozen
+
+
 def test_rewriting_frozen_subject_provenance_cannot_move_baseline(tmp_path, monkeypatch):
     _, _ = _anchored_change(tmp_path)
     subject = tmp_path / "subject.txt"
@@ -150,6 +166,116 @@ def test_historical_iteration_cannot_switch_subject_record(tmp_path, monkeypatch
     result = _validate(tmp_path, monkeypatch)
     assert result.exit_code == 2
     assert "immutable review iteration subject binding" in result.stdout.lower()
+
+
+def test_failed_iteration_revision_rewrite_is_rejected(tmp_path, monkeypatch):
+    change, _ = _failed_anchored_change(tmp_path)
+    mpath = change / "manifest.yml"
+    manifest = yaml.safe_load(mpath.read_text())
+    manifest["review"]["iterations"][0]["revision"] = "revision-b"
+    mpath.write_text(yaml.safe_dump(manifest, sort_keys=False), encoding="utf-8")
+    result = _validate(tmp_path, monkeypatch)
+    assert result.exit_code == 2
+
+
+def test_failed_iteration_subject_provenance_rewrite_is_rejected(tmp_path, monkeypatch):
+    change, frozen = _failed_anchored_change(tmp_path)
+    ppath = change / "provenance.yml"
+    provenance = yaml.safe_load(ppath.read_text())
+    provenance["records"].append(_record("resolution-002", "resolution", "revision-a", frozen))
+    ppath.write_text(yaml.safe_dump(provenance, sort_keys=False), encoding="utf-8")
+    mpath = change / "manifest.yml"
+    manifest = yaml.safe_load(mpath.read_text())
+    manifest["review"]["iterations"][0]["subject_provenance"] = "resolution-002"
+    mpath.write_text(yaml.safe_dump(manifest, sort_keys=False), encoding="utf-8")
+    result = _validate(tmp_path, monkeypatch)
+    assert result.exit_code == 2
+    assert "immutable review iteration subject binding" in result.stdout.lower()
+
+
+def test_failed_iteration_simultaneous_subject_rewrite_is_rejected(tmp_path, monkeypatch):
+    change, frozen = _failed_anchored_change(tmp_path)
+    ppath = change / "provenance.yml"
+    provenance = yaml.safe_load(ppath.read_text())
+    provenance["records"].append(_record("resolution-002", "resolution", "revision-b", frozen))
+    ppath.write_text(yaml.safe_dump(provenance, sort_keys=False), encoding="utf-8")
+    mpath = change / "manifest.yml"
+    manifest = yaml.safe_load(mpath.read_text())
+    iteration = manifest["review"]["iterations"][0]
+    iteration["revision"] = "revision-b"
+    iteration["subject_provenance"] = "resolution-002"
+    mpath.write_text(yaml.safe_dump(manifest, sort_keys=False), encoding="utf-8")
+    result = _validate(tmp_path, monkeypatch)
+    assert result.exit_code == 2
+    assert "immutable review iteration subject binding" in result.stdout.lower()
+
+
+def test_status_transition_does_not_disable_historical_subject_authority(tmp_path, monkeypatch):
+    change, frozen = _anchored_change(tmp_path)
+    _commit(tmp_path, "commit pending iteration")
+    ppath = change / "provenance.yml"
+    provenance = yaml.safe_load(ppath.read_text())
+    provenance["records"].append(_record("resolution-002", "resolution", "revision-a", frozen))
+    ppath.write_text(yaml.safe_dump(provenance, sort_keys=False), encoding="utf-8")
+    mpath = change / "manifest.yml"
+    manifest = yaml.safe_load(mpath.read_text())
+    manifest["review"]["status"] = "failed"
+    manifest["review"]["majors"] = 1
+    iteration = manifest["review"]["iterations"][0]
+    iteration["status"] = "failed"
+    iteration["subject_provenance"] = "resolution-002"
+    mpath.write_text(yaml.safe_dump(manifest, sort_keys=False), encoding="utf-8")
+    result = _validate(tmp_path, monkeypatch)
+    assert result.exit_code == 2
+    assert "immutable review iteration subject binding" in result.stdout.lower()
+
+
+def test_pending_to_failed_with_same_subject_binding_is_allowed(tmp_path, monkeypatch):
+    change, _ = _anchored_change(tmp_path)
+    mpath = change / "manifest.yml"
+    manifest = yaml.safe_load(mpath.read_text())
+    manifest["review"]["status"] = "failed"
+    manifest["review"]["majors"] = 1
+    manifest["review"]["iterations"][0]["status"] = "failed"
+    manifest["review"]["iterations"][0]["evidence_gap"] = "new finding"
+    mpath.write_text(yaml.safe_dump(manifest, sort_keys=False), encoding="utf-8")
+    result = _validate(tmp_path, monkeypatch)
+    assert result.exit_code == 0, result.stdout
+
+
+def test_failed_iteration_review_metadata_update_is_allowed(tmp_path, monkeypatch):
+    change, _ = _failed_anchored_change(tmp_path)
+    mpath = change / "manifest.yml"
+    manifest = yaml.safe_load(mpath.read_text())
+    manifest["review"]["iterations"][0]["evidence_gap"] = "expanded review evidence"
+    manifest["review"]["observations"] = 1
+    mpath.write_text(yaml.safe_dump(manifest, sort_keys=False), encoding="utf-8")
+    result = _validate(tmp_path, monkeypatch)
+    assert result.exit_code == 0, result.stdout
+
+
+def test_new_iteration_with_new_subject_binding_is_allowed(tmp_path, monkeypatch):
+    change, frozen = _failed_anchored_change(tmp_path)
+    ppath = change / "provenance.yml"
+    provenance = yaml.safe_load(ppath.read_text())
+    provenance["records"].append(_record("resolution-002", "resolution", "revision-b", frozen))
+    ppath.write_text(yaml.safe_dump(provenance, sort_keys=False), encoding="utf-8")
+    mpath = change / "manifest.yml"
+    manifest = yaml.safe_load(mpath.read_text())
+    manifest["review"]["status"] = "pending"
+    manifest["review"]["iteration"] = 2
+    manifest["review"]["majors"] = 0
+    manifest["review"]["iterations"].append(
+        {
+            "id": "review-002",
+            "revision": "revision-b",
+            "subject_provenance": "resolution-002",
+            "status": "pending",
+        }
+    )
+    mpath.write_text(yaml.safe_dump(manifest, sort_keys=False), encoding="utf-8")
+    result = _validate(tmp_path, monkeypatch)
+    assert result.exit_code == 0, result.stdout
 
 
 def test_legitimate_review_record_append_preserves_subject_anchor(tmp_path, monkeypatch):
