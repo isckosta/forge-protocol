@@ -3,25 +3,26 @@ change: CHG-0008
 requirements:
   FR-001: {tasks: [T-020], tests: [TDD-006], evidence: protocol_1_2_boundary}
   FR-002: {tasks: [T-020], tests: [TDD-006], evidence: version_axes}
-  FR-003: {tasks: [T-046, T-057], tests: [TDD-006, TDD-008, TDD-009, TDD-010], evidence: protocol1_compatibility}
+  FR-003: {tasks: [T-046, T-057, T-067, T-075], tests: [TDD-006, TDD-008, TDD-009, TDD-010, TDD-011], evidence: protocol1_compatibility}
   FR-004: {tasks: [T-020], tests: [TDD-006], evidence: protocol_resolution}
-  FR-005: {tasks: [T-042], tests: [TDD-006, TDD-008, TDD-010], evidence: execution_provenance_schema_and_history_authority}
-  FR-006: {tasks: [T-042], tests: [TDD-006, TDD-010], evidence: assurance_levels}
-  FR-007: {tasks: [T-043], tests: [TDD-006, TDD-010], evidence: minimum_recorded_assurance}
-  FR-008: {tasks: [T-041, T-042, T-043, T-044, T-045], tests: [TDD-008, TDD-009, TDD-010], evidence: concrete_immutable_revision_binding_and_anchor}
-  FR-009: {tasks: [T-043, T-057], tests: [TDD-006, TDD-008, TDD-009, TDD-010], evidence: execution_independence}
-  FR-010: {tasks: [T-043, T-057], tests: [TDD-006, TDD-008, TDD-009, TDD-010], evidence: context_independence}
-  FR-011: {tasks: [T-046, T-057], tests: [TDD-006, TDD-008, TDD-009, TDD-010], evidence: all_flow_regressions}
-  FR-012: {tasks: [T-042, T-043, T-045, T-062], tests: [TDD-008, TDD-009, TDD-010], evidence: frozen_iteration_subject_and_append_only_binding}
+  FR-005: {tasks: [T-042, T-066, T-071, T-073], tests: [TDD-006, TDD-008, TDD-010, TDD-011], evidence: execution_provenance_schema_and_history_authority}
+  FR-006: {tasks: [T-042], tests: [TDD-006, TDD-010, TDD-011], evidence: assurance_levels}
+  FR-007: {tasks: [T-043], tests: [TDD-006, TDD-010, TDD-011], evidence: minimum_recorded_assurance}
+  FR-008: {tasks: [T-041, T-042, T-043, T-044, T-045, T-066, T-071, T-073], tests: [TDD-008, TDD-009, TDD-010, TDD-011], evidence: concrete_immutable_revision_binding_and_history_authority}
+  FR-009: {tasks: [T-043, T-057, T-067, T-075], tests: [TDD-006, TDD-008, TDD-009, TDD-010, TDD-011], evidence: execution_independence}
+  FR-010: {tasks: [T-043, T-057, T-067, T-075], tests: [TDD-006, TDD-008, TDD-009, TDD-010, TDD-011], evidence: context_independence}
+  FR-011: {tasks: [T-046, T-057, T-067, T-075], tests: [TDD-006, TDD-008, TDD-009, TDD-010, TDD-011], evidence: all_flow_regressions}
+  FR-012: {tasks: [T-042, T-043, T-045, T-062, T-066, T-071, T-073], tests: [TDD-008, TDD-009, TDD-010, TDD-011], evidence: frozen_iteration_subject_and_append_only_binding}
   FR-013: {tasks: [T-047, T-064], evidence: protocol2_contract}
-  FR-014: {tasks: [T-043, T-057], tests: [TDD-006, TDD-008, TDD-009, TDD-010], evidence: forged_evidence_and_moved_baseline_regression}
-  FR-015: {tasks: [T-046, T-057], tests: [TDD-006, TDD-009, TDD-010], evidence: downgrade_regression}
-  FR-016: {tasks: [T-047, T-058], tests: [TDD-007, TDD-008, TDD-009, TDD-010], evidence: adapter_and_freeze_guidance}
-  FR-017: {tasks: [T-044, T-055], tests: [TDD-008, TDD-009, TDD-010], evidence: local_git_history_binding_no_remote_api}
-  FR-018: {tasks: [T-050, T-062, T-064], tests: [TDD-008, TDD-009, TDD-010], evidence: historical_reviews_preserved_and_next_review_pending}
-  FR-019: {tasks: [T-052, T-053, T-054, T-055, T-056, T-057, T-058, T-060, T-061, T-063], tests: [TDD-009, TDD-010], evidence: effective_workspace_delta_plus_immutable_authority}
+  FR-014: {tasks: [T-043, T-057, T-067, T-075], tests: [TDD-006, TDD-008, TDD-009, TDD-010, TDD-011], evidence: forged_evidence_and_history_rewrite_regression}
+  FR-015: {tasks: [T-046, T-057, T-067, T-075], tests: [TDD-006, TDD-009, TDD-010, TDD-011], evidence: downgrade_regression}
+  FR-016: {tasks: [T-047, T-058, T-067], tests: [TDD-007, TDD-008, TDD-009, TDD-010, TDD-011], evidence: adapter_and_freeze_guidance}
+  FR-017: {tasks: [T-044, T-055, T-066, T-071, T-073], tests: [TDD-008, TDD-009, TDD-010, TDD-011], evidence: local_git_history_binding_no_remote_api}
+  FR-018: {tasks: [T-050, T-062, T-064, T-068, T-069, T-077, T-078], tests: [TDD-008, TDD-009, TDD-010, TDD-011], evidence: historical_reviews_preserved_and_next_review_6_independent}
+  FR-019: {tasks: [T-052, T-053, T-054, T-055, T-056, T-057, T-058, T-060, T-061, T-063, T-066, T-067, T-070, T-071, T-072, T-073, T-074, T-075], tests: [TDD-009, TDD-010, TDD-011], evidence: effective_workspace_delta_plus_immutable_history_authority}
   INV-001: {tasks: [T-002], evidence: historical_gap_preserved}
-  INV-002: {tasks: [T-043, T-044], tests: [TDD-008, TDD-009, TDD-010], evidence: provenance_reference_immutable_validation_and_history_anchor}
-  INV-003: {tasks: [T-046, T-057], tests: [TDD-008, TDD-009, TDD-010], evidence: protocol1_preservation}
-  INV-004: {tasks: [T-062, T-064], evidence: pending_independent_rereview_iteration_5}
-  INV-005: {tasks: [T-053, T-055, T-056, T-063], tests: [TDD-009, TDD-010], evidence: workspace_freeze_and_baseline_authority_enforcement}
+  INV-002: {tasks: [T-043, T-044, T-066, T-071, T-073], tests: [TDD-008, TDD-009, TDD-010, TDD-011], evidence: provenance_and_iteration_identity_history_anchor}
+  INV-003: {tasks: [T-046, T-057, T-067, T-075], tests: [TDD-008, TDD-009, TDD-010, TDD-011], evidence: protocol1_preservation}
+  INV-004: {tasks: [T-068, T-069, T-077, T-078], evidence: historical_review_5_preserved_and_review_6_requires_independent_execution}
+  INV-005: {tasks: [T-053, T-055, T-056, T-063, T-066, T-071, T-073, T-074], tests: [TDD-009, TDD-010, TDD-011], evidence: workspace_freeze_and_status_independent_history_authority}
+  CHG-0008-R008: {tasks: [T-070, T-071, T-072, T-073, T-074, T-075, T-076, T-077], tests: [TDD-011], evidence: failed_review_iteration_subject_binding_is_append_only}
