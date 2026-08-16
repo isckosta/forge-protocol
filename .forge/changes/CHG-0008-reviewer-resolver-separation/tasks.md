@@ -3,7 +3,7 @@ forge:
   artifact: tasks
   schema: 1
 change: CHG-0008
-status: approved
+status: active
 ---
 # Tasks — Verifiable Review Independence
 
@@ -52,13 +52,13 @@ status: approved
 ## Resolution 5 — R008
 - [x] T-070 Establish tests-only RED proving failed Iteration `revision`/`subject_provenance` rewrites bypass historical authority.
 - [x] T-071 Remove verdict/status coupling from Review Iteration subject-binding history enforcement.
-- [x] T-072 Add regression coverage for revision-only, provenance-only, simultaneous rewrite, lifecycle transition, mutable review metadata, new Iteration and historical ID replacement.
+- [x] T-072 Add adversarial coverage for revision-only, provenance-only, simultaneous rewrite, lifecycle transition, mutable review metadata, new Iteration and historical ID replacement.
 - [x] T-073 Preserve committed bound Iteration IDs so remove/rename/replacement cannot evade per-ID authority.
 - [x] T-074 Preserve fail-closed history behavior while allowing a later valid binding to establish authority after a historical YAML snapshot that could not itself establish one.
 - [x] T-075 Verify R005/R006/R007, Protocol 1 compatibility, Protocol 2 FAST/STANDARD/FULL, `forge validate`, `forge doctor`, schemas/contract tests and distribution verification in the full suite.
 - [x] T-076 Update architecture, knowledge capture, TDD evidence, verification, tasks and traceability for R008 without normative churn.
-- [x] T-077 Freeze the final Resolution 5 reviewable subject and record `resolution-005` using only truthful repository-native provenance.
-- [x] T-078 Obtain a new independent Strict Review Iteration 6 against `resolution-005`.
-- [x] T-051 Complete CHG-0008 only after independent acceptance and all Completion Gates.
+- [ ] T-077 Freeze the final Resolution 5 reviewable subject and record `resolution-005` using only truthful repository-native provenance.
+- [ ] T-078 Obtain a new independent Strict Review Iteration 6 against `resolution-005`.
+- [ ] T-051 Complete CHG-0008 only after independent acceptance and all Completion Gates.
 
-Resolution 5 is frozen as `resolution-005`; Strict Review Iteration 6 passed independently with zero BLOCKER, MAJOR, MINOR, or OBSERVATION findings. Completion tasks are closed without rewriting historical failed reviews.
+T-077 is completed only by the post-freeze review-control metadata sequence. T-078 explicitly belongs to a separate Reviewer execution and is not executed by this Resolution session.
