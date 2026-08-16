@@ -124,8 +124,11 @@ def _first_committed_provenance_record(r:Path,path:Path,record_id:str):
 def _first_committed_review_iteration(r:Path,path:Path,iteration_id:str):
     documents=_committed_history_mappings(r,path)
     if documents is None:return _HISTORY_ERROR
+    unresolved_history_error=False
     for document in documents:
-        if document is _HISTORY_ERROR:return _HISTORY_ERROR
+        if document is _HISTORY_ERROR:
+            unresolved_history_error=True
+            continue
         assert isinstance(document,dict)
         review=document.get("review");iterations=review.get("iterations")if isinstance(review,dict)else None
         if not isinstance(iterations,list):continue
@@ -135,7 +138,7 @@ def _first_committed_review_iteration(r:Path,path:Path,iteration_id:str):
         candidate=matches[0]
         if not(isinstance(candidate.get("revision"),str)and candidate.get("revision") and isinstance(candidate.get("subject_provenance"),str)and candidate.get("subject_provenance")):continue
         return candidate
-    return None
+    return _HISTORY_ERROR if unresolved_history_error else None
 def _validate_protocol2_review_provenance(r:Path)->list[ValidationFinding]:
     out=[]; changes=r/".forge/changes"
     if not changes.is_dir():return out
@@ -172,7 +175,7 @@ def _validate_protocol2_review_provenance(r:Path)->list[ValidationFinding]:
             iid=it.get("id")
             if isinstance(iid,str)and iid:
                 ia=_first_committed_review_iteration(r,mpath,iid)
-                if ia is _HISTORY_ERROR:out.append(_finding(r,mpath,"C-026 could not determine committed Review Iteration authority; validation fails closed."));continue
+                if ia is _HISTORY_ERROR:out.append(_finding(r,mpath,f"C-026 could not determine committed Review Iteration authority for {iid}; validation fails closed."));continue
                 if ia is not None and(ia.get("revision")!=rid or ia.get("subject_provenance")!=sref):out.append(_finding(r,mpath,"C-026 immutable Review Iteration subject binding differs from its first committed authority."));continue
             sub=idx.get(sref)
             if sub is None:out.append(_finding(r,mpath,"Subject provenance was not found; invented IDs are not evidence."));continue
