@@ -229,6 +229,80 @@ def test_symlink_escape_is_rejected(tmp_path: Path) -> None:
     assert not (outside / "generated.md").exists()
 
 
+def test_directory_symlink_swap_after_preflight_prevents_escaping_publication_root(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    publisher = publisher_module()
+    outside = tmp_path.parent / "forge-outside-create-swap"
+    outside.mkdir(exist_ok=True)
+    tool_dir = tmp_path / "tool"
+    tool_dir.mkdir()
+    plan = plan_adapter(
+        manifest=_manifest(),
+        effective_configuration=EffectiveAdapterConfiguration(1, ()),
+        projections=(ProjectedArtifact(path="tool/generated.md", ownership=OwnershipMode.FORGE_OWNED, content="escape"),),
+        repository_state=(),
+    )
+    original_record_validation = publisher._validate_record_matches_plan
+
+    def swap_directory_for_symlink_after_preflight(plan, record) -> None:
+        original_record_validation(plan, record)
+        tool_dir.rmdir()
+        tool_dir.symlink_to(outside, target_is_directory=True)
+
+    monkeypatch.setattr(publisher, "_validate_record_matches_plan", swap_directory_for_symlink_after_preflight)
+
+    with pytest.raises(publisher.AdapterPublicationError):
+        publisher.publish_adapter_plan(
+            tmp_path,
+            plan,
+            _record(("tool/generated.md", digest_content("escape"))),
+        )
+
+    assert not (outside / "generated.md").exists()
+
+
+def test_directory_symlink_swap_after_preflight_prevents_escaping_update_target(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    publisher = publisher_module()
+    outside = tmp_path.parent / "forge-outside-update-swap"
+    outside.mkdir(exist_ok=True)
+    canary = outside / "generated.md"
+    canary.write_text("old", encoding="utf-8")
+
+    tool_dir = tmp_path / "tool"
+    tool_dir.mkdir()
+    target = tool_dir / "generated.md"
+    target.write_text("old", encoding="utf-8")
+    _write_prior_record(tmp_path, ("tool/generated.md", digest_content("old")))
+
+    plan = plan_adapter(
+        manifest=_manifest(),
+        effective_configuration=EffectiveAdapterConfiguration(1, ()),
+        projections=(ProjectedArtifact(path="tool/generated.md", ownership=OwnershipMode.FORGE_OWNED, content="new"),),
+        repository_state=(RepositoryArtifactState(path="tool/generated.md", exists=True, current_digest=digest_content("old"), expected_digest=digest_content("old")),),
+    )
+    original_record_validation = publisher._validate_record_matches_plan
+
+    def swap_directory_for_symlink_after_preflight(plan, record) -> None:
+        original_record_validation(plan, record)
+        target.unlink()
+        tool_dir.rmdir()
+        tool_dir.symlink_to(outside, target_is_directory=True)
+
+    monkeypatch.setattr(publisher, "_validate_record_matches_plan", swap_directory_for_symlink_after_preflight)
+
+    with pytest.raises(publisher.AdapterPublicationError):
+        publisher.publish_adapter_plan(
+            tmp_path,
+            plan,
+            _record(("tool/generated.md", digest_content("new"))),
+        )
+
+    assert canary.read_text(encoding="utf-8") == "old"
+
+
 def test_adapter_id_cannot_escape_installation_state_directory(tmp_path: Path) -> None:
     publisher = publisher_module()
     plan = AdapterPlan(adapter_id="../escape", operations=())

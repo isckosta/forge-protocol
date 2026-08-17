@@ -435,9 +435,8 @@ def publish_adapter_plan(
     installation_relative = f".forge/adapters/{plan.adapter_id}/installation.yml"
     installation_path = _safe_target(root, installation_relative)
 
-    targets: dict[str, Path] = {}
     for operation in plan.operations:
-        targets[operation.path] = _preflight_operation(root, operation)
+        _preflight_operation(root, operation)
 
     _validate_record_matches_plan(plan, installation_record)
     prior_record = _load_prior_installation_record(installation_path)
@@ -458,7 +457,11 @@ def publish_adapter_plan(
             if operation.intent in {OperationIntent.PRESERVE, OperationIntent.UNCHANGED}:
                 continue
 
-            target = targets[operation.path]
+            # Re-resolve and re-validate the target immediately before mutating it.
+            # Reusing a Path resolved during preflight would let a directory
+            # component swapped for a symlink between preflight and this write
+            # redirect the mutation outside the publication root.
+            target = _safe_target(root, operation.path)
 
             if operation.intent is OperationIntent.UPDATE:
                 if (
