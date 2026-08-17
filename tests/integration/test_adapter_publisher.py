@@ -415,6 +415,137 @@ def test_installation_state_directory_symlink_swap_before_first_read_cannot_forg
     assert target.read_text(encoding="utf-8") == "old-user-content"
 
 
+def test_rollback_backup_capture_cannot_be_poisoned_by_a_directory_swap_after_authorization(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    publisher = publisher_module()
+    outside = tmp_path.parent / "forge-outside-backup-capture-swap"
+    outside.mkdir(exist_ok=True)
+    forged_record = _record(("forged.md", digest_content("forged")))
+    write_installation_record(outside / "installation.yml", forged_record)
+
+    adapter_state_dir = tmp_path / ".forge" / "adapters" / "example"
+    adapter_state_dir.mkdir(parents=True)
+
+    operation = AdapterOperation(
+        path="create.md",
+        ownership=OwnershipMode.FORGE_OWNED,
+        intent=OperationIntent.CREATE,
+        content_digest=digest_content("new"),
+        content="new",
+    )
+    plan = AdapterPlan(adapter_id="example", operations=(operation,))
+
+    original_authorization_check = publisher._validate_prior_record_authorizes_plan
+
+    def swap_directory_for_symlink_after_authorization(plan, next_record, prior_record) -> None:
+        original_authorization_check(plan, next_record, prior_record)
+        adapter_state_dir.rmdir()
+        adapter_state_dir.symlink_to(outside, target_is_directory=True)
+
+    def restore_real_directory_and_fail_the_mutation(path) -> None:
+        adapter_state_dir.unlink()
+        adapter_state_dir.mkdir(parents=True)
+        raise publisher.AdapterPublicationConflictError(
+            "Adapter create target appeared after planning: simulated."
+        )
+
+    monkeypatch.setattr(
+        publisher,
+        "_validate_prior_record_authorizes_plan",
+        swap_directory_for_symlink_after_authorization,
+    )
+    monkeypatch.setattr(
+        publisher, "_reserve_create_target", restore_real_directory_and_fail_the_mutation
+    )
+
+    with pytest.raises(publisher.AdapterPublicationError):
+        publisher.publish_adapter_plan(
+            tmp_path, plan, _record(("create.md", digest_content("new")))
+        )
+
+    real_installation_path = tmp_path / ".forge/adapters/example/installation.yml"
+    assert not real_installation_path.exists()
+
+
+def test_rollback_of_an_already_applied_operation_reuses_a_stale_target_path(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    publisher = publisher_module()
+    sub = tmp_path / "sub"
+    sub.mkdir()
+    a_target = sub / "a.md"
+    a_target.write_text("SECRET-old-a-content", encoding="utf-8")
+    b_target = tmp_path / "zzz-b.md"
+    b_target.write_text("old-b-content", encoding="utf-8")
+
+    outside = tmp_path.parent / "forge-outside-rollback-applied-swap"
+    outside.mkdir(exist_ok=True)
+    real_sub_backup = tmp_path.parent / "sub-real-backup"
+
+    operation_a = AdapterOperation(
+        path="sub/a.md",
+        ownership=OwnershipMode.FORGE_OWNED,
+        intent=OperationIntent.UPDATE,
+        content_digest=digest_content("new-a-content"),
+        content="new-a-content",
+        expected_current_digest=digest_content("SECRET-old-a-content"),
+    )
+    operation_b = AdapterOperation(
+        path="zzz-b.md",
+        ownership=OwnershipMode.FORGE_OWNED,
+        intent=OperationIntent.UPDATE,
+        content_digest=digest_content("new-b-content"),
+        content="new-b-content",
+        expected_current_digest=digest_content("old-b-content"),
+    )
+    plan = AdapterPlan(adapter_id="example", operations=(operation_a, operation_b))
+    _write_prior_record(
+        tmp_path,
+        ("sub/a.md", digest_content("SECRET-old-a-content")),
+        ("zzz-b.md", digest_content("old-b-content")),
+    )
+
+    original_digest = publisher._current_digest
+    calls_for_b = {"count": 0}
+
+    def swap_a_directory_aside_then_report_b_as_concurrently_changed(path: Path) -> str:
+        if path.name == "zzz-b.md":
+            calls_for_b["count"] += 1
+            # The first call is the preflight recheck (before any mutation);
+            # only the second, inside the mutation loop itself, should race,
+            # so operation_a is already applied when operation_b fails.
+            if calls_for_b["count"] == 2:
+                sub.rename(real_sub_backup)
+                sub.symlink_to(outside, target_is_directory=True)
+                return digest_content("concurrently-changed-by-someone-else")
+        return original_digest(path)
+
+    monkeypatch.setattr(
+        publisher, "_current_digest", swap_a_directory_aside_then_report_b_as_concurrently_changed
+    )
+
+    with pytest.raises(publisher.AdapterPublicationError) as raised:
+        publisher.publish_adapter_plan(
+            tmp_path,
+            plan,
+            _record(
+                ("sub/a.md", digest_content("new-a-content")),
+                ("zzz-b.md", digest_content("new-b-content")),
+            ),
+        )
+
+    # The swapped directory makes a safe restore impossible; this must fail
+    # loudly as an incomplete rollback rather than silently leaking the
+    # original content to the attacker-controlled directory.
+    error = raised.value
+    assert type(error).__name__ == "AdapterPublicationRollbackError"
+    assert [failure.target for failure in getattr(error, "rollback_failures", ())] == [
+        "sub/a.md",
+    ]
+    assert not (outside / "a.md").exists()
+
+
 def test_adapter_id_cannot_escape_installation_state_directory(tmp_path: Path) -> None:
     publisher = publisher_module()
     plan = AdapterPlan(adapter_id="../escape", operations=())

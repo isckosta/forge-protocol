@@ -234,17 +234,26 @@ def _validate_plan_publication_ownership(
 
 def _load_prior_installation_record(
     path: Path,
-) -> AdapterInstallationRecord | None:
+) -> tuple[AdapterInstallationRecord | None, bytes | None]:
+    """Load the prior record and return its raw bytes from the same safe read.
+
+    Callers that need the prior installation.yml's existence or exact bytes
+    (for a rollback backup, for example) must derive them from this single
+    read instead of separately re-checking path.exists()/read_bytes() later,
+    which would let a directory swapped for a symlink between this call and
+    a later one poison that later read with forged content.
+    """
     if not path.exists():
-        return None
+        return None, None
     if path.is_symlink() or not path.is_file():
         raise AdapterPublicationStaleRecordError(
             "Existing Adapter installation record is not a safe regular file."
         )
     try:
+        raw = path.read_bytes()
         record = load_installation_record(path)
         require_recorded_publication_ownership(record)
-        return record
+        return record, raw
     except (
         InvalidAdapterInstallationRecordError,
         InvalidAdapterPublicationOwnershipError,
@@ -395,7 +404,7 @@ def _write_installation_record_atomically(
 def _rollback_publication(
     *,
     root: Path,
-    applied: list[tuple[Path, bytes | None]],
+    applied: list[tuple[str, bytes | None]],
     installation_relative: str,
     prior_installation: bytes | None,
     installation_existed: bool,
@@ -405,17 +414,18 @@ def _rollback_publication(
     def record_failure(target: str, error: Exception) -> None:
         failures.append(AdapterRollbackFailure(target=target, error=error))
 
-    def display(path: Path) -> str:
+    for relative_path, original in reversed(applied):
         try:
-            return path.relative_to(root).as_posix()
-        except ValueError:
-            return str(path)
-
-    for target, original in reversed(applied):
-        try:
+            # Re-resolve immediately before use, same reason as everywhere
+            # else in this module: a Path captured when the operation was
+            # applied could be stale by the time a later operation in the
+            # same plan fails and triggers rollback, letting a directory
+            # swapped for a symlink in between redirect the restore and leak
+            # the original content to an attacker-controlled location.
+            target = _safe_target(root, relative_path)
             _restore_bytes(target, original)
         except Exception as exc:
-            record_failure(display(target), exc)
+            record_failure(relative_path, exc)
 
     try:
         # Re-resolve immediately before use: reusing a Path resolved earlier
@@ -462,12 +472,11 @@ def publish_adapter_plan(
     # which _validate_prior_record_authorizes_plan would then trust to
     # authorize mutating a real repository file.
     installation_path = _safe_target(root, installation_relative)
-    prior_record = _load_prior_installation_record(installation_path)
+    prior_record, prior_installation = _load_prior_installation_record(installation_path)
     _validate_prior_record_authorizes_plan(plan, installation_record, prior_record)
 
-    applied: list[tuple[Path, bytes | None]] = []
-    prior_installation = installation_path.read_bytes() if installation_path.exists() else None
-    installation_existed = installation_path.exists()
+    applied: list[tuple[str, bytes | None]] = []
+    installation_existed = prior_record is not None
 
     if installation_existed and all(
         operation.intent in {OperationIntent.PRESERVE, OperationIntent.UNCHANGED}
@@ -497,13 +506,13 @@ def publish_adapter_plan(
                         f"Adapter update precondition changed before write: {operation.path}."
                     )
                 original = target.read_bytes()
-                applied.append((target, original))
+                applied.append((operation.path, original))
                 _replace_file(target, operation.content or "")
                 continue
 
             if operation.intent is OperationIntent.CREATE:
                 _reserve_create_target(target)
-                applied.append((target, None))
+                applied.append((operation.path, None))
                 _replace_file(target, operation.content or "")
                 continue
 
@@ -519,7 +528,7 @@ def publish_adapter_plan(
                         f"Adapter delete precondition changed before removal: {operation.path}."
                     )
                 original = target.read_bytes()
-                applied.append((target, original))
+                applied.append((operation.path, original))
                 target.unlink()
                 continue
 

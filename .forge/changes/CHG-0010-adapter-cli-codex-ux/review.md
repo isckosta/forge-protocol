@@ -4,7 +4,7 @@ forge:
   schema: 1
 change: CHG-0010
 status: pending
-iteration: 4
+iteration: 5
 ---
 
 # Strict Review — Adapter CLI and Codex Installation UX
@@ -373,6 +373,104 @@ Full suite after remediation: `.venv/bin/python -m pytest -q` — 352 passed.
 ## Final finding counts (Iteration 4)
 
 - BLOCKER: 1 (resolved)
+- MAJOR: 0
+- MINOR: 0
+- OBSERVATION: 0 new
+
+Decision: FAIL. Re-review of the resolved revision is required before PASS
+(`re_review.required_after_blocking_resolution`).
+
+## Iteration 5 — FAIL
+
+**Revision reviewed:** `9ff7a76`.
+
+A fifth independent Reviewer verified TDD-016 and actively tried to break it
+with variants, then re-read the entirety of `publish_adapter_plan` and every
+helper it calls line by line, given four consecutive iterations finding
+progressively subtler instances of the same defect class in the same
+function.
+
+### Verification of Iteration 4 remediation
+
+**Not fully closed.** The specific authorization-read vector TDD-016 targeted
+resists variants (the Reviewer actively tried swapping in the residual
+single-statement window and confirmed the fresh `_safe_target` call still
+catches it). But TDD-016's own completeness claim — "all four uses... now fed
+by a resolution immediately before or adjacent to their point of use" — was
+inaccurate: it missed a fifth use (the rollback backup capture,
+`prior_installation`/`installation_existed`), which still reused the Path
+from the fix's own resolution across a window spanning the entire
+authorization check, not a single statement.
+
+### BLOCKER-1 — Rollback backup capture reused the authorization-read's Path across the whole authorization-check window, letting a forged record be written to the real installation.yml during rollback
+
+`prior_installation = installation_path.read_bytes()...` and
+`installation_existed = installation_path.exists()` (immediately after
+`_validate_prior_record_authorizes_plan`) reused the same `installation_path`
+TDD-016 resolved for the authorization read, without re-resolving. A
+directory swapped for a symlink to a directory containing a forged
+`installation.yml` *after* the (legitimate) authorization check passed but
+*before* this capture poisoned `prior_installation`/`installation_existed`
+with forged content. If the attacker then restores the real directory before
+a later failure triggers rollback, `_rollback_publication`'s own (already
+correctly re-resolving) restore step writes that forged backup to the real
+path — with no error. The Reviewer reproduced this directly: a fresh
+install with no genuine prior record ended up, after a triggered rollback,
+with a forged `installation.yml` at the real `.forge/adapters/<id>/`
+location.
+
+### BLOCKER-2 — `_rollback_publication` never re-resolved the `Path` objects captured in `applied` at mutation time, unlike every other installation-path use in the same function
+
+For a multi-operation plan, the first-processed operation's target `Path`
+(captured in `applied` at mutation time) was reused unmodified at rollback
+time, however much later that occurs relative to a subsequent operation's
+failure. A directory swapped for a symlink between the first operation's
+mutation and the second operation's failure let `_restore_bytes` write the
+first operation's original (potentially sensitive) content into an
+attacker-controlled directory — exfiltrating it — while the real,
+already-mutated file was left un-rolled-back, with no rollback failure
+reported at all: a silent, false appearance of a clean rollback. The Reviewer
+reproduced this directly with a two-operation plan and a swap timed between
+the first operation's successful mutation and the second's precondition
+failure.
+
+No new MINOR or OBSERVATION findings this iteration; the Reviewer's sampling
+of CLI error mapping, dependency direction, and untracked-content checks
+found nothing new.
+
+### Resolution (regression-first TDD)
+
+- **TDD-017** (BLOCKER-1): added
+  `test_rollback_backup_capture_cannot_be_poisoned_by_a_directory_swap_after_authorization`,
+  confirmed RED (forged `installation.yml` present at the real path after a
+  triggered rollback). Fix: `_load_prior_installation_record` now returns
+  `(record, raw_bytes)`, reading the file's raw bytes as part of the same
+  safe read used to parse and validate it, instead of the caller separately
+  re-reading `installation_path.read_bytes()`/`.exists()` later.
+  `installation_existed` is now derived as `prior_record is not None`,
+  exactly equivalent to the removed separate existence check. Confirmed
+  GREEN.
+- **TDD-018** (BLOCKER-2): added
+  `test_rollback_of_an_already_applied_operation_reuses_a_stale_target_path`,
+  confirmed RED (secret original content written to the attacker-controlled
+  directory; the real file left with its new, un-rolled-back content; no
+  rollback failure reported — `AdapterPublicationConflictError` instead of
+  the expected `AdapterPublicationRollbackError`). Fix: `applied` now stores
+  `(operation.path, original_bytes)` tuples instead of `(Path,
+  original_bytes)`; `_rollback_publication` re-resolves each via
+  `_safe_target(root, relative_path)` immediately before `_restore_bytes`.
+  A still-swapped ancestor at rollback time now correctly raises
+  `UnsafeAdapterPathError`, recorded as an `AdapterRollbackFailure`,
+  surfacing as `AdapterPublicationRollbackError` — a loud, honest failure
+  instead of silent exfiltration with a false appearance of success.
+  Confirmed GREEN.
+
+Full suite after remediation: `.venv/bin/python -m pytest -q` — 354 passed.
+`git diff --check` clean.
+
+## Final finding counts (Iteration 5)
+
+- BLOCKER: 2 (resolved)
 - MAJOR: 0
 - MINOR: 0
 - OBSERVATION: 0 new
