@@ -35,9 +35,13 @@ class AdapterPublicationError(RuntimeError):
 class AdapterPublicationConflictError(AdapterPublicationError):
     """Raised when repository state no longer satisfies a safe publication plan."""
 
+    code = "E_FORGE_ADAPTER_CONFLICT"
+
 
 class UnsafeAdapterPathError(AdapterPublicationError):
     """Raised when an Adapter path is unsafe or ambiguous across platforms."""
+
+    code = "E_FORGE_ADAPTER_UNSAFE_PATH"
 
 
 @dataclass(frozen=True)
@@ -386,32 +390,39 @@ def _rollback_publication(
     *,
     root: Path,
     applied: list[tuple[Path, bytes | None]],
-    installation_path: Path,
+    installation_relative: str,
     prior_installation: bytes | None,
     installation_existed: bool,
 ) -> tuple[AdapterRollbackFailure, ...]:
     failures: list[AdapterRollbackFailure] = []
 
-    def record_failure(path: Path, error: Exception) -> None:
-        try:
-            target = path.relative_to(root).as_posix()
-        except ValueError:
-            target = str(path)
+    def record_failure(target: str, error: Exception) -> None:
         failures.append(AdapterRollbackFailure(target=target, error=error))
+
+    def display(path: Path) -> str:
+        try:
+            return path.relative_to(root).as_posix()
+        except ValueError:
+            return str(path)
 
     for target, original in reversed(applied):
         try:
             _restore_bytes(target, original)
         except Exception as exc:
-            record_failure(target, exc)
+            record_failure(display(target), exc)
 
     try:
+        # Re-resolve immediately before use: reusing a Path resolved earlier
+        # would let a directory component swapped for a symlink during
+        # mutation or rollback redirect this restore/removal outside the
+        # publication root, exactly like the mutation-loop targets above.
+        installation_path = _safe_target(root, installation_relative)
         if installation_existed:
             _restore_bytes(installation_path, prior_installation)
         elif installation_path.exists() or installation_path.is_symlink():
             installation_path.unlink()
     except Exception as exc:
-        record_failure(installation_path, exc)
+        record_failure(installation_relative, exc)
 
     return tuple(failures)
 
@@ -504,12 +515,16 @@ def publish_adapter_plan(
                 f"Unsupported publishable Adapter operation intent: {operation.intent}."
             )
 
+        # Re-resolve immediately before the write for the same reason as the
+        # per-operation targets above: installation_path was first resolved
+        # before the entire preflight/validation/mutation sequence ran.
+        installation_path = _safe_target(root, installation_relative)
         _write_installation_record_atomically(installation_path, installation_record)
     except Exception as exc:
         rollback_failures = _rollback_publication(
             root=root,
             applied=applied,
-            installation_path=installation_path,
+            installation_relative=installation_relative,
             prior_installation=prior_installation,
             installation_existed=installation_existed,
         )

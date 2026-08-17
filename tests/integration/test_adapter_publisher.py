@@ -303,6 +303,30 @@ def test_directory_symlink_swap_after_preflight_prevents_escaping_update_target(
     assert canary.read_text(encoding="utf-8") == "old"
 
 
+def test_directory_symlink_swap_after_preflight_prevents_escaping_installation_record_write(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    publisher = publisher_module()
+    outside = tmp_path.parent / "forge-outside-install-record-swap"
+    outside.mkdir(exist_ok=True)
+    adapter_state_dir = tmp_path / ".forge" / "adapters" / "example"
+    adapter_state_dir.mkdir(parents=True)
+    plan = AdapterPlan(adapter_id="example", operations=(), conflicts=())
+    original_record_validation = publisher._validate_record_matches_plan
+
+    def swap_directory_for_symlink_after_preflight(plan, record) -> None:
+        original_record_validation(plan, record)
+        adapter_state_dir.rmdir()
+        adapter_state_dir.symlink_to(outside, target_is_directory=True)
+
+    monkeypatch.setattr(publisher, "_validate_record_matches_plan", swap_directory_for_symlink_after_preflight)
+
+    with pytest.raises(publisher.AdapterPublicationError):
+        publisher.publish_adapter_plan(tmp_path, plan, _record())
+
+    assert not (outside / "installation.yml").exists()
+
+
 def test_adapter_id_cannot_escape_installation_state_directory(tmp_path: Path) -> None:
     publisher = publisher_module()
     plan = AdapterPlan(adapter_id="../escape", operations=())
