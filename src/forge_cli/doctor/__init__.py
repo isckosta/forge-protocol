@@ -69,6 +69,7 @@ def diagnose(start: Path, protocol_root: Path) -> DoctorResult:
 
     config_valid = False
     protocol_compatible = False
+    protocol_id = 1
     if not initialized:
         checks.append(_check("project_configuration", "skipped", "Project configuration requires an initialized Forge workspace."))
         checks.append(_check("protocol_compatibility", "skipped", "Protocol compatibility requires valid project configuration."))
@@ -76,7 +77,7 @@ def diagnose(start: Path, protocol_root: Path) -> DoctorResult:
     else:
         config_path = forge_dir / "forge.yml"
         try:
-            load_project_configuration(config_path)
+            project_configuration = load_project_configuration(config_path)
         except UnsupportedProtocolVersionError as error:
             config_valid = True
             checks.append(_check("project_configuration", "passed", "Project configuration conforms to the Forge Project Schema."))
@@ -87,8 +88,9 @@ def diagnose(start: Path, protocol_root: Path) -> DoctorResult:
         else:
             config_valid = True
             protocol_compatible = True
+            protocol_id = project_configuration["forge"]["protocol"]
             checks.append(_check("project_configuration", "passed", "Project configuration conforms to the Forge Project Schema."))
-            checks.append(_check("protocol_compatibility", "passed", "Configured Forge Protocol version is supported."))
+            checks.append(_check("protocol_compatibility", "passed", f"Configured Forge Protocol {protocol_id} is supported."))
 
         canonical_flow_ids = ("fast", "standard", "full")
         if config_valid and protocol_compatible:
@@ -110,16 +112,13 @@ def diagnose(start: Path, protocol_root: Path) -> DoctorResult:
         else:
             checks.append(_check("canonical_flows", "skipped", "Canonical Flow checks require compatible project configuration."))
 
-    if repository_root is None:
-        contract_project_root = start
-    else:
-        contract_project_root = repository_root
+    contract_project_root = repository_root if repository_root is not None else start
 
     try:
-        resolve_effective_contract(protocol_root, contract_project_root)
+        resolve_effective_contract(protocol_root, contract_project_root, protocol_id)
     except CanonicalContractUnavailableError as error:
         checks.append(_check("canonical_contract", "failed", str(error)))
     else:
-        checks.append(_check("canonical_contract", "passed", "Canonical Engineering Contract is available."))
+        checks.append(_check("canonical_contract", "passed", f"Canonical Protocol {protocol_id} Engineering Contract is available."))
 
     return DoctorResult(checks=tuple(checks))

@@ -6,62 +6,53 @@ CLI releases will follow Semantic Versioning when releases begin. Protocol versi
 
 ## Unreleased
 
+### Protocol 2 — Verifiable Review Independence
+
+Added:
+
+- integer **Protocol 2** as the compatibility boundary for mandatory independent Strict Review Execution and Execution Context;
+- version-specific Protocol 2 Contract, Specification, and Review Policy resources under `protocol/versions/2/`;
+- `forge/execution-provenance@1`, a provider-independent repository-native ledger for Implementation, Resolution, and Review execution provenance;
+- explicit provenance assurance levels: `claimed`, `recorded`, and `verified`, with at least `recorded` required for Protocol 2 `review_passed`;
+- iteration-aware Protocol 2 Review state in `forge/change@2`, linking each passed Review to subject and Reviewer provenance for the revision under review;
+- FAST, STANDARD, and FULL Protocol 2 validation for missing/forged provenance, wrong revision binding, shared Execution, shared Context, partial evidence, contaminated re-review, active schema downgrade, and dirty frozen review subjects;
+- effective Git review-subject freeze validation across committed, staged, unstaged, deleted/renamed, and Git-visible untracked reviewable paths while respecting Git ignore rules;
+- exact Change-local review-control metadata exception for `manifest.yml`, `provenance.yml`, and `review.md`, with rename/lookalike/symlink bypass protection;
+- Protocol-aware canonical Contract resolution in validation and Doctor;
+- Protocol-aware Codex projection so Protocol 2 provenance/freeze semantics are projected for FAST/STANDARD/FULL without leaking into Protocol 1.
+
+Changed:
+
+- restored Protocol 1 C-026, Specification §25, Review Policy, and `forge/change@1` to their historical pre-CHG-0008 semantics instead of retroactively strengthening Protocol 1;
+- Protocol 2 review-subject binding now describes the effective reviewable workspace, not only committed `<subject>..HEAD` history;
+- Codex Adapter compatibility interval covers integer Protocols 1 and 2 and now instructs Protocol 2 harnesses to finish reviewable material, ensure the effective workspace is clean, freeze, record provenance, and re-check the freeze before independent Review;
+- compatibility documentation explicitly distinguishes Protocol version from artifact schema version and documents the Protocol 1 → 2 breaking boundary.
+
+Security/trust boundary:
+
+- pairwise-distinct execution/context strings are no longer treated as sufficient evidence of independence;
+- post-freeze staged, unstaged, untracked, deletion, rename, and path-based metadata bypasses cannot silently alter the Protocol 2 subject presented for Review;
+- Forge Core verifies durable provenance linkage and consistency but does not claim self-recorded provenance is cryptographic/external proof; `verified` provenance is reserved for observer-backed evidence.
+
+Migration:
+
+- completed historical Protocol 1 Changes remain unchanged and require no fabricated provenance;
+- active Protocol 2 Changes use `forge/change@2` and may not downgrade to `forge/change@1` to bypass the Strict Review Gate.
+
 ### Protocol 1 Contract Freeze
 
 Changed:
 
-- stabilized the human-readable Protocol label as `1` while preserving integer
-  Protocol compatibility;
+- stabilized the human-readable Protocol label as `1` while preserving integer Protocol compatibility;
 - published Protocol 1 compatibility, breaking-change, and deprecation rules;
-- added a portable schema catalog and offline contract coverage for canonical
-  schemas and repository-native artifacts;
-- migrated historical artifact structures to their canonical schemas without
-  changing recorded engineering outcomes.
+- added a portable schema catalog and offline contract coverage for canonical schemas and repository-native artifacts;
+- migrated historical artifact structures to their canonical schemas without changing recorded engineering outcomes.
 
 ### Foundation
 
 Added:
 
-- Forge Manifesto;
-- Core Architecture;
-- Forge Core Protocol draft;
-- Engineering Contract;
-- FAST, STANDARD, and FULL Flows;
-- TDD-first development model;
-- RED -> GREEN -> REFACTOR lifecycle;
-- RED Gate semantics;
-- regression-first bugfix policy;
-- adversarial Strict Review;
-- baseline Testing, Review, Documentation, Architecture, and Security Policies;
-- project and Change Schemas;
-- configuration-resolution model;
-- foundational RFC and ADRs;
-- Forge dogfooding workspace;
-- CHG-0001 Bootstrap Forge CLI Specification and Test Strategy;
-- Python 3.12+ bootstrap CLI with `version`, `init`, `validate`, and `doctor`;
-- Git repository root resolution;
-- atomic staged workspace publication with exclusive initialization locking;
-- canonical Project Schema validation and Protocol compatibility checks;
-- canonical Flow and Engineering Contract resolution;
-- structured validation findings and read-only Doctor diagnostics;
-- packaged canonical Protocol resources for isolated wheel execution;
-- offline distribution verification and runtime dependency audit;
-- Harness Adapter manifest and installation-record Schemas;
-- independent Adapter identity/versioning and half-open Protocol compatibility intervals;
-- Harness capability requirement and explicit limitation model;
-- immutable deterministic Adapter plans with ownership and operation vocabularies;
-- deterministic shared-artifact merge provenance requirements;
-- repository-native Adapter installation records with generated content digests;
-- generated artifact drift detection and stale-state conflict protection;
-- Harness-agnostic conformance validation for canonical Flow, TDD RED, Strict Review, and repository authority;
-- deterministic Harness-agnostic Adapter planner;
-- safe Adapter publisher with repository path confinement, symlink/traversal protection, update preconditions, rollback, and installation-record-last semantics;
-- isolated-wheel regression coverage proving Adapter Schemas resolve without a source checkout;
-- first concrete Codex Harness Adapter with packaged descriptor and dated capability evidence;
-- deterministic Codex workflow and Engineering Contract projection resources derived from canonical Forge input;
-- conservative Codex capability declarations and explicit invariant enforcement limitations;
-- optional explicit/evidence-backed Codex publication targets without an invented vendor path;
-- generic Core reuse for Codex planning, ownership, collision protection, installation state, and drift detection;
-- isolated-wheel and offline Codex Adapter verification without a Codex/OpenAI SDK dependency.
-
-The bootstrap CLI and Adapter interfaces remain pre-release software. Codex is the first concrete Harness integration and remains governed by canonical repository-native Forge state.
+- Forge Manifesto and Core Architecture;
+- Forge Core Protocol, Engineering Contract, FAST/STANDARD/FULL Flows, TDD-first development model, RED → GREEN → REFACTOR lifecycle, Verification, adversarial Strict Review, and canonical Policies/Schemas;
+- official Python CLI with `version`, `init`, `validate`, and `doctor`;
+- repository-native Change lifecycle, configuration resolution, offline packaged Protocol resources, Distribution Verification, Harness Adapter architecture, Codex Adapter, and deterministic Adapter planning/publication/drift detection.

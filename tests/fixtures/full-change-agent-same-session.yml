@@ -1,0 +1,33 @@
+schema: forge/change@2
+change:
+  id: CHG-9999
+  title: Invalid shared-context FULL review
+  kind: infrastructure
+flow:
+  initial: full
+  current: full
+state:
+  current: strict_review
+artifacts: {}
+tdd:
+  status: compliant
+  cycles: 1
+verification:
+  status: passed
+review:
+  status: active
+  iteration: 1
+  blockers: 0
+  majors: 0
+  minors: 0
+  observations: 0
+  reviewer_identity:
+    actor_type: agent
+    execution_id: review-exec-001
+    context_id: shared-context-001
+    resolver_execution_id: resolver-exec-001
+    resolver_context_id: shared-context-001
+documentation:
+  impact_evaluated: true
+  update_required: false
+  reason: No documentation impact in validation fixture.

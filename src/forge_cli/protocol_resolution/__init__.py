@@ -51,10 +51,19 @@ def _load_yaml(path: Path) -> dict[str, Any]:
     return data
 
 
+def _versioned_protocol_root(protocol_root: Path, protocol_id: int) -> Path:
+    """Resolve immutable version-specific resources without relabeling Protocol 1."""
+    if protocol_id == 1:
+        return protocol_root
+    candidate = protocol_root / "versions" / str(protocol_id)
+    return candidate if candidate.is_dir() else protocol_root
+
+
 def resolve_effective_flow(
     protocol_root: Path,
     project_root: Path,
     flow_id: str,
+    protocol_id: int = 1,
 ) -> dict[str, dict[str, Any]]:
     """Resolve canonical and project Flow layers without destructive merging."""
 
@@ -80,7 +89,10 @@ def resolve_effective_flow(
         )
 
     canonical_id = flow["canonical"]
-    canonical_path = protocol_root / "flows" / f"{canonical_id}.yml"
+    versioned_root = _versioned_protocol_root(protocol_root, protocol_id)
+    canonical_path = versioned_root / "flows" / f"{canonical_id}.yml"
+    if not canonical_path.is_file():
+        canonical_path = protocol_root / "flows" / f"{canonical_id}.yml"
     if not canonical_path.is_file():
         raise UnknownCanonicalFlowError(
             f"Unknown canonical Forge Flow: {canonical_id}."
@@ -99,13 +111,15 @@ def resolve_effective_flow(
 def resolve_effective_contract(
     protocol_root: Path,
     project_root: Path,
+    protocol_id: int = 1,
 ) -> EffectiveContract:
-    """Compose the immutable canonical Contract with an additive project extension."""
+    """Compose the selected immutable canonical Contract with a project extension."""
 
-    canonical_path = protocol_root / "contract" / "engineering.md"
+    versioned_root = _versioned_protocol_root(protocol_root, protocol_id)
+    canonical_path = versioned_root / "contract" / "engineering.md"
     if not canonical_path.is_file():
         raise CanonicalContractUnavailableError(
-            f"Canonical Engineering Contract is unavailable at {canonical_path}."
+            f"Canonical Protocol {protocol_id} Engineering Contract is unavailable at {canonical_path}."
         )
 
     canonical = canonical_path.read_text(encoding="utf-8")
