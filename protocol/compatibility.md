@@ -1,43 +1,35 @@
-# Forge Protocol 1 Compatibility
+# Forge Protocol Compatibility
 
 Status: Stable
 
-This document defines how Forge Protocol 1 evolves. The normative Core
-semantics remain in `specification.md`; this policy determines whether a
-change may retain integer Protocol identifier `1`.
+This document defines the compatibility boundary between integer Forge Protocol versions. Protocol version and artifact schema version are independent axes.
 
 ## Independent versions
 
 Forge has four independent version axes:
 
-- **Protocol version** — integer compatibility contract used by projects and
-  Adapters. The stable current identifier and human label are both `1`.
-- **Schema version** — suffix in an artifact identifier such as
-  `forge/change@1`. It versions that artifact shape, not the entire Protocol.
+- **Protocol version** — integer Core semantic compatibility contract used by projects and Adapters.
+- **Schema version** — suffix in an artifact identifier such as `forge/change@1` or `forge/change@2`; it versions that artifact shape, not the entire Protocol.
 - **CLI version** — Semantic Versioning of the installable implementation.
-- **Adapter version** — Adapter-specific Semantic Versioning, with an explicit
-  half-open Protocol interval `min <= protocol < max_exclusive`.
+- **Adapter version** — Adapter-specific Semantic Versioning, with an explicit half-open Protocol interval.
 
-A release may change one axis without changing the others when their respective
-contracts remain compatible.
+A schema suffix MUST NOT be used to conceal a breaking Core semantic change that belongs at the integer Protocol boundary.
 
-## Compatible Protocol 1 evolution
+## Protocol 1 — frozen semantic meaning
 
-Protocol 1 may retain identifier `1` for:
+Protocol 1 remains valid and preserves its published meaning. In particular, C-026 means that Reviewer and Resolver are distinct conceptual Roles. Protocol 1 does not retroactively require independent Execution identifiers, independent Execution Context identifiers, revision-bound provenance, or a provenance ledger.
 
-- optional fields or artifacts whose absence preserves existing meaning;
-- new independently versioned schemas that do not invalidate existing valid
-  instances;
-- stronger validation diagnostics for states already invalid under the
-  published contract;
-- editorial clarification that does not alter normative meaning;
-- additional Harness representations or enforcement mechanisms that preserve
-  canonical semantics;
-- implementation fixes that make behavior conform to existing requirements.
+Previously valid conforming Protocol 1 projects and completed Change instances MUST remain valid merely because Protocol 2 exists. `forge/change@1` preserves its historical shape and meaning.
 
-Compatible additions must not make a previously valid conforming Protocol 1
-project, Change, Flow, or Adapter invalid merely because it does not use the
-addition.
+Compatible Protocol 1 maintenance may still include editorial corrections, implementation fixes that enforce already-published semantics, optional artifacts whose absence preserves existing meaning, and independently versioned schema additions that do not invalidate Protocol 1 instances.
+
+## Protocol 2 — review-independence boundary
+
+Protocol 2 intentionally strengthens Strict Review from conceptual Role separation to revision-bound independent Execution and Execution Context provenance. Because this invalidates states that were valid under Protocol 1, the stronger obligation is identified as integer Protocol `2` rather than being relabeled as a compatible Protocol 1 revision.
+
+Protocol 2 active Changes use `forge/change@2` and declare `protocol: 2`. A Protocol 2 repository MAY retain completed historical `forge/change@1` Changes without retroactive migration or fabricated provenance. An active Protocol 2 Change MUST NOT downgrade to `forge/change@1` to bypass the Protocol 2 Strict Review Gate.
+
+The `forge/execution-provenance@1` artifact is the repository-native ledger for Protocol 2 execution records. Its schema version is independent from Protocol 2; a future compatible provenance shape could receive another schema suffix without necessarily creating Protocol 3.
 
 ## Breaking Protocol evolution
 
@@ -45,54 +37,24 @@ A new integer Protocol identifier is required to:
 
 - remove or weaken a Contract invariant;
 - remove a previously supported required capability or artifact;
-- make a previously optional field required for existing instances;
-- change the meaning of an existing required field, stage, Gate, severity, or
-  ownership mode;
-- invalidate a previously valid conforming Protocol 1 instance;
-- change the Adapter compatibility interval semantics;
-- authorize a Flow to bypass applicable TDD/RED, Verification, Strict Review,
-  blocking external-review thread reconciliation, Documentation Impact, or
-  truthful Completion.
+- make a previously optional field or evidence source mandatory for existing instances;
+- change the meaning of an existing required field, stage, Gate, severity, or ownership mode;
+- invalidate a previously valid conforming instance;
+- change Adapter compatibility interval semantics;
+- authorize a Flow to bypass applicable TDD/RED, Verification, Strict Review, blocking external-review reconciliation, Documentation Impact, or truthful Completion.
 
-An individual artifact shape may instead require a new schema suffix when the
-break is limited to that artifact. If the shape change also changes Core
-semantic obligations, both the schema and integer Protocol version must change.
+If an artifact-shape change also changes Core semantic obligations, both the relevant schema version and integer Protocol version must be selected correctly.
 
 ## Deprecation
 
-A deprecation record must state:
-
-1. the affected construct;
-2. its replacement or migration path;
-3. the first CLI release or Protocol revision that marks it deprecated;
-4. the compatibility period during which it remains supported;
-5. the earliest removal boundary.
-
-Deprecation does not authorize early removal. Removal that meets a breaking
-condition above requires the next integer Protocol identifier. Security or data
-integrity emergencies may shorten a CLI support window, but they do not permit
-the implementation to mislabel a breaking Protocol contract as compatible.
+A deprecation record must state the affected construct, replacement or migration path, first release or Protocol revision marking it deprecated, compatibility period, and earliest removal boundary. Deprecation does not authorize early removal.
 
 ## Stable lifecycle vocabulary
 
-Protocol 1 freezes the canonical Flow names `FAST`, `STANDARD`, and `FULL` and
-the common quality obligations:
+Protocol 1 and Protocol 2 both retain FAST, STANDARD, and FULL and the common quality obligations: applicable TDD, Verification beyond passing tests, adversarial Strict Review, blocking-thread reconciliation on active external review surfaces, Documentation Impact evaluation, and truthful Completion.
 
-- applicable TDD with observed valid RED before production behavior;
-- Verification beyond merely passing tests;
-- adversarial Strict Review;
-- reconciliation of blocking threads on an active external review surface;
-- explicit Documentation Impact evaluation;
-- Completion only when manifest state agrees with repository reality.
-
-Flows may differ in planning ceremony and may add stricter Gates. FAST does not
-require a formal Requirement identifier, but it retains the applicable
-test-before-implementation and completion quality Gates.
+Protocol 2 adds the same review-provenance quality invariant to FAST, STANDARD, and FULL. FAST reduces ceremony, not quality.
 
 ## Schema catalog
 
-`schemas/catalog.yml` is the portable list of supported schemas. Cataloged
-schemas use JSON Schema Draft 2020-12 and must agree with the identifier in the
-instance's top-level `schema` field. Cross-field semantic constraints that
-standard JSON Schema cannot express remain part of canonical deterministic
-validation; Adapter interval ordering is one such constraint.
+`schemas/catalog.yml` is the portable list of schemas shipped by the distribution. Catalog presence does not imply that every schema is normative for every Protocol version. Applicability is defined by the selected Protocol contract and the artifact's own identifier. Cross-field semantic constraints that JSON Schema cannot express remain deterministic Core validation responsibilities.

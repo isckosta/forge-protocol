@@ -1,4 +1,5 @@
 from pathlib import Path
+import re
 import subprocess
 
 import pytest
@@ -79,7 +80,10 @@ def test_adapter_list_treats_unsupported_project_protocol_as_unknown_compatibili
 ) -> None:
     _initialize_project(tmp_path, monkeypatch)
     config = tmp_path / ".forge" / "forge.yml"
-    config.write_text(config.read_text(encoding="utf-8").replace("protocol: 1", "protocol: 99"), encoding="utf-8")
+    config.write_text(
+        re.sub(r"protocol: \d+", "protocol: 99", config.read_text(encoding="utf-8")),
+        encoding="utf-8",
+    )
 
     result = runner.invoke(app, ["adapter", "list"])
 

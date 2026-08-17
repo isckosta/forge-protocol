@@ -1,0 +1,189 @@
+schema: forge/execution-provenance@1
+change: CHG-0008
+records:
+  - id: resolution-001
+    role: resolution
+    execution: {id: resolution-exec-chg0008-20260815-01, context_id: resolution-context-chg0008-20260815-01}
+    recorded_at: 2026-08-15T18:27:15Z
+    revision: {id: chg-0008-resolution-001, commit: 538a77dcd77aed0db0505a288fc1cbea0e69def3}
+    source: {assurance: recorded, observed_by: self, harness: chatgpt, statement: 'Historical Resolution 1 self-recorded provenance; not external proof.'}
+  - id: review-002
+    role: review
+    execution: {id: review-exec-chg0008-20260815-02, context_id: review-context-chg0008-20260815-02}
+    recorded_at: 2026-08-15T18:45:00Z
+    revision: {id: chg-0008-resolution-001, commit: f5a825917170ac684fefaa2b096a7ff83996d5cd}
+    source: {assurance: recorded, observed_by: self, harness: chatgpt, statement: 'Historical Strict Review Iteration 2 provenance; its commit mismatch is preserved as R005 evidence.'}
+  - id: resolution-002
+    role: resolution
+    execution:
+      id: resolution-exec-chg0008-20260815-02
+      context_id: resolution-context-chg0008-20260815-02
+    recorded_at: 2026-08-15T19:14:00Z
+    revision:
+      id: chg-0008-resolution-002
+      immutable_ref: {type: git_commit, value: 8642bb607a276139e91ec4030b7fb0a18ca1023b}
+      commit: 8642bb607a276139e91ec4030b7fb0a18ca1023b
+      description: >-
+        Frozen Resolution 2 review subject containing the R004/R005 implementation,
+        regressions, Protocol 2 normative updates, Adapter guidance and Verification evidence.
+        Subsequent commits are restricted to Change-local review-control metadata.
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: chatgpt
+      statement: >-
+        This Resolver execution records repository-native self-observed provenance for the
+        frozen subject. No provider-native attestation was available; assurance is recorded,
+        not verified or cryptographic/external proof.
+  - id: review-003
+    role: review
+    execution:
+      id: review-exec-chg0008-20260815-03
+      context_id: review-context-chg0008-20260815-03
+    recorded_at: 2026-08-15T19:20:00Z
+    revision:
+      id: chg-0008-resolution-002
+      immutable_ref: {type: git_commit, value: 8642bb607a276139e91ec4030b7fb0a18ca1023b}
+      commit: 8642bb607a276139e91ec4030b7fb0a18ca1023b
+      description: Strict Review Iteration 3 against the frozen Resolution 2 review subject.
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: chatgpt
+      statement: >-
+        This independent Reviewer execution records repository-native self-observed
+        execution/context provenance for Strict Review Iteration 3. No provider-native
+        attestation was available; assurance is recorded, not verified.
+  - id: resolution-003
+    role: resolution
+    execution:
+      id: resolution-exec-chg0008-20260815-03
+      context_id: resolution-context-chg0008-20260815-03
+    recorded_at: 2026-08-15T19:48:16Z
+    revision:
+      id: chg-0008-resolution-003
+      immutable_ref: {type: git_commit, value: 4df2af728eb9e0f6225bda87762dbaf236fd3671}
+      commit: 4df2af728eb9e0f6225bda87762dbaf236fd3671
+      description: >-
+        Frozen Resolution 3 review subject containing the R006 effective-workspace freeze fix,
+        dedicated regressions, Protocol 2 normative updates, Codex Adapter guidance,
+        CI root-cause repair, traceability and Verification evidence.
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: chatgpt
+      statement: >-
+        This Resolver execution records repository-native self-observed provenance for the
+        frozen Resolution 3 subject. No provider-native attestation was available; assurance
+        is recorded, not verified or cryptographic/external proof.
+  - id: review-004
+    role: review
+    execution:
+      id: review-exec-chg0008-20260815-04
+      context_id: review-context-chg0008-20260815-04
+    recorded_at: 2026-08-15T20:02:32Z
+    revision:
+      id: chg-0008-resolution-003
+      immutable_ref: {type: git_commit, value: 4df2af728eb9e0f6225bda87762dbaf236fd3671}
+      commit: 4df2af728eb9e0f6225bda87762dbaf236fd3671
+      description: Strict Review Iteration 4 against the frozen Resolution 3 review subject.
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: chatgpt
+      statement: >-
+        Independent Reviewer execution for Strict Review Iteration 4. Repository-native
+        self-recorded provenance only; no provider-native attestation or external proof was
+        available, so assurance is recorded rather than verified.
+  - id: resolution-004
+    role: resolution
+    execution:
+      id: resolution-exec-chg0008-20260815-04
+      context_id: resolution-context-chg0008-20260815-04
+    recorded_at: 2026-08-15T20:35:57Z
+    revision:
+      id: chg-0008-resolution-004
+      immutable_ref:
+        type: git_commit
+        value: 87f0e169676df0ca8463a5620774d26af90b242a
+      commit: 87f0e169676df0ca8463a5620774d26af90b242a
+      description: >-
+        Frozen Resolution 4 review subject resolving R007 by anchoring established Protocol 2
+        subject provenance to its first complete committed representation, preserving live
+        Review Iteration subject bindings, and retaining the R006 effective-workspace freeze.
+        Tests run 31907092347 and Distribution Verification run 31907092231 passed for this subject.
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: chatgpt
+      statement: >-
+        This Resolver execution records repository-native self-observed provenance for the
+        frozen Resolution 4 subject. The authority is local Git history and is not cryptographic
+        or external attestation; no provider-native proof was available, so assurance is recorded.
+  - id: review-005
+    role: review
+    execution:
+      id: review-exec-chg0008-20260815-05
+      context_id: review-context-chg0008-20260815-05
+    recorded_at: 2026-08-15T20:43:00Z
+    revision:
+      id: chg-0008-resolution-004
+      immutable_ref:
+        type: git_commit
+        value: 87f0e169676df0ca8463a5620774d26af90b242a
+      commit: 87f0e169676df0ca8463a5620774d26af90b242a
+      description: Strict Review Iteration 5 against the frozen Resolution 4 review subject.
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: chatgpt
+      statement: >-
+        Independent Reviewer execution for Strict Review Iteration 5. Repository-native
+        self-recorded provenance only; no provider-native attestation or external proof was
+        available, so assurance is recorded rather than verified.
+  - id: resolution-005
+    role: resolution
+    execution:
+      id: resolution-exec-chg0008-20260815-05
+      context_id: resolution-context-chg0008-20260815-05
+    recorded_at: 2026-08-16T00:49:41Z
+    revision:
+      id: chg-0008-resolution-005
+      immutable_ref:
+        type: git_commit
+        value: a6358394ad877bb011e86cc87b580d204a975b5f
+      commit: a6358394ad877bb011e86cc87b580d204a975b5f
+      description: >-
+        Frozen Resolution 5 review subject resolving R008 with status-independent historical
+        Review Iteration subject authority, preservation of committed bound Iteration IDs,
+        legitimate lifecycle-metadata evolution, and retained R005/R006/R007 protections.
+        Tests run 31918151814 and Distribution Verification run 31918151818 passed for this subject.
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: chatgpt
+      statement: >-
+        This Resolver execution records repository-native self-observed provenance for the
+        frozen Resolution 5 subject. No provider-native execution ID, external attestation or
+        stronger observer-backed proof was available; assurance is recorded, not verified.
+  - id: review-006
+    role: review
+    execution:
+      id: review-exec-chg0008-20260815-06
+      context_id: review-context-chg0008-20260815-06
+    recorded_at: 2026-08-16T01:07:14Z
+    revision:
+      id: chg-0008-resolution-005
+      immutable_ref:
+        type: git_commit
+        value: a6358394ad877bb011e86cc87b580d204a975b5f
+      commit: a6358394ad877bb011e86cc87b580d204a975b5f
+      description: Strict Review Iteration 6 against the frozen Resolution 5 review subject.
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: chatgpt
+      statement: >-
+        Independent Reviewer execution for Strict Review Iteration 6. Repository-native
+        self-recorded provenance only; no provider-native attestation or external proof was
+        available, so assurance is recorded rather than verified.

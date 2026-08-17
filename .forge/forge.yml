@@ -4,7 +4,7 @@ project:
   name: forge
 
 forge:
-  protocol: 1
+  protocol: 2
 
 flows:
   default: standard

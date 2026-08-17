@@ -5,7 +5,7 @@ adapter:
   harness: codex
 protocol:
   min: 1
-  max_exclusive: 2
+  max_exclusive: 3
 capabilities:
   persistent_instructions: false
   commands: false

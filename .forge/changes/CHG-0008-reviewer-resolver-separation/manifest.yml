@@ -1,0 +1,81 @@
+schema: forge/change@2
+protocol: 2
+change: {id: CHG-0008, title: Verifiable Review Independence, kind: feature}
+flow: {initial: full, current: full, escalations: []}
+state: {current: complete}
+artifacts:
+  intent: complete
+  discovery: complete
+  specification: complete
+  specification_drift: complete
+  specification_review: complete
+  architecture: complete
+  test_strategy: approved
+  plan: approved
+  tasks: approved
+  traceability: complete
+  tdd_evidence: complete
+  implementation: complete
+  provenance: complete
+  verification: complete
+  review: complete
+  documentation: complete
+  knowledge_capture: complete
+requirements: {total: 19, implemented: 19, verified: 19}
+tdd: {status: compliant, cycles: 11}
+verification: {status: passed}
+review:
+  status: passed
+  iteration: 6
+  blockers: 0
+  majors: 0
+  minors: 0
+  observations: 0
+  iterations:
+    - id: review-001
+      revision: 43170fa3eb0e16d9e848c3b26e44ef757906dffc
+      status: failed
+      evidence_gap: Strict Review Iteration 1 returned REQUEST CHANGES with R001-R004; historical provenance was not fabricated.
+    - id: review-002
+      revision: chg-0008-resolution-001
+      subject_provenance: resolution-001
+      reviewer_provenance: review-002
+      status: failed
+      evidence_gap: Strict Review Iteration 2 preserved R004 as partial and added R005 because logical revision binding did not enforce concrete commit equality.
+    - id: review-003
+      revision: chg-0008-resolution-002
+      subject_provenance: resolution-002
+      reviewer_provenance: review-003
+      status: failed
+      evidence_gap: >-
+        CHG-0008-R006 MAJOR: review-subject freeze detects committed post-freeze subject changes
+        but ignores uncommitted, staged, and untracked reviewable mutations.
+    - id: review-004
+      revision: chg-0008-resolution-003
+      subject_provenance: resolution-003
+      reviewer_provenance: review-004
+      status: failed
+      evidence_gap: >-
+        CHG-0008-R007 BLOCKER: mutable allowlisted provenance can rewrite the frozen subject
+        immutable revision and thereby hide reviewable post-freeze committed mutations.
+    - id: review-005
+      revision: chg-0008-resolution-004
+      subject_provenance: resolution-004
+      reviewer_provenance: review-005
+      status: failed
+      evidence_gap: >-
+        CHG-0008-R008 MAJOR: committed Review Iteration subject authority is enforced only while
+        status is pending or passed; a historical failed Iteration can be rewritten to another
+        revision or subject_provenance without triggering the append-only history check.
+    - id: review-006
+      revision: chg-0008-resolution-005
+      subject_provenance: resolution-005
+      reviewer_provenance: review-006
+      status: passed
+documentation:
+  impact_evaluated: true
+  update_required: true
+  reason: >-
+    Protocol 2 now anchors established subject provenance and committed Review Iteration
+    identity/binding to local Git history independently of verdict status, while preserving
+    the R006 effective-workspace freeze, R007 provenance authority and Protocol 1 compatibility.

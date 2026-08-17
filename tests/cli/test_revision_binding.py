@@ -1,0 +1,67 @@
+import subprocess
+from pathlib import Path
+import pytest, yaml
+from typer.testing import CliRunner
+from forge_cli.app import app
+runner=CliRunner()
+def init(root:Path,protocol=2):
+ subprocess.run(["git","init",str(root)],check=True,capture_output=True);subprocess.run(["git","config","user.email","t@x"],cwd=root,check=True);subprocess.run(["git","config","user.name","T"],cwd=root,check=True);f=root/".forge";f.mkdir();(f/"forge.yml").write_text(f"schema: forge/project@1\nproject:\n  name: t\nforge:\n  protocol: {protocol}\nflows:\n  default: full\n  allow_fast: true\n  auto_escalation: true\ntesting:\n  approach: tdd_first\nreview:\n  strict: true\ndocumentation:\n  impact_evaluation: required\n")
+def commit(root:Path,msg:str):
+ subprocess.run(["git","add","."],cwd=root,check=True);subprocess.run(["git","commit","--allow-empty","-m",msg],cwd=root,check=True,capture_output=True);return subprocess.run(["git","rev-parse","HEAD"],cwd=root,check=True,capture_output=True,text=True).stdout.strip()
+def write(root:Path,s:str,r:str|None,*,status="passed",flow="full",sr="revision-a",rr="revision-a",same_exec=False,same_ctx=False):
+ d=root/".forge/changes/CHG-9999-binding";d.mkdir(parents=True,exist_ok=True);it={"id":"review-001","revision":"revision-a","subject_provenance":"resolution-001","status":status};
+ if status=="passed":it["reviewer_provenance"]="review-001"
+ m={"schema":"forge/change@2","protocol":2,"change":{"id":"CHG-9999","title":"Binding","kind":"bugfix"},"flow":{"initial":flow,"current":flow,"escalations":[]},"state":{"current":"strict_review"},"artifacts":{},"tdd":{"status":"compliant","cycles":1},"verification":{"status":"passed"},"review":{"status":status,"iteration":1,"blockers":0,"majors":0,"minors":0,"observations":0,"iterations":[it]},"documentation":{"impact_evaluated":True,"update_required":False}}
+ def rec(i,role,rev,sha,ex,ctx):return {"id":i,"role":role,"execution":{"id":ex,"context_id":ctx},"recorded_at":"2026-08-15T19:00:00Z","revision":{"id":rev,"immutable_ref":{"type":"git_commit","value":sha},"commit":sha},"source":{"assurance":"recorded","observed_by":"self"}}
+ records=[rec("resolution-001","resolution",sr,s,"x" if same_exec else "se","c" if same_ctx else "sc")]
+ if r:records.append(rec("review-001","review",rr,r,"x" if same_exec else "re","c" if same_ctx else "rc"))
+ (d/"manifest.yml").write_text(yaml.safe_dump(m,sort_keys=False));(d/"provenance.yml").write_text(yaml.safe_dump({"schema":"forge/execution-provenance@1","change":"CHG-9999","records":records},sort_keys=False));return d
+def validate(root,monkeypatch):monkeypatch.chdir(root);return runner.invoke(app,["validate"])
+def frozen_subject(root:Path):
+ subject=root/"subject.txt";subject.write_text("frozen");return subject,commit(root,"freeze")
+def test_same_id_same_commit_passes(tmp_path,monkeypatch):init(tmp_path);a=commit(tmp_path,"a");write(tmp_path,a,a);assert validate(tmp_path,monkeypatch).exit_code==0
+def test_same_id_different_commit_fails(tmp_path,monkeypatch):init(tmp_path);a=commit(tmp_path,"a");b=commit(tmp_path,"b");write(tmp_path,a,b);assert validate(tmp_path,monkeypatch).exit_code==2
+def test_missing_all_immutable_refs_fails(tmp_path,monkeypatch):
+ init(tmp_path);a=commit(tmp_path,"a");d=write(tmp_path,a,a);p=yaml.safe_load((d/"provenance.yml").read_text());p["records"][0]["revision"].pop("immutable_ref");p["records"][0]["revision"].pop("commit");(d/"provenance.yml").write_text(yaml.safe_dump(p,sort_keys=False));assert validate(tmp_path,monkeypatch).exit_code==2
+def test_wrong_subject_commit_fails(tmp_path,monkeypatch):init(tmp_path);commit(tmp_path,"a");write(tmp_path,"f"*40,"f"*40);assert validate(tmp_path,monkeypatch).exit_code==2
+def test_pending_subject_freeze_passes(tmp_path,monkeypatch):init(tmp_path);a=commit(tmp_path,"a");write(tmp_path,a,None,status="pending");assert validate(tmp_path,monkeypatch).exit_code==0
+def test_post_freeze_subject_change_fails(tmp_path,monkeypatch):init(tmp_path);a=commit(tmp_path,"a");write(tmp_path,a,None,status="pending");(tmp_path/"subject.txt").write_text("changed");commit(tmp_path,"changed");assert validate(tmp_path,monkeypatch).exit_code==2
+def test_unstaged_tracked_subject_change_fails(tmp_path,monkeypatch):
+ init(tmp_path);subject,a=frozen_subject(tmp_path);write(tmp_path,a,None,status="pending");subject.write_text("changed");assert validate(tmp_path,monkeypatch).exit_code==2
+def test_staged_tracked_subject_change_fails(tmp_path,monkeypatch):
+ init(tmp_path);subject,a=frozen_subject(tmp_path);write(tmp_path,a,None,status="pending");subject.write_text("changed");subprocess.run(["git","add","subject.txt"],cwd=tmp_path,check=True);assert validate(tmp_path,monkeypatch).exit_code==2
+def test_untracked_reviewable_file_fails(tmp_path,monkeypatch):
+ init(tmp_path);a=commit(tmp_path,"freeze");write(tmp_path,a,None,status="pending");(tmp_path/"src").mkdir();(tmp_path/"src/new_file.py").write_text("x=1\n");assert validate(tmp_path,monkeypatch).exit_code==2
+def test_tracked_deletion_fails(tmp_path,monkeypatch):
+ init(tmp_path);subject,a=frozen_subject(tmp_path);write(tmp_path,a,None,status="pending");subject.unlink();assert validate(tmp_path,monkeypatch).exit_code==2
+def test_tracked_rename_fails(tmp_path,monkeypatch):
+ init(tmp_path);subject,a=frozen_subject(tmp_path);write(tmp_path,a,None,status="pending");subject.rename(tmp_path/"renamed.txt");assert validate(tmp_path,monkeypatch).exit_code==2
+def test_review_metadata_after_freeze_passes(tmp_path,monkeypatch):init(tmp_path);a=commit(tmp_path,"a");d=write(tmp_path,a,None,status="pending");(d/"review.md").write_text("review");commit(tmp_path,"review metadata");assert validate(tmp_path,monkeypatch).exit_code==0
+@pytest.mark.parametrize("name",["manifest.yml","provenance.yml","review.md"])
+def test_local_review_control_metadata_change_passes(tmp_path,monkeypatch,name):
+ init(tmp_path);a=commit(tmp_path,"freeze");d=write(tmp_path,a,None,status="pending");commit(tmp_path,"control metadata");p=d/name
+ if name=="review.md":p.write_text("review\n")
+ else:p.write_text(p.read_text()+"\n")
+ assert validate(tmp_path,monkeypatch).exit_code==0
+def test_reviewable_artifact_in_same_change_fails(tmp_path,monkeypatch):
+ init(tmp_path);a=commit(tmp_path,"freeze");d=write(tmp_path,a,None,status="pending");(d/"architecture.md").write_text("changed\n");assert validate(tmp_path,monkeypatch).exit_code==2
+def test_other_change_metadata_is_not_ignored(tmp_path,monkeypatch):
+ init(tmp_path);a=commit(tmp_path,"freeze");write(tmp_path,a,None,status="pending");other=tmp_path/".forge/changes/CHG-9998-other";other.mkdir(parents=True);(other/"manifest.yml").write_text("schema: forge/change@2\n");assert validate(tmp_path,monkeypatch).exit_code==2
+def test_ignored_untracked_file_does_not_invalidate_subject(tmp_path,monkeypatch):
+ init(tmp_path);(tmp_path/".gitignore").write_text(".cache/\n");a=commit(tmp_path,"freeze");write(tmp_path,a,None,status="pending");cache=tmp_path/".cache";cache.mkdir();(cache/"temp.txt").write_text("ignored\n");assert validate(tmp_path,monkeypatch).exit_code==0
+def test_rename_reviewable_file_to_allowed_basename_still_fails(tmp_path,monkeypatch):
+ init(tmp_path);subject,a=frozen_subject(tmp_path);d=write(tmp_path,a,None,status="pending");subject.rename(d/"review.md");assert validate(tmp_path,monkeypatch).exit_code==2
+def test_similar_review_metadata_path_is_not_allowed(tmp_path,monkeypatch):
+ init(tmp_path);a=commit(tmp_path,"freeze");d=write(tmp_path,a,None,status="pending");(d/"review.md.bak").write_text("not control metadata\n");assert validate(tmp_path,monkeypatch).exit_code==2
+def test_symlink_at_review_control_path_is_not_allowed(tmp_path,monkeypatch):
+ init(tmp_path);target=tmp_path/"subject.txt";target.write_text("frozen");a=commit(tmp_path,"freeze");d=write(tmp_path,a,None,status="pending");(d/"review.md").symlink_to(target);assert validate(tmp_path,monkeypatch).exit_code==2
+def test_directory_named_review_md_is_not_allowed(tmp_path,monkeypatch):
+ init(tmp_path);a=commit(tmp_path,"freeze");d=write(tmp_path,a,None,status="pending");(d/"review.md").mkdir();((d/"review.md")/"payload.txt").write_text("reviewable\n");assert validate(tmp_path,monkeypatch).exit_code==2
+def test_same_basename_outside_change_is_not_allowed(tmp_path,monkeypatch):
+ init(tmp_path);a=commit(tmp_path,"freeze");write(tmp_path,a,None,status="pending");(tmp_path/"review.md").write_text("outside change\n");assert validate(tmp_path,monkeypatch).exit_code==2
+@pytest.mark.parametrize("flow",["fast","standard","full"])
+def test_all_flows_pass_with_binding(tmp_path,monkeypatch,flow):init(tmp_path);a=commit(tmp_path,"a");write(tmp_path,a,a,flow=flow);assert validate(tmp_path,monkeypatch).exit_code==0
+def test_protocol1_compatibility(tmp_path,monkeypatch):init(tmp_path,1);assert validate(tmp_path,monkeypatch).exit_code==0
+def test_shared_execution_still_fails(tmp_path,monkeypatch):init(tmp_path);a=commit(tmp_path,"a");write(tmp_path,a,a,same_exec=True);assert validate(tmp_path,monkeypatch).exit_code==2
+def test_shared_context_still_fails(tmp_path,monkeypatch):init(tmp_path);a=commit(tmp_path,"a");write(tmp_path,a,a,same_ctx=True);assert validate(tmp_path,monkeypatch).exit_code==2
+def test_wrong_revision_id_still_fails(tmp_path,monkeypatch):init(tmp_path);a=commit(tmp_path,"a");write(tmp_path,a,a,rr="revision-b");assert validate(tmp_path,monkeypatch).exit_code==2

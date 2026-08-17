@@ -42,6 +42,7 @@ class CodexDriver:
         bundle = generate_codex_skill_bundle(
             contract_content=context.contract_content,
             flows=context.flows,
+            protocol_id=context.project_protocol,
         )
         stages, gates, has_tdd, has_strict_review = _flow_representation(context.flows)
         limitations = _limitations(

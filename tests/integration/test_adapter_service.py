@@ -69,6 +69,16 @@ documentation:
     return root
 
 
+@pytest.fixture
+def protocol2_project(initialized_project: Path) -> Path:
+    configuration_path = initialized_project / ".forge" / "forge.yml"
+    configuration_path.write_text(
+        configuration_path.read_text(encoding="utf-8").replace("protocol: 1", "protocol: 2"),
+        encoding="utf-8",
+    )
+    return initialized_project
+
+
 def _service() -> AdapterService:
     return AdapterService(build_packaged_registry())
 
@@ -131,6 +141,29 @@ def test_plan_is_read_only_and_uses_evidence_target(initialized_project: Path) -
     assert result.installed_version is None
     assert result.current_version == "0.1.0"
     assert _tree_bytes_and_mtimes(initialized_project) == before
+
+
+def test_install_projects_protocol1_skill_without_reviewer_resolver_independence(
+    initialized_project: Path,
+) -> None:
+    _service().install(initialized_project, "codex")
+
+    skill = (initialized_project / ".agents/skills/forge/SKILL.md").read_text(encoding="utf-8")
+
+    assert "Reviewer/Resolver independence" not in skill
+    assert "subject_provenance" not in skill
+
+
+def test_install_projects_protocol2_skill_with_reviewer_resolver_independence(
+    protocol2_project: Path,
+) -> None:
+    _service().install(protocol2_project, "codex")
+
+    skill = (protocol2_project / ".agents/skills/forge/SKILL.md").read_text(encoding="utf-8")
+
+    assert "Reviewer/Resolver independence" in skill
+    assert "Execution and Execution Context independent" in skill
+    assert "subject_provenance" in skill
 
 
 def test_target_precedence_reports_explicit_configuration_then_evidence(

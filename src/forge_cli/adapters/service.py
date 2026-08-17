@@ -428,13 +428,14 @@ class AdapterService:
             )
         else:
             try:
-                flows = self._effective_flows(root)
+                protocol_id = project_configuration["forge"]["protocol"]
+                flows = self._effective_flows(root, protocol_id)
                 projection = driver.project(
                     AdapterProjectionContext(
-                        project_protocol=project_configuration["forge"]["protocol"],
+                        project_protocol=protocol_id,
                         flows=flows,
                         contract_content=resolve_effective_contract(
-                            resolve_protocol_root(), root
+                            resolve_protocol_root(), root, protocol_id
                         ).text,
                         target=target,
                     )
@@ -589,11 +590,14 @@ class AdapterService:
             configuration=load_adapter_configuration(root, adapter_id),
             driver=driver,
         )
+        protocol_id = configuration["forge"]["protocol"]
         projection = driver.project(
             AdapterProjectionContext(
-                project_protocol=configuration["forge"]["protocol"],
-                flows=self._effective_flows(root),
-                contract_content=resolve_effective_contract(resolve_protocol_root(), root).text,
+                project_protocol=protocol_id,
+                flows=self._effective_flows(root, protocol_id),
+                contract_content=resolve_effective_contract(
+                    resolve_protocol_root(), root, protocol_id
+                ).text,
                 target=target,
             )
         )
@@ -711,12 +715,12 @@ class AdapterService:
         return target, source
 
     @staticmethod
-    def _effective_flows(project_root: Path) -> tuple[tuple[str, str], ...]:
+    def _effective_flows(project_root: Path, protocol_id: int = 1) -> tuple[tuple[str, str], ...]:
         protocol_root = resolve_protocol_root()
         flow_directory = project_root / ".forge" / "flows"
         flows: dict[str, str] = {}
         for path in sorted(flow_directory.glob("*.yml")):
-            effective = resolve_effective_flow(protocol_root, project_root, path.stem)
+            effective = resolve_effective_flow(protocol_root, project_root, path.stem, protocol_id)
             if effective["project"]["flow"].get("enabled") is not True:
                 continue
             canonical = effective["canonical"]

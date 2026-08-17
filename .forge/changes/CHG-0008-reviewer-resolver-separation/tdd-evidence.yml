@@ -1,0 +1,139 @@
+schema: forge/tdd-evidence@1
+change: CHG-0008
+status: compliant
+cycle_count: 11
+cycles:
+  - {id: TDD-001, title: Reject FULL same-session Reviewer execution, requirements: [historical-session-model], behavior: historical first-pass evidence, red: {valid: true, commit: 1f83d498124d028fccf8ae3a01bd18a1d068a758, command: pytest -q, result: '1 failed, 162 passed', reason: validator initially accepted same-session review}, green: {commit: 105229d7fe24f24a48e5376f0d55782b793e8510, command: pytest -q, result: '164 passed'}}
+  - {id: TDD-002, title: Reject claimed isolation with identical session references, requirements: [historical-session-model], behavior: historical evidence, red: {valid: true, commit: 8a3099d5044ef802869748c02fe122a8412ed927, command: pytest -q, result: failed, reason: identical references were not rejected}, green: {commit: 518629c8ae07f18e82dcac5fa382ffd6af8c86a5, command: pytest -q, result: passed}}
+  - {id: TDD-003, title: Historical reviewer identity structure, requirements: [historical-pre-resolution-model], behavior: superseded model, red: {valid: true, commit: 7f21439e2cc4517a423f99efd1f4b0f817ca3d7e, command: pytest -q, result: failed, reason: prior schema allowed pending identity shape}, green: {commit: 666cf96f88faaf2445ba8313ee715cad306db6c0, command: pytest -q, result: passed}}
+  - {id: TDD-004, title: Preserve forge/change@1 compatibility, requirements: [historical-pre-resolution-model], behavior: historical compatibility attempt, red: {valid: true, commit: 4a6b5d64be0ccc7b26456fe5b8b9d06170a7bd63, command: pytest -q, result: failed, reason: mandatory evidence applied retroactively}, green: {commit: c2c0391b9381044449fcce45225f306f9bf57818, command: pytest -q, result: '168 passed'}}
+  - id: TDD-005
+    title: Reject contaminated Strict Review Execution and Execution Context
+    requirements: [historical-pre-resolution-model]
+    behavior: historical execution/context independence cycle
+    red: {valid: true, commit: 3d4883d0a0329a629026f22e4c314ffa04b2bfed, workflow_run_id: 31899409371, job_id: 95047717053, command: pytest -q, result: '3 failed, 166 passed', reason: both boundaries were not enforced}
+    green: {commit: fec5ac22c3ef62c213526ae3675f105a2a1afd45, workflow_run_id: 31899652483, job_id: 95048292204, command: pytest -q, result: '169 passed in 3.79s'}
+  - id: TDD-006
+    title: Resolve Protocol boundary and provenance findings R001-R004
+    requirements: [FR-001, FR-002, FR-003, FR-004, FR-005, FR-006, FR-007, FR-008, FR-009, FR-010, FR-011, FR-012, FR-014, FR-015]
+    behavior: Protocol 1 compatibility and Protocol 2 provenance enforcement
+    red: {valid: true, commit: d71435f9b2fca5c5829121ff45e0059e67526d84, workflow_run_id: 31900774999, job_id: 95051092652, command: pytest -q, result: failed in Run tests, reason: Protocol 2 provenance model was absent}
+    green: {commit: 538a77dcd77aed0db0505a288fc1cbea0e69def3, workflow_run_id: 31901397058, job_id: 95052623111, command: pytest -q, result: '182 passed in 3.83s'}
+  - id: TDD-007
+    title: Preserve Adapter projection semantics across Protocol versions
+    requirements: [FR-016]
+    behavior: Protocol-aware Codex projection
+    red: {valid: true, commit: bb43fae06670e90f5ed07a63f154ec0f541c854d, command: pytest -q, result: expected failure, reason: projection had no protocol boundary}
+    green: {commit: 538a77dcd77aed0db0505a288fc1cbea0e69def3, workflow_run_id: 31901397058, job_id: 95052623111, command: pytest -q, result: '182 passed in 3.83s'}
+  - id: TDD-008
+    title: Enforce concrete immutable revision binding and review-subject freeze
+    requirements: [FR-008, FR-012, FR-018, CHG-0008-R004, CHG-0008-R005]
+    behavior: >-
+      Same logical revision with different concrete commits is rejected; explicit Git subjects
+      must exist locally; committed post-freeze subject mutation invalidates review binding;
+      review-control metadata may follow the freeze; Protocol 1 and all Protocol 2 Flows remain compatible.
+    red:
+      valid: true
+      commit: b565426abc2b1c04f322667635b3267373fb17a7
+      workflow_run_id: 31902858488
+      job_id: 95056158653
+      command: pytest -q
+      result: failed in Run tests after setup/dependency steps passed
+      reason: Core compared revision.id but did not compare concrete commit binding.
+    green:
+      commit: e360685531e2a4ee76890b1c636173f02ead1d3e
+      workflow_run_id: 31903247493
+      job_id: 95057114869
+      command: pytest -q
+      result: passed
+  - id: TDD-009
+    title: Reject effective reviewable workspace mutation after frozen subject
+    requirements: [FR-003, FR-008, FR-009, FR-010, FR-011, FR-012, FR-014, FR-015, FR-016, FR-017, FR-018, FR-019, INV-005, CHG-0008-R006]
+    behavior: >-
+      Protocol 2 Git subject freeze evaluates one effective reviewable workspace delta covering
+      committed, staged, unstaged, deletion/rename and Git-visible untracked state while keeping
+      an exact Change-local review-control metadata exception and preserving Protocol 1 and
+      existing R004/R005 independence/provenance regressions.
+    red:
+      valid: true
+      test_authored_before_production_commit: bf2746c8283e5596f29f86ad189f57b285d1c0b0
+      commit: d845f0a270648f10e7106184db4a6970bad8132b
+      workflow_run_id: 31904557628
+      job_id: 95060254120
+      command: pytest -q
+      result: '9 failed, 201 passed in 3.93s'
+      reason: >-
+        With the Iteration 3 YAML artifact repaired and only the validator restored to its
+        pre-R006 commit-only behavior, Core returned success for unstaged, staged, untracked,
+        deletion, rename, same-Change reviewable artifact, rename-to-allowlist, lookalike and
+        symlink mutation cases.
+    green:
+      commit: eaa6c481e5ea9a08c3f4e234feb6d1cbf871ee99
+      workflow_run_id: 31904623010
+      job_id: 95060410846
+      command: pytest -q
+      result: '210 passed in 4.95s'
+      distribution_workflow_run_id: 31904622991
+      distribution_result: passed
+  - id: TDD-010
+    title: Prevent mutable provenance from moving a frozen review subject
+    requirements: [FR-008, FR-012, FR-014, FR-017, FR-018, FR-019, INV-002, INV-005, CHG-0008-R007]
+    behavior: >-
+      Core anchors referenced subject provenance and historical Review Iteration subject bindings
+      to their first committed Git representation before using the current immutable reference as
+      a workspace baseline. Legitimate append-only review metadata remains possible; rewritten,
+      replaced, removed/recreated or shadowed subject authority and incomplete Git history fail closed.
+    red:
+      valid: true
+      commit: 73f865ff712647c24a0203c530703d69c2513ae8
+      workflow_run_id: 31906413392
+      job_id: 95064855880
+      command: pytest -q
+      result: '1 failed, 212 passed in 5.49s'
+      reason: >-
+        The causal CLI regression froze A, committed subject provenance for A, committed a reviewable
+        mutation B, then rewrote only allowlisted provenance so both subject and Reviewer coherently
+        claimed B. The vulnerable validator returned exit code 0 instead of rejecting the moved baseline.
+    green:
+      commit: 80292e6acc54a59e15bf4c4919b9286cc2ba5dd6
+      workflow_run_id: 31906638536
+      command: pytest -q
+      result: passed
+      distribution_workflow_run_id: 31906638462
+      distribution_result: passed
+  - id: TDD-011
+    title: Preserve historical Review Iteration subject authority across verdicts
+    requirements: [FR-008, FR-012, FR-014, FR-017, FR-018, FR-019, INV-002, INV-005, CHG-0008-R008]
+    behavior: >-
+      A valid committed Protocol 2 Review Iteration permanently binds its Iteration ID, logical
+      revision and subject provenance independently of pending/passed/failed lifecycle state.
+      Revision-only, subject-provenance-only, simultaneous binding rewrites and Iteration ID
+      replacement are rejected; legitimate lifecycle/evidence metadata updates and new Iterations
+      remain allowed. R005 concrete binding, R006 effective-workspace freeze, R007 provenance
+      authority, Protocol 1 compatibility and FAST/STANDARD/FULL behavior remain covered.
+    red:
+      valid: true
+      commit: 1d70b1282b7c0dd2f5015439281fd493954ca87f
+      workflow_run_id: 31917557112
+      job_id: 95091910991
+      command: pytest -q
+      result: failed in Run tests after setup/dependency steps passed
+      reason: >-
+        The primary tests-only RED proved that the pre-fix validator consulted committed Review
+        Iteration authority only while current status was pending or passed, allowing a historical
+        failed Iteration to redirect revision or subject_provenance. A supplemental tests-only RED
+        at commit 410dc2efe32e1b3c96aaf8f9378d052f7566b68b / Tests run 31917909131 then proved
+        that replacing the established Iteration ID itself still escaped lookup until committed
+        bound Iteration IDs were explicitly preserved.
+    green:
+      commit: 66c88be244617864f9e8aea54f044e4bc6eaaa91
+      workflow_run_id: 31918012008
+      job_id: 95093064159
+      command: pytest -q
+      result: '228 passed in 5.91s; forge validate PASS; forge doctor PASS'
+      distribution_workflow_run_id: 31918012004
+      distribution_result: passed
+notes:
+  - TDD-001 through TDD-010 are preserved as historical evidence.
+  - TDD-011 is the dedicated R008 Resolution 5 cycle; its RED reason preserves the supplemental Iteration-ID bypass chronology without extending the schema.
+  - Strict Review Iterations 1 through 5 remain historical REQUEST CHANGES. Iteration 6 must be executed independently after `resolution-005` is recorded.

@@ -200,6 +200,13 @@ def main(
     assert initialized.stdout == f"Forge initialized at {repository / '.forge'}\n"
     assert guard_marker.read_text(encoding="utf-8") == "loaded\n"
 
+    configuration_text = (repository / ".forge" / "forge.yml").read_text(encoding="utf-8")
+    protocol_match = re.search(r"^\s*protocol:\s*(\d+)\s*$", configuration_text, re.MULTILINE)
+    assert protocol_match is not None, "forge.yml must declare a Forge Protocol version"
+    versioned_protocol = expected_protocol / "versions" / protocol_match.group(1)
+    if not versioned_protocol.is_dir():
+        versioned_protocol = expected_protocol
+
     flow_directory = repository / ".forge" / "flows"
     project_flow_paths = sorted(flow_directory.glob("*.yml"))
     assert {path.stem for path in project_flow_paths} == {"fast", "standard", "full"}
@@ -252,7 +259,7 @@ def main(
     _assert_skill_frontmatter(skill)
     resolved_references = _effective_reference_links(skill, skill_root)
     contract = resolved_references["references/engineering-contract.md"]
-    assert contract.read_bytes() == (expected_protocol / "contract" / "engineering.md").read_bytes()
+    assert contract.read_bytes() == (versioned_protocol / "contract" / "engineering.md").read_bytes()
 
     generated_flow_paths = {
         path.relative_to(skill_root / "references" / "flows").with_suffix("").as_posix()

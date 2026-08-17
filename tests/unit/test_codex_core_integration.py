@@ -29,14 +29,37 @@ def _require_behavior() -> None:
     assert detect_codex_drift is not None
 
 
-def _bundle():
+def _bundle(flow_id: str = "full", protocol_id: int = 1):
     return generate_codex_projection_bundle(
         CodexProjectionInput(
-            flow_id="full",
+            flow_id=flow_id,
             flow_content="stages: [verification, strict_review]",
             contract_content="canonical contract",
+            protocol_id=protocol_id,
         )
     )
+
+
+def test_protocol1_projection_does_not_retroactively_project_protocol2_provenance() -> None:
+    bundle = _bundle("full", protocol_id=1)
+    skill_resource = next(item for item in bundle.resources if item.name == "SKILL.md")
+
+    assert "provenance.yml" not in skill_resource.content
+    assert "subject_provenance" not in skill_resource.content
+
+
+def test_protocol2_all_flows_projection_require_review_provenance_boundary() -> None:
+    for flow_id in ("fast", "standard", "full"):
+        bundle = _bundle(flow_id, protocol_id=2)
+        skill_resource = next(item for item in bundle.resources if item.name == "SKILL.md")
+        assert "Execution and Execution Context independent" in skill_resource.content
+        assert "changing Role inside the same conversation" in skill_resource.content
+        assert "provenance.yml" in skill_resource.content
+        assert "subject_provenance" in skill_resource.content
+        assert "reviewer_provenance" in skill_resource.content
+        assert "claimed" in skill_resource.content
+        assert "recorded" in skill_resource.content
+        assert "self-review" in skill_resource.content.lower()
 
 
 def test_bundle_resources_become_forge_owned_generic_operations() -> None:

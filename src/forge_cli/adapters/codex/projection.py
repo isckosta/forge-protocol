@@ -9,6 +9,7 @@ from typing import Iterable
 
 import yaml
 
+
 @dataclass(frozen=True)
 class CodexProjectionInput:
     """Compatibility input for callers projecting one effective Flow."""
@@ -16,6 +17,7 @@ class CodexProjectionInput:
     flow_id: str
     flow_content: str
     contract_content: str
+    protocol_id: int = 1
 
 
 @dataclass(frozen=True)
@@ -50,7 +52,44 @@ def _resource(name: str, content: str) -> CodexProjectionResource:
     )
 
 
-def _gate_instructions(flows: Iterable[tuple[str, str]]) -> str:
+_REVIEWER_RESOLVER_INDEPENDENCE_LINES: tuple[str, ...] = (
+    "",
+    "### Reviewer/Resolver independence",
+    "",
+    "- Under Protocol 2, Strict Review must run in an Execution and Execution Context "
+    "independent from the implementation or resolution that produced the revision under review.",
+    "- Merely changing Role inside the same conversation, thread, session, or reasoning "
+    "context is self-review and cannot satisfy Strict Review.",
+    "- Finish the Implementation/Resolution and all reviewable evidence before freezing the "
+    "review subject.",
+    "- Before freezing, ensure the effective reviewable Git workspace is clean: no committed "
+    "post-subject delta, staged reviewable changes, unstaged reviewable changes, or "
+    "Git-visible untracked reviewable files.",
+    "- Identify the concrete immutable subject revision. In Git, use the subject commit SHA; "
+    "`revision.id` alone is not sufficient.",
+    "- Record the frozen subject in `provenance.yml`; the Review Iteration references it "
+    "through `subject_provenance`.",
+    "- Only the exact Change-local `manifest.yml`, `provenance.yml`, and `review.md` paths are "
+    "review-control metadata that may differ after the freeze; do not generalize that "
+    "exception to the Change directory, matching basenames, symlinks, or rename targets.",
+    "- Git-ignored cache/editor/temp files do not count as reviewable workspace mutations for "
+    "the freeze invariant.",
+    "- Re-check committed, staged, unstaged, and untracked reviewable deltas after recording "
+    "review-control metadata.",
+    "- Start Strict Review against the frozen subject, not an ambiguous later HEAD or dirty "
+    "checkout.",
+    "- Record the independent Reviewer execution through `reviewer_provenance`; it must bind "
+    "to the exact same logical revision and immutable reference.",
+    "- Reviewer Execution and Context must both differ from the subject. Distinct invented IDs "
+    "are not evidence.",
+    "- `claimed` is insufficient; `recorded` is repository-native self-recorded evidence and "
+    "`verified` is stronger observer-backed evidence.",
+    "- After blocking findings are resolved, freeze the new Resolution revision and re-review "
+    "that concrete revision independently.",
+)
+
+
+def _gate_instructions(flows: Iterable[tuple[str, str]], protocol_id: int) -> str:
     sections: list[str] = []
     for flow_id, content in sorted(flows, key=lambda item: item[0]):
         data = yaml.safe_load(content) or {}
@@ -78,6 +117,8 @@ def _gate_instructions(flows: Iterable[tuple[str, str]]) -> str:
                 "- Completion requires all blocking review threads on any active "
                 "external review surface to be resolved."
             )
+        if protocol_id >= 2 and flow_id in {"fast", "standard", "full"}:
+            lines.extend(_REVIEWER_RESOLVER_INDEPENDENCE_LINES)
         if lines:
             sections.append("\n".join((f"### Flow `{flow_id}` gate obligations", "", *lines)))
     return "\n\n".join(sections)
@@ -93,9 +134,9 @@ def _reference_links(flows: Iterable[tuple[str, str]]) -> str:
     ))
 
 
-def _skill_content(flows: Iterable[tuple[str, str]]) -> str:
+def _skill_content(flows: Iterable[tuple[str, str]], protocol_id: int) -> str:
     effective_flows = tuple(flows)
-    gate_instructions = _gate_instructions(effective_flows)
+    gate_instructions = _gate_instructions(effective_flows, protocol_id)
     return "\n".join((
         "---",
         "name: forge",
@@ -114,6 +155,7 @@ def generate_codex_skill_bundle(
     *,
     contract_content: str,
     flows: Iterable[tuple[str, str]],
+    protocol_id: int = 1,
 ) -> CodexProjectionBundle:
     """Render only the already-resolved effective Forge inputs for Codex."""
     effective_flows = tuple(flows)
@@ -126,7 +168,7 @@ def generate_codex_skill_bundle(
         flow_resources.append(_resource(f"references/flows/{flow_id}.yml", flow_content))
 
     resources = (
-        _resource("SKILL.md", _skill_content(effective_flows)),
+        _resource("SKILL.md", _skill_content(effective_flows, protocol_id)),
         _resource("references/engineering-contract.md", contract_content),
         *flow_resources,
     )
@@ -142,4 +184,5 @@ def generate_codex_projection_bundle(canonical: CodexProjectionInput) -> CodexPr
     return generate_codex_skill_bundle(
         contract_content=canonical.contract_content,
         flows=((canonical.flow_id, canonical.flow_content),),
+        protocol_id=canonical.protocol_id,
     )
