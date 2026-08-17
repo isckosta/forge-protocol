@@ -4,7 +4,7 @@ forge:
   schema: 1
 change: CHG-0010
 status: pending
-iteration: 2
+iteration: 3
 ---
 
 # Strict Review — Adapter CLI and Codex Installation UX
@@ -217,5 +217,86 @@ Full suite after remediation: `.venv/bin/python -m pytest -q` — 349 passed.
 - MINOR: 1 (resolved)
 - OBSERVATION: 0 new (Iteration 1's three stand; the residual rollback-window
   instance noted above does not escalate Observation #3)
+
+Decision: FAIL. Re-review of the resolved revision is required before PASS.
+
+## Iteration 3 — FAIL
+
+**Revision reviewed:** `fdf06a5`.
+
+A third, independent fresh Reviewer verified Iteration 2's remediation and
+continued the full adversarial review.
+
+### Verification of Iteration 2 remediations
+
+- **TDD-013 (MAJOR fix): confirmed complete.** The Reviewer re-read the full
+  current `publisher.py` and found no remaining uncoded base-class raise
+  inside `_load_prior_installation_record` or
+  `_validate_prior_record_authorizes_plan`.
+- **The `_validate_record_matches_plan` uncoded distinction: confirmed
+  logically sound.** The Reviewer traced `installation_record`'s only
+  construction site (`AdapterService._installation_record()`, called in the
+  same statement as `prepared.result.plan` in both `install()` and
+  `update()`, with zero disk I/O between plan and record construction) and
+  could not construct a counterexample where a mismatch there reflects
+  genuine external staleness rather than an internal bug in
+  `_installation_record()` itself.
+- **MINOR (manifest.yml): confirmed fixed** — `tdd.cycles` matched
+  `tdd-evidence.yml`'s `cycle_count` (45) at the reviewed revision.
+
+### MAJOR — no-op short-circuit performed a second, unsafe, uncoded raw read three lines after TDD-013's fix stops
+
+`publish_adapter_plan`'s PRESERVE/UNCHANGED-only no-op short-circuit
+(`src/forge_cli/adapters/publisher.py`, then line 469) called the raw
+`state.load_installation_record` directly instead of reusing `prior_record`
+— already loaded and validated three lines earlier by the very function
+TDD-013 had just hardened. The raw call performs no symlink check and, on
+parse/schema failure, raises the uncoded `InvalidAdapterInstallationRecordError`,
+falling through to `E_FORGE_INTERNAL_ERROR`/exit `70` — exactly the FR-023
+violation TDD-013 closed, one call away. Unlike the earlier findings, this is
+not only a race edge case: `AdapterService.update()` reaches this exact
+branch on every ordinary "version bump, content unchanged" reinstall, a
+routine path.
+
+### MINOR — `AdapterService._effective_flows` raised the uncoded base `AdapterServiceError` for duplicate enabled canonical Flow configuration
+
+Same FR-023 uncoded-exception pattern found twice already in
+`publisher.py` (`src/forge_cli/adapters/service.py`, `_effective_flows`),
+this time reachable only through a hand-edited/misconfigured project with two
+enabled `.forge/flows/*.yml` files resolving to the same canonical Flow id —
+narrower reachability than the MAJOR findings, so classified MINOR rather
+than MAJOR/BLOCKER.
+
+No BLOCKER-class finding: no write escapes the repository root in either new
+finding; the bypassed symlink check was on a read, and the comparison result
+is discarded on mismatch.
+
+### Resolution (regression-first TDD)
+
+- **TDD-014** (MAJOR): added
+  `test_no_op_short_circuit_reuses_the_already_loaded_prior_record_instead_of_a_second_raw_read`,
+  confirmed RED (`InvalidAdapterInstallationRecordError` from re-parsing a
+  corrupted on-disk record the first safe read had already seen before
+  corruption). Fix: the no-op check now compares `prior_record ==
+  installation_record` instead of re-reading
+  `load_installation_record(installation_path)` — a one-line change that
+  removes the redundant I/O, the redundant TOCTOU window, and the coding gap
+  together. Confirmed GREEN.
+- **TDD-015** (MINOR): added
+  `test_plan_rejects_duplicate_enabled_canonical_flow_with_stable_code`,
+  confirmed RED (`ImportError`, no such exception class yet). Fix: new
+  `AdapterFlowConfigurationError(AdapterServiceError)`,
+  `code = "E_FORGE_ADAPTER_FLOW_CONFIGURATION"`, replacing the base-class
+  raise in `_effective_flows`. Confirmed GREEN.
+
+Full suite after remediation: `.venv/bin/python -m pytest -q` — 351 passed.
+`git diff --check` clean.
+
+## Final finding counts (Iteration 3)
+
+- BLOCKER: 0
+- MAJOR: 1 (resolved)
+- MINOR: 1 (resolved)
+- OBSERVATION: 0 new
 
 Decision: FAIL. Re-review of the resolved revision is required before PASS.

@@ -9,6 +9,7 @@ from forge_cli.adapters.packaged import build_packaged_registry
 from forge_cli.adapters.service import (
     AdapterAlreadyInstalledError,
     AdapterDriftError,
+    AdapterFlowConfigurationError,
     AdapterInstallationRequiredError,
     AdapterService,
     InvalidAdapterInstallationError,
@@ -129,6 +130,19 @@ def _empty_service() -> AdapterService:
 
 def _empty_record_path(project_root: Path) -> Path:
     return project_root / ".forge" / "adapters" / "empty" / "installation.yml"
+
+
+def test_plan_rejects_duplicate_enabled_canonical_flow_with_stable_code(
+    initialized_project: Path,
+) -> None:
+    duplicate = initialized_project / ".forge" / "flows" / "full-duplicate.yml"
+    duplicate.write_text(
+        "schema: forge/project-flow@1\nflow:\n  canonical: full\n  enabled: true\n",
+        encoding="utf-8",
+    )
+
+    with pytest.raises(AdapterFlowConfigurationError):
+        _service().plan(initialized_project, "codex")
 
 
 def test_plan_is_read_only_and_uses_evidence_target(initialized_project: Path) -> None:

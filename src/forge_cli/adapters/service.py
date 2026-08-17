@@ -84,6 +84,10 @@ class AdapterTargetUnavailableError(AdapterServiceError):
     code = "E_FORGE_ADAPTER_TARGET_UNAVAILABLE"
 
 
+class AdapterFlowConfigurationError(AdapterServiceError):
+    code = "E_FORGE_ADAPTER_FLOW_CONFIGURATION"
+
+
 def require_valid_installation_identity(
     record: AdapterInstallationRecord,
     driver: HarnessDriver,
@@ -726,7 +730,9 @@ class AdapterService:
             canonical = effective["canonical"]
             canonical_id = canonical["flow"]["id"]
             if canonical_id in flows:
-                raise AdapterServiceError(f"Duplicate enabled canonical Flow: {canonical_id}.")
+                raise AdapterFlowConfigurationError(
+                    f"Duplicate enabled canonical Flow: {canonical_id}."
+                )
             flows[canonical_id] = yaml.safe_dump(canonical, sort_keys=False, allow_unicode=True)
         return tuple(sorted(flows.items()))
 

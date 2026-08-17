@@ -466,7 +466,7 @@ def publish_adapter_plan(
     if installation_existed and all(
         operation.intent in {OperationIntent.PRESERVE, OperationIntent.UNCHANGED}
         for operation in plan.operations
-    ) and load_installation_record(installation_path) == installation_record:
+    ) and prior_record == installation_record:
         return
 
     try:

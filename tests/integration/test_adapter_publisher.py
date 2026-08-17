@@ -508,6 +508,46 @@ def test_all_unchanged_operations_preserve_the_existing_installation_record(
     assert installation_path.read_bytes() == previous_record_bytes
 
 
+def test_no_op_short_circuit_reuses_the_already_loaded_prior_record_instead_of_a_second_raw_read(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    publisher = publisher_module()
+    target = tmp_path / "generated.md"
+    target.write_text("same", encoding="utf-8")
+    record = _record(("generated.md", digest_content("same")))
+    installation_path = tmp_path / ".forge/adapters/example/installation.yml"
+    write_installation_record(installation_path, record)
+    plan = plan_adapter(
+        manifest=_manifest(),
+        effective_configuration=EffectiveAdapterConfiguration(1, ()),
+        projections=(
+            ProjectedArtifact(path="generated.md", ownership=OwnershipMode.FORGE_OWNED, content="same"),
+        ),
+        repository_state=(
+            RepositoryArtifactState(
+                path="generated.md",
+                exists=True,
+                current_digest=digest_content("same"),
+                expected_digest=digest_content("same"),
+            ),
+        ),
+    )
+    original_authorization_check = publisher._validate_prior_record_authorizes_plan
+
+    def corrupt_record_on_disk_after_the_first_safe_read(plan, next_record, prior_record) -> None:
+        original_authorization_check(plan, next_record, prior_record)
+        installation_path.write_text(":\n  - not [valid yaml", encoding="utf-8")
+
+    monkeypatch.setattr(
+        publisher,
+        "_validate_prior_record_authorizes_plan",
+        corrupt_record_on_disk_after_the_first_safe_read,
+    )
+
+    publisher.publish_adapter_plan(tmp_path, plan, record)
+
+
 def test_failure_after_create_update_and_delete_restores_every_file_and_installation_record(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,

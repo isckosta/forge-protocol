@@ -1,7 +1,7 @@
 schema: forge/tdd-evidence@1
 change: CHG-0010
 status: active
-cycle_count: 45
+cycle_count: 47
 cycles:
   - id: TDD-001A
     title: Registry stable ordering
@@ -590,6 +590,39 @@ cycles:
     notes:
       - "New AdapterPublicationStaleRecordError(AdapterPublicationError), code = E_FORGE_ADAPTER_STALE_RECORD, replaces the base-class raise at every site in _load_prior_installation_record and _validate_prior_record_authorizes_plan. _validate_record_matches_plan's raises were deliberately left uncoded: the record it checks is constructed by AdapterService directly from the same plan being published (service.py's _installation_record call), so a mismatch there is a genuine internal invariant violation, not on-disk staleness — unlike prior_record, which _load_prior_installation_record re-reads independently from disk at publish time and can legitimately diverge from what AdapterService observed when it built the plan."
       - Focused publisher regression command passed 24 tests; full suite command `.venv/bin/python -m pytest` passed 349 tests; `git diff --check` clean.
+  - id: TDD-014
+    title: No-op short-circuit reuses the already-validated prior record
+    requirements: [FR-017, FR-023, NFR-002, INV-001]
+    behavior: publish_adapter_plan's PRESERVE/UNCHANGED-only no-op short-circuit compares against the already-loaded, already-validated prior_record instead of performing a second raw load_installation_record read of the same on-disk file
+    origin: "Strict Review Iteration 3 MAJOR (third independent Reviewer): three lines after TDD-013 hardened _load_prior_installation_record/_validate_prior_record_authorizes_plan, the no-op short-circuit still called the raw state.load_installation_record directly, bypassing both the symlink check and the coded-exception wrapping TDD-013 had just added, for a routine code path (ordinary version-bump reinstall with unchanged content), not only a race edge case"
+    red:
+      valid: true
+      command: .venv/bin/python -m pytest tests/integration/test_adapter_publisher.py::test_no_op_short_circuit_reuses_the_already_loaded_prior_record_instead_of_a_second_raw_read -v
+      result: 1 failed
+      reason: After successful collection, the test failed with InvalidAdapterInstallationRecordError ("while parsing a block mapping...") because publish_adapter_plan's no-op check called load_installation_record(installation_path) again after the record was corrupted on disk between the first safe read (inside _load_prior_installation_record) and this second raw read, raising an uncoded exception instead of using the already-loaded, already-validated prior_record.
+    green:
+      command: .venv/bin/python -m pytest tests/integration/test_adapter_publisher.py::test_no_op_short_circuit_reuses_the_already_loaded_prior_record_instead_of_a_second_raw_read -v
+      result: 1 passed
+    notes:
+      - "The fix is a one-line change: `load_installation_record(installation_path) == installation_record` became `prior_record == installation_record`, reusing the value _load_prior_installation_record already parsed and validated moments earlier instead of re-reading the file raw. This eliminates the redundant I/O, the redundant TOCTOU window, and the coding gap in the same stroke."
+      - Focused publisher regression command passed 25 tests; full suite command `.venv/bin/python -m pytest` passed 350 tests; `git diff --check` clean.
+  - id: TDD-015
+    title: Stable exit code for duplicate enabled canonical Flow configuration
+    requirements: [FR-023]
+    behavior: forge adapter plan/install/update exit 2 with the stable E_FORGE_ADAPTER_FLOW_CONFIGURATION code when a project declares two enabled project Flow files pointing at the same canonical Flow id, instead of falling through to E_FORGE_INTERNAL_ERROR at exit 70
+    origin: Strict Review Iteration 3 MINOR (third independent Reviewer, flagged as the same FR-023 uncoded-exception pattern found twice already in publisher.py, this time in AdapterService._effective_flows)
+    red:
+      valid: true
+      command: .venv/bin/python -m pytest tests/integration/test_adapter_service.py::test_plan_rejects_duplicate_enabled_canonical_flow_with_stable_code -v
+      result: 1 failed (collection error)
+      reason: ImportError, "cannot import name 'AdapterFlowConfigurationError' from 'forge_cli.adapters.service'" because no such exception existed yet; _effective_flows raised the uncoded base AdapterServiceError for a project with two enabled .forge/flows/*.yml files resolving to the same canonical Flow id.
+    green:
+      command: .venv/bin/python -m pytest tests/integration/test_adapter_service.py::test_plan_rejects_duplicate_enabled_canonical_flow_with_stable_code -v
+      result: 1 passed
+    notes:
+      - New AdapterFlowConfigurationError(AdapterServiceError), code = E_FORGE_ADAPTER_FLOW_CONFIGURATION, replaces the base-class raise in _effective_flows.
+      - Classified MINOR rather than MAJOR because reachability requires a hand-edited/misconfigured local project Flow file, not ordinary concurrent CLI usage like the MAJOR findings in publisher.py; fixed anyway because the remediation is small and proportionate, and leaving a known instance of the same uncoded-exception pattern unfixed after two prior iterations flagged it would be inconsistent.
+      - Full suite command `.venv/bin/python -m pytest` passed 351 tests; `git diff --check` clean.
 notes:
   - Focused regression command `.venv/bin/python -m pytest tests/unit/test_adapter_registry.py tests/unit/test_codex_adapter_descriptor.py -v` passed 11 tests.
   - 'rg -n "codex" src/forge_cli/adapters/driver.py src/forge_cli/adapters/registry.py returned no matches.'
