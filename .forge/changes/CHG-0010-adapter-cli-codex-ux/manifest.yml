@@ -1,7 +1,7 @@
 schema: forge/change@1
 
 change:
-  id: CHG-0008
+  id: CHG-0010
   title: Adapter CLI and Codex Installation UX
   kind: feature
 

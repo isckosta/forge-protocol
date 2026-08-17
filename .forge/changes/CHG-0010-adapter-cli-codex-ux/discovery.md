@@ -2,7 +2,7 @@
 forge:
   artifact: discovery
   schema: 1
-change: CHG-0008
+change: CHG-0010
 status: complete
 ---
 
@@ -11,7 +11,9 @@ status: complete
 ## Repository baseline
 
 The Change began from commit `df0cb42020604d54ea1673106d746bc855bafb5e`
-on branch `feat/chg-0008-adapter-cli-codex-ux` in an isolated worktree. The
+on branch `feat/chg-0010-adapter-cli-codex-ux` (renumbered from CHG-0008 after
+an id collision with an independently completed CHG-0008 on `main`; see the
+rename commit for provenance) in an isolated worktree. The
 baseline suite passed all 162 tests after the local test environments received
 the `pip` module required by the existing isolated-wheel test.
 

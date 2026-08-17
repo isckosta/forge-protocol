@@ -127,7 +127,7 @@ Expected: all pass; inspect `rg -n "codex" src/forge_cli/adapters/{driver,regist
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/forge_cli/adapters/driver.py src/forge_cli/adapters/registry.py src/forge_cli/adapters/packaged.py src/forge_cli/adapters/codex/driver.py tests/unit/test_adapter_registry.py .forge/changes/CHG-0008-adapter-cli-codex-ux/tdd-evidence.yml
+git add src/forge_cli/adapters/driver.py src/forge_cli/adapters/registry.py src/forge_cli/adapters/packaged.py src/forge_cli/adapters/codex/driver.py tests/unit/test_adapter_registry.py .forge/changes/CHG-0010-adapter-cli-codex-ux/tdd-evidence.yml
 git commit -m "feat(adapter): add packaged driver registry"
 ```
 
@@ -203,7 +203,7 @@ Expected: all pass and the schema catalog contains exactly one mapping for `forg
 - [ ] **Step 5: Commit**
 
 ```bash
-git add protocol/schemas src/forge_cli/adapters/configuration.py src/forge_cli/adapters/codex tests/unit/test_adapter_configuration.py tests/unit/test_codex_publication_targets.py tests/contract/test_protocol_contract.py .forge/changes/CHG-0008-adapter-cli-codex-ux/tdd-evidence.yml
+git add protocol/schemas src/forge_cli/adapters/configuration.py src/forge_cli/adapters/codex tests/unit/test_adapter_configuration.py tests/unit/test_codex_publication_targets.py tests/contract/test_protocol_contract.py .forge/changes/CHG-0010-adapter-cli-codex-ux/tdd-evidence.yml
 git commit -m "feat(adapter): add schema-backed target configuration"
 ```
 
@@ -267,7 +267,7 @@ Expected: all pass and repeated digests match.
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/forge_cli/adapters/codex tests/unit/test_codex_skill_projection.py tests/unit/test_codex_projection_bundle.py tests/unit/test_codex_projection_gates.py tests/unit/test_codex_distribution_resources.py .forge/changes/CHG-0008-adapter-cli-codex-ux/tdd-evidence.yml
+git add src/forge_cli/adapters/codex tests/unit/test_codex_skill_projection.py tests/unit/test_codex_projection_bundle.py tests/unit/test_codex_projection_gates.py tests/unit/test_codex_distribution_resources.py .forge/changes/CHG-0010-adapter-cli-codex-ux/tdd-evidence.yml
 git commit -m "feat(codex): render repository Forge skill"
 ```
 
@@ -352,7 +352,7 @@ Expected: all pass, including mixed rollback and no silent adoption.
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/forge_cli/adapters tests/unit/test_adapter_ownership.py tests/unit/test_adapter_planner.py tests/unit/test_adapter_drift.py tests/unit/test_adapter_installation_state.py tests/integration/test_adapter_publisher.py .forge/changes/CHG-0008-adapter-cli-codex-ux/tdd-evidence.yml
+git add src/forge_cli/adapters tests/unit/test_adapter_ownership.py tests/unit/test_adapter_planner.py tests/unit/test_adapter_drift.py tests/unit/test_adapter_installation_state.py tests/integration/test_adapter_publisher.py .forge/changes/CHG-0010-adapter-cli-codex-ux/tdd-evidence.yml
 git commit -m "feat(adapter): add idempotent update planning"
 ```
 
@@ -419,7 +419,7 @@ Expected: all pass and read-only operations preserve a recursive byte/mtime snap
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/forge_cli/adapters/repository.py src/forge_cli/adapters/service.py tests/integration/test_adapter_service.py .forge/changes/CHG-0008-adapter-cli-codex-ux/tdd-evidence.yml
+git add src/forge_cli/adapters/repository.py src/forge_cli/adapters/service.py tests/integration/test_adapter_service.py .forge/changes/CHG-0010-adapter-cli-codex-ux/tdd-evidence.yml
 git commit -m "feat(adapter): orchestrate safe install and update"
 ```
 
@@ -484,7 +484,7 @@ Expected: all pass, repeated results equal, and snapshots prove no mutation.
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/forge_cli/adapters/diagnostics.py src/forge_cli/adapters/service.py tests/unit/test_adapter_diagnostics.py tests/integration/test_adapter_service.py .forge/changes/CHG-0008-adapter-cli-codex-ux/tdd-evidence.yml
+git add src/forge_cli/adapters/diagnostics.py src/forge_cli/adapters/service.py tests/unit/test_adapter_diagnostics.py tests/integration/test_adapter_service.py .forge/changes/CHG-0010-adapter-cli-codex-ux/tdd-evidence.yml
 git commit -m "feat(adapter): add validation and diagnostics"
 ```
 
@@ -551,7 +551,7 @@ Expected: all CLI tests pass and existing top-level output is unchanged.
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/forge_cli/app.py src/forge_cli/adapter_cli.py src/forge_cli/adapters/formatting.py tests/cli .forge/changes/CHG-0008-adapter-cli-codex-ux/tdd-evidence.yml
+git add src/forge_cli/app.py src/forge_cli/adapter_cli.py src/forge_cli/adapters/formatting.py tests/cli .forge/changes/CHG-0010-adapter-cli-codex-ux/tdd-evidence.yml
 git commit -m "feat(cli): add Adapter management commands"
 ```
 
@@ -620,7 +620,7 @@ Expected: distribution test and full suite pass.
 - [ ] **Step 5: Commit**
 
 ```bash
-git add tests/integration/adapter_cli_wheel_probe.py tests/integration/test_adapter_distribution.py pyproject.toml .forge/changes/CHG-0008-adapter-cli-codex-ux/tdd-evidence.yml
+git add tests/integration/adapter_cli_wheel_probe.py tests/integration/test_adapter_distribution.py pyproject.toml .forge/changes/CHG-0010-adapter-cli-codex-ux/tdd-evidence.yml
 git commit -m "test(adapter): verify offline wheel golden path"
 ```
 
@@ -628,11 +628,11 @@ git commit -m "test(adapter): verify offline wheel golden path"
 
 **Files:**
 
-- Create: `.forge/changes/CHG-0008-adapter-cli-codex-ux/verification.md`
-- Create: `.forge/changes/CHG-0008-adapter-cli-codex-ux/review.md`
-- Modify: `.forge/changes/CHG-0008-adapter-cli-codex-ux/manifest.yml`
-- Modify: `.forge/changes/CHG-0008-adapter-cli-codex-ux/traceability.yml`
-- Modify: `.forge/changes/CHG-0008-adapter-cli-codex-ux/tdd-evidence.yml`
+- Create: `.forge/changes/CHG-0010-adapter-cli-codex-ux/verification.md`
+- Create: `.forge/changes/CHG-0010-adapter-cli-codex-ux/review.md`
+- Modify: `.forge/changes/CHG-0010-adapter-cli-codex-ux/manifest.yml`
+- Modify: `.forge/changes/CHG-0010-adapter-cli-codex-ux/traceability.yml`
+- Modify: `.forge/changes/CHG-0010-adapter-cli-codex-ux/tdd-evidence.yml`
 
 - [ ] **Step 1: Audit TDD and traceability before claiming Verification**
 
@@ -669,7 +669,7 @@ repeat Strict Review until zero blocker/major remains.
 - [ ] **Step 5: Commit verified review state**
 
 ```bash
-git add .forge/changes/CHG-0008-adapter-cli-codex-ux
+git add .forge/changes/CHG-0010-adapter-cli-codex-ux
 git commit -m "docs(chg-0008): record verification and strict review"
 ```
 
@@ -682,8 +682,8 @@ git commit -m "docs(chg-0008): record verification and strict review"
 - Modify: `CHANGELOG.md`
 - Modify: `ROADMAP.md`
 - Create: `docs/adapter-cli.md`
-- Create: `.forge/changes/CHG-0008-adapter-cli-codex-ux/knowledge-capture.md`
-- Modify: `.forge/changes/CHG-0008-adapter-cli-codex-ux/manifest.yml`
+- Create: `.forge/changes/CHG-0010-adapter-cli-codex-ux/knowledge-capture.md`
+- Modify: `.forge/changes/CHG-0010-adapter-cli-codex-ux/manifest.yml`
 
 - [ ] **Step 1: Document the tested public contract**
 
@@ -695,7 +695,7 @@ T-007/T-008.
 - [ ] **Step 2: Update architecture and release history**
 
 Document the registry/service/driver boundary, link ADR-0008, and add a
-CHG-0008 Changelog entry. Mark the Roadmap stage Completed by `CHG-0008` only
+CHG-0010 Changelog entry. Mark the Roadmap stage Completed by `CHG-0010` only
 after Verification and Strict Review pass.
 
 - [ ] **Step 3: Capture reusable knowledge**
@@ -720,6 +720,6 @@ PR exists, and forbidden local files are absent from `git ls-files`.
 - [ ] **Step 5: Commit Completion artifacts**
 
 ```bash
-git add README.md ARCHITECTURE.md CHANGELOG.md ROADMAP.md docs/adapter-cli.md docs/adr/0008-codex-repository-skill-is-the-default-publication-target.md .forge/changes/CHG-0008-adapter-cli-codex-ux
+git add README.md ARCHITECTURE.md CHANGELOG.md ROADMAP.md docs/adapter-cli.md docs/adr/0008-codex-repository-skill-is-the-default-publication-target.md .forge/changes/CHG-0010-adapter-cli-codex-ux
 git commit -m "docs(chg-0008): complete Adapter CLI knowledge capture"
 ```

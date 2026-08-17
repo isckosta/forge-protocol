@@ -1,5 +1,5 @@
 schema: forge/traceability@1
-change: CHG-0008
+change: CHG-0010
 requirements:
   FR-001: {tasks: [T-007], test_strategy: TDD-007}
   FR-002: {tasks: [T-001, T-007], test_strategy: TDD-001/TDD-007}

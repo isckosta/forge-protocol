@@ -2,7 +2,7 @@
 forge:
   artifact: specification
   schema: 1
-change: CHG-0008
+change: CHG-0010
 status: approved
 review:
   iterations: 1
