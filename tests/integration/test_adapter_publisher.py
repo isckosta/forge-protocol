@@ -8,7 +8,13 @@ from forge_cli.adapters.ownership import (
     InvalidAdapterPublicationOwnershipError,
     require_publication_root_ownership,
 )
-from forge_cli.adapters.plan import AdapterPlan, OperationIntent, OwnershipMode, digest_content
+from forge_cli.adapters.plan import (
+    AdapterOperation,
+    AdapterPlan,
+    OperationIntent,
+    OwnershipMode,
+    digest_content,
+)
 from forge_cli.adapters.planner import (
     EffectiveAdapterConfiguration,
     ProjectedArtifact,
@@ -325,6 +331,31 @@ def test_directory_symlink_swap_after_preflight_prevents_escaping_installation_r
         publisher.publish_adapter_plan(tmp_path, plan, _record())
 
     assert not (outside / "installation.yml").exists()
+
+
+def test_stale_prior_record_authorization_mismatch_uses_stable_stale_record_code(
+    tmp_path: Path,
+) -> None:
+    publisher = publisher_module()
+    target = tmp_path / "generated.md"
+    target.write_text("current", encoding="utf-8")
+    _write_prior_record(tmp_path, ("generated.md", digest_content("stale-recorded-value")))
+    operation = AdapterOperation(
+        path="generated.md",
+        ownership=OwnershipMode.FORGE_OWNED,
+        intent=OperationIntent.UPDATE,
+        content_digest=digest_content("new"),
+        content="new",
+        expected_current_digest=digest_content("current"),
+    )
+    plan = AdapterPlan(adapter_id="example", operations=(operation,))
+
+    with pytest.raises(publisher.AdapterPublicationStaleRecordError):
+        publisher.publish_adapter_plan(
+            tmp_path, plan, _record(("generated.md", digest_content("new")))
+        )
+
+    assert target.read_text(encoding="utf-8") == "current"
 
 
 def test_adapter_id_cannot_escape_installation_state_directory(tmp_path: Path) -> None:

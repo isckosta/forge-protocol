@@ -6,7 +6,11 @@ import pytest
 from typer.testing import CliRunner
 
 import forge_cli.adapter_cli as adapter_cli
-from forge_cli.adapters.publisher import AdapterPublicationConflictError, UnsafeAdapterPathError
+from forge_cli.adapters.publisher import (
+    AdapterPublicationConflictError,
+    AdapterPublicationStaleRecordError,
+    UnsafeAdapterPathError,
+)
 from forge_cli.adapters.state import AdapterInstallationRecord, write_installation_record
 from forge_cli.app import app
 from forge_cli.git import GitUnavailableError
@@ -251,6 +255,26 @@ def test_adapter_install_maps_unsafe_path_to_stable_exit_code(
     assert (
         "E_FORGE_ADAPTER_UNSAFE_PATH: Adapter artifact path escapes repository root: "
         "'../escape'." in result.stdout
+    )
+
+
+def test_adapter_update_maps_stale_record_to_stable_exit_code(
+    tmp_path: Path, monkeypatch
+) -> None:
+    _initialize_project(tmp_path, monkeypatch)
+
+    def explode(*_args, **_kwargs):
+        raise AdapterPublicationStaleRecordError(
+            "Existing installation record does not authorize update for tool/generated.md."
+        )
+
+    monkeypatch.setattr(adapter_cli.AdapterService, "update", explode)
+    result = runner.invoke(app, ["adapter", "update", "codex"])
+
+    assert result.exit_code == 2
+    assert (
+        "E_FORGE_ADAPTER_STALE_RECORD: Existing installation record does not authorize "
+        "update for tool/generated.md." in result.stdout
     )
 
 

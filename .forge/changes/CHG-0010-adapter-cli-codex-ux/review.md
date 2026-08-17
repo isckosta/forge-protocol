@@ -4,7 +4,7 @@ forge:
   schema: 1
 change: CHG-0010
 status: pending
-iteration: 1
+iteration: 2
 ---
 
 # Strict Review — Adapter CLI and Codex Installation UX
@@ -132,3 +132,90 @@ Full suite after both fixes: `.venv/bin/python -m pytest -q` — 347 passed.
 
 Decision: FAIL. Re-review of the resolved revision is required before PASS
 (`re_review.required_after_blocking_resolution`).
+
+## Iteration 2 — FAIL
+
+**Revision reviewed:** `1fcac5a`.
+
+A second, independent fresh Reviewer (no access to the Iteration 1 Resolver's
+implementation context beyond what is recorded in this file and
+`tdd-evidence.yml`) verified both Iteration 1 remediations by hand-tracing the
+exact diff and actively probing for a still-open variant, then continued the
+full adversarial review across all 18 dimensions rather than only the two
+prior findings, per `diff_only_review: false`.
+
+### Verification of Iteration 1 remediations
+
+- **BLOCKER (installation-record TOCTOU): confirmed genuinely closed** for
+  the reported gap. The Reviewer hand-traced the fix's control flow against
+  the existing regression test and separately probed whether the attack
+  could instead land inside `_rollback_publication`'s own
+  `_safe_target`-then-`_restore_bytes`/`unlink` gap, or the equivalent gap at
+  every other `_safe_target`-then-syscall pair in the module. It confirmed
+  such a window still exists, but classified it as a concrete instance of
+  Iteration 1's already-accepted Observation #3 (repeated re-validation
+  narrows but does not eliminate TOCTOU) rather than a new class of
+  exposure — the original BLOCKER's window spanned the entire
+  preflight/validation/mutation sequence and needed no timing precision to
+  exploit; the residual window is a single Python statement. Not escalated.
+- **MAJOR (FR-023 exit codes): fix was directionally correct but
+  incomplete** — see new MAJOR below.
+
+### MAJOR — FR-023 still violated for "stale state": most `AdapterPublicationError` raise sites remained uncoded
+
+Iteration 1's fix added `.code` only to `AdapterPublicationConflictError` and
+`UnsafeAdapterPathError`, the two exceptions it happened to reproduce. It left
+every raise site in `_load_prior_installation_record` and
+`_validate_prior_record_authorizes_plan` on the uncoded base
+`AdapterPublicationError`, and `tdd-evidence.yml`'s own TDD-012 notes
+mischaracterized all of them as "should-never-happen internal-invariant
+failures." The Reviewer disproved that characterization for these two
+functions specifically: unlike `_validate_record_matches_plan` (which checks
+`next_record`, a value `AdapterService` constructs deterministically from the
+same plan being published — a genuine internal invariant), `prior_record` is
+independently re-read from disk by `_load_prior_installation_record` at
+publish time, after `AdapterService._prepare()` already captured its own
+snapshot. A plan built against one snapshot and a disk record that changed
+before `publish_adapter_plan` re-validates it — via ordinary concurrent
+`forge adapter update` usage, or external interference with
+`installation.yml` — is exactly FR-023's listed "stale state" category, not
+an internal bug. The Reviewer reproduced it directly: a plan whose
+`expected_current_digest` no longer matched the on-disk prior record's
+recorded digest raised the uncoded base class, mapping through the real
+`_handle_adapter_error` to exit `70`/`E_FORGE_INTERNAL_ERROR` instead of exit
+`2`. No existing test exercised this path.
+
+### MINOR — `manifest.yml` `tdd.cycles` stale relative to `tdd-evidence.yml` (C-029)
+
+Commit `1fcac5a` bumped `tdd-evidence.yml`'s `cycle_count` from 42 to 44 when
+adding TDD-011/TDD-012 but left `manifest.yml`'s `tdd.cycles` at 42.
+
+### Resolution (regression-first TDD)
+
+- **TDD-013** (MAJOR): added
+  `test_stale_prior_record_authorization_mismatch_uses_stable_stale_record_code`
+  (publisher-level) and
+  `test_adapter_update_maps_stale_record_to_stable_exit_code` (CLI-level).
+  Confirmed RED for the publisher-level test (`AttributeError`: no such
+  exception class yet). Fix: new
+  `AdapterPublicationStaleRecordError(AdapterPublicationError)`,
+  `code = "E_FORGE_ADAPTER_STALE_RECORD"`, replacing the base-class raise at
+  every site in `_load_prior_installation_record` and
+  `_validate_prior_record_authorizes_plan`. `_validate_record_matches_plan`
+  deliberately remains uncoded — it is a true internal invariant, not
+  on-disk staleness, per the analysis above. Confirmed GREEN.
+- **MINOR**: `manifest.yml` `tdd.cycles` corrected to `45` (matching
+  `tdd-evidence.yml`'s `cycle_count` after TDD-013).
+
+Full suite after remediation: `.venv/bin/python -m pytest -q` — 349 passed.
+`git diff --check` clean.
+
+## Final finding counts (Iteration 2)
+
+- BLOCKER: 0
+- MAJOR: 1 (resolved)
+- MINOR: 1 (resolved)
+- OBSERVATION: 0 new (Iteration 1's three stand; the residual rollback-window
+  instance noted above does not escalate Observation #3)
+
+Decision: FAIL. Re-review of the resolved revision is required before PASS.

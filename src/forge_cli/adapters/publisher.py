@@ -44,6 +44,12 @@ class UnsafeAdapterPathError(AdapterPublicationError):
     code = "E_FORGE_ADAPTER_UNSAFE_PATH"
 
 
+class AdapterPublicationStaleRecordError(AdapterPublicationError):
+    """Raised when the on-disk prior installation record no longer authorizes the plan."""
+
+    code = "E_FORGE_ADAPTER_STALE_RECORD"
+
+
 @dataclass(frozen=True)
 class AdapterRollbackFailure:
     """A target that could not be restored after publication failed."""
@@ -232,7 +238,7 @@ def _load_prior_installation_record(
     if not path.exists():
         return None
     if path.is_symlink() or not path.is_file():
-        raise AdapterPublicationError(
+        raise AdapterPublicationStaleRecordError(
             "Existing Adapter installation record is not a safe regular file."
         )
     try:
@@ -243,7 +249,7 @@ def _load_prior_installation_record(
         InvalidAdapterInstallationRecordError,
         InvalidAdapterPublicationOwnershipError,
     ) as error:
-        raise AdapterPublicationError(
+        raise AdapterPublicationStaleRecordError(
             f"Existing Adapter installation record is invalid: {error}"
         ) from error
 
@@ -258,7 +264,7 @@ def _validate_prior_record_authorizes_plan(
         or prior_record.harness != next_record.harness
         or prior_record.publication_root != next_record.publication_root
     ):
-        raise AdapterPublicationError(
+        raise AdapterPublicationStaleRecordError(
             "Existing installation record identity or publication root does not "
             "authorize this Adapter plan."
         )
@@ -271,7 +277,7 @@ def _validate_prior_record_authorizes_plan(
     if prior_record is not None and len(prior_generated) != len(
         prior_record.generated_artifacts
     ):
-        raise AdapterPublicationError(
+        raise AdapterPublicationStaleRecordError(
             "Existing installation record contains duplicate generated artifact paths."
         )
 
@@ -281,7 +287,7 @@ def _validate_prior_record_authorizes_plan(
         recorded_digest = prior_generated.get(operation.path)
         if operation.intent is OperationIntent.CREATE:
             if recorded_digest is not None:
-                raise AdapterPublicationError(
+                raise AdapterPublicationStaleRecordError(
                     f"Adapter create path remains recorded as generated: {operation.path}."
                 )
             continue
@@ -293,7 +299,7 @@ def _validate_prior_record_authorizes_plan(
             recorded_digest is None
             or operation.expected_current_digest != recorded_digest
         ):
-            raise AdapterPublicationError(
+            raise AdapterPublicationStaleRecordError(
                 f"Existing installation record does not authorize {operation.intent.value} "
                 f"for {operation.path}."
             )

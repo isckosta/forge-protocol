@@ -38,14 +38,14 @@ requirements:
 
 tdd:
   status: compliant
-  cycles: 42
+  cycles: 45
 
 verification:
   status: passed
 
 review:
   status: pending
-  iteration: 1
+  iteration: 2
   blockers: 0
   majors: 0
   minors: 0
