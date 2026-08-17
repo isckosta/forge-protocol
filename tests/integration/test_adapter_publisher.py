@@ -358,6 +358,63 @@ def test_stale_prior_record_authorization_mismatch_uses_stable_stale_record_code
     assert target.read_text(encoding="utf-8") == "current"
 
 
+def test_installation_state_directory_symlink_swap_before_first_read_cannot_forge_authorization(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    publisher = publisher_module()
+    target = tmp_path / "generated.md"
+    target.write_text("old-user-content", encoding="utf-8")
+
+    outside = tmp_path.parent / "forge-outside-install-read-swap"
+    outside.mkdir(exist_ok=True)
+    forged_record = _record(("generated.md", digest_content("old-user-content")))
+    write_installation_record(outside / "installation.yml", forged_record)
+
+    adapter_state_dir = tmp_path / ".forge" / "adapters" / "example"
+    adapter_state_dir.mkdir(parents=True)
+
+    operation = AdapterOperation(
+        path="generated.md",
+        ownership=OwnershipMode.FORGE_OWNED,
+        intent=OperationIntent.UPDATE,
+        content_digest=digest_content("attacker-new-content"),
+        content="attacker-new-content",
+        expected_current_digest=digest_content("old-user-content"),
+    )
+    plan = AdapterPlan(adapter_id="example", operations=(operation,))
+
+    original_record_validation = publisher._validate_record_matches_plan
+    original_authorization_check = publisher._validate_prior_record_authorizes_plan
+
+    def swap_directory_for_symlink_before_first_read(plan, record) -> None:
+        original_record_validation(plan, record)
+        adapter_state_dir.rmdir()
+        adapter_state_dir.symlink_to(outside, target_is_directory=True)
+
+    def restore_real_directory_after_the_poisoned_read(plan, next_record, prior_record) -> None:
+        original_authorization_check(plan, next_record, prior_record)
+        adapter_state_dir.unlink()
+        adapter_state_dir.mkdir(parents=True)
+
+    monkeypatch.setattr(
+        publisher, "_validate_record_matches_plan", swap_directory_for_symlink_before_first_read
+    )
+    monkeypatch.setattr(
+        publisher,
+        "_validate_prior_record_authorizes_plan",
+        restore_real_directory_after_the_poisoned_read,
+    )
+
+    with pytest.raises(publisher.AdapterPublicationError):
+        publisher.publish_adapter_plan(
+            tmp_path,
+            plan,
+            _record(("generated.md", digest_content("attacker-new-content"))),
+        )
+
+    assert target.read_text(encoding="utf-8") == "old-user-content"
+
+
 def test_adapter_id_cannot_escape_installation_state_directory(tmp_path: Path) -> None:
     publisher = publisher_module()
     plan = AdapterPlan(adapter_id="../escape", operations=())

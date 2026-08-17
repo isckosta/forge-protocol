@@ -450,12 +450,18 @@ def publish_adapter_plan(
         )
 
     installation_relative = f".forge/adapters/{plan.adapter_id}/installation.yml"
-    installation_path = _safe_target(root, installation_relative)
 
     for operation in plan.operations:
         _preflight_operation(root, operation)
 
     _validate_record_matches_plan(plan, installation_record)
+    # Resolve immediately before the first read: resolving this earlier (e.g.
+    # before the preflight loop above) and reusing it here would let a
+    # directory component swapped for a symlink during preflight/validation
+    # poison the prior-record read below with an attacker-forged record,
+    # which _validate_prior_record_authorizes_plan would then trust to
+    # authorize mutating a real repository file.
+    installation_path = _safe_target(root, installation_relative)
     prior_record = _load_prior_installation_record(installation_path)
     _validate_prior_record_authorizes_plan(plan, installation_record, prior_record)
 

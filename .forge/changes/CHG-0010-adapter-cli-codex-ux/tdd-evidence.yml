@@ -1,7 +1,7 @@
 schema: forge/tdd-evidence@1
 change: CHG-0010
 status: active
-cycle_count: 47
+cycle_count: 48
 cycles:
   - id: TDD-001A
     title: Registry stable ordering
@@ -623,6 +623,23 @@ cycles:
       - New AdapterFlowConfigurationError(AdapterServiceError), code = E_FORGE_ADAPTER_FLOW_CONFIGURATION, replaces the base-class raise in _effective_flows.
       - Classified MINOR rather than MAJOR because reachability requires a hand-edited/misconfigured local project Flow file, not ordinary concurrent CLI usage like the MAJOR findings in publisher.py; fixed anyway because the remediation is small and proportionate, and leaving a known instance of the same uncoded-exception pattern unfixed after two prior iterations flagged it would be inconsistent.
       - Full suite command `.venv/bin/python -m pytest` passed 351 tests; `git diff --check` clean.
+  - id: TDD-016
+    title: Mutation-time re-validated prior-record read authorizing publication
+    requirements: [FR-017, FR-018, NFR-002, NFR-003, INV-001, INV-004, AC-006, AC-012]
+    behavior: publish_adapter_plan resolves the installation-record path via _safe_target immediately before the first read that feeds the prior-record authorization decision, instead of reusing the Path resolved once before the entire preflight/validation sequence, so a directory swapped for a symlink during that window cannot poison _validate_prior_record_authorizes_plan with an attacker-forged prior record that authorizes overwriting a real repository file
+    origin: "Strict Review Iteration 4 BLOCKER (fourth independent Reviewer): TDD-011/TDD-014 closed the write and no-op-comparison paths but never touched installation_path's original resolution at the top of the function, which still fed the read at _load_prior_installation_record; _load_prior_installation_record only checks whether the installation.yml leaf itself is a symlink, not its ancestor components, so it does not independently catch what _safe_target's ancestor walk would have caught"
+    red:
+      valid: true
+      command: .venv/bin/python -m pytest tests/integration/test_adapter_publisher.py::test_installation_state_directory_symlink_swap_before_first_read_cannot_forge_authorization -v
+      result: 1 failed
+      reason: "After successful collection, the test raised \"DID NOT RAISE AdapterPublicationError\" and the target file's content changed to the attacker's value. A two-phase attack (swap .forge/adapters/<id> for a symlink to a directory containing a forged installation.yml between _validate_record_matches_plan and _load_prior_installation_record, then restore the real directory between _validate_prior_record_authorizes_plan and the final write) let the forged record authorize an UPDATE of a real repository file that Forge never legitimately owned, and the already-fixed final-write/rollback re-resolution succeeded normally against the restored real directory, so publish_adapter_plan returned without raising, permanently overwriting real repository content with attacker-controlled bytes and recording it as legitimate."
+    green:
+      command: .venv/bin/python -m pytest tests/integration/test_adapter_publisher.py::test_installation_state_directory_symlink_swap_before_first_read_cannot_forge_authorization -v
+      result: 1 passed
+    notes:
+      - "Fix moves installation_path = _safe_target(root, installation_relative) from before the preflight loop to immediately before _load_prior_installation_record, its first actual use. Since the swap in this attack happens inside the _validate_record_matches_plan hook (which now runs before the relocated resolution), the fresh _safe_target call observes the symlink immediately and raises UnsafeAdapterPathError before any prior-record read occurs, closing the entire preflight-loop-sized window down to the same single-statement residual already accepted as Iteration 1's Observation #3."
+      - "This closes the same conceptual gap TDD-011 (write path) and TDD-014 (no-op comparison) closed, on the one remaining unguarded use of the originally-resolved installation_path: the authorization-feeding read. All four uses of the installation-record path (initial/no-op read, write, rollback, and now this read) are re-resolved immediately before use."
+      - Focused publisher regression command passed 26 tests; full suite command `.venv/bin/python -m pytest` passed 352 tests; `git diff --check` clean.
 notes:
   - Focused regression command `.venv/bin/python -m pytest tests/unit/test_adapter_registry.py tests/unit/test_codex_adapter_descriptor.py -v` passed 11 tests.
   - 'rg -n "codex" src/forge_cli/adapters/driver.py src/forge_cli/adapters/registry.py returned no matches.'

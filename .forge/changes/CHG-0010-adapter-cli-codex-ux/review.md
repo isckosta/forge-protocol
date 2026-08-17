@@ -4,7 +4,7 @@ forge:
   schema: 1
 change: CHG-0010
 status: pending
-iteration: 3
+iteration: 4
 ---
 
 # Strict Review — Adapter CLI and Codex Installation UX
@@ -300,3 +300,82 @@ Full suite after remediation: `.venv/bin/python -m pytest -q` — 351 passed.
 - OBSERVATION: 0 new
 
 Decision: FAIL. Re-review of the resolved revision is required before PASS.
+
+## Iteration 4 — FAIL
+
+**Revision reviewed:** `23559dc`.
+
+A fourth independent Reviewer verified Iteration 3's remediation, then, given
+three consecutive iterations finding progressively subtler instances of the
+same general defect class in `publisher.py`, read the entirety of
+`publish_adapter_plan` and every helper it calls line by line before
+continuing the broader adversarial review.
+
+### Verification of Iteration 3 remediations
+
+- **TDD-014 (MAJOR fix): correct as far as it went, but exposed a deeper
+  problem.** The one-line change (`prior_record == installation_record`) does
+  eliminate the redundant raw read reported in Iteration 3. The Reviewer
+  confirmed `prior_record`'s possible `None` value compares safely and
+  falls through to the full mutation path, not a bug. But tracing where
+  `prior_record` itself comes from — `_load_prior_installation_record(installation_path)`
+  — surfaced that `installation_path` was still the single Path object
+  resolved once at the top of the function, before the entire preflight loop
+  and `_validate_record_matches_plan`, exactly the BLOCKER class Iteration 1
+  described, on the one remaining use TDD-011 never touched (TDD-011 only
+  re-resolved the write and rollback paths, not this read).
+- **TDD-015 (MINOR fix): confirmed correct** —
+  `AdapterFlowConfigurationError`/`E_FORGE_ADAPTER_FLOW_CONFIGURATION` maps
+  to exit 2 as expected.
+
+### BLOCKER — Prior-record read authorizing publication used a Path resolved before the entire preflight/validation window, letting a forged record overwrite a real repository file
+
+`_load_prior_installation_record` only checks whether the `installation.yml`
+leaf itself is a symlink; it does not walk ancestor components the way
+`_safe_target` does. Reusing the once-resolved `installation_path` for this
+read meant a directory swapped for a symlink during preflight/validation
+(before the read) let an attacker-forged `installation.yml` be read as the
+prior record, which `_validate_prior_record_authorizes_plan` then trusted to
+authorize a plan operation against a real repository file. Because the
+per-operation mutation targets are resolved fresh and safely (TDD-009C) and
+the final install-record write/rollback are also already re-resolved
+(TDD-011), a two-phase attack — swap before the read, restore the real
+directory before the final write — let `publish_adapter_plan` complete
+without raising anything at all, permanently overwriting a real file with
+attacker-controlled content and recording the mutation as legitimate. The
+Reviewer reproduced this directly: a real `generated.md` containing
+"old-user-content", no genuine prior installation record, and a forged
+`installation.yml` reachable only during the swap window resulted in
+`generated.md` containing "attacker-new-content" with `publish_adapter_plan`
+returning normally. None of the three existing symlink-swap regression tests
+(TDD-009C, TDD-011) planted a forged record at the swap destination or
+restored the real directory before the final write, so none exercised this
+path.
+
+### Resolution (regression-first TDD)
+
+- **TDD-016** (BLOCKER): added
+  `test_installation_state_directory_symlink_swap_before_first_read_cannot_forge_authorization`,
+  confirmed RED (`DID NOT RAISE`, real file overwritten with attacker
+  content). Fix: moved `installation_path = _safe_target(root,
+  installation_relative)` from before the preflight loop to immediately
+  before `_load_prior_installation_record`, its first actual use — closing
+  the preflight-loop-sized window down to the same single-statement residual
+  window already accepted as Observation #3. All four uses of the
+  installation-record path (authorization read, write, rollback, and the
+  no-op comparison that reuses the same read) are now fed by a resolution
+  that happens immediately before or adjacent to their point of use.
+  Confirmed GREEN.
+
+Full suite after remediation: `.venv/bin/python -m pytest -q` — 352 passed.
+`git diff --check` clean.
+
+## Final finding counts (Iteration 4)
+
+- BLOCKER: 1 (resolved)
+- MAJOR: 0
+- MINOR: 0
+- OBSERVATION: 0 new
+
+Decision: FAIL. Re-review of the resolved revision is required before PASS
+(`re_review.required_after_blocking_resolution`).
