@@ -2,7 +2,7 @@ schema: forge/change@2
 protocol: 2
 change: {id: CHG-0011, title: Review Convergence Boundary, kind: feature}
 flow: {initial: full, current: full, escalations: []}
-state: {current: strict_review}
+state: {current: complete}
 artifacts:
   intent: complete
   discovery: complete
@@ -12,24 +12,24 @@ artifacts:
   architecture: complete
   test_strategy: approved
   plan: approved
-  tasks: active
+  tasks: complete
   traceability: complete
   tdd_evidence: complete
   implementation: complete
   provenance: complete
   verification: complete
-  review: pending
-  documentation: pending
+  review: complete
+  documentation: complete
   knowledge_capture: complete
 requirements: {total: 16, implemented: 16, verified: 16}
 tdd: {status: compliant, cycles: 8}
 verification: {status: passed}
 review:
-  status: failed
-  iteration: 1
-  blockers: 1
-  majors: 2
-  minors: 1
+  status: passed
+  iteration: 2
+  blockers: 0
+  majors: 0
+  minors: 0
   observations: 1
   iterations:
     - id: review-001
@@ -49,6 +49,25 @@ review:
         (MAJOR): Resolution Scope containment is trivially defeated by an
         unbounded glob (e.g. scope: ["*"]), untested. See review.md for full
         findings (also CHG-0011-R004 MINOR, CHG-0011-R005 OBSERVATION).
+    - id: review-002
+      revision: chg-0011-resolution-001
+      subject_provenance: resolution-001
+      reviewer_provenance: review-002
+      kind: resolution_verification
+      status: passed
+      new_material_findings: 0
+      finding_classes: []
+      evidence_gap: >-
+        CHG-0011-R001-R004 verified genuinely resolved by reading the actual
+        code/spec diff and adversarially re-probing both the
+        convergence_decision per-Iteration binding and the exact-path scope
+        containment against real validate_project (scenarios beyond the two
+        shipped regression tests). Resolution Delta (3469d66..e52000f)
+        recomputed independently, matches resolution-001's declared scope
+        exactly (11/11, provenance.yml correctly excluded per FR-004); no
+        Out-of-Scope Mutation. No resolution regression found. R005
+        (OBSERVATION) carries forward, accepted by design, not re-raised as
+        a finding of this Iteration. See review.md Iteration 2.
 documentation:
   impact_evaluated: true
   update_required: true

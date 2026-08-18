@@ -3,8 +3,8 @@ forge:
   artifact: review
   schema: 1
 change: CHG-0011
-status: failed
-iteration: 1
+status: passed
+iteration: 2
 ---
 
 # Strict Review — Review Convergence Boundary
@@ -93,3 +93,93 @@ Finding counts:
 - OBSERVATION: 1 (CHG-0011-R005)
 
 Per C-027, Completion MUST NOT proceed with an unresolved BLOCKER or MAJOR finding present. A Resolution addressing R001–R003 (R004/R005 at the Resolver's discretion, though R004 should be corrected or at minimum acknowledged) is required before the next Strict Review Iteration.
+
+## Iteration 2 — PASS
+
+Reviewed revision: `chg-0011-resolution-001`, `e52000fd8f50a12096c043d454822483e2977e31` (subject provenance `resolution-001`, `role: resolution`, `targets: [CHG-0011-R001, CHG-0011-R002, CHG-0011-R003, CHG-0011-R004]`).
+
+Reviewer Execution: `review-exec-chg0011-20260818-4f2a19be`.
+Reviewer Execution Context: `review-context-chg0011-20260818-4f2a19be`.
+Assurance: `recorded` (self-recorded repository-native provenance; no cryptographic/external attestation claimed).
+
+This is CHG-0011's own second Strict Review Iteration, classified `kind: resolution_verification` — it is a review of `resolution-001`, the Resolution that addressed Strict Review Iteration 1's R001–R004. Its authority is bounded, per this Change's own `specification.md` (Finding taxonomy, FR-007–FR-009), to: (a) whether R001–R004 were actually fixed; (b) resolution regressions (class B) inside the Resolution's own delta; (c) Out-of-Scope Mutation (class C) against the declared `resolution-001` scope; (d) provenance/revision/subject correctness for this Iteration. This section applies that bounded authority to itself, not an unrestricted Initial Review re-audit of the whole CHG-0011 diff.
+
+### Resolution Delta computed independently
+
+`git diff --name-status 3469d66dbb22765b8beb7d712fb6cefb67454616..e52000fd8f50a12096c043d454822483e2977e31` (computed directly, not trusted from any artifact) yields 12 changed paths:
+
+```
+M  .forge/changes/CHG-0011-review-convergence-boundary/architecture.md
+M  .forge/changes/CHG-0011-review-convergence-boundary/knowledge-capture.md
+M  .forge/changes/CHG-0011-review-convergence-boundary/provenance.yml
+A  .forge/changes/CHG-0011-review-convergence-boundary/specification-drift.md
+M  .forge/changes/CHG-0011-review-convergence-boundary/specification.md
+M  .forge/changes/CHG-0011-review-convergence-boundary/tasks.md
+M  .forge/changes/CHG-0011-review-convergence-boundary/tdd-evidence.yml
+M  .forge/changes/CHG-0011-review-convergence-boundary/traceability.yml
+M  protocol/schemas/change-v2.schema.json
+M  protocol/versions/2/specification.md
+M  src/forge_cli/validation/__init__.py
+M  tests/unit/test_resolution_verification.py
+```
+
+`provenance.yml` is excluded from the Resolution Delta by this Change's own FR-004 (review-control metadata exception: `manifest.yml`/`provenance.yml`/`review.md`). The remaining 11 paths match `resolution-001`'s declared `scope` list exactly — 11 declared, 11 present, one-to-one. `manifest.yml` and `review.md` were not touched by the Resolution commit (consistent with FR-004). **No Out-of-Scope Mutation (class C) found**; declared scope was accurate, not just broad-enough-to-pass.
+
+### R001 (BLOCKER) — verified fixed, adversarially probed
+
+Read the actual diff of `_validate_resolution_verification` in `src/forge_cli/validation/__init__.py`. The fix moves the decision from a single manifest-wide `review.convergence.decision` field to `iterations[i+1].convergence_decision`, read fresh inside the historical-scan loop (`decision=nxt.get("convergence_decision")`) for **every** index `i` where `streaks[i]>=2`, rather than once from a shared field. The schema (`protocol/schemas/change-v2.schema.json`) was correspondingly changed: `review.convergence.decision` was removed entirely (not left as inert legacy), and `convergence_decision` was added as a per-Iteration property.
+
+Verification performed beyond reading the diff:
+- Ran the Resolver's own new regression test, `test_convergence_decision_cannot_be_reused_across_independent_episodes`, which reproduces the exact scenario from Iteration 1's R001 finding (episode 1 resolved with a valid decision + a failing follow-on `initial_review`, then an independent episode 2 two-strike streak, then a final `passed` `initial_review` with no decision of its own) — it now fails validation as required.
+- Constructed my own additional adversarial scenario, independent of the shipped test suite, using `test_resolution_verification.py`'s own helper functions against the real `validate_project` (real Git-backed manifests, not mocked): a **plateaued** streak (4 consecutive `resolution_verification` failures with `new_material_findings: 1`, never interrupted by a genuine `initial_review`) followed by a `passed` `initial_review` carrying no decision anywhere. This probes whether the per-index historical scan could be tricked by streak overlap/aliasing (i.e., whether one `i+1` index could be claimed by two different streak positions). Result: correctly rejected, with the redundant-but-safe "further resolution_verification Iteration is not valid" finding firing at every intermediate index and the "requires its own valid convergence_decision" finding firing at the terminal index. No bypass found; the mechanism fails closed, never open, under streak plateau.
+- Confirmed each streak index `i` maps to a distinct `i+1` (array positions are unique per `i`), so aliasing/reuse across two different episodes' authorizing Iterations is structurally impossible now that committed Iterations are immutable (Protocol 2/CHG-0008 freeze) and the decision lives on the Iteration itself rather than a shared field.
+
+R001 is genuinely closed. `AC-015` is satisfied.
+
+### R003 (MAJOR) — verified fixed, adversarially probed
+
+`fnmatch` was removed from the import list and from `_uncovered_paths`, which now does plain set membership (`p not in patterns`) with no pattern interpretation at all.
+
+Verification performed beyond reading the diff: ran `_uncovered_paths` directly (not just via `validate_project`) against a battery of path-matching tricks beyond the shipped `scope: ["*"]` regression test — `scope: ["src/*"]`, a leading `./src/x.py`, a doubled slash `src//x.py`, a trailing slash `src/x.py/`, and a case variant `SRC/X.PY` against an actual delta path `src/x.py`. Every one of these was correctly treated as **uncovered** (fails closed — the trick never causes a real out-of-scope path to be mistaken as covered; at worst a legitimately-covered path could be mis-declared and flagged as uncovered, which forces escalation, not a bypass). No path-normalization or case-sensitivity bypass exists in the exact-match implementation. `AC-016` is satisfied.
+
+### R002 (MAJOR) — verified fixed, genuinely consistent
+
+`specification.md` AC-009 was retracted and replaced (not reworded around the contradiction): it now states a decision is unconditionally required on `iterations[i+1]` regardless of that Iteration's `kind`, matching FR-012, `protocol/versions/2/specification.md` §13 (both updated in this Resolution's diff, read directly), and the actual code (`if not valid_decision: out.append(...)` is unconditional — it does not branch on `nxt.get("kind")`). Cross-checked against the shipped test `test_convergence_limit_blocks_further_resolution_verification_without_decision` (asserts rejection of a `resolution_verification` at `i+1` with no decision) and `test_convergence_limit_allows_new_initial_review_after_decision` (asserts acceptance of `initial_review` at `i+1` *with* a decision) — no test exercises "initial_review, no decision" as a positive case, consistent with the corrected AC-009's claim that this case is now rejected, not permitted. No remaining self-contradiction found between AC-009, FR-012, §13, and the implementation.
+
+### R004 (MINOR) — verified fixed
+
+`specification.md` FR-013 now states plainly that Core does not read `finding_classes`/`evidence_gap` content, only requires `new_material_findings` to be present/well-typed — matching the actual code (`finding_classes` and `evidence_gap` do not appear anywhere in `src/forge_cli/validation/__init__.py`, confirmed by direct search). One imprecision noted but not treated as a defect: Iteration 1's finding text quoted `architecture.md`'s validator-changes step 8 as characterizing the check as "consistent (`>0` implies at least one B/C class recorded)" — that exact phrase is not literally present in `architecture.md` at either the pre- or post-Resolution commit (checked directly); step 8's actual text was already accurate (it only ever described the `new_material_findings` well-typedness check, not content cross-checking) and was left unchanged by this Resolution. This does not affect the verdict: FR-013's specification text (the actual overstatement Iteration 1 identified and evidenced with a reproduction) is corrected and now matches code; the `architecture.md` quote imprecision is an artifact of how Iteration 1's finding text was phrased, not a live inconsistency in the current repository.
+
+### Class D (unrelated latent) note
+
+While reading `_validate_resolution_verification` for this verification, no new pre-existing-but-unrelated defect was noticed beyond what Iteration 1 already recorded (R005, OBSERVATION, accepted by design and correctly left unresolved by this Resolution — `specification-drift.md` records it as "not resolved by design," which is itself the correct disposition for an accepted-scope-narrowing OBSERVATION, not a lapse). No class D finding is raised in this Iteration.
+
+### Verification performed
+
+- `pytest -q` from `/home/isckosta/forge-protocol/.worktrees/chg-0011` (`.venv`): **244 passed**, matching `verification.md`/`resolution-001`'s claim, independently reproduced.
+- `forge validate` from the same worktree: exit 2, exactly one finding — the same pre-existing `C-026` CHG-0008 freeze finding Iteration 1 already independently confirmed as pre-existing and unrelated to CHG-0011. No new finding introduced by this Resolution's changes. `AC-014` is satisfied for the Resolution subject.
+- Full `git diff --name-status` Resolution Delta computed directly (above) and cross-checked against `resolution-001`'s declared `scope`, not trusted blindly (per this Iteration's own required task (c)).
+
+### Was the Resolution-Verification framing meaningfully constrained relative to an unrestricted re-audit?
+
+Yes, materially. Concretely, this Iteration did **not**: re-read or re-adjudicate the happy-path FR-001–FR-010 mechanics already assessed in Iteration 1 (only the R001/R003 code paths that actually changed were re-read line-by-line); re-run the full adversarial probing Iteration 1 did against the pre-Resolution code (out-of-scope containment happy path, Full Review Escalation, etc.) since none of that was touched by this delta; or treat R005 (OBSERVATION, explicitly left unresolved by design) as blocking, which an unrestricted re-audit applying Intent's framing fresh might have been tempted to revisit. The scope boundary in practice meant: read the 11-path delta in full (all of it — none of the 11 files is large), verify each of R001–R004's fixes against the specific lines Iteration 1 cited, and adversarially re-probe only the two mechanisms (`convergence_decision` binding, `_uncovered_paths` matching) Iteration 1 found breakable — rather than re-deriving new adversarial scenarios against parts of the mechanism Iteration 1 already cleared. This is narrower, faster, and more targeted than Iteration 1's audit, while still catching a genuine regression or out-of-scope mutation had either existed — the taxonomy (class A/B/C mandatory, D recorded-not-dropped) did its job as a bounding device, not a suppression device.
+
+### Assessment against the Change's own declared terms
+
+- All four targeted findings (R001 BLOCKER, R002/R003 MAJOR, R004 MINOR) are genuinely resolved: verified by reading the actual code/spec diff, not by trusting `resolution-001`'s or `specification-drift.md`'s narrative, and by independently reproducing both the shipped regression tests and my own additional adversarial probes against real `validate_project`.
+- R005 (OBSERVATION) remains correctly unresolved by design, consistent with its own disposition in Iteration 1 and `specification-drift.md`.
+- No class B (resolution regression), class C (out-of-scope mutation), or class D (unrelated latent, independently BLOCKER/MAJOR) finding was found. `new_material_findings` for this Iteration is `0`.
+- `pytest -q` (244 passed) and `forge validate` (single pre-existing CHG-0008 finding) both independently reproduced, matching the Resolution's claims.
+
+### Verdict
+
+**PASS**
+
+Finding counts (this Iteration):
+
+- BLOCKER: 0
+- MAJOR: 0
+- MINOR: 0
+- OBSERVATION: 0 (R005 carries forward from Iteration 1 as an accepted-by-design, unresolved OBSERVATION — not re-raised here since it is not a finding of this Iteration)
+
+`new_material_findings: 0`. CHG-0011 may proceed to Completion per this Change's own convergence mechanism, which this Iteration has now used, and passed, on itself.
