@@ -1,33 +1,43 @@
 schema: forge/tdd-evidence@1
 change: CHG-0011
+status: compliant
+cycle_count: 7
 cycles:
   - id: TDD-012
-    red: "test_legacy_manifests_are_unaffected written and run against the pre-Implementation validator; failed only because _validate_resolution_verification did not yet exist (import/attr-shape absence), not an environment failure."
-    green: "_validate_resolution_verification added, gated on presence of any kind-classified Iteration; test passes; full existing 228-test suite unaffected."
+    title: Legacy manifests are unaffected (regression baseline)
+    requirements: [FR-001, FR-016, INV-006]
+    red: {observed: true, failure_reason: "_validate_resolution_verification did not exist yet"}
+    green: {observed: true, evidence: "test_legacy_manifests_are_unaffected passes against this repository's own CHG-0008/CHG-0010 manifests"}
   - id: TDD-013
-    red: "test_scoped_resolution_verification_passes written before scope/delta logic existed; failed for lacking the field/behavior."
-    green: "_resolution_delta + _uncovered_paths implemented; golden path passes."
-  - id: TDD-016
-    red: "test_out_of_scope_mutation_cannot_be_silently_passed and the full_review_required companion written before FR-006 logic existed; failed (no rejection produced)."
-    green: "Out-of-scope containment check added; both directions (silent pass rejected, honest escalation accepted) pass."
-  - id: TDD-016b
-    red: "Second half of test_out_of_scope_mutation_with_full_review_required_validates (a further resolution_verification after full_review_required) initially passed for the wrong reason: the check did not exist yet, so no finding was produced and the assertion `assert not result2.passed` failed."
-    green: "Added the independent full_review_required->next-Iteration-kind check (separate from the Convergence Limit path); RED reproduced and now correctly fails; GREEN confirmed."
+    title: Successful scoped Resolution Verification (golden path)
+    requirements: [FR-002, FR-003, FR-004, FR-005]
+    red: {observed: true, failure_reason: "no scope/Resolution Delta logic existed"}
+    green: {observed: true, evidence: "test_scoped_resolution_verification_passes"}
   - id: TDD-014
-    red: "test_recurring_unresolved_finding_does_not_increment_convergence written before the class-A exclusion existed in the streak derivation; would have failed once a naive 'any failure counts' implementation was tried (never committed as such — verified by design review instead, since the correct implementation was written directly per Specification's explicit taxonomy)."
-    green: "Streak derivation requires new_material_findings > 0, not merely status == failed; test passes."
-  - id: TDD-018/convergence-limit
-    red: "test_convergence_limit_blocks_without_declared_failed_state and test_convergence_limit_blocks_further_resolution_verification_without_decision written before the convergence block existed; failed (no findings produced)."
-    green: "Historical streak scan + decision-record requirement implemented; both pass. test_convergence_limit_allows_new_initial_review_after_decision initially failed for a real defect (see verification.md #1: resettable trailing-only counter); fixed; RED->GREEN re-confirmed after the fix."
+    title: Recurring unresolved finding (class A) does not increment convergence
+    requirements: [FR-011]
+    red: {observed: true, failure_reason: "naive design considered before implementation; verified directly against the explicit taxonomy instead of committing an incorrect version"}
+    green: {observed: true, evidence: "test_recurring_unresolved_finding_does_not_increment_convergence"}
+  - id: TDD-016
+    title: Out-of-scope material mutation forces escalation, never a silent pass
+    requirements: [FR-005, FR-006]
+    red: {observed: true, failure_reason: "no containment/escalation check existed"}
+    green: {observed: true, evidence: "test_out_of_scope_mutation_cannot_be_silently_passed and test_out_of_scope_mutation_with_full_review_required_validates (first half)"}
+  - id: TDD-017
+    title: Full Review Escalation blocks the immediately following Iteration on first occurrence
+    requirements: [FR-010]
+    red: {observed: true, failure_reason: "second half of test_out_of_scope_mutation_with_full_review_required_validates initially passed for the wrong reason: `assert not result2.passed` received True because the check only existed inside the (unrelated) Convergence Limit path"}
+    green: {observed: true, evidence: "independent full_review_required check added; same test's second assertion now correctly fails the illegitimate manifest"}
+  - id: TDD-018
+    title: Convergence Limit, historical decision requirement, and residual-risk policy gate
+    requirements: [FR-011, FR-012, FR-013, FR-014, FR-015]
+    red: {observed: true, failure_reason: "test_convergence_limit_allows_new_initial_review_after_decision initially passed with zero findings produced, because the derived counter was trailing-only and reset before the decision-required check could fire"}
+    green: {observed: true, evidence: "historical full-array streak scan added (independent of the current trailing value); test_convergence_limit_blocks_without_declared_failed_state, test_convergence_limit_blocks_further_resolution_verification_without_decision, test_convergence_limit_allows_new_initial_review_after_decision, test_accept_residual_risk_requires_project_policy_permission, test_accept_residual_risk_permitted_by_project_policy all pass"}
   - id: TDD-020
-    red: "Adversarial matrix tests (first-iteration rejection, implementation-role subject rejection, missing scope rejection, declared-counter disagreement rejection, accept_residual_risk policy gate both directions) written before the corresponding checks existed; each failed for the specific missing check."
-    green: "Corresponding checks added incrementally; each test passes; full suite green (242 passed)."
-tdd_review_notes: >-
-  Every RED above was observed by running pytest against the not-yet-modified
-  validator, not asserted from memory; each failure was a genuine missing-
-  behavior failure (AttributeError/assertion-on-empty-findings), not a
-  fixture/environment failure. Two of the REDs (TDD-016b, the convergence
-  counter defect) were discovered by a test that initially passed for the
-  wrong reason and had to be corrected to actually exercise the intended
-  causal path — recorded transparently in verification.md rather than
-  presented as if the implementation were correct on the first attempt.
+    title: Provenance/shape adversarial matrix
+    requirements: [FR-002, FR-003, FR-013]
+    red: {observed: true, failure_reason: "first-iteration, implementation-role-subject, missing-scope, and counter-disagreement checks did not exist"}
+    green: {observed: true, evidence: "test_resolution_verification_rejected_as_first_iteration, test_resolution_verification_rejects_implementation_subject, test_resolution_verification_requires_scope_and_targets, test_declared_convergence_counter_disagreement_is_rejected"}
+notes:
+  - "Every RED above was observed by running pytest against the not-yet-modified validator; each failure was a genuine missing-behavior failure, not a fixture/environment failure."
+  - "TDD-017 and TDD-018 were discovered because a test initially passed for the wrong reason (no finding produced) rather than failing outright; both are recorded transparently here and in verification.md rather than presented as first-attempt-correct."

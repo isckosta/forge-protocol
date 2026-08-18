@@ -21,7 +21,7 @@ artifacts:
   documentation: pending
   knowledge_capture: complete
 requirements: {total: 16, implemented: 16, verified: 16}
-tdd: {status: compliant, cycles: 8}
+tdd: {status: compliant, cycles: 7}
 verification: {status: passed}
 review:
   status: pending

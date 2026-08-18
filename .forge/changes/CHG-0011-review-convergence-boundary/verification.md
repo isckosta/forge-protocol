@@ -8,8 +8,9 @@ status: complete
 # Verification — CHG-0011
 
 ## Test evidence
-`tests/unit/test_resolution_verification.py` (14 tests, TDD-012, TDD-013,
-TDD-014, TDD-016, and a subset of TDD-020) plus the full existing suite:
+`tests/unit/test_resolution_verification.py` (14 tests, TDD-012 through
+TDD-014, TDD-016 through TDD-018, and a subset of TDD-020 — see
+`tdd-evidence.yml`) plus the full existing suite:
 
 ```
 pytest -q          -> 242 passed (228 pre-existing + 14 new; zero regressions)
