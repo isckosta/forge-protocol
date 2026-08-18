@@ -1,0 +1,731 @@
+schema: forge/tdd-evidence@1
+change: CHG-0010
+status: active
+cycle_count: 51
+cycles:
+  - id: TDD-001A
+    title: Registry stable ordering
+    requirements: [FR-002, NFR-003]
+    behavior: list returns the registered Harness Drivers in ascending Adapter id order
+    red:
+      valid: true
+      command: .venv/bin/python -m pytest tests/unit/test_adapter_registry.py::test_registry_orders_drivers_by_adapter_id -v
+      result: 1 failed
+      reason: The temporary unsorted registry returned ['zeta', 'alpha'] rather than ['alpha', 'zeta'] after successful collection.
+    green:
+      command: .venv/bin/python -m pytest tests/unit/test_adapter_registry.py::test_registry_orders_drivers_by_adapter_id -v
+      result: 1 passed
+  - id: TDD-001B
+    title: Registry unknown Adapter error
+    requirements: [FR-002]
+    behavior: exact-id lookup rejects a missing Adapter with the stable domain error code
+    red:
+      valid: true
+      command: .venv/bin/python -m pytest tests/unit/test_adapter_registry.py::test_registry_rejects_unknown_adapter_with_stable_code -v
+      result: 1 failed
+      reason: The temporary lookup returned None for a missing Adapter, so the expected UnknownAdapterError was not raised after successful collection.
+    green:
+      command: .venv/bin/python -m pytest tests/unit/test_adapter_registry.py::test_registry_rejects_unknown_adapter_with_stable_code -v
+      result: 1 passed
+  - id: TDD-001C
+    title: Registry duplicate Adapter rejection
+    requirements: [FR-002]
+    behavior: construction rejects duplicate Adapter ids
+    red:
+      valid: true
+      command: .venv/bin/python -m pytest tests/unit/test_adapter_registry.py::test_registry_rejects_duplicate_adapter_ids -v
+      result: 1 failed
+      reason: The temporary constructor overwrote the first duplicate and did not raise DuplicateAdapterError after successful collection.
+    green:
+      command: .venv/bin/python -m pytest tests/unit/test_adapter_registry.py::test_registry_rejects_duplicate_adapter_ids -v
+      result: 1 passed
+  - id: TDD-001D
+    title: Static packaged Codex composition
+    requirements: [FR-003, INV-005]
+    behavior: the packaged registry exposes Codex without a network call
+    red:
+      valid: true
+      command: .venv/bin/python -m pytest tests/unit/test_adapter_registry.py::test_packaged_registry_contains_codex_without_network -v
+      result: 1 failed
+      reason: The temporary empty packaged registry raised UnknownAdapterError for codex after successful collection; socket.create_connection remained guarded by the test.
+    green:
+      command: .venv/bin/python -m pytest tests/unit/test_adapter_registry.py::test_packaged_registry_contains_codex_without_network -v
+      result: 1 passed
+  - id: TDD-001E
+    title: Codex driver packaged manifest scaffold
+    requirements: [FR-003, INV-005]
+    behavior: CodexDriver exposes the packaged Codex identity to the generic registry
+    red:
+      valid: true
+      command: .venv/bin/python -m pytest tests/unit/test_adapter_registry.py::test_codex_driver_exposes_packaged_manifest -v
+      result: 1 failed
+      reason: The temporary placeholder manifest returned adapter_id missing instead of codex after successful collection.
+    green:
+      command: .venv/bin/python -m pytest tests/unit/test_adapter_registry.py::test_codex_driver_exposes_packaged_manifest -v
+      result: 1 passed
+  - id: TDD-001F
+    title: Codex driver no-target scaffold
+    requirements: [FR-003]
+    behavior: CodexDriver has no default target before T-002 target evidence
+    red:
+      valid: true
+      command: .venv/bin/python -m pytest tests/unit/test_adapter_registry.py::test_codex_driver_has_no_default_target_before_target_evidence -v
+      result: 1 failed
+      reason: The temporary driver returned .agents/skills/forge instead of None after successful collection.
+    green:
+      command: .venv/bin/python -m pytest tests/unit/test_adapter_registry.py::test_codex_driver_has_no_default_target_before_target_evidence -v
+      result: 1 passed
+  - id: TDD-001G
+    title: Codex driver projection scaffold
+    requirements: [FR-003]
+    behavior: CodexDriver deliberately rejects projection before T-003 implements it
+    red:
+      valid: true
+      command: .venv/bin/python -m pytest tests/unit/test_adapter_registry.py::test_codex_driver_project_is_explicitly_unimplemented -v
+      result: 1 failed
+      reason: The temporary project method returned None, so the expected NotImplementedError was not raised after successful collection.
+    green:
+      command: .venv/bin/python -m pytest tests/unit/test_adapter_registry.py::test_codex_driver_project_is_explicitly_unimplemented -v
+      result: 1 passed
+  - id: TDD-002
+    title: Schema-backed Adapter configuration and Codex target evidence
+    requirements: [FR-005, FR-006, FR-007, FR-023, INV-005, AC-009, AC-011]
+    behavior: Adapter configuration validates safe user-owned targets and resolves Codex publication targets by explicit option, configuration, then packaged repository evidence
+    red:
+      valid: true
+      command: .venv/bin/python -m pytest tests/unit/test_adapter_configuration.py tests/unit/test_codex_publication_targets.py -v
+      result: 13 failed, 5 passed
+      reason: After successful collection, the importable configuration scaffold returned no target or validation failure; Codex target resolution rejected the configuration argument and the driver returned None instead of packaged evidence.
+    green:
+      command: .venv/bin/python -m pytest tests/unit/test_adapter_configuration.py tests/unit/test_codex_publication_targets.py tests/contract/test_protocol_contract.py -v
+      result: 43 passed
+  - id: TDD-002B
+    title: Configuration schema normalized target shapes
+    requirements: [FR-005, FR-007, AC-011]
+    behavior: the configuration schema independently rejects paths that are repository-normalizable but not normalized publication targets
+    red:
+      valid: true
+      command: .venv/bin/python -m pytest tests/contract/test_protocol_contract.py::test_adapter_configuration_schema_rejects_unsafe_target_shapes -v
+      result: 3 failed, 5 passed
+      reason: The initial schema accepted '.', './target', and 'target//child' even though the runtime configuration boundary rejected those unsafe normalized shapes.
+    green:
+      command: .venv/bin/python -m pytest tests/contract/test_protocol_contract.py::test_adapter_configuration_schema_rejects_unsafe_target_shapes -v
+      result: 8 passed
+  - id: TDD-002C
+    title: Project-root-confined configuration API and tilde target safety
+    requirements: [FR-005, FR-007, FR-023, AC-011]
+    behavior: configuration writes derive the sole Adapter path from the project root, reject arbitrary project files and unsafe Adapter ids, and reject tilde targets in configuration and Codex resolution
+    red:
+      valid: true
+      command: .venv/bin/python -m pytest tests/unit/test_adapter_configuration.py::test_write_derives_the_only_configuration_path_from_the_project_root tests/unit/test_adapter_configuration.py::test_write_does_not_treat_a_project_file_as_an_arbitrary_configuration_destination tests/unit/test_adapter_configuration.py::test_unsafe_adapter_id_is_rejected tests/unit/test_adapter_configuration.py::test_invalid_or_forbidden_target_is_rejected tests/unit/test_codex_publication_targets.py::test_unsafe_target_shape_is_rejected_before_generic_planning -v
+      result: 9 failed, 7 passed
+      reason: The direct-path API treated a repository directory as a destination, overwrote `.forge/forge.yml`, accepted unsafe Adapter ids and `~/forge` configuration targets, and Codex target resolution accepted `~/forge`.
+    green:
+      command: .venv/bin/python -m pytest tests/unit/test_adapter_configuration.py tests/unit/test_codex_publication_targets.py tests/contract/test_protocol_contract.py -v
+      result: 63 passed
+  - id: TDD-002D
+    title: Ancestor symlink confinement
+    requirements: [FR-005, FR-007, AC-011]
+    behavior: configuration writing rejects a symlink in an existing ancestor and leaves the outside referent untouched
+    red:
+      valid: true
+      command: .venv/bin/python -m pytest tests/unit/test_adapter_configuration.py::test_write_rejects_an_ancestor_symlink_without_escaping_the_project_root -v
+      result: 1 failed
+      reason: The prior direct-path writer followed `.forge` into the outside directory and created the configuration without raising.
+    green:
+      command: .venv/bin/python -m pytest tests/unit/test_adapter_configuration.py tests/unit/test_codex_publication_targets.py tests/contract/test_protocol_contract.py -v
+      result: 63 passed
+  - id: TDD-002E
+    title: Schema rejects tilde target
+    requirements: [FR-005, FR-007, AC-011]
+    behavior: the configuration schema rejects a tilde-prefixed target before runtime configuration construction
+    red:
+      valid: true
+      command: .venv/bin/python -m pytest tests/contract/test_protocol_contract.py::test_adapter_configuration_schema_rejects_unsafe_target_shapes -v
+      result: 1 failed, 8 passed
+      reason: The initial JSON Schema accepted `~/forge`, although it is outside the repository-relative target grammar.
+    green:
+      command: .venv/bin/python -m pytest tests/contract/test_protocol_contract.py::test_adapter_configuration_schema_rejects_unsafe_target_shapes -v
+      result: 9 passed
+  - id: TDD-002F
+    title: Descriptor-anchored configuration replacement
+    requirements: [FR-005, FR-007, AC-011]
+    behavior: configuration publication stays anchored to the Adapter directory opened beneath the project root when a concurrent directory-name swap introduces a symlink, and cleans its temporary file if replacement fails
+    red:
+      valid: true
+      command: .venv/bin/python -m pytest tests/unit/test_adapter_configuration.py::test_write_stays_anchored_when_the_adapter_directory_is_swapped_before_replace -v
+      result: 1 failed
+      reason: The Path-based replacement followed the injected replacement symlink and created `outside/config.yml`.
+    green:
+      command: .venv/bin/python -m pytest tests/unit/test_adapter_configuration.py::test_write_stays_anchored_when_the_adapter_directory_is_swapped_before_replace tests/unit/test_adapter_configuration.py::test_write_cleans_its_anchored_temporary_file_when_replace_fails -v
+      result: 2 passed
+  - id: TDD-002G
+    title: Descriptor primitive fail-closed boundary
+    requirements: [FR-005, FR-007, FR-023, AC-011]
+    behavior: an unavailable descriptor-relative replacement remains an invalid configuration failure and leaves no temporary file
+    red:
+      valid: true
+      command: .venv/bin/python -m pytest tests/unit/test_adapter_configuration.py::test_write_fails_closed_when_descriptor_relative_replace_is_unavailable -v
+      result: 1 failed
+      reason: An injected unsupported `dir_fd` replacement raised TypeError through the public writer instead of the stable InvalidAdapterConfigurationError boundary.
+    green:
+      command: .venv/bin/python -m pytest tests/unit/test_adapter_configuration.py::test_write_fails_closed_when_descriptor_relative_replace_is_unavailable -v
+      result: 1 passed
+    notes:
+      - Fix round 3 adds the independent TDD-002H raced-cleanup proof; it does not combine the primitive-availability behavior with cleanup behavior.
+  - id: TDD-002H
+    title: Descriptor-anchored raced temporary cleanup
+    requirements: [FR-005, FR-007, AC-011]
+    behavior: a replacement failure after the Adapter directory is swapped to a symlink preserves an external same-name temporary sentinel, removes only the internal temporary through the original directory descriptor, and leaves external configuration plus Forge files untouched
+    red:
+      valid: true
+      command: .venv/bin/python -m pytest tests/unit/test_adapter_configuration.py::test_raced_replace_failure_preserves_an_external_same_name_temp_and_cleans_internal_temp -v
+      result: 1 failed
+      reason: With the descriptor-relative cleanup temporarily removed, the cleanup resolved the injected same-name temporary in the external working directory and deleted the external sentinel.
+    green:
+      command: .venv/bin/python -m pytest tests/unit/test_adapter_configuration.py::test_raced_replace_failure_preserves_an_external_same_name_temp_and_cleans_internal_temp -v
+      result: 1 passed
+  - id: TDD-003
+    title: Valid deterministic Codex repository skill
+    requirements: [FR-008, FR-009, FR-010, FR-022, NFR-001, NFR-003, INV-001, INV-005, AC-010]
+    behavior: CodexDriver renders a stable repository-local Forge skill with only effective references, preserves authority, and exposes skill-only TDD and review behavior as generic limitations
+    red:
+      valid: true
+      command: .venv/bin/python -m pytest tests/unit/test_codex_skill_projection.py -v
+      result: 4 failed
+      reason: The importable empty projection returned no skill artifacts or generic limitations, so layout, reference, and limitation assertions failed after successful collection.
+    green:
+      command: .venv/bin/python -m pytest tests/unit/test_codex_skill_projection.py tests/unit/test_codex_projection_bundle.py tests/unit/test_codex_projection_gates.py tests/unit/test_codex_distribution_resources.py -v
+      result: 17 passed
+  - id: TDD-003A
+    title: Codex semantic gate rendering and truthful TDD representation
+    requirements: [FR-009, FR-022, AC-010]
+    behavior: Codex renders human-readable configured RED and completion gates, omits absent blocking-review obligations, and represents TDD only when both RED checks are present
+    red:
+      valid: true
+      command: .venv/bin/python -m pytest tests/unit/test_codex_skill_projection.py tests/unit/test_codex_projection_gates.py -v
+      result: 4 failed, 6 passed
+      reason: The renderer exposed only YAML identifiers instead of gate instructions, and the driver treated a TDD stage without both RED checks as a preserved TDD invariant.
+    green:
+      command: .venv/bin/python -m pytest tests/unit/test_codex_skill_projection.py tests/unit/test_codex_projection_bundle.py tests/unit/test_codex_projection_gates.py tests/unit/test_codex_distribution_resources.py -v
+      result: 17 passed
+  - id: TDD-003B
+    title: Codex Flow-scoped gate rendering
+    requirements: [FR-009, FR-022, AC-010]
+    behavior: Codex keeps every rendered gate obligation attributable to one effective Flow and never composes checks or completion requirements from different Flows
+    red:
+      valid: true
+      command: .venv/bin/python -m pytest tests/unit/test_codex_projection_gates.py -v
+      result: 1 failed, 6 passed
+      reason: The renderer ORed checks and completion requirements over all Flows, producing unscoped composite RED and completion instructions for split Flow inputs.
+    green:
+      command: .venv/bin/python -m pytest tests/unit/test_codex_skill_projection.py tests/unit/test_codex_projection_bundle.py tests/unit/test_codex_projection_gates.py tests/unit/test_codex_distribution_resources.py -v
+      result: 18 passed
+  - id: TDD-004A
+    title: Recorded equal desired artifact is unchanged
+    requirements: [FR-014, FR-015, FR-017, INV-002, AC-005]
+    behavior: a Forge-owned artifact becomes unchanged only after the observed digest proves recorded ownership and equals the desired digest
+    red:
+      valid: true
+      command: .venv/bin/python -m pytest tests/unit/test_adapter_ownership.py::test_recorded_equal_desired_file_is_unchanged -v
+      result: 1 failed
+      reason: The classifier rejected the desired_digest contract, so the recorded idempotent state could not be distinguished from update after successful collection.
+    green:
+      command: .venv/bin/python -m pytest tests/unit/test_adapter_ownership.py::test_recorded_equal_desired_file_is_unchanged -v
+      result: 1 passed
+  - id: TDD-004B
+    title: Obsolete generated artifact transition
+    requirements: [FR-018, INV-004, AC-006, AC-007]
+    behavior: an intact prior generated artifact becomes delete_generated, while a digest-diverged obsolete artifact is a conflict
+    red:
+      valid: true
+      command: .venv/bin/python -m pytest tests/unit/test_adapter_planner.py::test_obsolete_intact_generated_file_is_deleted_but_drifted_one_conflicts -v
+      result: 1 failed
+      reason: The planner rejected previous_generated state, so it could not derive a guarded obsolete-artifact transition after successful collection.
+    green:
+      command: .venv/bin/python -m pytest tests/unit/test_adapter_planner.py::test_obsolete_intact_generated_file_is_deleted_but_drifted_one_conflicts -v
+      result: 1 passed
+  - id: TDD-004C
+    title: Unchanged publisher and record completeness
+    requirements: [FR-015, FR-019, AC-005]
+    behavior: publication accepts and skips an unchanged Forge-owned artifact only when the next record retains its desired digest
+    red:
+      valid: true
+      command: .venv/bin/python -m pytest tests/integration/test_adapter_publisher.py::test_unchanged_forge_owned_content_is_skipped_and_remains_in_the_record -v
+      result: 1 failed
+      reason: The preflight publisher rejected a valid unchanged operation as unsupported after successful collection.
+    green:
+      command: .venv/bin/python -m pytest tests/integration/test_adapter_publisher.py::test_unchanged_forge_owned_content_is_skipped_and_remains_in_the_record -v
+      result: 1 passed
+  - id: TDD-004D
+    title: Mixed publication rollback after deletion
+    requirements: [FR-018, FR-019, NFR-002, INV-004, AC-008]
+    behavior: an injected record-write failure after create, update, and delete restores every target and the prior installation record byte-for-byte
+    red:
+      valid: true
+      command: .venv/bin/python -m pytest tests/integration/test_adapter_publisher.py::test_failure_after_create_update_and_delete_restores_every_file_and_installation_record -v
+      result: 1 failed
+      reason: With delete publication disabled, the failure was raised before all operations reached the injected record-write boundary, as proved by the false attempted-write assertion.
+    green:
+      command: .venv/bin/python -m pytest tests/integration/test_adapter_publisher.py::test_failure_after_create_update_and_delete_restores_every_file_and_installation_record -v
+      result: 1 passed
+  - id: TDD-004E
+    title: Generated cleanup preserves canonical Forge state
+    requirements: [FR-010, FR-018, NFR-001, AC-012]
+    behavior: publisher deletion of a generated skill in its own tree leaves the separate canonical Forge project, Flow, Contract, and Change bytes intact
+    red:
+      valid: true
+      command: .venv/bin/python -m pytest tests/integration/test_adapter_publisher.py::test_deleting_generated_tree_leaves_separate_canonical_forge_tree_byte_identical -v
+      result: 1 failed
+      reason: With delete publication disabled, the production publisher rejected the planned generated-tree cleanup after successful collection.
+    green:
+      command: .venv/bin/python -m pytest tests/integration/test_adapter_publisher.py::test_deleting_generated_tree_leaves_separate_canonical_forge_tree_byte_identical -v
+      result: 1 passed
+  - id: TDD-004F
+    title: True no-op preserves installation record bytes
+    requirements: [FR-015, FR-019, AC-005]
+    behavior: when every operation is unchanged and the existing record equals the next record, publication leaves both generated content and installation state untouched
+    red:
+      valid: true
+      command: .venv/bin/python -m pytest tests/integration/test_adapter_publisher.py::test_all_unchanged_operations_preserve_the_existing_installation_record -v
+      result: 1 failed
+      reason: The publisher attempted the injected failing record rewrite despite an all-unchanged plan and identical pre-existing record.
+    green:
+      command: .venv/bin/python -m pytest tests/integration/test_adapter_publisher.py::test_all_unchanged_operations_preserve_the_existing_installation_record -v
+      result: 1 passed
+  - id: TDD-004G
+    title: Equal bytes do not establish Forge ownership
+    requirements: [FR-014, INV-002, AC-004]
+    behavior: an unrecorded Forge-owned path conflicts even if its observed bytes equal the desired projection
+    red:
+      valid: true
+      command: .venv/bin/python -m pytest tests/unit/test_adapter_ownership.py::test_unrecorded_equal_desired_file_conflicts_without_silent_adoption -v
+      result: 1 failed
+      reason: The deliberate unsafe mutation treated equal desired bytes without a recorded digest as unchanged, causing the conflict assertion to fail.
+    green:
+      command: .venv/bin/python -m pytest tests/unit/test_adapter_ownership.py::test_unrecorded_equal_desired_file_conflicts_without_silent_adoption -v
+      result: 1 passed
+  - id: TDD-004H
+    title: Obsolete deletion requires recorded ownership state
+    requirements: [FR-014, FR-018, INV-002, INV-004, AC-006, AC-007]
+    behavior: an obsolete artifact with bytes equal to the prior generated digest conflicts unless its expected recorded digest is the same and its current bytes equal that expected digest
+    red:
+      valid: true
+      command: .venv/bin/python -m pytest tests/unit/test_adapter_planner.py::test_obsolete_equal_bytes_without_matching_recorded_state_conflict -v
+      result: 2 failed
+      reason: The obsolete planner path emitted delete_generated for both absent and mismatched expected state whenever current bytes equaled the previous generated digest.
+    green:
+      command: .venv/bin/python -m pytest tests/unit/test_adapter_planner.py::test_obsolete_equal_bytes_without_matching_recorded_state_conflict tests/unit/test_adapter_planner.py::test_obsolete_intact_generated_file_is_deleted_but_drifted_one_conflicts -v
+      result: 3 passed
+  - id: TDD-004I
+    title: Incomplete publication rollback boundary
+    requirements: [FR-018, NFR-002, INV-004, AC-008]
+    behavior: restore failures report every affected target through AdapterPublicationRollbackError and chain the original generic or conflict publication failure
+    red:
+      valid: true
+      command: .venv/bin/python -m pytest tests/integration/test_adapter_publisher.py::test_incomplete_rollback_reports_generic_publication_failure_and_target tests/integration/test_adapter_publisher.py::test_incomplete_rollback_preserves_late_conflict_as_the_public_cause -v
+      result: 2 failed
+      reason: The generic path falsely reported complete rollback after suppressing restore failure, while the conflict path leaked the restore OSError and lost the original conflict.
+    green:
+      command: .venv/bin/python -m pytest tests/integration/test_adapter_publisher.py::test_incomplete_rollback_reports_generic_publication_failure_and_target tests/integration/test_adapter_publisher.py::test_incomplete_rollback_preserves_late_conflict_as_the_public_cause -v
+      result: 2 passed
+  - id: TDD-005A
+    title: Generic Adapter service state machine
+    requirements: [FR-004, FR-006, FR-008, FR-012, FR-013, FR-015, FR-016, FR-017, INV-001, INV-003, INV-004, AC-005, AC-007, AC-009, AC-011]
+    behavior: generic planning reads a valid initialized project without mutation, resolves explicit/configuration/evidence targets, and install/update preserve the safe record and drift state machine
+    red:
+      valid: true
+      command: .venv/bin/python -m pytest tests/integration/test_adapter_service.py -v
+      result: 9 failed
+      reason: Importable service scaffolding raised AdapterServiceError for every operation after the integration module collected successfully.
+    green:
+      command: .venv/bin/python -m pytest tests/integration/test_adapter_service.py -v
+      result: 9 passed
+  - id: TDD-005B
+    title: Unsafe recorded path is invalid installation state
+    requirements: [FR-017, FR-018, INV-004, AC-011]
+    behavior: update rejects a same-identity record with a traversal generated path as typed invalid installation state without changing project bytes
+    red:
+      valid: true
+      command: .venv/bin/python -m pytest tests/integration/test_adapter_service.py::test_update_rejects_an_unsafe_recorded_path_as_invalid_state_without_mutation -v
+      result: 1 failed
+      reason: The snapshot raised InvalidAdapterRepositoryPathError directly instead of the service invalid-installation domain error.
+    green:
+      command: .venv/bin/python -m pytest tests/integration/test_adapter_service.py::test_update_rejects_an_unsafe_recorded_path_as_invalid_state_without_mutation -v
+      result: 1 passed
+  - id: TDD-005C
+    title: Update refreshes an older installation record
+    requirements: [FR-016, FR-019, AC-006]
+    behavior: update writes the current complete record when an older valid installation has unchanged generated artifacts
+    red:
+      valid: true
+      command: .venv/bin/python -m pytest tests/integration/test_adapter_service.py::test_update_refreshes_an_older_record_even_when_all_artifacts_are_unchanged -v
+      result: 1 failed
+      reason: The update state machine treated all unchanged operations as a no-op and left adapter version 0.0.9 in the installation record.
+    green:
+      command: .venv/bin/python -m pytest tests/integration/test_adapter_service.py::test_update_refreshes_an_older_record_even_when_all_artifacts_are_unchanged -v
+      result: 1 passed
+  - id: TDD-005D
+    title: Duplicate generated paths are invalid installation state
+    requirements: [FR-017, FR-019, INV-004, AC-011]
+    behavior: update refuses a same-identity record with duplicate generated artifact paths before planning or mutation
+    red:
+      valid: true
+      command: .venv/bin/python -m pytest tests/integration/test_adapter_service.py::test_update_rejects_duplicate_recorded_paths_without_mutation -v
+      result: 1 failed
+      reason: Generic planning raised ValueError for duplicate previous generated state instead of exposing typed invalid installation state.
+    green:
+      command: .venv/bin/python -m pytest tests/integration/test_adapter_service.py::test_update_rejects_duplicate_recorded_paths_without_mutation -v
+      result: 1 passed
+  - id: TDD-005E
+    title: Empty projection installation state machine
+    requirements: [FR-013, FR-015, FR-016, FR-019, AC-005]
+    behavior: a recordless empty projection first installs its empty record, then same-version reinstall and update are true read-only no-ops
+    red:
+      valid: true
+      command: .venv/bin/python -m pytest tests/integration/test_adapter_service.py::test_empty_projection_first_install_publishes_an_empty_record tests/integration/test_adapter_service.py::test_empty_projection_reinstall_is_a_true_noop tests/integration/test_adapter_service.py::test_empty_projection_current_version_update_is_a_true_noop -v
+      result: 1 passed, 2 failed
+      reason: The recordless install correctly wrote the empty record, but the false non-empty guard made reinstall raise AdapterAlreadyInstalledError and made same-version update rewrite the record with mutated=True.
+    green:
+      command: .venv/bin/python -m pytest tests/integration/test_adapter_service.py::test_empty_projection_first_install_publishes_an_empty_record tests/integration/test_adapter_service.py::test_empty_projection_reinstall_is_a_true_noop tests/integration/test_adapter_service.py::test_empty_projection_current_version_update_is_a_true_noop -v
+      result: 3 passed
+  - id: TDD-006
+    title: Read-only Adapter validation and diagnostics
+    requirements: [FR-020, FR-021, FR-022, FR-023, NFR-001, NFR-004, INV-003, AC-007, AC-010, AC-011]
+    behavior: immutable Adapter diagnostics use stable ordered checks and findings, report missing, changed, and unsafe generated state with safe remediation, preserve generic representation limits as warnings, and never mutate project files
+    red:
+      valid: true
+      command: .venv/bin/python -m pytest tests/unit/test_adapter_diagnostics.py tests/integration/test_adapter_service.py -v
+      result: 5 failed, 16 passed
+      reason: Importable empty diagnostic scaffolding returned no checks or findings, and AdapterService did not yet expose validate or doctor methods after successful collection.
+    intermediate_green:
+      command: .venv/bin/python -m pytest tests/unit/test_adapter_diagnostics.py -v
+      result: 2 passed
+    green:
+      command: .venv/bin/python -m pytest tests/unit/test_adapter_diagnostics.py tests/integration/test_adapter_service.py -v
+      result: 24 passed
+    notes:
+      - A second focused RED run proved missing generated artifacts and a generic conformance violation failed through the new service methods before their implementation.
+      - A separate focused RED/GREEN cycle changed unsafe recorded generated paths from an ambiguous safe-read failure to an explicit unsafe-path diagnostic; its focused test passed after the change.
+  - id: TDD-006A
+    title: Unsupported project Protocol cannot false-pass Adapter diagnostics
+    requirements: [FR-020, FR-021, FR-023, NFR-001, INV-003, AC-011]
+    behavior: an unsupported integer project Protocol fails configuration and makes compatibility unavailable even when a fixture Adapter numeric interval would otherwise include that value; validation fails and diagnostics do not change project bytes or mtimes
+    red:
+      valid: true
+      command: .venv/bin/python -m pytest tests/integration/test_adapter_service.py::test_doctor_rejects_unsupported_project_protocol_even_when_driver_range_includes_it -v
+      result: 1 failed
+      reason: UnsupportedProtocolVersionError assigned its integer value to project_protocol, leaving configuration passed and compatibility eligible to pass against the Adapter range.
+    green:
+      command: .venv/bin/python -m pytest tests/integration/test_adapter_service.py::test_doctor_rejects_unsupported_project_protocol_even_when_driver_range_includes_it -v
+      result: 1 passed
+  - id: TDD-007
+    title: Public Adapter management CLI
+    requirements: [FR-001, FR-002, FR-003, FR-004, FR-005, FR-006, FR-007, FR-011, FR-012, FR-013, FR-014, FR-015, FR-016, FR-020, FR-021, FR-022, FR-023, NFR-004, INV-003, AC-001, AC-002, AC-003, AC-004, AC-005, AC-009, AC-010, AC-011]
+    behavior: the public adapter subgroup exposes only infrastructure commands, resolves repository state through the Git boundary, renders deterministic plans and diagnostics, preserves dry-run/read-only behavior, and maps expected Adapter and environment failures to stable output and exit codes
+    red:
+      valid: true
+      command: .venv/bin/python -m pytest tests/cli/test_adapter_commands.py tests/cli/test_cli_contract.py -v
+      result: 7 failed, 5 passed
+      reason: The CLI test module collected successfully, but the public adapter command group was absent from the Typer application.
+    green:
+      command: .venv/bin/python -m pytest tests/cli/test_adapter_commands.py tests/cli -v
+      result: 11 passed; 22 passed
+    notes:
+      - A focused RED/GREEN conflict cycle proved a planned Typer exit must bypass the generic exception mapper; otherwise it surfaced as E_FORGE_INTERNAL_ERROR with exit 70.
+      - A separate RED/GREEN cycle confirmed adapter list treats an unsupported project Protocol as unknown compatibility rather than crashing.
+      - The CLI tests exercise configuration target persistence, packaged discovery state, plan/install dry-run parity, safe collision failure, idempotent no-op timestamps, validation/doctor output, update precondition, unknown Adapter, and Git environment exit behavior.
+  - id: TDD-007A
+    title: Adapter command preparation error boundary
+    requirements: [FR-023]
+    behavior: unexpected failures in command preparation and packaged registry construction produce only the stable internal error output and exit 70, while Typer exits remain unmodified
+    red:
+      valid: true
+      command: .venv/bin/python -m pytest tests/cli/test_adapter_commands.py::test_adapter_command_maps_unexpected_project_preparation_failure_to_internal_error tests/cli/test_adapter_commands.py::test_adapter_list_maps_unexpected_registry_preparation_failure_to_internal_error -v
+      result: 2 failed
+      reason: validate_project and build_packaged_registry ran before any command error boundary, so their RuntimeError escaped through Typer with exit 1.
+    green:
+      command: .venv/bin/python -m pytest tests/cli/test_adapter_commands.py::test_adapter_command_maps_unexpected_project_preparation_failure_to_internal_error tests/cli/test_adapter_commands.py::test_adapter_list_maps_unexpected_registry_preparation_failure_to_internal_error -v
+      result: 2 passed
+  - id: TDD-007B
+    title: Adapter list installation identity validation
+    requirements: [FR-002, FR-023]
+    behavior: list reports a schema-valid installation record with a mismatched Adapter id or Harness as invalid without modifying repository bytes
+    red:
+      valid: true
+      command: .venv/bin/python -m pytest tests/cli/test_adapter_commands.py::test_adapter_list_reports_mismatched_installation_identity_as_invalid -v
+      result: 2 failed
+      reason: list classified every schema-valid record at the selected Adapter path as installed without checking the record identity against the packaged manifest.
+    green:
+      command: .venv/bin/python -m pytest tests/cli/test_adapter_commands.py::test_adapter_list_reports_mismatched_installation_identity_as_invalid -v
+      result: 2 passed
+  - id: TDD-008
+    title: Linked effective Forge references in the Codex skill
+    requirements: [FR-009, FR-010, NFR-001, INV-001, AC-010, AC-012]
+    behavior: generated SKILL.md deterministically links its effective Engineering Contract and every-and-only effective Flow reference so generated artifacts are reachable from the repository-local skill
+    red:
+      valid: true
+      command: .venv/bin/python -m pytest tests/unit/test_codex_skill_projection.py::test_codex_skill_links_only_the_effective_contract_and_flows_deterministically -v
+      result: 1 failed
+      reason: Strict review identified that SKILL.md contained only generic reference prose; the focused projection assertion collected successfully and failed because the required effective-reference links were absent. The original installed-wheel scenario had passed before this review finding.
+    green:
+      command: .venv/bin/python -m pytest tests/unit/test_codex_skill_projection.py::test_codex_skill_links_only_the_effective_contract_and_flows_deterministically -v
+      result: 1 passed
+  - id: TDD-009A
+    title: Publication-root-bound generated ownership
+    requirements: [FR-010, FR-017, FR-018, FR-019, FR-020, NFR-002, NFR-003, INV-001, INV-004, AC-006, AC-011, AC-012]
+    behavior: installation records cannot authorize planning or deletion of canonical Forge-owned generated state because every recorded generated path is bound to an explicit driver-validated publication root and its prior digest authorization is revalidated before mutation
+    origin: Task 9 Strict Review C-001
+    red:
+      valid: true
+      revision: c6777f5ca6064dd27d3d93e534b45f1fece948c6
+      command: .venv/bin/python -m pytest tests/integration/test_adapter_service.py::test_plan_rejects_recorded_canonical_forge_paths_without_planning_deletion tests/integration/test_adapter_service.py::test_update_rejects_recorded_canonical_forge_paths_without_mutation -v
+      result: 2 failed
+      reason: After successful collection, plan trusted hostile canonical paths as obsolete generated state and update deleted four canonical .forge files before replacing the installation record.
+    green:
+      command: .venv/bin/python -m pytest tests/integration/test_adapter_service.py::test_plan_rejects_recorded_canonical_forge_paths_without_planning_deletion tests/integration/test_adapter_service.py::test_update_rejects_recorded_canonical_forge_paths_without_mutation -v
+      result: 2 passed
+    notes:
+      - New installation records use forge/adapter-installation@2 and persist publication.root; legacy @1 records remain parseable but cannot authorize planning or publication.
+      - Focused state, ownership, target, service, publisher, and contract regression command passed 111 tests, including explicit v2 canonical recorded-path rejection and Forge-owned publisher-boundary defense in depth.
+  - id: TDD-009B
+    title: All-operation publication-root confinement
+    requirements: [FR-010, FR-017, NFR-002, NFR-003, INV-001, INV-004, AC-006, AC-012]
+    behavior: publisher authorization rejects every operation path outside or equal to the next publication root, including SHARED and PRESERVE paths, before filesystem preflight; valid paths must be strict component-wise descendants
+    origin: Task 9 C-001 scoped re-review
+    red:
+      valid: true
+      revision: 8c3716fa8bf4a9efc65176a2c67ad721a8641db6
+      command: .venv/bin/python -m pytest tests/integration/test_adapter_publisher.py::test_publisher_rejects_shared_update_of_canonical_forge_state tests/integration/test_adapter_publisher.py::test_publication_root_itself_is_not_an_owned_artifact_or_publishable_target -v
+      result: 2 failed
+      reason: After successful collection, a planner-valid SHARED UPDATE overwrote canonical .forge/forge.yml and wrote a record, while artifact path bundle equal to publication.root was accepted by ownership validation and direct publication created both the root file and record.
+    green:
+      command: .venv/bin/python -m pytest tests/integration/test_adapter_publisher.py::test_publisher_rejects_shared_update_of_canonical_forge_state tests/integration/test_adapter_publisher.py::test_publication_root_itself_is_not_an_owned_artifact_or_publishable_target -v
+      result: 2 passed
+    notes:
+      - PRESERVE remains exempt from generated-record membership because it is non-mutating, but its path is still root-confined before publisher preflight resolves or inspects it.
+      - Focused publisher, ownership, service, state, and contract regression command passed 96 tests.
+  - id: TDD-009C
+    title: Mutation-time re-validated publication target
+    requirements: [FR-017, FR-018, NFR-002, NFR-003, INV-001, INV-004, AC-006, AC-012]
+    behavior: publisher re-resolves and re-validates each mutated target's safety immediately before writing instead of reusing the Path object computed once during preflight, so a directory component swapped for a symlink after preflight cannot redirect a create, update, or delete outside the publication root
+    origin: Task 9 Strict Review C-002 (publisher preflight-then-stale-resolve race)
+    red:
+      valid: true
+      command: .venv/bin/python -m pytest tests/integration/test_adapter_publisher.py::test_directory_symlink_swap_after_preflight_prevents_escaping_publication_root tests/integration/test_adapter_publisher.py::test_directory_symlink_swap_after_preflight_prevents_escaping_update_target -v
+      result: 2 failed
+      reason: After successful collection, both tests raised "DID NOT RAISE AdapterPublicationError" because publish_adapter_plan reused each operation's preflight-resolved Path unchanged in the mutation loop; a directory swapped for a symlink to an external directory between preflight and mutation was followed by the write, creating a file (or overwriting an identical-digest decoy) outside the publication root without any error.
+    green:
+      command: .venv/bin/python -m pytest tests/integration/test_adapter_publisher.py::test_directory_symlink_swap_after_preflight_prevents_escaping_publication_root tests/integration/test_adapter_publisher.py::test_directory_symlink_swap_after_preflight_prevents_escaping_update_target -v
+      result: 2 passed
+    notes:
+      - Fix removes the preflight-computed targets dict and instead calls _safe_target(root, operation.path) again immediately before each create, update, or delete write, so the same symlink-walk and root-confinement check preflight performs once is re-run at the last possible moment before every mutation.
+      - The UPDATE branch's existing immediate-before-write digest recheck was insufficient alone because an attacker-prepared decoy with the same expected digest at the swapped location passes the digest check while still redirecting the write outside root; only re-resolving via _safe_target catches the ancestor symlink itself.
+      - Focused publisher, state, service, and contract regression command passed 89 tests; full suite command `.venv/bin/python -m pytest` passed 276 tests; `git diff --check` clean.
+  - id: TDD-010
+    title: Protocol-aware Codex skill projection
+    requirements: [FR-009, FR-010, NFR-001, INV-001]
+    behavior: the installed Codex skill's SKILL.md carries the Protocol 2 Reviewer/Resolver independence instructions when the project declares Protocol 2, and carries none of that content under Protocol 1, because AdapterService now threads the project's declared protocol id from AdapterProjectionContext.project_protocol through resolve_effective_contract/resolve_effective_flow into generate_codex_skill_bundle instead of always resolving Protocol 1 canonical resources
+    origin: Reconciliation with main's independently merged CHG-0008 (Verifiable Review Independence / Protocol 2), which added protocol-id-conditional Reviewer/Resolver instructions to the Codex projection but never wired them past test-only call sites into any driver
+    red:
+      valid: true
+      command: .venv/bin/python -m pytest tests/integration/test_adapter_service.py::test_install_projects_protocol1_skill_without_reviewer_resolver_independence tests/integration/test_adapter_service.py::test_install_projects_protocol2_skill_with_reviewer_resolver_independence -v
+      result: 1 failed, 1 passed
+      reason: With driver.py and service.py temporarily reverted to omit protocol_id, the Protocol 2 test failed because the installed SKILL.md never contained "Reviewer/Resolver independence" or "subject_provenance"; resolve_effective_contract/resolve_effective_flow always resolved the Protocol 1 canonical resources regardless of the project's declared protocol.
+    green:
+      command: .venv/bin/python -m pytest tests/integration/test_adapter_service.py::test_install_projects_protocol1_skill_without_reviewer_resolver_independence tests/integration/test_adapter_service.py::test_install_projects_protocol2_skill_with_reviewer_resolver_independence -v
+      result: 2 passed
+    notes:
+      - "This was a real design reconciliation, not a mechanical merge fix, because both branches rewrote the Codex projection module from scratch after the fork point: main kept the two-resource forge-flow.md/forge-contract.md model and appended protocol_id-conditional instructions to it (unwired to any production driver), while this Change replaced it with a repository-local Skill/references bundle (TDD-008) that had no notion of protocol at all."
+      - _gate_instructions in projection.py now accepts protocol_id and appends the ported Reviewer/Resolver independence lines per applicable flow (fast/standard/full) instead of the retired single-document _instructions function.
+      - Full suite command `.venv/bin/python -m pytest` passed 344 tests; `git diff --check` clean.
+  - id: TDD-011
+    title: Mutation-time re-validated installation-record path
+    requirements: [FR-017, FR-018, NFR-002, NFR-003, INV-001, INV-004, AC-006, AC-012]
+    behavior: publish_adapter_plan re-resolves the installation-record path via _safe_target immediately before reading it for rollback baseline reuse, writing it, and restoring/removing it during rollback, instead of reusing the single Path resolved once at the top of the function before the entire preflight/validation/mutation sequence runs
+    origin: Strict Review Iteration 1 BLOCKER (independent Reviewer, reviewer_resolver_separation honored via a fresh subagent with no access to the Resolver's implementation context)
+    red:
+      valid: true
+      command: .venv/bin/python -m pytest tests/integration/test_adapter_publisher.py::test_directory_symlink_swap_after_preflight_prevents_escaping_installation_record_write -v
+      result: 1 failed
+      reason: After successful collection, the test raised "DID NOT RAISE AdapterPublicationError" because publish_adapter_plan reused the Path computed once for .forge/adapters/<id>/installation.yml unchanged through the write and rollback paths; swapping that directory for a symlink to an external directory after preflight let the full installation record be written outside the repository root with no error.
+    green:
+      command: .venv/bin/python -m pytest tests/integration/test_adapter_publisher.py::test_directory_symlink_swap_after_preflight_prevents_escaping_installation_record_write -v
+      result: 1 passed
+    notes:
+      - "TDD-009C's fix (re-resolve immediately before write) was applied to every generated-artifact operation but missed the publisher's own .forge/adapters/<id>/installation.yml bookkeeping path, which was still resolved exactly once at the top of publish_adapter_plan. This was the exact same defect class TDD-009C was written to close, on a path TDD-009C's two regression tests never exercised."
+      - _rollback_publication now takes installation_relative (the string) instead of a precomputed installation_path, and resolves it via _safe_target immediately before the restore/unlink, inside the same try/except that already reports per-target rollback failures — so a symlink discovered only during rollback is reported as an AdapterRollbackFailure rather than crashing out and skipping recovery of the other applied files.
+      - Focused publisher regression command passed 23 tests; full suite command `.venv/bin/python -m pytest` passed 347 tests; `git diff --check` clean.
+  - id: TDD-012
+    title: Stable exit codes for publisher-raised domain failures
+    requirements: [FR-023]
+    behavior: forge adapter install/update exit 2 with a stable E_FORGE_ADAPTER_CONFLICT or E_FORGE_ADAPTER_UNSAFE_PATH code when publish_adapter_plan raises AdapterPublicationConflictError or UnsafeAdapterPathError, instead of falling through to the generic E_FORGE_INTERNAL_ERROR at exit 70
+    origin: Strict Review Iteration 1 MAJOR (independent Reviewer)
+    red:
+      valid: true
+      command: .venv/bin/python -m pytest tests/cli/test_adapter_commands.py::test_adapter_install_maps_publication_conflict_to_stable_conflict_exit_code tests/cli/test_adapter_commands.py::test_adapter_install_maps_unsafe_path_to_stable_exit_code -v
+      result: 2 failed
+      reason: After successful collection, both tests asserted exit_code == 2 and got 70, because none of AdapterPublicationError's subclasses defined a .code class attribute (unlike every AdapterServiceError subclass in service.py), so _handle_adapter_error's `getattr(error, "code", None)` check always fell through to E_FORGE_INTERNAL_ERROR for every publisher-raised failure, including the expected collision-after-planning case.
+    green:
+      command: .venv/bin/python -m pytest tests/cli/test_adapter_commands.py::test_adapter_install_maps_publication_conflict_to_stable_conflict_exit_code tests/cli/test_adapter_commands.py::test_adapter_install_maps_unsafe_path_to_stable_exit_code -v
+      result: 2 passed
+    notes:
+      - AdapterPublicationConflictError.code reuses the existing E_FORGE_ADAPTER_CONFLICT string already used for plan.conflicts and AdapterPlanConflictError, since both represent the same "collision" concept from FR-023 at different detection points (plan time vs. publish time).
+      - UnsafeAdapterPathError.code introduces E_FORGE_ADAPTER_UNSAFE_PATH, a new stable code for the "invalid configuration"/unsafe-path domain-failure category FR-023 requires.
+      - The base AdapterPublicationError and AdapterPublicationRollbackError intentionally remain without a .code override, so record-mismatch/should-never-happen internal-invariant failures and incomplete-rollback failures continue to surface as E_FORGE_INTERNAL_ERROR at exit 70, which is proportional to the finding's evidence (only the conflict and unsafe-path paths were reproduced misreporting a genuinely expected domain failure).
+      - Full suite command `.venv/bin/python -m pytest` passed 347 tests; `git diff --check` clean.
+  - id: TDD-013
+    title: Stable exit code for stale on-disk installation-record authorization
+    requirements: [FR-023]
+    behavior: forge adapter update/install exit 2 with the stable E_FORGE_ADAPTER_STALE_RECORD code when the on-disk prior installation record re-read at publish time no longer authorizes the plan (identity/root mismatch, duplicate recorded paths, or a recorded digest that disagrees with the plan's expectation), instead of falling through to E_FORGE_INTERNAL_ERROR at exit 70
+    origin: "Strict Review Iteration 2 MAJOR (independent Reviewer, second fresh agent): TDD-012 correctly coded AdapterPublicationConflictError/UnsafeAdapterPathError but left _load_prior_installation_record and _validate_prior_record_authorizes_plan raising the uncoded base AdapterPublicationError, which is reachable as genuine \"stale state\" (FR-023's own listed category) through ordinary concurrent forge adapter update usage or external interference with the on-disk record, not only through should-never-happen internal invariants"
+    red:
+      valid: true
+      command: .venv/bin/python -m pytest tests/integration/test_adapter_publisher.py::test_stale_prior_record_authorization_mismatch_uses_stable_stale_record_code -v
+      result: 1 failed
+      reason: After successful collection, the test failed with AttributeError, "module 'forge_cli.adapters.publisher' has no attribute 'AdapterPublicationStaleRecordError'" because no such exception existed yet; _validate_prior_record_authorizes_plan raised the uncoded base AdapterPublicationError for a plan whose expected_current_digest disagreed with the on-disk prior record's recorded digest for the same path.
+    green:
+      command: .venv/bin/python -m pytest tests/integration/test_adapter_publisher.py::test_stale_prior_record_authorization_mismatch_uses_stable_stale_record_code tests/cli/test_adapter_commands.py::test_adapter_update_maps_stale_record_to_stable_exit_code -v
+      result: 2 passed
+    notes:
+      - "New AdapterPublicationStaleRecordError(AdapterPublicationError), code = E_FORGE_ADAPTER_STALE_RECORD, replaces the base-class raise at every site in _load_prior_installation_record and _validate_prior_record_authorizes_plan. _validate_record_matches_plan's raises were deliberately left uncoded: the record it checks is constructed by AdapterService directly from the same plan being published (service.py's _installation_record call), so a mismatch there is a genuine internal invariant violation, not on-disk staleness — unlike prior_record, which _load_prior_installation_record re-reads independently from disk at publish time and can legitimately diverge from what AdapterService observed when it built the plan."
+      - Focused publisher regression command passed 24 tests; full suite command `.venv/bin/python -m pytest` passed 349 tests; `git diff --check` clean.
+  - id: TDD-014
+    title: No-op short-circuit reuses the already-validated prior record
+    requirements: [FR-017, FR-023, NFR-002, INV-001]
+    behavior: publish_adapter_plan's PRESERVE/UNCHANGED-only no-op short-circuit compares against the already-loaded, already-validated prior_record instead of performing a second raw load_installation_record read of the same on-disk file
+    origin: "Strict Review Iteration 3 MAJOR (third independent Reviewer): three lines after TDD-013 hardened _load_prior_installation_record/_validate_prior_record_authorizes_plan, the no-op short-circuit still called the raw state.load_installation_record directly, bypassing both the symlink check and the coded-exception wrapping TDD-013 had just added, for a routine code path (ordinary version-bump reinstall with unchanged content), not only a race edge case"
+    red:
+      valid: true
+      command: .venv/bin/python -m pytest tests/integration/test_adapter_publisher.py::test_no_op_short_circuit_reuses_the_already_loaded_prior_record_instead_of_a_second_raw_read -v
+      result: 1 failed
+      reason: After successful collection, the test failed with InvalidAdapterInstallationRecordError ("while parsing a block mapping...") because publish_adapter_plan's no-op check called load_installation_record(installation_path) again after the record was corrupted on disk between the first safe read (inside _load_prior_installation_record) and this second raw read, raising an uncoded exception instead of using the already-loaded, already-validated prior_record.
+    green:
+      command: .venv/bin/python -m pytest tests/integration/test_adapter_publisher.py::test_no_op_short_circuit_reuses_the_already_loaded_prior_record_instead_of_a_second_raw_read -v
+      result: 1 passed
+    notes:
+      - "The fix is a one-line change: `load_installation_record(installation_path) == installation_record` became `prior_record == installation_record`, reusing the value _load_prior_installation_record already parsed and validated moments earlier instead of re-reading the file raw. This eliminates the redundant I/O, the redundant TOCTOU window, and the coding gap in the same stroke."
+      - Focused publisher regression command passed 25 tests; full suite command `.venv/bin/python -m pytest` passed 350 tests; `git diff --check` clean.
+  - id: TDD-015
+    title: Stable exit code for duplicate enabled canonical Flow configuration
+    requirements: [FR-023]
+    behavior: forge adapter plan/install/update exit 2 with the stable E_FORGE_ADAPTER_FLOW_CONFIGURATION code when a project declares two enabled project Flow files pointing at the same canonical Flow id, instead of falling through to E_FORGE_INTERNAL_ERROR at exit 70
+    origin: Strict Review Iteration 3 MINOR (third independent Reviewer, flagged as the same FR-023 uncoded-exception pattern found twice already in publisher.py, this time in AdapterService._effective_flows)
+    red:
+      valid: true
+      command: .venv/bin/python -m pytest tests/integration/test_adapter_service.py::test_plan_rejects_duplicate_enabled_canonical_flow_with_stable_code -v
+      result: 1 failed (collection error)
+      reason: ImportError, "cannot import name 'AdapterFlowConfigurationError' from 'forge_cli.adapters.service'" because no such exception existed yet; _effective_flows raised the uncoded base AdapterServiceError for a project with two enabled .forge/flows/*.yml files resolving to the same canonical Flow id.
+    green:
+      command: .venv/bin/python -m pytest tests/integration/test_adapter_service.py::test_plan_rejects_duplicate_enabled_canonical_flow_with_stable_code -v
+      result: 1 passed
+    notes:
+      - New AdapterFlowConfigurationError(AdapterServiceError), code = E_FORGE_ADAPTER_FLOW_CONFIGURATION, replaces the base-class raise in _effective_flows.
+      - Classified MINOR rather than MAJOR because reachability requires a hand-edited/misconfigured local project Flow file, not ordinary concurrent CLI usage like the MAJOR findings in publisher.py; fixed anyway because the remediation is small and proportionate, and leaving a known instance of the same uncoded-exception pattern unfixed after two prior iterations flagged it would be inconsistent.
+      - Full suite command `.venv/bin/python -m pytest` passed 351 tests; `git diff --check` clean.
+  - id: TDD-016
+    title: Mutation-time re-validated prior-record read authorizing publication
+    requirements: [FR-017, FR-018, NFR-002, NFR-003, INV-001, INV-004, AC-006, AC-012]
+    behavior: publish_adapter_plan resolves the installation-record path via _safe_target immediately before the first read that feeds the prior-record authorization decision, instead of reusing the Path resolved once before the entire preflight/validation sequence, so a directory swapped for a symlink during that window cannot poison _validate_prior_record_authorizes_plan with an attacker-forged prior record that authorizes overwriting a real repository file
+    origin: "Strict Review Iteration 4 BLOCKER (fourth independent Reviewer): TDD-011/TDD-014 closed the write and no-op-comparison paths but never touched installation_path's original resolution at the top of the function, which still fed the read at _load_prior_installation_record; _load_prior_installation_record only checks whether the installation.yml leaf itself is a symlink, not its ancestor components, so it does not independently catch what _safe_target's ancestor walk would have caught"
+    red:
+      valid: true
+      command: .venv/bin/python -m pytest tests/integration/test_adapter_publisher.py::test_installation_state_directory_symlink_swap_before_first_read_cannot_forge_authorization -v
+      result: 1 failed
+      reason: "After successful collection, the test raised \"DID NOT RAISE AdapterPublicationError\" and the target file's content changed to the attacker's value. A two-phase attack (swap .forge/adapters/<id> for a symlink to a directory containing a forged installation.yml between _validate_record_matches_plan and _load_prior_installation_record, then restore the real directory between _validate_prior_record_authorizes_plan and the final write) let the forged record authorize an UPDATE of a real repository file that Forge never legitimately owned, and the already-fixed final-write/rollback re-resolution succeeded normally against the restored real directory, so publish_adapter_plan returned without raising, permanently overwriting real repository content with attacker-controlled bytes and recording it as legitimate."
+    green:
+      command: .venv/bin/python -m pytest tests/integration/test_adapter_publisher.py::test_installation_state_directory_symlink_swap_before_first_read_cannot_forge_authorization -v
+      result: 1 passed
+    notes:
+      - "Fix moves installation_path = _safe_target(root, installation_relative) from before the preflight loop to immediately before _load_prior_installation_record, its first actual use. Since the swap in this attack happens inside the _validate_record_matches_plan hook (which now runs before the relocated resolution), the fresh _safe_target call observes the symlink immediately and raises UnsafeAdapterPathError before any prior-record read occurs, closing the entire preflight-loop-sized window down to the same single-statement residual already accepted as Iteration 1's Observation #3."
+      - "This closes the same conceptual gap TDD-011 (write path) and TDD-014 (no-op comparison) closed, on the one remaining unguarded use of the originally-resolved installation_path: the authorization-feeding read. All four uses of the installation-record path (initial/no-op read, write, rollback, and now this read) are re-resolved immediately before use."
+      - Focused publisher regression command passed 26 tests; full suite command `.venv/bin/python -m pytest` passed 352 tests; `git diff --check` clean.
+  - id: TDD-017
+    title: Rollback backup capture derived from the same safe read as the prior record
+    requirements: [FR-017, FR-018, NFR-002, NFR-003, INV-001, INV-004, AC-006, AC-008, AC-012]
+    behavior: publish_adapter_plan derives its rollback backup (prior_installation bytes and installation_existed) from the same single safe read _load_prior_installation_record already performs, instead of separately re-reading installation_path.read_bytes()/exists() a few lines later, so a directory swapped for a symlink between the authorization check and that later re-read cannot poison the rollback backup with attacker-forged content that later gets written to the real installation.yml path during rollback
+    origin: "Strict Review Iteration 5 BLOCKER-1 (fifth independent Reviewer): TDD-016's own completeness claim (\"all four uses... now fed by a resolution immediately before or adjacent to their point of use\") was inaccurate; the backup capture at the time reused the Path from TDD-016's fix without re-reading, across a window spanning the full authorization check, not a single statement"
+    red:
+      valid: true
+      command: .venv/bin/python -m pytest tests/integration/test_adapter_publisher.py::test_rollback_backup_capture_cannot_be_poisoned_by_a_directory_swap_after_authorization -v
+      result: 1 failed
+      reason: After successful collection, the test failed because an attacker-forged installation.yml existed at the real .forge/adapters/<id>/installation.yml path after publish_adapter_plan raised and rolled back; the directory was swapped for a symlink to a directory containing a forged record after the (legitimate) authorization check passed but before the separate installation_path.read_bytes()/exists() re-read captured the rollback backup, and _rollback_publication's own already-fixed re-resolution just wrote that forged backup to the (attacker-restored) real path.
+    green:
+      command: .venv/bin/python -m pytest tests/integration/test_adapter_publisher.py::test_rollback_backup_capture_cannot_be_poisoned_by_a_directory_swap_after_authorization -v
+      result: 1 passed
+    notes:
+      - "_load_prior_installation_record now returns (record, raw_bytes) instead of just the record, reading the file's raw bytes as part of the same safe read used to parse and validate it. installation_existed is now derived as `prior_record is not None`, exactly equivalent to the prior separate path.exists() check because _load_prior_installation_record already performs that check internally before returning."
+      - Focused publisher regression command passed 27 tests; full suite command `.venv/bin/python -m pytest` passed 353 tests; `git diff --check` clean.
+  - id: TDD-018
+    title: Rollback re-resolves each already-applied operation's target immediately before restoring it
+    requirements: [FR-017, FR-018, NFR-002, NFR-003, INV-001, INV-004, AC-006, AC-008, AC-012]
+    behavior: _rollback_publication re-resolves each already-applied operation's target via _safe_target immediately before _restore_bytes, using the operation's relative path string stored in `applied` instead of the Path object captured at mutation time, so a directory swapped for a symlink between an earlier operation's mutation and a later operation's failure cannot redirect that earlier operation's rollback restore to an attacker-controlled directory (exfiltrating its original content) while leaving the real, already-mutated file un-rolled-back with no reported failure
+    origin: "Strict Review Iteration 5 BLOCKER-2 (fifth independent Reviewer): unlike installation_path, the Path objects stored in `applied` during the mutation loop were never re-resolved at rollback time, even after four iterations of fixes to every other installation-path use in the same function"
+    red:
+      valid: true
+      command: .venv/bin/python -m pytest tests/integration/test_adapter_publisher.py::test_rollback_of_an_already_applied_operation_reuses_a_stale_target_path -v
+      result: 1 failed
+      reason: "After successful collection, the test failed asserting the raised error was AdapterPublicationRollbackError but got AdapterPublicationConflictError instead: with a two-operation plan (alphabetically first operation mutated and appended to `applied`, second operation's mutation-time precondition recheck triggered a directory swap of the first operation's ancestor to an attacker directory and reported a conflict), _rollback_publication's restore of the first operation reused its stale mutation-time Path, silently writing the real prior content into the attacker-controlled directory (exfiltration) while the real file kept its new, un-rolled-back content -- with no rollback failure reported at all."
+    green:
+      command: .venv/bin/python -m pytest tests/integration/test_adapter_publisher.py::test_rollback_of_an_already_applied_operation_reuses_a_stale_target_path -v
+      result: 1 passed
+    notes:
+      - "`applied` now stores (operation.path, original_bytes) tuples instead of (Path, original_bytes); _rollback_publication re-resolves via _safe_target(root, relative_path) immediately before _restore_bytes for each. When the ancestor is still swapped at rollback time, this now correctly raises UnsafeAdapterPathError, caught and recorded as an AdapterRollbackFailure, surfacing as AdapterPublicationRollbackError -- a loud, honest failure instead of a silent exfiltration with a false appearance of a clean rollback."
+      - The unused `display()` helper (relative_to(root) formatting for an already-absolute Path) was removed from _rollback_publication; relative_path strings from `applied` and installation_relative are already the correct display form.
+      - Focused publisher regression command passed 28 tests; full suite command `.venv/bin/python -m pytest` passed 354 tests; `git diff --check` clean.
+  - id: TDD-019
+    title: Digest/parse checks and their paired rollback-backup capture derive from one physical read, not two
+    requirements: [FR-017, FR-018, NFR-002, NFR-003, INV-001, INV-004, AC-006, AC-008, AC-012]
+    behavior: >-
+      _load_prior_installation_record reads installation.yml once and derives
+      both the parsed/validated record and the raw rollback-backup bytes from
+      that same read (parse_installation_record now takes already-read text
+      instead of re-reading the path itself); the update/delete mutation-loop
+      precondition recheck reads its target once via the new
+      _current_digest_and_bytes and derives both the digest comparison and
+      the rollback-backup bytes from that same read, instead of a separate
+      _current_digest(target) call followed by a later target.read_bytes().
+    origin: >-
+      Self-review before requesting Strict Review Iteration 6, given five
+      consecutive iterations finding progressively subtler instances of the
+      same general defect class (two physical reads of the same on-disk
+      content, one authorizing a decision and a later one capturing a
+      rollback backup, letting a concurrent writer desynchronize what was
+      authorized from what gets restored) in publisher.py: the two remaining
+      call sites still performing two separate reads instead of one were
+      found and closed proactively rather than left for a sixth Reviewer to
+      find as a sixth iteration of the same class.
+    red:
+      valid: true
+      command: .venv/bin/python -m pytest tests/integration/test_adapter_publisher.py::test_prior_record_read_is_not_desynchronized_by_a_concurrent_content_change tests/integration/test_adapter_publisher.py::test_update_precondition_digest_and_rollback_backup_come_from_the_same_read -v
+      result: 2 failed
+      reason: >-
+        Before the fix, parse_installation_record's predecessor
+        (load_installation_record) performed its own path.read_bytes() call
+        internally, so a test that rewrote the file between the caller's own
+        read and the parse call observed the rewritten (forged) content
+        instead of the originally-read bytes; separately, the precondition
+        recheck called only _current_digest(target) (no bytes returned),
+        so a test patching a combined digest+bytes helper found no such
+        attribute to patch (AttributeError) before the fix existed.
+    green:
+      command: .venv/bin/python -m pytest tests/integration/test_adapter_publisher.py::test_prior_record_read_is_not_desynchronized_by_a_concurrent_content_change tests/integration/test_adapter_publisher.py::test_update_precondition_digest_and_rollback_backup_come_from_the_same_read -v
+      result: 2 passed
+    notes:
+      - "load_installation_record is preserved as a thin path -> parse_installation_record(text) wrapper for callers that only need one read of their own; _load_prior_installation_record now calls parse_installation_record(raw.decode(...)) directly against bytes it already captured, never a second physical read."
+      - "_current_digest (digest-only) is preserved for the two preflight call sites that never need the raw bytes; _current_digest_and_bytes is new and used only where a precondition digest check and a rollback-backup capture both need the exact same on-disk content."
+      - Full suite command `.venv/bin/python -m pytest` passed 356 tests; `git diff --check` clean.
+notes:
+  - Focused regression command `.venv/bin/python -m pytest tests/unit/test_adapter_registry.py tests/unit/test_codex_adapter_descriptor.py -v` passed 11 tests.
+  - 'rg -n "codex" src/forge_cli/adapters/driver.py src/forge_cli/adapters/registry.py returned no matches.'
+  - Fix round 1 full suite command `.venv/bin/python -m pytest` passed 202 tests.
+  - Fix round 2 focused configuration/target/contract command passed 66 tests; full suite command `.venv/bin/python -m pytest` passed 205 tests.
+  - Fix round 3 focused configuration/target/contract command passed 67 tests; sandbox full suite covered 205 tests and only wheel build isolation failed due unavailable Hatchling download; approved-network full suite passed 206 tests.
+  - TDD-003 full suite command `.venv/bin/python -m pytest -q` passed 210 tests.
+  - TDD-003A focused suite passed 17 tests; approved-network full suite command `.venv/bin/python -m pytest -q` passed 210 tests.
+  - TDD-003B focused suite passed 18 tests; full suite command `.venv/bin/python -m pytest -q` passed 211 tests.
+  - AC-012 is deferred from the pure TDD-003 projection boundary to TDD-004 publisher cleanup and TDD-008 distribution verification.
+  - "Task 8 began as distribution Verification. Strict review then exposed an FR-009 effective-reference reachability gap, which is remediated as TDD-008; the hardened isolated installed-wheel probe now verifies the explicit links, wheel-derived references, full repository read-only snapshots, and a venv-local Python network guard."
+  - "TDD-008 broad projection regression `.venv/bin/python -m pytest tests/unit/test_codex_skill_projection.py tests/unit/test_codex_projection_gates.py tests/unit/test_codex_projection_bundle.py -v` passed 16 tests."
+  - "Duplicate effective Flow characterization `.venv/bin/python -m pytest tests/unit/test_codex_projection_bundle.py::test_projection_bundle_rejects_conflicting_duplicate_effective_flow_ids -v` passed 1 test: public generation rejects the second conflicting id before SKILL.md rendering."
+  - "Current combined projection regression `.venv/bin/python -m pytest tests/unit/test_codex_skill_projection.py tests/unit/test_codex_projection_gates.py tests/unit/test_codex_projection_bundle.py -v` passed 17 tests after adding the duplicate-rejection characterization."

@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://forge.dev/schemas/adapter-configuration.schema.json",
+  "title": "Forge Adapter Configuration",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "adapter"],
+  "properties": {
+    "schema": {"const": "forge/adapter-configuration@1"},
+    "adapter": {"type": "string", "minLength": 1},
+    "target": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^(?![~])(?!.codex(?:/|$))(?!.*(?:^|/)\\.{1,2}(?:/|$))(?!.*//)(?!.*[\\\\:\\u0000\\r\\n])[^/](?:.*[^/])?$"
+    }
+  }
+}

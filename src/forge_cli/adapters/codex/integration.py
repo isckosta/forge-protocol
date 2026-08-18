@@ -56,6 +56,7 @@ def build_codex_installation_record(
     *,
     descriptor: CodexAdapterDescriptor,
     plan: AdapterPlan,
+    target: PublicationTarget,
 ) -> AdapterInstallationRecord:
     generated = (
         GeneratedArtifact(path=operation.path, digest=operation.content_digest)
@@ -70,6 +71,7 @@ def build_codex_installation_record(
         harness=manifest.harness,
         protocol_min=manifest.protocol_min,
         protocol_max_exclusive=manifest.protocol_max_exclusive,
+        publication_root=target.root,
         generated_artifacts=generated,
         limitations=plan.limitations,
     )

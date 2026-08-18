@@ -46,6 +46,26 @@ forge doctor
 
 `forge init` requires Git and initializes `.forge/` at the Git repository root, even when invoked from a nested directory. `forge validate` validates project state against the bundled canonical Protocol. `forge doctor` performs read-only diagnostics.
 
+The CLI also exposes an Adapter command group for installing and managing Harness Adapters:
+
+```text
+forge adapter list
+forge adapter configure <adapter>
+forge adapter plan <adapter>
+forge adapter install <adapter>
+forge adapter validate <adapter>
+forge adapter doctor <adapter>
+forge adapter update <adapter>
+```
+
+For example, from an initialized project:
+
+```bash
+forge adapter install codex
+```
+
+plans, then safely publishes, the Codex Harness projection described below.
+
 The CLI deliberately does **not** expose development-lifecycle commands such as `specify`, `implement`, `verify`, or `review`. Those activities execute in the chat runtime under the Protocol.
 
 ### Development installation

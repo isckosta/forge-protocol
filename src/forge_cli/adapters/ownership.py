@@ -4,7 +4,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from enum import StrEnum
-from typing import Mapping
+from pathlib import PurePosixPath
+from typing import Iterable, Mapping
 
 from forge_cli.adapters.plan import OperationIntent, OwnershipMode
 from forge_cli.adapters.state import AdapterInstallationRecord
@@ -30,6 +31,70 @@ class GeneratedDrift:
     observed_digest: str | None
 
 
+class InvalidAdapterPublicationOwnershipError(ValueError):
+    """Raised when generated paths are not bound to a safe publication root."""
+
+
+def _checked_publication_path(path: str, *, allow_repository_root: bool) -> PurePosixPath:
+    if not isinstance(path, str) or not path or "\\" in path or "\x00" in path:
+        raise InvalidAdapterPublicationOwnershipError(
+            f"Invalid Adapter publication path: {path!r}."
+        )
+    pure = PurePosixPath(path)
+    if allow_repository_root and path == ".":
+        return pure
+    if (
+        pure.is_absolute()
+        or pure.as_posix() != path
+        or any(part in {"", ".", ".."} or ":" in part for part in pure.parts)
+    ):
+        raise InvalidAdapterPublicationOwnershipError(
+            f"Invalid Adapter publication path: {path!r}."
+        )
+    return pure
+
+
+def _reject_canonical_forge_path(path: PurePosixPath) -> None:
+    if path.parts and path.parts[0] == ".forge":
+        raise InvalidAdapterPublicationOwnershipError(
+            f"Canonical Forge state cannot be Adapter-generated: {path.as_posix()!r}."
+        )
+
+
+def require_publication_root_ownership(
+    publication_root: str | None,
+    artifact_paths: Iterable[str],
+) -> None:
+    """Require every artifact to be a strict descendant of a non-canonical root."""
+    if publication_root is None:
+        raise InvalidAdapterPublicationOwnershipError(
+            "Adapter installation record has no publication-root ownership metadata."
+        )
+    root = _checked_publication_path(publication_root, allow_repository_root=True)
+    _reject_canonical_forge_path(root)
+
+    for artifact_path in artifact_paths:
+        artifact = _checked_publication_path(
+            artifact_path,
+            allow_repository_root=False,
+        )
+        _reject_canonical_forge_path(artifact)
+        if root not in artifact.parents:
+            raise InvalidAdapterPublicationOwnershipError(
+                f"Generated Adapter path {artifact_path!r} is not below recorded "
+                f"publication root {publication_root!r}."
+            )
+
+
+def require_recorded_publication_ownership(
+    record: AdapterInstallationRecord,
+) -> None:
+    require_publication_root_ownership(
+        record.publication_root,
+        (artifact.path for artifact in record.generated_artifacts),
+    )
+
+
 def classify_artifact(
     *,
     ownership: OwnershipMode,
@@ -37,6 +102,7 @@ def classify_artifact(
     current_digest: str | None,
     expected_digest: str | None,
     merge_result: str | None,
+    desired_digest: str | None = None,
 ) -> OwnershipDecision:
     """Classify an artifact without reading or mutating filesystem state."""
 
@@ -53,15 +119,19 @@ def classify_artifact(
         )
 
     if ownership is OwnershipMode.FORGE_OWNED:
-        if expected_digest is not None and current_digest == expected_digest:
+        if expected_digest is None or current_digest != expected_digest:
             return OwnershipDecision(
-                intent=OperationIntent.UPDATE,
-                safe_to_apply=True,
+                intent=OperationIntent.CONFLICT,
+                safe_to_apply=False,
             )
 
         return OwnershipDecision(
-            intent=OperationIntent.CONFLICT,
-            safe_to_apply=False,
+            intent=(
+                OperationIntent.UNCHANGED
+                if desired_digest is not None and current_digest == desired_digest
+                else OperationIntent.UPDATE
+            ),
+            safe_to_apply=True,
         )
 
     if ownership is OwnershipMode.SHARED:

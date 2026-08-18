@@ -1,0 +1,49 @@
+schema: forge/traceability@1
+change: CHG-0010
+requirements:
+  FR-001: {tasks: [T-007], test_strategy: TDD-007}
+  FR-002: {tasks: [T-001, T-007], test_strategy: TDD-001/TDD-007}
+  FR-003: {tasks: [T-001, T-007], test_strategy: TDD-001/TDD-007}
+  FR-004: {tasks: [T-005, T-007], test_strategy: TDD-005/TDD-007}
+  FR-005: {tasks: [T-002, T-007], test_strategy: TDD-002/TDD-007}
+  FR-006: {tasks: [T-002, T-005], test_strategy: TDD-002/TDD-005}
+  FR-007: {tasks: [T-002, T-007], test_strategy: TDD-002/TDD-007}
+  FR-008: {tasks: [T-003, T-005], test_strategy: TDD-003/TDD-005}
+  FR-009: {tasks: [T-003], test_strategy: TDD-003}
+  FR-010: {tasks: [T-003, T-008], test_strategy: TDD-003/TDD-008}
+  FR-011: {tasks: [T-004, T-007], test_strategy: TDD-004/TDD-007}
+  FR-012: {tasks: [T-005], test_strategy: TDD-005}
+  FR-013: {tasks: [T-004, T-005], test_strategy: TDD-004/TDD-005}
+  FR-014: {tasks: [T-004, T-005], test_strategy: TDD-004/TDD-005}
+  FR-015: {tasks: [T-004, T-005, T-007], test_strategy: TDD-004/TDD-005/TDD-007}
+  FR-016: {tasks: [T-005, T-007], test_strategy: TDD-005/TDD-007}
+  FR-017: {tasks: [T-004, T-005], test_strategy: TDD-004/TDD-005}
+  FR-018: {tasks: [T-004], test_strategy: TDD-004}
+  FR-019: {tasks: [T-004, T-005], test_strategy: TDD-004/TDD-005}
+  FR-020: {tasks: [T-006, T-007], test_strategy: TDD-006/TDD-007}
+  FR-021: {tasks: [T-006, T-007], test_strategy: TDD-006/TDD-007}
+  FR-022: {tasks: [T-003, T-006], test_strategy: TDD-003/TDD-006}
+  FR-023: {tasks: [T-002, T-006, T-007], test_strategy: TDD-002/TDD-006/TDD-007}
+  FR-024: {tasks: [T-008], test_strategy: TDD-008}
+  NFR-001: {tasks: [T-003, T-004, T-006, T-008], test_strategy: TDD-003/TDD-004/TDD-006/TDD-008}
+  NFR-002: {tasks: [T-004], test_strategy: TDD-004}
+  NFR-003: {tasks: [T-001, T-003, T-005], test_strategy: TDD-001/TDD-003/TDD-005}
+  NFR-004: {tasks: [T-006, T-007], test_strategy: TDD-006/TDD-007}
+  INV-001: {tasks: [T-003, T-005, T-008], test_strategy: TDD-003/TDD-005/TDD-008}
+  INV-002: {tasks: [T-004], test_strategy: TDD-004}
+  INV-003: {tasks: [T-005, T-006, T-007], test_strategy: TDD-005/TDD-006/TDD-007}
+  INV-004: {tasks: [T-004, T-005], test_strategy: TDD-004/TDD-005}
+  INV-005: {tasks: [T-001, T-002, T-003, T-008], test_strategy: TDD-001/TDD-002/TDD-003/TDD-008}
+acceptance:
+  AC-001: [T-005, T-007, T-008]
+  AC-002: [T-001, T-007, T-008]
+  AC-003: [T-004, T-007, T-008]
+  AC-004: [T-004, T-005, T-008]
+  AC-005: [T-004, T-005, T-007, T-008]
+  AC-006: [T-004, T-005, T-008]
+  AC-007: [T-004, T-006, T-008]
+  AC-008: [T-004]
+  AC-009: [T-002, T-005, T-007]
+  AC-010: [T-003, T-006, T-008]
+  AC-011: [T-002, T-005, T-006, T-007]
+  AC-012: [T-004, T-008]

@@ -42,24 +42,24 @@ def _bundle(flow_id: str = "full", protocol_id: int = 1):
 
 def test_protocol1_projection_does_not_retroactively_project_protocol2_provenance() -> None:
     bundle = _bundle("full", protocol_id=1)
-    flow_resource = next(item for item in bundle.resources if item.name == "forge-flow.md")
+    skill_resource = next(item for item in bundle.resources if item.name == "SKILL.md")
 
-    assert "provenance.yml" not in flow_resource.content
-    assert "subject_provenance" not in flow_resource.content
+    assert "provenance.yml" not in skill_resource.content
+    assert "subject_provenance" not in skill_resource.content
 
 
 def test_protocol2_all_flows_projection_require_review_provenance_boundary() -> None:
     for flow_id in ("fast", "standard", "full"):
         bundle = _bundle(flow_id, protocol_id=2)
-        flow_resource = next(item for item in bundle.resources if item.name == "forge-flow.md")
-        assert "Execution and Execution Context independent" in flow_resource.content
-        assert "changing Role inside the same conversation" in flow_resource.content
-        assert "provenance.yml" in flow_resource.content
-        assert "subject_provenance" in flow_resource.content
-        assert "reviewer_provenance" in flow_resource.content
-        assert "claimed" in flow_resource.content
-        assert "recorded" in flow_resource.content
-        assert "self-review" in flow_resource.content.lower()
+        skill_resource = next(item for item in bundle.resources if item.name == "SKILL.md")
+        assert "Execution and Execution Context independent" in skill_resource.content
+        assert "changing Role inside the same conversation" in skill_resource.content
+        assert "provenance.yml" in skill_resource.content
+        assert "subject_provenance" in skill_resource.content
+        assert "reviewer_provenance" in skill_resource.content
+        assert "claimed" in skill_resource.content
+        assert "recorded" in skill_resource.content
+        assert "self-review" in skill_resource.content.lower()
 
 
 def test_bundle_resources_become_forge_owned_generic_operations() -> None:
@@ -71,7 +71,9 @@ def test_bundle_resources_become_forge_owned_generic_operations() -> None:
         capability_requirements=(), repository_state=(),
     )
     assert [item.path for item in plan.operations] == [
-        "tools/codex/forge-contract.md", "tools/codex/forge-flow.md",
+        "tools/codex/SKILL.md",
+        "tools/codex/references/engineering-contract.md",
+        "tools/codex/references/flows/full.yml",
     ]
     assert all(item.ownership is OwnershipMode.FORGE_OWNED for item in plan.operations)
     assert all(item.intent is OperationIntent.CREATE for item in plan.operations)
@@ -86,12 +88,12 @@ def test_existing_unowned_target_is_classified_as_conflict() -> None:
         capability_requirements=(),
         repository_state=(
             RepositoryArtifactState(
-                path="tools/codex/forge-flow.md", exists=True,
+                path="tools/codex/references/flows/full.yml", exists=True,
                 current_digest="user-state", expected_digest=None,
             ),
         ),
     )
-    operation = next(item for item in plan.operations if item.path.endswith("forge-flow.md"))
+    operation = next(item for item in plan.operations if item.path.endswith("references/flows/full.yml"))
     assert operation.intent is OperationIntent.CONFLICT
     assert plan.conflicts
 
@@ -135,6 +137,7 @@ def test_represented_invariant_limitation_survives_plan_and_installation_record(
     record = build_codex_installation_record(
         descriptor=load_codex_adapter_descriptor(),
         plan=plan,
+        target=target,
     )
     expected = ("INV-TDD: capability skills cannot be enforced (FR-016)",)
 
@@ -151,10 +154,16 @@ def test_installation_record_uses_forge_owned_planned_artifacts() -> None:
         bundle=_bundle(), target=target, project_protocol=1,
         capability_requirements=(), repository_state=(),
     )
-    record = build_codex_installation_record(descriptor=descriptor, plan=plan)
+    record = build_codex_installation_record(
+        descriptor=descriptor,
+        plan=plan,
+        target=target,
+    )
     assert record.adapter_id == "codex"
     assert [item.path for item in record.generated_artifacts] == [
-        "tools/codex/forge-contract.md", "tools/codex/forge-flow.md",
+        "tools/codex/SKILL.md",
+        "tools/codex/references/engineering-contract.md",
+        "tools/codex/references/flows/full.yml",
     ]
     assert [item.digest for item in record.generated_artifacts] == [
         item.content_digest for item in plan.operations
@@ -170,7 +179,11 @@ def test_recorded_generated_drift_reuses_generic_detection() -> None:
         bundle=_bundle(), target=target, project_protocol=1,
         capability_requirements=(), repository_state=(),
     )
-    record = build_codex_installation_record(descriptor=descriptor, plan=plan)
+    record = build_codex_installation_record(
+        descriptor=descriptor,
+        plan=plan,
+        target=target,
+    )
     observed = {item.path: item.digest for item in record.generated_artifacts}
     changed_path = record.generated_artifacts[0].path
     observed[changed_path] = sha256(b"changed").hexdigest()

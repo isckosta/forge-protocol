@@ -1,0 +1,60 @@
+schema: forge/change@1
+
+change:
+  id: CHG-0010
+  title: Adapter CLI and Codex Installation UX
+  kind: feature
+
+flow:
+  initial: full
+  current: full
+  escalations: []
+
+state:
+  current: complete
+
+artifacts:
+  intent: complete
+  discovery: complete
+  specification: complete
+  specification_review: complete
+  architecture: complete
+  architecture_decision: complete
+  test_strategy: approved
+  plan: approved
+  tasks: approved
+  traceability: complete
+  tdd_evidence: complete
+  implementation: complete
+  verification: complete
+  review: complete
+  documentation: complete
+  knowledge_capture: complete
+
+requirements:
+  total: 33
+  implemented: 33
+  verified: 33
+
+tdd:
+  status: compliant
+  cycles: 51
+
+verification:
+  status: passed
+
+review:
+  status: passed
+  iteration: 6
+  blockers: 0
+  majors: 0
+  minors: 0
+  observations: 5
+
+documentation:
+  impact_evaluated: true
+  update_required: true
+  reason: >
+    This Change introduces a public Adapter command group, the supported Codex
+    installation path, configuration and recovery guidance, and the v1 golden
+    path required by the Roadmap.

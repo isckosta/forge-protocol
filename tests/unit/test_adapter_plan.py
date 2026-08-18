@@ -23,6 +23,7 @@ def test_ownership_and_intent_vocabularies_are_canonical() -> None:
     assert {item.value for item in module.OperationIntent} == {
         "create",
         "update",
+        "unchanged",
         "preserve",
         "conflict",
         "delete_generated",
