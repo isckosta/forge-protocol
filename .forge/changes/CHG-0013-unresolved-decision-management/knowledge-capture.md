@@ -61,6 +61,65 @@ status: complete
   restoring) is better than not doing so, but is not equivalent to true
   RED-first discipline and is recorded as exactly that — a real, disclosed
   deviation for independent Review to weigh, not a self-granted exception.
+- **The Protocol 2 §5 review-control metadata exception is exactly three
+  paths — `manifest.yml`, `provenance.yml`, `review.md` — and nothing else,
+  including files that "feel" like they should qualify.** This Change's own
+  Implementation edited `verification.md` after freezing its subject,
+  assuming (never actually checking against the Specification text) that a
+  verification write-up was as harmless post-freeze as updating the review
+  ledger. It is not exempt, and doing so broke the freeze — caught only by
+  independent Strict Review Finding CHG-0013-R001, which additionally found
+  that the *diagnosis* recorded for the resulting `C-026` failure was
+  itself wrong (blamed on unrelated pre-existing untracked files, "verified"
+  by a stash experiment whose result was a coincidence, not a proof). Two
+  compounding lessons: (1) an exempted-path set defined by exact enumeration
+  means exactly that — verify against the literal set, not intuition about
+  which files "feel like metadata"; (2) an experiment that produces the
+  *expected* result is not automatically evidence of the *hypothesized*
+  cause — the independent Reviewer re-ran the identical experiment and got
+  a different, correct answer, underscoring why C-026 requires the
+  Reviewer to be a genuinely separate Execution/Context rather than the
+  same session self-checking its own hypothesis.
+- **A guard expressed only as a conjunction of two fields
+  (`authority == human AND resolved_via == autonomous_decision`) is
+  bypassable by changing either field independently — the same shape of
+  bug CHG-0011's own knowledge-capture flagged for "a field whose presence
+  authorizes a specific past event" not being bound to that instance.**
+  CHG-0013-R002 found the product/contract authority floor was enforced
+  only through the resolved_via combination, not as a direct property of
+  `class`; simply declaring `authority: agent` on a `product`-class
+  Decision bypassed the entire guarantee. General lesson reinforced a
+  second time in this Protocol's history: when a floor/invariant is meant
+  to bind unconditionally to a category (here, `class`), check it directly
+  against that category, not only through a narrower combination that
+  happens to imply it in the common case.
+- **`dict.get(key)` returning `None` for an absent key is easy to conflate
+  with "key present, value not in the flagged set" when writing a
+  membership check (`if current in {...}`).** CHG-0013-R003 found exactly
+  this: an `invalidates` entry naming a key never tracked in `artifacts` at
+  all silently passed the same check meant to catch it staying
+  `complete`/`approved`. Distinguishing "absent" from "present-but-wrong-
+  value" needs an explicit `key not in mapping` branch, not reliance on the
+  absent case happening to fall outside the flagged value set.
+- **Disclosing a Contract deviation honestly is necessary but not
+  sufficient — the deviation still needs an explicit accept/reject Decision
+  from someone other than whoever made it.** This Change's own
+  TDD-ordering deviation (C-009) was fully and honestly disclosed in
+  `verification.md`/`tdd-evidence.yml`, but independent Strict Review
+  (CHG-0013-R004) correctly refused to treat disclosure as equivalent to
+  resolution: "this needs an explicit accept/reject engineering decision...
+  not self-adjudicated as acceptable by this same session." Directly
+  reinforces this Change's own C-053/C-054/C-055: a Recommendation (or in
+  this case, a disclosed rationale) is not a Decision merely because it is
+  well-reasoned and transparent.
+- **Deferred, not fixed in this Change (Strict Review CHG-0013-R005,
+  R006):** `supersedes`/`superseded_by` are schema-declared but never
+  mechanically cross-checked for existence/consistency; every Decision
+  finding is tagged with the single umbrella code `C-051` regardless of
+  which of the ~15 distinct checks actually failed. Both accepted as
+  documented follow-up work rather than expanded into this Change's own
+  Resolution scope — recorded here so a future Change does not have to
+  rediscover them.
 - F-008 ("Material Protocol Changes require RFC") is satisfied in this
   repository's actual practice by an ADR alone for Contract/Specification-
   level Changes below the scale of introducing a new integer Protocol

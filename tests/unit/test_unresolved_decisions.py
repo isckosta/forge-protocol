@@ -345,3 +345,79 @@ def test_absent_or_empty_decisions_short_circuits(tmp_path: Path) -> None:
     _write_manifest(root_empty, "CHG-9116-empty", _base_manifest([]))
     result_empty = validate_project(root_empty, PROTOCOL_ROOT)
     assert result_empty.passed, _messages(result_empty)
+
+
+# ---------------------------------------------------------------------------
+# CHG-0013-R002 (MAJOR, found by independent Strict Review Iteration 1):
+# the human-authority floor for product/contract Classes (C-055, FR-017,
+# authority_floor in protocol/policies/decision.yml) was only checked in
+# the narrow combination authority == human AND resolved_via ==
+# autonomous_decision. Setting authority directly to a non-human value on a
+# product/contract Decision bypassed the floor entirely, defeating the one
+# guarantee this Change's own Contract calls non-negotiable.
+# ---------------------------------------------------------------------------
+
+def test_product_class_below_human_authority_floor_is_a_finding(tmp_path: Path) -> None:
+    decision = {
+        "id": "DEC-001", "class": "product", "materiality": "material",
+        "status": "resolved", "authority": "agent", "owning_artifact": "specification",
+        "discovered_in": "specification", "resolved_via": "autonomous_decision",
+    }
+    _init(tmp_path)
+    _write_manifest(tmp_path, "CHG-9117-r002-product", _base_manifest([decision]))
+    result = validate_project(tmp_path, PROTOCOL_ROOT)
+    assert not result.passed
+    assert any("authority floor" in m for m in _messages(result))
+
+
+def test_contract_class_below_human_authority_floor_is_a_finding(tmp_path: Path) -> None:
+    decision = {
+        "id": "DEC-001", "class": "contract", "materiality": "material",
+        "status": "resolved", "authority": "agent_with_review", "owning_artifact": "specification",
+        "discovered_in": "specification", "resolved_via": "autonomous_decision",
+    }
+    _init(tmp_path)
+    _write_manifest(tmp_path, "CHG-9118-r002-contract", _base_manifest([decision]))
+    result = validate_project(tmp_path, PROTOCOL_ROOT)
+    assert not result.passed
+    assert any("authority floor" in m for m in _messages(result))
+
+
+def test_architectural_and_technical_classes_are_not_floor_restricted(tmp_path: Path) -> None:
+    decisions = [
+        {
+            "id": "DEC-001", "class": "architectural", "materiality": "material",
+            "status": "resolved", "authority": "agent", "owning_artifact": "architecture",
+            "discovered_in": "architecture", "resolved_via": "autonomous_decision",
+        },
+        {
+            "id": "DEC-002", "class": "technical", "materiality": "material",
+            "status": "resolved", "authority": "agent", "owning_artifact": "tasks",
+            "discovered_in": "tasks", "resolved_via": "autonomous_decision",
+        },
+    ]
+    _init(tmp_path)
+    _write_manifest(tmp_path, "CHG-9119-r002-unrestricted", _base_manifest(decisions))
+    result = validate_project(tmp_path, PROTOCOL_ROOT)
+    assert result.passed, _messages(result)
+
+
+# ---------------------------------------------------------------------------
+# CHG-0013-R003 (MINOR, found by independent Strict Review Iteration 1):
+# `invalidates` referencing an artifact key entirely absent from
+# `artifacts` (as opposed to present-but-complete/approved) silently
+# passed, because `artifacts.get(key)` returns None, which is not in
+# {"complete","approved"}.
+# ---------------------------------------------------------------------------
+
+def test_invalidates_target_missing_from_artifacts_is_a_finding(tmp_path: Path) -> None:
+    decision = {
+        "id": "DEC-001", "class": "product", "materiality": "material",
+        "status": "resolved", "authority": "human", "owning_artifact": "specification",
+        "discovered_in": "tasks", "resolved_via": "human_decision", "invalidates": ["nonexistent_artifact_key"],
+    }
+    _init(tmp_path)
+    _write_manifest(tmp_path, "CHG-9120-r003-missingkey", _base_manifest([decision], artifacts={}))
+    result = validate_project(tmp_path, PROTOCOL_ROOT)
+    assert not result.passed
+    assert any("nonexistent_artifact_key" in m and "not tracked" in m for m in _messages(result))

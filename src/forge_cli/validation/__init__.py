@@ -368,6 +368,7 @@ _DEC_OPEN_BLOCKING={"open","analyzing","awaiting_decision"}
 _DEC_AUTHORITIES={"human","agent","agent_with_review"}
 _DEC_RESOLVED_VIA={"evidence","autonomous_decision","human_decision"}
 _DEC_OWNING_BY_CLASS={"product":{"specification"},"contract":{"specification","compatibility"},"architectural":{"architecture"},"technical":{"plan","tasks"}}
+_DEC_AUTHORITY_FLOOR={"product":"human","contract":"human"}
 _DEC_ID_RE=re.compile(r"^DEC-[0-9]{3,}$")
 def _dec_finding(r:Path,p:Path,m:str)->ValidationFinding:return ValidationFinding("C-051",str(p.relative_to(r)),m,p)
 def _decision_gates(m:dict)->list[tuple[str,set[str]|None]]:
@@ -424,6 +425,14 @@ def _validate_unresolved_decisions(r:Path,mpath:Path,m:dict)->list[ValidationFin
         if status in{"resolved","superseded"}and resolved_via is None:out.append(_dec_finding(r,mpath,f"Decision {did!r} is {status!r} but declares no resolved_via."))
         if status in _DEC_OPEN_BLOCKING and resolved_via is not None:out.append(_dec_finding(r,mpath,f"Decision {did!r} declares resolved_via {resolved_via!r} while status is {status!r} (not yet resolved)."))
         if authority=="human"and resolved_via=="autonomous_decision":out.append(_dec_finding(r,mpath,f"Decision {did!r}: human-authority Decisions MUST NOT be resolved via autonomous_decision (C-055)."))
+        # CHG-0013-R002: the product/contract authority floor (C-055, FR-017,
+        # protocol/policies/decision.yml authority_floor) is a property of the
+        # Class itself, not only of the (authority, resolved_via) pair above —
+        # a manifest that sets authority away from `human` on a product/contract
+        # Decision bypassed the floor entirely under the narrower check alone.
+        floor=_DEC_AUTHORITY_FLOOR.get(cls)
+        if floor is not None and authority!=floor:
+            out.append(_dec_finding(r,mpath,f"Decision {did!r}: class {cls!r} has a non-negotiable authority floor of {floor!r}; authority {authority!r} MUST NOT be declared (C-055)."))
         # INV-003: owning_artifact must be a valid Owning Artifact for the Class.
         allowed_owning=_DEC_OWNING_BY_CLASS.get(cls)
         if allowed_owning is not None and owning not in allowed_owning:
@@ -443,6 +452,14 @@ def _validate_unresolved_decisions(r:Path,mpath:Path,m:dict)->list[ValidationFin
     artifacts=m.get("artifacts")if isinstance(m.get("artifacts"),dict)else{}
     for entry in valid:
         for key in entry.get("invalidates")or[]:
+            if key not in artifacts:
+                # CHG-0013-R003: artifacts.get(key) is None for a missing key,
+                # which is not in {"complete","approved"} — the check below
+                # would silently pass a typo'd or never-tracked artifact key,
+                # dropping the invalidation obligation entirely. A declared
+                # invalidation target must name a real, tracked Artifact.
+                out.append(_dec_finding(r,mpath,f"Decision {entry.get('id')!r} declares invalidates: {key!r}, but {key!r} is not tracked in artifacts at all (C-057)."))
+                continue
             current=artifacts.get(key)
             if current in{"complete","approved"}:
                 out.append(_dec_finding(r,mpath,f"Decision {entry.get('id')!r} declares invalidates: {key!r}, but artifacts.{key} is still {current!r}; it must become invalidated until revisited (C-057)."))

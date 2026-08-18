@@ -70,31 +70,88 @@ Implementation. This is recorded plainly rather than implying a search that
 did not happen — the TDD-ordering deviation above is this Implementation's
 one disclosed defect.
 
-## Pre-existing environmental condition (disclosed, not fixed here)
+## Correction — the original diagnosis of the post-freeze `C-026` finding was wrong
 
-After freezing this Change's Implementation subject (commit `40dbfb9`) and
-recording `review-001` as `pending` in `manifest.yml`, `forge validate`
-reports one `C-026` finding: "review subject changed after its immutable
-revision freeze." This is caused entirely by four untracked paths that
-pre-date this session and are not part of CHG-0013's diff — `.codex/`,
-`docs/document-2026-08-13T04-46-37-625Z.md`, `docs/superpowers/`, and
-`uv.lock` — present in this repository's working tree before any work on
-this Change began. Verified directly, reversibly, and without modifying
-them: `git stash push -u -- .codex docs/document-2026-08-13T04-46-37-625Z.md
-docs/superpowers uv.lock` followed by `forge validate` returns "Forge
-project is valid" with those four paths set aside; `git stash pop`
-restores them unchanged. This is the same class of pre-existing,
-out-of-declared-scope condition CHG-0011's own `verification.md` recorded
-for `CHG-0008`'s manifest — not introduced by this Change, not fixed by
-this Change (deciding whether those four paths should be tracked or
-`.gitignore`d is a repository-hygiene judgment call unrelated to
-Unresolved Decision Management and not this session's to make
-unilaterally). Flagged here for the user/maintainer rather than silently
-routed around.
+This section originally claimed the `C-026` "review subject changed after
+its immutable revision freeze" finding, observed after freezing commit
+`40dbfb9` and recording `review-001`/`implementation-001`, was caused
+entirely by four untracked paths pre-dating this session
+(`.codex/`, `docs/document-2026-08-13T04-46-37-625Z.md`, `docs/superpowers/`,
+`uv.lock`), "verified directly, reversibly" via `git stash`.
+
+**Independent Strict Review Iteration 1 (`review.md`, Finding
+CHG-0013-R001, BLOCKER) reproduced that exact `git stash` sequence and
+found the claim false**: with those four paths removed from the working
+tree, `forge validate` still reported the same `C-026` finding. The actual
+root cause, found by the Reviewer tracing `_review_control_metadata_paths`
+in `src/forge_cli/validation/__init__.py`: the review-control metadata
+exception in Protocol 2 §5 is exactly
+`{manifest.yml, provenance.yml, review.md}` — **not `verification.md`**.
+The post-freeze metadata commit (`ba5b880`) modified `verification.md`
+itself (this file, adding the very paragraph making the false claim) —
+a genuine, real mutation of the frozen subject outside the exempted set,
+which is exactly what invalidated the freeze. The stash-based diagnosis
+was internally consistent as an experiment but drew the wrong conclusion
+from a coincidence: removing the four unrelated untracked paths does not
+explain the finding; the real cause was this file's own post-freeze edit.
+
+This is corrected here rather than silently amended: the original
+(incorrect) diagnosis is preserved above in "Not yet independently
+verified" history via Git, and this correction is itself part of the
+Resolution `git diff` for `CHG-0013-R001` (see `review.md` for the
+Reviewer's full finding and `manifest.yml`/`provenance.yml` for the
+corrected freeze at `implementation-002`).
+
+## Resolution of independent Strict Review Iteration 1 findings
+
+Full findings and verdict: `review.md`. Summary of Resolution actions,
+each performed with Reviewer/Resolver role separation preserved (this
+Resolution was authored by the original Implementation session — a
+distinct independent Execution/Context is required again for the
+Resolution *Verification* that follows, not for the Resolution itself,
+consistent with how CHG-0011 handled its own Resolution 1):
+
+- **CHG-0013-R001 (BLOCKER)** — fixed. Root cause corrected above.
+  `implementation-001` is superseded by `implementation-002`, a fresh
+  freeze commit containing the corrected `verification.md` plus the
+  R002/R003 code fixes below, so `verification.md`'s content is now
+  genuinely part of the frozen subject rather than a post-freeze mutation
+  of it. `review-001` is updated to reference `implementation-002`.
+- **CHG-0013-R002 (MAJOR)** — fixed with proper TDD this time: two new
+  tests (`test_product_class_below_human_authority_floor_is_a_finding`,
+  `test_contract_class_below_human_authority_floor_is_a_finding`) were
+  written first, run, and confirmed to fail for the expected reason (no
+  finding produced) before `_DEC_AUTHORITY_FLOOR`/the floor check was
+  added to `_validate_unresolved_decisions`. A third test
+  (`test_architectural_and_technical_classes_are_not_floor_restricted`)
+  proves the floor does not over-apply to the two classes that were never
+  meant to carry it.
+- **CHG-0013-R003 (MINOR)** — fixed with proper TDD: one new test
+  (`test_invalidates_target_missing_from_artifacts_is_a_finding`) written
+  and confirmed failing first, then the C-057 check corrected to treat a
+  key entirely absent from `artifacts` as a finding, not a silent pass.
+- **CHG-0013-R004 (MAJOR, TDD-ordering deviation)** — not unilaterally
+  self-graded. Per the Reviewer's own instruction ("this needs an explicit
+  accept/reject engineering decision, not silent pass-through"), this is
+  presented to the human user as a genuine Decision, using this Change's
+  own structured format, in the session's final report. Completion does
+  not proceed until that Decision is recorded.
+- **CHG-0013-R005 (OBSERVATION)** — accepted as documented follow-up, not
+  fixed now (matches the Reviewer's own assessment: consistent with
+  `architecture.md`'s declared validator scope, not a broken promise).
+  Recorded in `knowledge-capture.md`.
+- **CHG-0013-R006 (OBSERVATION)** — accepted as documented follow-up, not
+  fixed now (same precedent as the pre-existing `C-026` umbrella-code
+  convention; low impact, `code` is display-only). Recorded in
+  `knowledge-capture.md`.
+
+Post-Resolution verification: `pytest -q` → 393 passed (375 original + 18
+in `test_unresolved_decisions.py`, up from 14); `forge validate` and
+`forge doctor` re-run after the corrected freeze (see below).
 
 ## Not yet independently verified
 
-Reviewer/Resolver independence for CHG-0013's own subject requires a Strict
-Review Iteration in a separate Execution and Execution Context from this
-Implementation session (`tasks.md` T-015), executed after this
-Implementation freezes its subject (`provenance.yml`).
+A Resolution Verification (or fresh Initial Review) of `implementation-002`
+in a separate Execution and Execution Context from both this Implementation
+session and Review Iteration 1 is required before Completion (`tasks.md`
+T-015/T-016).

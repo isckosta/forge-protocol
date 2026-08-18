@@ -14,10 +14,10 @@ requirements:
   FR-011: {tasks: [T-001, T-009, T-010], tests: [test_malformed_fields_are_findings_without_raising, test_superseded_decision_does_not_block], evidence: lifecycle_status_enum_and_open_blocking_set}
   FR-012: {tasks: [T-001, T-002], evidence: decisions_array_schema_plus_decisions_md_convention_in_architecture_md}
   FR-013: {tasks: [T-009, T-010], tests: [test_open_blocking_status_conflicts_with_passed_gate, test_resolved_material_decision_does_not_block, test_superseded_decision_does_not_block], evidence: gate_conflict_detection}
-  FR-014: {tasks: [T-009, T-010], tests: [test_invalidates_target_still_complete_is_a_finding, test_owning_artifact_inconsistent_with_class], evidence: invalidates_and_owning_artifact_checks}
+  FR-014: {tasks: [T-009, T-010], tests: [test_invalidates_target_still_complete_is_a_finding, test_invalidates_target_missing_from_artifacts_is_a_finding, test_owning_artifact_inconsistent_with_class], evidence: invalidates_and_owning_artifact_checks_incl_r003_resolution}
   FR-015: {tasks: [T-003], evidence: contract_c059_reviewer_resolver_separation_reuse}
   FR-016: {tasks: [T-003], evidence: contract_c056_assumption_laundering}
-  FR-017: {tasks: [T-002, T-006], evidence: policy_decision_schema_const_defaults}
+  FR-017: {tasks: [T-002, T-006, T-017], tests: [test_product_class_below_human_authority_floor_is_a_finding, test_contract_class_below_human_authority_floor_is_a_finding, test_architectural_and_technical_classes_are_not_floor_restricted], evidence: policy_decision_schema_const_defaults_plus_r002_resolution_mechanical_floor_check}
   FR-018: {tasks: [T-003, T-009, T-010], tests: [test_non_material_entry_never_blocks], evidence: contract_c058_and_non_material_short_circuit}
   INV-001: {tasks: [T-009, T-010], tests: [test_open_blocking_status_conflicts_with_passed_gate], evidence: open_blocking_gate_conflict}
   INV-002: {tasks: [T-009, T-010], tests: [test_human_authority_evidence_resolution_is_allowed], evidence: evidence_resolution_permitted_regardless_of_authority}

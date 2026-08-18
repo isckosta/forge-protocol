@@ -140,7 +140,13 @@ identically to `forge/change@1` and `forge/change@2`). It:
    correspond to a `status: resolved` entry; `authority: human` combined
    with `resolved_via: autonomous_decision` is a finding (C-055); a `status:
    resolved` entry with `resolved_via: null` is a finding (a Decision cannot
-   be resolved by nothing).
+   be resolved by nothing). Additionally — added during Resolution of
+   independent Strict Review Finding CHG-0013-R002, which found the check
+   above insufficient on its own — the `product`/`contract` authority floor
+   (C-055/FR-017) is checked as a property of `class` itself, independent of
+   `resolved_via`: `class` in `{product, contract}` combined with any
+   `authority` other than `human` is a finding, so the floor cannot be
+   bypassed simply by declaring a non-`human` `authority` directly.
 4. Checks INV-003 mechanically only to the extent it is representable
    without semantic Flow-order knowledge beyond what already exists: cross-
    references `owning_artifact` against the fixed Class→Owning-Artifact
@@ -159,7 +165,10 @@ identically to `forge/change@1` and `forge/change@2`). It:
    `artifacts.*` key that is currently `complete`/`approved` while the
    Decision that declared it is itself still Open-blocking, or while the
    named artifact was never subsequently transitioned through
-   `invalidated`→(revised), is a finding.
+   `invalidated`→(revised), is a finding — including, after Resolution of
+   Finding CHG-0013-R003, an `invalidates` key that is not tracked in
+   `artifacts` at all (a missing key is not the same as a present-and-
+   complete one, and the original check silently passed the former).
 
 This mirrors exactly the shape and rigor of
 `_validate_resolution_verification` (same file): small, pure, operating
