@@ -149,9 +149,25 @@ Post-Resolution verification: `pytest -q` → 393 passed (375 original + 18
 in `test_unresolved_decisions.py`, up from 14); `forge validate` and
 `forge doctor` re-run after the corrected freeze (see below).
 
+## Re-verification of the untracked-files condition against the new freeze
+
+After freezing `resolution-001` (commit `abf3bbb`) and recording
+`review-002` as `pending`, `forge validate` again reports the `C-026`
+finding. Re-verified independently against *this* freeze, the same way
+Strict Review Iteration 1 verified the original claim (not assumed to
+still hold from before): `git stash push -u -- .codex
+docs/document-2026-08-13T04-46-37-625Z.md docs/superpowers uv.lock`
+followed by `forge validate` returns "Forge project is valid"; `git stash
+pop` restores the four paths, confirmed via `git status --short`
+afterward. This time the only uncommitted change besides those four paths
+is `manifest.yml`/`provenance.yml` themselves (both exempt), so the
+four untracked paths are confirmed, again, to be the sole cause — this
+time against the corrected subject, not the broken one R001 was raised
+against.
+
 ## Not yet independently verified
 
-A Resolution Verification (or fresh Initial Review) of `implementation-002`
+A Resolution Verification (or fresh Initial Review) of `resolution-001`
 in a separate Execution and Execution Context from both this Implementation
 session and Review Iteration 1 is required before Completion (`tasks.md`
 T-015/T-016).
