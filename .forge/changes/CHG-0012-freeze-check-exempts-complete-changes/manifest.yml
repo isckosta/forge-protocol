@@ -7,6 +7,7 @@ artifacts:
   intent: complete
   inspection: complete
   specification_drift: complete
+  knowledge_capture: complete
   tdd_evidence: complete
   implementation: complete
   provenance: complete
@@ -18,11 +19,14 @@ tdd: {status: compliant, cycles: 1}
 verification: {status: passed}
 review:
   status: failed
-  iteration: 2
+  iteration: 3
   blockers: 1
   majors: 0
   minors: 0
-  observations: 0
+  observations: 1
+  convergence:
+    state: review_convergence_failed
+    consecutive_unconverged_verifications: 2
   iterations:
     - id: review-001
       revision: chg-0012-implementation-001
@@ -63,6 +67,39 @@ review:
         confirmed fixed; the Resolution Delta matches its declared scope
         exactly (no Out-of-Scope Mutation). See review.md Iteration 2 for
         full findings.
+    - id: review-003
+      revision: chg-0012-resolution-002
+      subject_provenance: resolution-002
+      reviewer_provenance: review-003
+      kind: resolution_verification
+      status: failed
+      new_material_findings: 1
+      evidence_gap: >-
+        CHG-0012-R003 (BLOCKER, class B -- direct evidenced consequence of
+        resolution-002's own delta, FR-007(b)):
+        _first_commit_where_state_complete walks only commits git log
+        --diff-filter=AM returns for manifest.yml, which never includes a
+        deletion commit. Reproduced directly against validate_project: seal
+        complete (C2) -> delete manifest.yml (C3, invisible to the
+        --diff-filter=AM walk) -> tamper the reviewed file (C4) -> recreate
+        manifest.yml as complete (C5) -> zero findings; the walk sees only
+        C2 and C5, both "complete", and never observes the C3-C4 window at
+        all. This defeats resolution-002's own "walks the entire
+        history"/"fails closed on ambiguous history" claim. CHG-0012-R002's
+        own scenario and adjacent variants (double revert/reseal cycles,
+        revert-and-tamper in one commit, mid-history YAML corruption
+        repaired before HEAD) are confirmed fixed; the Resolution Delta
+        matches its declared scope exactly (no Out-of-Scope Mutation). Also
+        recorded: a class D OBSERVATION, unrelated to
+        _first_commit_where_state_complete, that a manifest.yml genuinely
+        malformed at HEAD causes validate_project to produce zero findings
+        for that Change entirely -- pre-existing, not pursued further. See
+        review.md Iteration 3 for full findings. This is the second
+        consecutive resolution_verification Iteration with
+        new_material_findings > 0 (Iteration 2: CHG-0012-R002; Iteration 3:
+        CHG-0012-R003), reaching the Convergence Limit; per the engineer's
+        stated policy, no further automatic Resolution is attempted -- an
+        explicit engineer decision is required.
 documentation:
   impact_evaluated: true
   update_required: true

@@ -165,3 +165,49 @@ records:
         addresses) and from resolution-001/review-001/implementation-001.
         No provider-native or cryptographic attestation is claimed;
         assurance is recorded.
+  - id: review-003
+    role: review
+    execution: {id: review-exec-chg0012-20260818-03, context_id: review-context-chg0012-20260818-03}
+    recorded_at: 2026-08-18T05:10:00Z
+    revision:
+      id: chg-0012-resolution-002
+      immutable_ref: {type: git_commit, value: e243604a1bc65bca30e4d11589e71253d0842740}
+      commit: e243604a1bc65bca30e4d11589e71253d0842740
+      description: >-
+        Strict Review Iteration 3 (kind: resolution_verification) of
+        resolution-002, verifying CHG-0012-R002. Independent Execution and
+        Execution Context from resolution-002, review-002, resolution-001,
+        review-001, and implementation-001. Verdict: REQUEST CHANGES (1
+        BLOCKER, CHG-0012-R003, class B — direct evidenced consequence of
+        resolution-002's own delta; 1 class D OBSERVATION recorded but not
+        counted) — see review.md Iteration 3 for full findings.
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: claude-code
+      statement: >-
+        Self-recorded repository-native provenance for the independent
+        Resolution Verification execution that evaluated resolution-002
+        against CHG-0012-R002. No provider-native or cryptographic
+        attestation is claimed; assurance is recorded, not verified or
+        externally proven. Computed the Resolution Delta directly via git
+        diff --name-status between the prior reviewed subject
+        (e0b4b141f3cd164299710a4249cbd71430592abf) and this subject
+        (e243604a1bc65bca30e4d11589e71253d0842740) and confirmed it matches
+        resolution-002's declared scope exactly. pytest (377 passed), forge
+        validate (exit 0), and forge doctor (all PASS) were run directly by
+        this execution against the frozen subject commit. CHG-0012-R002's
+        own scenario and several adjacent variants (double revert/reseal,
+        revert-and-tamper in one commit, mid-history YAML corruption
+        repaired before HEAD) were independently reconfirmed fixed via
+        hand-built, real-Git-backed reproductions, not mocked. A new defect
+        (CHG-0012-R003) was found and reproduced directly against
+        validate_project: deleting manifest.yml (invisible to the
+        --diff-filter=AM history walk), tampering with the reviewed file,
+        then recreating manifest.yml as complete again hides the tampering
+        entirely, defeating resolution-002's own "walks the entire
+        history"/"fails closed on ambiguous history" claim. A separate,
+        unrelated (class D) OBSERVATION was also recorded per FR-008: a
+        manifest.yml left genuinely malformed at HEAD causes zero findings
+        for that Change, not merely a skipped freeze-drift check; this
+        predates CHG-0012 and was not pursued further.

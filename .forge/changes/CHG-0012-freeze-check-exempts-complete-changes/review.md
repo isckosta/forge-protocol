@@ -4,7 +4,7 @@ forge:
   schema: 1
 change: CHG-0012
 status: failed
-iteration: 2
+iteration: 3
 ---
 
 # Strict Review — Freeze check exempts complete Changes
@@ -117,3 +117,60 @@ Finding counts (this Iteration):
 - new_material_findings: 1 (CHG-0012-R002; class A/D findings, of which there are none this Iteration, would not count per FR-013)
 
 Per C-027, Completion MUST NOT proceed with an unresolved BLOCKER finding present. This Iteration does not, by itself, require Full Review Escalation (`full_review_required: true`) — CHG-0012-R002 is a class B Resolution Regression, not an Out-of-Scope Mutation (FR-006), and the Convergence Limit (2 consecutive `resolution_verification` Iterations with `new_material_findings > 0`) has not been reached at this Iteration (only 1 so far). A further Resolution scoped to CHG-0012-R002 — for example, tracking the manifest commit where `state.current` first became `complete` *and never subsequently reverted before the diff endpoint used*, or otherwise making `_first_commit_where_state_complete`'s anchor robust to non-monotonic `state.current` — followed by another `resolution_verification` Iteration, remains available before Full Review Escalation would be required.
+
+## Iteration 3 — REQUEST CHANGES
+
+Reviewed revision: `e243604a1bc65bca30e4d11589e71253d0842740` (`resolution-002`, per `provenance.yml`), a Resolution of Resolution Verification Iteration 2's BLOCKER (`targets: [CHG-0012-R002]`).
+
+Reviewer Execution: `review-exec-chg0012-20260818-03`.
+Reviewer Execution Context: `review-context-chg0012-20260818-03`.
+Assurance: `recorded` (self-recorded repository-native provenance; no cryptographic/external attestation claimed).
+
+This is a Strict Review Iteration with `kind: resolution_verification` (CHG-0011), independent in Execution and Execution Context from `resolution-002`, `review-002`, `resolution-001`, `review-001`, and `implementation-001`. Authority is bound to: (a) whether CHG-0012-R002 was genuinely fixed; (b) whether `resolution-002`'s own delta (or its direct evidenced consequences, per FR-007(b)) introduced a new defect (class B); (c) whether the Resolution Delta stayed within its declared `scope`; (d) provenance/revision/subject correctness for this Iteration.
+
+### Verification performed
+
+- Read `intent.md`, `inspection.md`, `specification-drift.md`, `verification.md`, `review.md` (Iterations 1-2), `provenance.yml`, `manifest.yml` in full, focused on the Resolution 2 sections.
+- Read `git show e243604a1bc65bca30e4d11589e71253d0842740` in full: the rewritten `_first_commit_where_state_complete` (`src/forge_cli/validation/__init__.py` lines 236-284) and its new regression test.
+- Computed the Resolution Delta directly: `git diff --name-status e0b4b141f3cd164299710a4249cbd71430592abf..e243604a1bc65bca30e4d11589e71253d0842740` → `manifest.yml`, `provenance.yml`, `review.md` (review-control metadata, excluded per the standard exception), `specification-drift.md`, `verification.md`, `src/forge_cli/validation/__init__.py`, `tests/unit/test_freeze_check_exempts_complete_changes.py`. Excluding review-control metadata, this is **exactly** `resolution-002`'s declared `scope` (4 paths) — no more, no less. No Out-of-Scope Mutation (class C: 0).
+- `.venv/bin/python -m pytest -q`: **377 passed**, matching `verification.md`.
+- `.venv/bin/forge validate`: exit 0, "Forge project is valid".
+- `.venv/bin/forge doctor`: exit 0, all 7 checks PASS.
+- Built independent, hand-written, real-Git-backed reproductions against the actual `validate_project` (not mocked, not reusing the shipped tests as-is), reusing `tests/unit/test_freeze_check_exempts_complete_changes.py`'s helpers:
+  - **CHG-0012-R002's own scenario** (seal → revert → tamper → reseal, single cycle): correctly detected. Confirms the shipped `test_reverting_and_resealing_complete_cannot_hide_tampering`.
+  - **Double revert/reseal cycle** (seal → revert → reseal → revert → tamper → reseal): correctly detected — the first revert alone is sufficient to make `_first_commit_where_state_complete` fail closed (return `None`), regardless of how many cycles follow.
+  - **Tampering in the same commit as the revert** (one commit both reverts `state.current` and edits the reviewed file): correctly detected.
+  - **A post-seal commit with genuinely malformed YAML in `manifest.yml`, followed by tampering, followed by a commit restoring a valid `complete` manifest at HEAD**: correctly detected — the `yaml.YAMLError` branch (lines 272-275) fails closed exactly as designed.
+  - **CHG-0012-R001's original scenario** (single tamper before the first seal): still correctly detected.
+  - **The original CI false positive** (a later, independent edit to the same file, occurring cleanly after a genuine, non-reverted seal): still silently accepted, as intended.
+
+### Findings
+
+- **CHG-0012-R003 — BLOCKER (class B — direct evidenced consequence of `resolution-002`'s own delta, FR-007(b)) — `_first_commit_where_state_complete` walks only commits `git log --diff-filter=AM` returns for the manifest path, which never includes a deletion commit; deleting `manifest.yml`, tampering with the reviewed file, then recreating `manifest.yml` with `state.current: complete` produces zero findings, defeating the exact "walks the entire history... fails closed on an ambiguous history" guarantee `resolution-002`'s own docstring (lines 248-257) claims to provide.**
+
+  Reproduced directly against `validate_project` (real Git repo, not mocked): C1 freezes `reviewed_module.py`. C2 seals `state.current: complete` cleanly (`manifest.yml` created here — this is the commit the function returns). C3 **deletes** `manifest.yml` entirely (a `D`-type diff, invisible to `--diff-filter=AM`, so it is never inspected by the loop at all — unlike a revert or a parse failure, which the loop's `sealed is not None: return None` branches do catch). C4 tampers `reviewed_module.py`. C5 recreates `manifest.yml` (an `A`-type diff, so it *is* visible) with `state.current: complete` again. The history walk sees only C2 (`sealed = C2`, `current == "complete"`) then C5 (`current == "complete"`, `elif current!="complete"` is false, no `return None`) — the entire C3-C4 window is structurally absent from the walk, not merely unexamined. `_first_commit_where_state_complete` returns C2, `_resolution_delta` compares the frozen subject only against C2, and the tampering at C4 is invisible. `validate_project` produces zero findings. Confirmed reproducible with a single delete/recreate cycle and with two consecutive delete/recreate cycles (tampering hidden in the second window).
+
+  This is squarely a **direct evidenced consequence** of `resolution-002`'s delta, not a bare pre-existing/unrelated (class D) condition: the `git log --diff-filter=AM` construction itself is unchanged since `resolution-001` (confirmed: it does not appear in `resolution-002`'s diff hunk, `git show e243604a1bc65bca30e4d11589e71253d0842740`), but `resolution-002`'s *new* code and its *new* docstring (added in this delta) make an explicit, general claim of comprehensiveness — "walks the *entire* [post-seal] history," "fails closed rather than silently trusting an ambiguous history" — that the shipped fix does not deliver. The new `sealed`-tracking loop explicitly enumerates and closes two ambiguity classes it is responsible for (a reverted `current` value; an unparseable snapshot) but omits a third, equally reachable one it does not mention or guard: a missing snapshot, reachable via deletion, which the same actor R001/R002 were written against (anyone who can hand-edit `manifest.yml` can also delete it) can trivially produce. Whether `_first_commit_where_state_complete`'s underlying history source should instead use `--diff-filter=AMD` (or otherwise treat a deletion commit as an unconditional `return None` once `sealed is not None`, matching the same pattern already used for the other two ambiguity classes) is a Resolution decision, not this Iteration's to make — but the gap is real, reproduces cleanly, and defeats the exact guarantee this Resolution's own text asserts.
+
+- **(class D, OBSERVATION, unrelated to `_first_commit_where_state_complete`) — a `manifest.yml` that is genuinely malformed YAML *at HEAD* causes `validate_project` to produce zero findings for that Change entirely** (not merely to skip the freeze-drift check), rather than surfacing a diagnostic about the unparseable manifest. Observed as a side effect while constructing the malformed-YAML repro above (a manifest left broken at HEAD, rather than repaired by a later commit, produced no findings at all for that Change). This is not inside `resolution-002`'s delta — `_validate_protocol2_review_provenance`'s top-level manifest-scanning loop (not `_first_commit_where_state_complete`) predates CHG-0012 entirely and is unrelated to this Change's own fix — and is not, by itself, BLOCKER or MAJOR severity on the evidence gathered here, so per FR-009 it does not force escalation or affect the convergence counter. Recorded per FR-008 so it is not silently dropped; not pursued further, as doing so would exceed this Iteration's bounded authority.
+
+### Assessment against Resolution Verification's bounded authority
+
+- **(a) Is CHG-0012-R002 fixed?** Yes, for the scenario R002 actually demonstrated (a single revert-then-reseal cycle) and for the variants adjacent to it tested here (multiple revert cycles, revert-and-tamper in one commit, mid-history YAML corruption with a later valid HEAD) — independently reproduced and reconfirmed.
+- **(b) Resolution regression?** Yes — CHG-0012-R003 above, a defect that is a direct evidenced consequence of `resolution-002`'s own delta (its new fail-closed design omits the deletion/missing-snapshot ambiguity class it otherwise claims to close).
+- **(c) Resolution Scope respected?** Yes — the Resolution Delta is exactly the declared 4-path `scope`, no Out-of-Scope Mutation.
+- **(d) Provenance/revision/subject correctness?** `resolution-002` correctly declares `role: resolution`, `targets: [CHG-0012-R002]`, a non-empty exact-path `scope`, and an Execution/Context (`resolution-exec-chg0012-20260818-02`/`resolution-context-chg0012-20260818-02`) distinct from every prior record. No defect found here.
+
+### Verdict
+
+**REQUEST CHANGES**
+
+Finding counts (this Iteration):
+
+- BLOCKER: 1 (CHG-0012-R003, class B)
+- MAJOR: 0
+- MINOR: 0
+- OBSERVATION: 1 (class D, malformed-manifest-at-HEAD producing zero findings — not counted per FR-013, recorded per FR-008)
+- new_material_findings: 1 (CHG-0012-R003; the class D observation does not count per FR-013)
+
+Per C-027, Completion MUST NOT proceed with an unresolved BLOCKER finding present. **This is the second consecutive `resolution_verification` Iteration with `new_material_findings > 0`** (Iteration 2 found CHG-0012-R002; this Iteration finds CHG-0012-R003), reaching the Convergence Limit referenced in Iteration 2's verdict. Per the engineer's own stated policy for this cycle, this Iteration does not proceed to attempt a fourth automatic fix; it reports CHG-0012-R003 and returns authority to the engineer to make an explicit decision (accept as documented residual risk, pursue a further scoped Resolution, or another course) rather than triggering another automatic Resolution attempt.
