@@ -121,9 +121,19 @@ def write_installation_record(path: Path, record: AdapterInstallationRecord) -> 
     )
 
 
-def load_installation_record(path: Path) -> AdapterInstallationRecord:
+def parse_installation_record(text: str) -> AdapterInstallationRecord:
+    """Parse an installation record from already-read text.
+
+    Callers that must derive a validation/authorization decision and a
+    rollback backup from the exact same on-disk content should read the file
+    once and pass that text here, instead of calling load_installation_record
+    (which performs its own file read) after a separate read of their own --
+    two physical reads of the same path give a concurrent writer a window to
+    change the content in between, desynchronizing what was authorized from
+    what gets restored on rollback.
+    """
     try:
-        payload = yaml.safe_load(path.read_text(encoding="utf-8"))
+        payload = yaml.safe_load(text)
         if not isinstance(payload, dict):
             raise InvalidAdapterInstallationRecordError(
                 "Adapter installation record must be a mapping."
@@ -147,7 +157,6 @@ def load_installation_record(path: Path) -> AdapterInstallationRecord:
             limitations=payload["limitations"],
         )
     except (
-        OSError,
         TypeError,
         KeyError,
         ValidationError,
@@ -155,3 +164,11 @@ def load_installation_record(path: Path) -> AdapterInstallationRecord:
     ) as exc:
         message = exc.message if isinstance(exc, ValidationError) else str(exc)
         raise InvalidAdapterInstallationRecordError(message) from exc
+
+
+def load_installation_record(path: Path) -> AdapterInstallationRecord:
+    try:
+        text = path.read_text(encoding="utf-8")
+    except OSError as exc:
+        raise InvalidAdapterInstallationRecordError(str(exc)) from exc
+    return parse_installation_record(text)

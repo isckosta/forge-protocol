@@ -23,7 +23,7 @@ from forge_cli.adapters.ownership import (
 from forge_cli.adapters.state import (
     AdapterInstallationRecord,
     InvalidAdapterInstallationRecordError,
-    load_installation_record,
+    parse_installation_record,
     write_installation_record,
 )
 
@@ -170,6 +170,25 @@ def _current_digest(path: Path) -> str:
     return digest_content(content)
 
 
+def _current_digest_and_bytes(path: Path) -> tuple[str, bytes]:
+    """Read a target once and return both its digest and raw bytes.
+
+    Used wherever a precondition digest check and a rollback-backup capture
+    both need the exact same on-disk content: separate reads (digest first,
+    raw bytes later) would let a concurrent writer change the file in
+    between, authorizing a mutation against one version of the content while
+    capturing a different version as the rollback backup.
+    """
+    try:
+        raw = path.read_bytes()
+        content = raw.decode("utf-8")
+    except (OSError, UnicodeError) as exc:
+        raise AdapterPublicationConflictError(
+            f"Cannot safely inspect current Adapter artifact: {path}"
+        ) from exc
+    return digest_content(content), raw
+
+
 def _validate_record_matches_plan(
     plan: AdapterPlan,
     record: AdapterInstallationRecord,
@@ -251,7 +270,7 @@ def _load_prior_installation_record(
         )
     try:
         raw = path.read_bytes()
-        record = load_installation_record(path)
+        record = parse_installation_record(raw.decode("utf-8"))
         require_recorded_publication_ownership(record)
         return record, raw
     except (
@@ -500,12 +519,15 @@ def publish_adapter_plan(
                     operation.expected_current_digest is None
                     or not target.exists()
                     or target.is_symlink()
-                    or _current_digest(target) != operation.expected_current_digest
                 ):
                     raise AdapterPublicationConflictError(
                         f"Adapter update precondition changed before write: {operation.path}."
                     )
-                original = target.read_bytes()
+                current_digest, original = _current_digest_and_bytes(target)
+                if current_digest != operation.expected_current_digest:
+                    raise AdapterPublicationConflictError(
+                        f"Adapter update precondition changed before write: {operation.path}."
+                    )
                 applied.append((operation.path, original))
                 _replace_file(target, operation.content or "")
                 continue
@@ -522,12 +544,15 @@ def publish_adapter_plan(
                     or not target.exists()
                     or target.is_symlink()
                     or not target.is_file()
-                    or _current_digest(target) != operation.expected_current_digest
                 ):
                     raise AdapterPublicationConflictError(
                         f"Adapter delete precondition changed before removal: {operation.path}."
                     )
-                original = target.read_bytes()
+                current_digest, original = _current_digest_and_bytes(target)
+                if current_digest != operation.expected_current_digest:
+                    raise AdapterPublicationConflictError(
+                        f"Adapter delete precondition changed before removal: {operation.path}."
+                    )
                 applied.append((operation.path, original))
                 target.unlink()
                 continue

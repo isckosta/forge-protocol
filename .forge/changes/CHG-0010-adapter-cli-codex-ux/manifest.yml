@@ -38,7 +38,7 @@ requirements:
 
 tdd:
   status: compliant
-  cycles: 50
+  cycles: 51
 
 verification:
   status: passed

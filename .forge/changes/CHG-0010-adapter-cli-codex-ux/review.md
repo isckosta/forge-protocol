@@ -477,3 +477,36 @@ Full suite after remediation: `.venv/bin/python -m pytest -q` — 354 passed.
 
 Decision: FAIL. Re-review of the resolved revision is required before PASS
 (`re_review.required_after_blocking_resolution`).
+
+## Pre-Iteration 6 note — Resolution scope (TDD-019)
+
+Before requesting Iteration 6, self-review found two remaining call sites of
+the same defect class Iterations 1–5 progressively closed (a decision-
+authorizing read and a later rollback-backup read of the same on-disk
+content performed as two separate physical reads, letting a concurrent
+writer desynchronize the two): `_load_prior_installation_record`'s own
+prior-record parse, and the update/delete mutation-loop precondition
+recheck. TDD-019 (`tdd-evidence.yml`) closes both with a single-read-derives-
+both pattern, per CHG-0011's Resolution Scope discipline — applied here by
+convention, not mechanism, since CHG-0010 is `forge/change@1` and predates
+Protocol 2's provenance ledger:
+
+- **Declared scope:** `src/forge_cli/adapters/state.py` (`parse_
+  installation_record`/`load_installation_record` split),
+  `src/forge_cli/adapters/publisher.py` (`_current_digest_and_bytes` plus
+  the two call sites replacing `_current_digest`+`read_bytes()`),
+  `tests/integration/test_adapter_publisher.py` (two new regression tests).
+- **Declared targets:** the two remaining double-read call sites named
+  above — not a re-opening of any other part of the module.
+- **Note to the Iteration 6 Reviewer:** this is the sixth consecutive
+  iteration finding an instance of the same underlying defect class in this
+  file. Iteration 1's Observation #3 already named the structural
+  alternative (`configuration.py`'s fd-anchored, `O_NOFOLLOW`-based write
+  path, which prevents this whole class by construction rather than by
+  re-validating before each use) as legitimate future hardening explicitly
+  deferred as out of scope for each individual remediation pass. The
+  engineer was presented this choice again after TDD-019 and chose to
+  proceed with a scoped Iteration 6 rather than pause for the structural
+  rewrite; if Iteration 6 finds yet another instance of this same class,
+  that recommendation should be escalated explicitly rather than absorbed
+  into a seventh scoped pass.

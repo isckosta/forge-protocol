@@ -506,23 +506,25 @@ def test_rollback_of_an_already_applied_operation_reuses_a_stale_target_path(
         ("zzz-b.md", digest_content("old-b-content")),
     )
 
-    original_digest = publisher._current_digest
-    calls_for_b = {"count": 0}
+    original_digest_and_bytes = publisher._current_digest_and_bytes
 
-    def swap_a_directory_aside_then_report_b_as_concurrently_changed(path: Path) -> str:
+    def swap_a_directory_aside_then_report_b_as_concurrently_changed(
+        path: Path,
+    ) -> tuple[str, bytes]:
+        # Only the mutation loop's precondition recheck calls
+        # _current_digest_and_bytes (preflight uses the digest-only
+        # _current_digest), so operation_a is already applied by the time
+        # this fires for operation_b.
         if path.name == "zzz-b.md":
-            calls_for_b["count"] += 1
-            # The first call is the preflight recheck (before any mutation);
-            # only the second, inside the mutation loop itself, should race,
-            # so operation_a is already applied when operation_b fails.
-            if calls_for_b["count"] == 2:
-                sub.rename(real_sub_backup)
-                sub.symlink_to(outside, target_is_directory=True)
-                return digest_content("concurrently-changed-by-someone-else")
-        return original_digest(path)
+            sub.rename(real_sub_backup)
+            sub.symlink_to(outside, target_is_directory=True)
+            return digest_content("concurrently-changed-by-someone-else"), b"irrelevant"
+        return original_digest_and_bytes(path)
 
     monkeypatch.setattr(
-        publisher, "_current_digest", swap_a_directory_aside_then_report_b_as_concurrently_changed
+        publisher,
+        "_current_digest_and_bytes",
+        swap_a_directory_aside_then_report_b_as_concurrently_changed,
     )
 
     with pytest.raises(publisher.AdapterPublicationError) as raised:
@@ -544,6 +546,76 @@ def test_rollback_of_an_already_applied_operation_reuses_a_stale_target_path(
         "sub/a.md",
     ]
     assert not (outside / "a.md").exists()
+
+
+def test_prior_record_read_is_not_desynchronized_by_a_concurrent_content_change(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    publisher = publisher_module()
+    installation_path = tmp_path / ".forge/adapters/example/installation.yml"
+    _write_prior_record(tmp_path, ("legit.md", digest_content("legit")))
+    legit_bytes = installation_path.read_bytes()
+
+    forged_record = _record(("forged.md", digest_content("forged")))
+    original_parse = publisher.parse_installation_record
+
+    def rewrite_the_file_then_parse(text: str):
+        # Simulate a racing writer that changes the on-disk content the
+        # instant it is parsed, to prove parsing derives from the bytes
+        # already captured rather than performing its own separate read of
+        # the path -- two separate physical reads of the same file could
+        # otherwise desynchronize what gets authorized from what gets
+        # captured as the rollback backup, without any symlink involved.
+        write_installation_record(installation_path, forged_record)
+        return original_parse(text)
+
+    monkeypatch.setattr(publisher, "parse_installation_record", rewrite_the_file_then_parse)
+
+    record, raw = publisher._load_prior_installation_record(installation_path)
+
+    assert raw == legit_bytes
+    assert {artifact.path for artifact in record.generated_artifacts} == {"legit.md"}
+
+
+def test_update_precondition_digest_and_rollback_backup_come_from_the_same_read(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    publisher = publisher_module()
+    target = tmp_path / "generated.md"
+    target.write_text("SECRET-legit-content", encoding="utf-8")
+    _write_prior_record(tmp_path, ("generated.md", digest_content("SECRET-legit-content")))
+    plan = plan_adapter(
+        manifest=_manifest(),
+        effective_configuration=EffectiveAdapterConfiguration(1, ()),
+        projections=(
+            ProjectedArtifact(path="generated.md", ownership=OwnershipMode.FORGE_OWNED, content="new"),
+        ),
+        repository_state=(
+            RepositoryArtifactState(
+                path="generated.md",
+                exists=True,
+                current_digest=digest_content("SECRET-legit-content"),
+                expected_digest=digest_content("SECRET-legit-content"),
+            ),
+        ),
+    )
+    original_digest_and_bytes = publisher._current_digest_and_bytes
+
+    def rewrite_the_file_then_read(path):
+        # Simulate a racing writer that changes the file the instant it is
+        # inspected, to prove the digest check and the rollback-backup
+        # capture derive from the same physical read.
+        target.write_text("ATTACKER-RACE-INJECTED-CONTENT", encoding="utf-8")
+        return original_digest_and_bytes(path)
+
+    monkeypatch.setattr(publisher, "_current_digest_and_bytes", rewrite_the_file_then_read)
+
+    with pytest.raises(publisher.AdapterPublicationConflictError):
+        publisher.publish_adapter_plan(
+            tmp_path, plan, _record(("generated.md", digest_content("new")))
+        )
+
+    assert target.read_text(encoding="utf-8") == "ATTACKER-RACE-INJECTED-CONTENT"
 
 
 def test_adapter_id_cannot_escape_installation_state_directory(tmp_path: Path) -> None:
