@@ -53,13 +53,40 @@ observed reverted, or if any post-seal snapshot fails to parse. All five
 regression tests pass; the temporarily-neutered version was restored
 immediately after confirming RED.
 
+### Attempt 4 (structural rewrite, Resolution Verification Iteration 3 finding)
+RED: `test_reverting...`-adjacent scenarios plus manual reproduction of
+CHG-0012-R003 (delete-then-recreate manifest.yml) against Resolution 2's
+code — confirmed the gap.
+
+GREEN: `_implementation_touched_paths` + scoped comparison against HEAD,
+with no dependency on `state.current` history. All of R001/R002/R003
+verified closed by replaying each attack scenario. But `forge validate`
+against the live repository showed CHG-0011's own manifest newly failing
+(this Change's own implementation touching `src/forge_cli/validation/
+__init__.py`, a file CHG-0011's frozen subject also touched) — real,
+observed CI friction, not hypothetical. Reported to the engineer; not
+adopted.
+
+### Final decision (Non-Convergence option C)
+Reverted to Attempt 1's exemption shape (`st.get("current")!="complete"`),
+this time with `specification-drift.md` explicitly documenting and
+accepting its R001-class residual risk rather than silently reintroducing
+it. `_implementation_touched_paths` removed as dead code. Test suite
+rewritten to assert the final, accepted behavior: unrelated activity never
+flagged for a complete Change (original bug, fixed); active-Change drift
+detection unweakened (regression guard); the Change's own file drifting
+post-completion is *not* flagged, explicitly documented as the accepted
+trade-off rather than tested as a "still detected" claim.
+
 ## Full suite and CLI
 ```
-pytest -q            -> 377 passed (372 pre-existing + 5 new; zero regressions)
-forge validate        -> exit 0, "Forge project is valid" (all three
-                          CI-breaking/BLOCKER-reproducing scenarios closed;
-                          reproduces the fix closing the exact failure from
-                          GitHub Actions run 32091880352)
+pytest -q            -> 375 passed (372 pre-existing + 3 new final tests;
+                          zero regressions)
+forge validate        -> exit 0, "Forge project is valid" (both the
+                          original CI failure AND the friction Attempt 4
+                          introduced against CHG-0011 are resolved;
+                          reproduces the fix closing GitHub Actions run
+                          32091880352)
 forge doctor          -> exit 0, all PASS
 ```
 

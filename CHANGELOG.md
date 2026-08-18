@@ -16,6 +16,16 @@ Fixed:
   development on the same branch no longer resurrect a closed, already
   independently-reviewed Change as a validation failure.
 
+Known limitation (accepted, documented trade-off — see CHG-0012's
+`specification-drift.md`):
+
+- once a Change's `state.current` reaches `complete`, the freeze-drift check
+  no longer inspects further activity on that Change's own previously
+  reviewed files, including a hand-edited `state.current` that was never
+  genuinely earned through Completion. This mirrors Protocol 2's existing
+  `assurance: recorded` (self-declared) trust model rather than closing a
+  gap no other layer of `forge validate` defends against either.
+
 ### Adapter CLI and Codex Installation UX
 
 Added:

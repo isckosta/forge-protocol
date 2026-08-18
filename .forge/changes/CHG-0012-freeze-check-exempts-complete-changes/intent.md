@@ -37,18 +37,21 @@ exemption.
 
 A passed Review Iteration's frozen-subject-drift check MUST NOT fire for
 activity unrelated to the Change's own reviewed subject once the Change's
-`state.current` is `complete` — but it MUST continue to detect the Change's
-own reviewed files being tampered with between the freeze and the moment
-the Change was genuinely sealed complete. See `specification-drift.md`: the
-first attempt at this Change exempted `complete` unconditionally, which
-independent Strict Review Iteration 1 found (CHG-0012-R001, BLOCKER) also
-silently disabled the true positive, not only the false positive. The
-corrected approach compares the frozen subject against the commit where
-`state.current` first became `complete` (not against a perpetually moving
-`HEAD`), preserving protection through the entire window a human/agent
-judgment could still be influenced, while accepting that unrelated activity
-occurring *after* that seal — including a later Change legitimately editing
-a shared file — is a different Change's concern, not this freeze's.
+`state.current` is `complete`.
+
+See `specification-drift.md` for the full four-attempt history. In short:
+the first attempt (unconditional `complete` exemption) also silently
+disabled detecting the Change's own reviewed files being tampered with
+(CHG-0012-R001, BLOCKER). Two further attempts to precisely bound that
+protection each closed one gap and opened another (CHG-0012-R002, R003),
+reaching Non-Convergence. A fourth, structurally different attempt (scope
+the comparison to the implementation's own touched paths, always checked
+against HEAD) closed all three but reintroduced real CI friction on shared
+files. The engineer's final decision (Non-Convergence option C) accepted
+the original unconditional-exemption shape with its R001-class risk
+explicitly documented as a disclosed trade-off, consistent with Protocol
+2's existing self-declared (`recorded`, not `verified`) trust model —
+rather than adopted silently or left undiscovered.
 
 ## Non-goals
 
