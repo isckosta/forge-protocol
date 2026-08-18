@@ -1,0 +1,33 @@
+schema: forge/execution-provenance@1
+change: CHG-0011
+records:
+  - id: implementation-001
+    role: implementation
+    execution: {id: implementation-exec-chg0011-20260817-01, context_id: implementation-context-chg0011-20260817-01}
+    recorded_at: 2026-08-17T22:00:00Z
+    revision:
+      id: chg-0011-implementation-001
+      immutable_ref: {type: git_commit, value: 4dd8e3f88067a94547b244edb147bf2895a58b30}
+      commit: 4dd8e3f88067a94547b244edb147bf2895a58b30
+      description: >-
+        Frozen CHG-0011 Implementation subject: Resolution Verification
+        scoping and review convergence termination semantics (Contract
+        C-047-C-050, Protocol 2 Specification 10-13, review policy,
+        additive change-v2/execution-provenance schemas, Core validator
+        boundary in src/forge_cli/validation/__init__.py, 14 new adversarial
+        tests, ADR-0011, and this Change's own Specification/Architecture/
+        Test Strategy/Plan/Tasks/Verification/Knowledge Capture artifacts).
+        Subsequent commits are restricted to Change-local review-control
+        metadata (this file and manifest.yml/review.md).
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: claude-code
+      statement: >-
+        Self-recorded repository-native provenance for the Implementation
+        execution that produced CHG-0011. No provider-native attestation is
+        claimed; assurance is recorded, not verified or cryptographic/
+        external proof. The independent Strict Review Iteration that follows
+        must run in a distinct Execution and Execution Context per Protocol
+        2 (unchanged by this Change) and will record its own review-role
+        provenance separately.
