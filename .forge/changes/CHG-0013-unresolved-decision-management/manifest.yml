@@ -16,7 +16,7 @@ artifacts:
   traceability: complete
   tdd_evidence: complete
   implementation: complete
-  provenance: pending
+  provenance: complete
   verification: complete
   review: pending
   documentation: complete
@@ -26,12 +26,16 @@ tdd: {status: compliant, cycles: 9}
 verification: {status: passed}
 review:
   status: pending
-  iteration: 0
+  iteration: 1
   blockers: 0
   majors: 0
   minors: 0
   observations: 0
-  iterations: []
+  iterations:
+    - id: review-001
+      revision: chg-0013-implementation-001
+      subject_provenance: implementation-001
+      status: pending
 documentation:
   impact_evaluated: true
   update_required: true

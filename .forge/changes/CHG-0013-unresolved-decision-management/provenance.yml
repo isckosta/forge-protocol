@@ -1,0 +1,12 @@
+schema: forge/execution-provenance@1
+change: CHG-0013
+records:
+  - id: implementation-001
+    role: implementation
+    execution: {id: chg-0013-impl-session-1, context_id: chg-0013-impl-context-1}
+    recorded_at: "2026-08-18T18:00:00Z"
+    revision:
+      id: chg-0013-implementation-001
+      immutable_ref: {type: git_commit, value: 40dbfb94dfda9909c47ad158c1e5f6b6d2da903e}
+      commit: 40dbfb94dfda9909c47ad158c1e5f6b6d2da903e
+    source: {assurance: recorded, observed_by: self}

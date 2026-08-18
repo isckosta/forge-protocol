@@ -70,6 +70,28 @@ Implementation. This is recorded plainly rather than implying a search that
 did not happen — the TDD-ordering deviation above is this Implementation's
 one disclosed defect.
 
+## Pre-existing environmental condition (disclosed, not fixed here)
+
+After freezing this Change's Implementation subject (commit `40dbfb9`) and
+recording `review-001` as `pending` in `manifest.yml`, `forge validate`
+reports one `C-026` finding: "review subject changed after its immutable
+revision freeze." This is caused entirely by four untracked paths that
+pre-date this session and are not part of CHG-0013's diff — `.codex/`,
+`docs/document-2026-08-13T04-46-37-625Z.md`, `docs/superpowers/`, and
+`uv.lock` — present in this repository's working tree before any work on
+this Change began. Verified directly, reversibly, and without modifying
+them: `git stash push -u -- .codex docs/document-2026-08-13T04-46-37-625Z.md
+docs/superpowers uv.lock` followed by `forge validate` returns "Forge
+project is valid" with those four paths set aside; `git stash pop`
+restores them unchanged. This is the same class of pre-existing,
+out-of-declared-scope condition CHG-0011's own `verification.md` recorded
+for `CHG-0008`'s manifest — not introduced by this Change, not fixed by
+this Change (deciding whether those four paths should be tracked or
+`.gitignore`d is a repository-hygiene judgment call unrelated to
+Unresolved Decision Management and not this session's to make
+unilaterally). Flagged here for the user/maintainer rather than silently
+routed around.
+
 ## Not yet independently verified
 
 Reviewer/Resolver independence for CHG-0013's own subject requires a Strict
