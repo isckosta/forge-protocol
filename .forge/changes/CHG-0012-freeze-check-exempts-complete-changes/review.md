@@ -174,3 +174,54 @@ Finding counts (this Iteration):
 - new_material_findings: 1 (CHG-0012-R003; the class D observation does not count per FR-013)
 
 Per C-027, Completion MUST NOT proceed with an unresolved BLOCKER finding present. **This is the second consecutive `resolution_verification` Iteration with `new_material_findings > 0`** (Iteration 2 found CHG-0012-R002; this Iteration finds CHG-0012-R003), reaching the Convergence Limit referenced in Iteration 2's verdict. Per the engineer's own stated policy for this cycle, this Iteration does not proceed to attempt a fourth automatic fix; it reports CHG-0012-R003 and returns authority to the engineer to make an explicit decision (accept as documented residual risk, pursue a further scoped Resolution, or another course) rather than triggering another automatic Resolution attempt.
+
+## Iteration 4 — REQUEST CHANGES (`kind: initial_review`)
+
+Reviewed revision: `03b51d1b251c11e1d52d6fefd5b40287213fb286` (`resolution-003`, per `provenance.yml`), the engineer's Resolution of CHG-0012's Non-Convergence.
+
+Reviewer Execution: `review-exec-chg0012-20260818-04`.
+Reviewer Execution Context: `review-context-chg0012-20260818-04`.
+Assurance: `recorded` (self-recorded repository-native provenance; no cryptographic/external attestation claimed).
+
+Per `protocol/versions/2/specification.md` Section 13, the Iteration immediately following a Non-Convergence episode MUST be `kind: initial_review` (a `resolution_verification` is invalid at this position) and MUST carry its own `convergence_decision`. This Iteration is independent in Execution and Execution Context from `resolution-003`, `review-003`, `resolution-002`, `review-002`, `resolution-001`, `review-001`, and `implementation-001`.
+
+### Verification performed
+
+- Read `review.md` (Iterations 1-3), `specification-drift.md`, `intent.md`, `inspection.md`, `knowledge-capture.md`, `verification.md`, `manifest.yml`, `provenance.yml`, `CHANGELOG.md` in full.
+- Read `protocol/versions/2/specification.md` Sections 12-13 (Convergence/Non-convergence), `protocol/versions/2/policies/review.yml`, `protocol/policies/review.yml`, and `protocol/contract/engineering.md` C-040/C-041 in full.
+- Read `.forge/forge.yml` (effective project configuration) and confirmed `review.convergence.allow_residual_risk_acceptance: true`.
+- Read `src/forge_cli/validation/__init__.py` in full, including `_validate_resolution_verification` and `_residual_risk_permitted` (the CHG-0011 machinery gating this very Iteration's `convergence_decision`).
+- Read `tests/unit/test_freeze_check_exempts_complete_changes.py` in full.
+- `git show 03b51d1` in full (complete diff, not a summary).
+- `grep -rn` across `src/`, `tests/`, `docs/` for leftover references to `_first_commit_where_state_complete`, `_implementation_touched_paths`, and CHG-0012-R001/R002/R003 — none found outside expected historical narrative.
+- `.venv/bin/python -m pytest -q`: **375 passed**. `.venv/bin/forge validate`: exit 0, "Forge project is valid". `.venv/bin/forge doctor`: all 7 PASS.
+- `git diff --check` on the reviewed commit: clean. `git diff --check` across the full branch since `830b0dc6` (`diff_only_review: false`): one hit, a trailing blank line at EOF in `inspection.md`.
+
+### Assessment
+
+1. **Procedural validity of the Non-Convergence decision — sound.** `.forge/forge.yml` explicitly enables `allow_residual_risk_acceptance`, changed in this exact commit; `_residual_risk_permitted()` reads exactly that field, so the precondition is mechanically enforced, not decorative. `manifest.yml`/`provenance.yml`/`review.md` at the reviewed revision correctly do not yet contain a formal Iteration-4 entry — consistent with the Resolver recording it after this verdict. The decision's human origin is documented in `specification-drift.md` and `knowledge-capture.md` ("an explicit, justified engineering decision was made by the engineer, not fabricated by the agent") — a self-declared (`assurance: recorded`) claim, consistent with every other provenance record in this system; no stronger proof exists or is expected anywhere in this codebase. Documentation across `specification-drift.md`, `intent.md`, `knowledge-capture.md`, `verification.md`, and `CHANGELOG.md` is specific and does not understate the accepted risk.
+2. **Reverted code — correct and clean.** `_first_commit_where_state_complete` and any Attempt-4 helper (`_implementation_touched_paths`) are completely absent from the tree (confirmed via `grep`). The final shape at `src/forge_cli/validation/__init__.py:348` is byte-for-byte the same logical condition as Attempt 1 (`CHG-0012-R001`'s originally-rejected shape) — not stronger, not weaker than `specification-drift.md` describes.
+3. **Test honesty — confirmed.** The three shipped tests accurately reflect final behavior, including `test_documented_residual_risk_tampering_a_complete_changes_own_file`, which explicitly asserts *non-detection* of post-completion tampering and names it as the accepted risk rather than pretending it is still caught.
+4. **Full adversarial pass — 1 new MAJOR, 2 non-blocking observations** (below). No issues found across the remaining dimensions (correctness, edge_cases, invalid_states, domain_invariants, architecture, authorization, security, persistence, data_integrity, concurrency, transactions, performance, maintainability, backward_compatibility, requirement_compliance, tdd_compliance, test_quality) — the diff is narrowly scoped, and `forge validate`/`forge doctor`/the full suite all reproduce independently.
+
+### Findings
+
+- **CHG-0012-R004 — MAJOR (dimension: documentation, C-041 knowledge consistency) — `inspection.md`'s "Correction after Strict Review Iteration 1" section was not updated by `resolution-003` and still asserts, as current fact, that `_first_commit_where_state_complete` "preserves detection for any tampering between freeze and the genuine seal point."** This is false about the shipped code, which no longer contains that function — that is precisely the residual risk the engineer accepted, not a preserved protection. `intent.md`, `specification-drift.md`, `verification.md`, `knowledge-capture.md`, and `CHANGELOG.md` were all correctly updated in `resolution-003`; `inspection.md` alone was missed. This is the exact class of false safety claim Iteration 1 flagged as `CHG-0012-R001` in `intent.md`'s original text — now surfacing in a sibling artifact the final revert missed. Does not affect the shipped code's correctness or the Non-Convergence decision's validity; a documentation-only fix.
+- **OBSERVATION (trivial) — trailing blank line at EOF in `inspection.md`** (`git diff --check`), swept up by the same fix.
+- **OBSERVATION (non-blocking, verifiability) — `knowledge-capture.md`'s "Follow-up" section describes Attempt 4 as "implemented, verified against all three prior BLOCKERs," but the code was reverted before being committed, so no artifact in this repository lets an independent reviewer reproduce that verification.** Does not affect the shipped code (Attempt 4 is not part of what's running); recorded for completeness in a review chain that otherwise insisted on independent, hand-built reproduction at every step.
+
+### Verdict
+
+**REQUEST CHANGES**
+
+Finding counts (this Iteration):
+
+- BLOCKER: 0
+- MAJOR: 1 (CHG-0012-R004)
+- MINOR: 0
+- OBSERVATION: 2
+- new_material_findings: 1 (CHG-0012-R004; `kind: initial_review`, so this does not feed the `resolution_verification`-only convergence counter)
+
+Per `blocking: [blocker, major]`, this MAJOR must be resolved before Completion. The Non-Convergence decision itself — Section 13 procedure, `accept_residual_risk` eligibility, the reverted code, and the test suite — is independently confirmed sound and honestly documented; this is not a re-litigation of the accepted trade-off, only a cross-file documentation-consistency gap the revert missed.
+
+**`convergence_decision`:** `option: accept_residual_risk`. **Reason:** recorded verbatim in `manifest.yml`'s `review.iterations[3].convergence_decision.reason` (this Iteration independently confirms it is procedurally valid per Section 13 and factually accurate against the reviewed code).
