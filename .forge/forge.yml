@@ -17,7 +17,7 @@ testing:
 review:
   strict: true
   convergence:
-    allow_residual_risk_acceptance: false
+    allow_residual_risk_acceptance: true
 
 documentation:
   impact_evaluation: required

@@ -1,0 +1,173 @@
+schema: forge/change@2
+protocol: 2
+change: {id: CHG-0012, title: Freeze check exempts complete Changes, kind: bugfix}
+flow: {initial: fast, current: fast, escalations: []}
+state: {current: complete}
+artifacts:
+  intent: complete
+  inspection: complete
+  specification_drift: complete
+  knowledge_capture: complete
+  tdd_evidence: complete
+  implementation: complete
+  provenance: complete
+  verification: complete
+  review: complete
+  documentation: complete
+requirements: {total: 1, implemented: 1, verified: 1}
+tdd: {status: compliant, cycles: 1}
+verification: {status: passed}
+review:
+  status: passed
+  iteration: 5
+  blockers: 0
+  majors: 0
+  minors: 0
+  observations: 2
+  convergence:
+    state: nominal
+    consecutive_unconverged_verifications: 0
+  iterations:
+    - id: review-001
+      revision: chg-0012-implementation-001
+      subject_provenance: implementation-001
+      reviewer_provenance: review-001
+      kind: initial_review
+      status: failed
+      evidence_gap: >-
+        CHG-0012-R001 (BLOCKER): state.current: complete is a self-declared
+        field with no programmatic Completion Gate anywhere in this
+        codebase (no C-027/C-035 validator, no forge complete command), and
+        this fix's exemption turns it into a total, unscoped bypass of
+        C-026's freeze-drift protection for the Change's own reviewed
+        subject files, not just for unrelated repository activity —
+        reproduced directly against validate_project: a complete Change's
+        own reviewed file, silently edited after its Review passed,
+        produces zero findings, where the identical edit against a
+        non-complete Change is correctly caught. No other check in
+        _validate_protocol2_review_provenance compensates. See review.md
+        for full findings and a proposed scoped-diff alternative.
+    - id: review-002
+      revision: chg-0012-resolution-001
+      subject_provenance: resolution-001
+      reviewer_provenance: review-002
+      kind: resolution_verification
+      status: failed
+      new_material_findings: 1
+      evidence_gap: >-
+        CHG-0012-R002 (BLOCKER, class B Resolution Regression):
+        _first_commit_where_state_complete anchors on the first commit
+        where state.current recorded complete, with no check that
+        state.current never reverted afterward. Reproduced directly against
+        validate_project: seal complete (C3, untouched file) -> revert
+        state.current to strict_review (C4) -> tamper the reviewed file
+        (C5) -> re-seal complete (C6) -> zero findings; the tampering in C5
+        is invisible because the drift comparison only ever runs against
+        C3. CHG-0012-R001's own scenario (single tamper, single seal) is
+        confirmed fixed; the Resolution Delta matches its declared scope
+        exactly (no Out-of-Scope Mutation). See review.md Iteration 2 for
+        full findings.
+    - id: review-003
+      revision: chg-0012-resolution-002
+      subject_provenance: resolution-002
+      reviewer_provenance: review-003
+      kind: resolution_verification
+      status: failed
+      new_material_findings: 1
+      evidence_gap: >-
+        CHG-0012-R003 (BLOCKER, class B -- direct evidenced consequence of
+        resolution-002's own delta, FR-007(b)):
+        _first_commit_where_state_complete walks only commits git log
+        --diff-filter=AM returns for manifest.yml, which never includes a
+        deletion commit. Reproduced directly against validate_project: seal
+        complete (C2) -> delete manifest.yml (C3, invisible to the
+        --diff-filter=AM walk) -> tamper the reviewed file (C4) -> recreate
+        manifest.yml as complete (C5) -> zero findings; the walk sees only
+        C2 and C5, both "complete", and never observes the C3-C4 window at
+        all. This defeats resolution-002's own "walks the entire
+        history"/"fails closed on ambiguous history" claim. CHG-0012-R002's
+        own scenario and adjacent variants (double revert/reseal cycles,
+        revert-and-tamper in one commit, mid-history YAML corruption
+        repaired before HEAD) are confirmed fixed; the Resolution Delta
+        matches its declared scope exactly (no Out-of-Scope Mutation). Also
+        recorded: a class D OBSERVATION, unrelated to
+        _first_commit_where_state_complete, that a manifest.yml genuinely
+        malformed at HEAD causes validate_project to produce zero findings
+        for that Change entirely -- pre-existing, not pursued further. See
+        review.md Iteration 3 for full findings. This is the second
+        consecutive resolution_verification Iteration with
+        new_material_findings > 0 (Iteration 2: CHG-0012-R002; Iteration 3:
+        CHG-0012-R003), reaching the Convergence Limit; per the engineer's
+        stated policy, no further automatic Resolution is attempted -- an
+        explicit engineer decision is required.
+    - id: review-004
+      revision: chg-0012-resolution-003
+      subject_provenance: resolution-003
+      reviewer_provenance: review-004
+      kind: initial_review
+      status: failed
+      new_material_findings: 1
+      convergence_decision:
+        option: accept_residual_risk
+        reason: >-
+          A fourth, structurally stronger attempt (scope the freeze-drift
+          comparison to paths the frozen implementation itself touched,
+          checked permanently against HEAD, no dependency on
+          state.current history) was built and independently verified to
+          close CHG-0012-R001, R002, and R003 simultaneously, but
+          reintroduced real, observed CI friction: src/forge_cli/
+          validation/__init__.py is itself a shared, frequently-touched
+          file this Change's own implementation touches, so the stronger
+          fix broke CHG-0011's own validation the moment this Change's
+          uncommitted work existed. The engineer explicitly chose to
+          revert to Attempt 1's unconditional state.current == "complete"
+          exemption -- the same shape CHG-0012-R001 originally flagged --
+          with that finding's residual risk explicitly documented in
+          specification-drift.md as a disclosed C-040 trade-off rather
+          than silently reintroduced, consistent with Protocol 2's
+          existing self-declared (assurance: recorded) trust model.
+        recorded_at: "2026-08-18T16:29:23-03:00"
+      evidence_gap: >-
+        CHG-0012-R004 (MAJOR, documentation/C-041 knowledge consistency):
+        inspection.md's "Correction after Strict Review Iteration 1"
+        section was not updated by resolution-003 and still asserted, as
+        current fact, that _first_commit_where_state_complete "preserves
+        detection for any tampering between freeze and the genuine seal
+        point" -- false about the shipped code, which no longer contains
+        that function; that is precisely the residual risk the engineer
+        accepted. intent.md, specification-drift.md, verification.md,
+        knowledge-capture.md, and CHANGELOG.md were all correctly updated
+        in resolution-003; inspection.md alone was missed. Also recorded: a
+        trailing-blank-line-at-EOF observation in the same file (git diff
+        --check). Neither finding affects the correctness of the shipped
+        code or the validity of the Non-Convergence decision itself, which
+        this Iteration independently confirmed procedurally valid,
+        honestly documented, and correctly implemented. See review.md
+        Iteration 4 for full findings.
+    - id: review-005
+      revision: chg-0012-resolution-004
+      subject_provenance: resolution-004
+      reviewer_provenance: review-005
+      kind: resolution_verification
+      status: passed
+      new_material_findings: 0
+      evidence_gap: >-
+        No finding. Resolution Delta (git diff --name-status
+        03b51d1..dad362b) is exactly resolution-004's declared scope
+        (inspection.md only) -- no Out-of-Scope Mutation. inspection.md
+        confirmed to correctly describe the full four-attempt history and
+        final decision, matching the shipped code exactly, with no
+        remaining claim that _first_commit_where_state_complete exists or
+        that pre-seal tampering detection is preserved. This is the first
+        resolution_verification Iteration in a fresh sequence -- Iteration
+        4 (kind: initial_review) reset the convergence counter, so this
+        Iteration does not reopen the already-resolved Non-Convergence
+        episode. See review.md Iteration 5 for full findings.
+documentation:
+  impact_evaluated: true
+  update_required: true
+  reason: >-
+    Internal Core validation behavior correction affecting CI-visible
+    `forge validate` output for every completed Protocol 2 Change; recorded
+    in CHANGELOG.md under a new "Freeze check exempts complete Changes"
+    entry. No user-facing CLI surface, schema, or Contract text changed.

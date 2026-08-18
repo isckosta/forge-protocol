@@ -1,0 +1,399 @@
+schema: forge/execution-provenance@1
+change: CHG-0012
+records:
+  - id: implementation-001
+    role: implementation
+    execution: {id: implementation-exec-chg0012-20260818-01, context_id: implementation-context-chg0012-20260818-01}
+    recorded_at: 2026-08-18T02:35:00Z
+    revision:
+      id: chg-0012-implementation-001
+      immutable_ref: {type: git_commit, value: 47468fec276ceb4ab1137aa94f5a2b26760fc6da}
+      commit: 47468fec276ceb4ab1137aa94f5a2b26760fc6da
+      description: >-
+        Frozen CHG-0012 Implementation subject: one-condition fix to
+        src/forge_cli/validation/__init__.py's Protocol 2 freeze-drift check
+        (exempts state.current == complete, mirroring the existing exemption
+        at line 296), a new regression test module, and CHANGELOG update.
+        Fixes the exact failure on GitHub Actions run 32091880352.
+        Subsequent commits are restricted to Change-local review-control
+        metadata (this file and manifest.yml/review.md).
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: claude-code
+      statement: >-
+        Self-recorded repository-native provenance for the Implementation
+        execution that produced CHG-0012. No provider-native attestation is
+        claimed; assurance is recorded, not verified or cryptographic/
+        external proof. The independent Strict Review Iteration that follows
+        must run in a distinct Execution and Execution Context per Protocol
+        2 and will record its own review-role provenance separately.
+  - id: review-001
+    role: review
+    execution: {id: review-exec-chg0012-20260818-01, context_id: review-context-chg0012-20260818-01}
+    recorded_at: 2026-08-18T03:10:00Z
+    revision:
+      id: chg-0012-implementation-001
+      immutable_ref: {type: git_commit, value: 47468fec276ceb4ab1137aa94f5a2b26760fc6da}
+      commit: 47468fec276ceb4ab1137aa94f5a2b26760fc6da
+      description: >-
+        Strict Review Iteration 1 (kind: initial_review) of CHG-0012's frozen
+        implementation-001 subject. Independent Execution and Execution
+        Context from the Implementation session that produced
+        implementation-001. Verdict: REQUEST CHANGES (1 BLOCKER) — see
+        review.md for full findings.
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: claude-code
+      statement: >-
+        Self-recorded repository-native provenance for the independent
+        Strict Review execution that evaluated CHG-0012's frozen
+        implementation-001 subject. No provider-native or cryptographic
+        attestation is claimed; assurance is recorded, not verified or
+        externally proven. pytest, forge validate, and forge doctor were run
+        directly by this Review execution against the frozen subject
+        commit, and the bypass finding (CHG-0012-R001) was reproduced
+        directly against validate_project with a hand-built, real-Git-backed
+        scenario, not mocked.
+  - id: resolution-001
+    role: resolution
+    scope:
+      - .forge/changes/CHG-0012-freeze-check-exempts-complete-changes/inspection.md
+      - .forge/changes/CHG-0012-freeze-check-exempts-complete-changes/intent.md
+      - .forge/changes/CHG-0012-freeze-check-exempts-complete-changes/specification-drift.md
+      - .forge/changes/CHG-0012-freeze-check-exempts-complete-changes/verification.md
+      - src/forge_cli/validation/__init__.py
+      - tests/unit/test_freeze_check_exempts_complete_changes.py
+    targets: [CHG-0012-R001]
+    execution: {id: resolution-exec-chg0012-20260818-01, context_id: resolution-context-chg0012-20260818-01}
+    recorded_at: 2026-08-18T03:30:00Z
+    revision:
+      id: chg-0012-resolution-001
+      immutable_ref: {type: git_commit, value: e0b4b141f3cd164299710a4249cbd71430592abf}
+      commit: e0b4b141f3cd164299710a4249cbd71430592abf
+      description: >-
+        Resolution of independent Strict Review Iteration 1's BLOCKER
+        (CHG-0012-R001): replaces the unconditional state.current==complete
+        exemption with a comparison against the first commit where the
+        Change's manifest recorded state.current==complete
+        (_first_commit_where_state_complete + _resolution_delta), preserving
+        detection of the Change's own reviewed files being tampered with
+        before that seal while still resolving the original CI false
+        positive for activity after it. New regression test reproduces the
+        Reviewer's own attack as a causal RED, then GREEN. Full suite: 376
+        passed. forge validate: exit 0.
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: claude-code
+      statement: >-
+        Self-recorded repository-native provenance for this Resolution
+        execution, distinct in Execution and Execution Context from
+        review-001 (the Reviewer execution whose BLOCKER this Resolution
+        addresses) and from implementation-001. No provider-native or
+        cryptographic attestation is claimed; assurance is recorded.
+  - id: review-002
+    role: review
+    execution: {id: review-exec-chg0012-20260818-02, context_id: review-context-chg0012-20260818-02}
+    recorded_at: 2026-08-18T04:10:00Z
+    revision:
+      id: chg-0012-resolution-001
+      immutable_ref: {type: git_commit, value: e0b4b141f3cd164299710a4249cbd71430592abf}
+      commit: e0b4b141f3cd164299710a4249cbd71430592abf
+      description: >-
+        Strict Review Iteration 2 (kind: resolution_verification) of
+        resolution-001, verifying CHG-0012-R001. Independent Execution and
+        Execution Context from resolution-001, review-001, and
+        implementation-001. Verdict: REQUEST CHANGES (1 BLOCKER,
+        CHG-0012-R002, class B Resolution Regression) — see review.md
+        Iteration 2 for full findings.
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: claude-code
+      statement: >-
+        Self-recorded repository-native provenance for the independent
+        Resolution Verification execution that evaluated resolution-001
+        against CHG-0012-R001. No provider-native or cryptographic
+        attestation is claimed; assurance is recorded, not verified or
+        externally proven. Computed the Resolution Delta directly via git
+        diff --name-status between the prior reviewed subject
+        (47468fec276ceb4ab1137aa94f5a2b26760fc6da) and this subject
+        (e0b4b141f3cd164299710a4249cbd71430592abf) and confirmed it matches
+        resolution-001's declared scope exactly. pytest, forge validate, and
+        forge doctor were run directly by this execution against the frozen
+        subject commit. CHG-0012-R001's own scenario was independently
+        reconfirmed fixed via the shipped regression tests. A new defect
+        (CHG-0012-R002) was found and reproduced directly against
+        validate_project with a hand-built, real-Git-backed scenario
+        (state.current reverted from complete and re-sealed, hiding
+        tampering in between), not mocked.
+  - id: resolution-002
+    role: resolution
+    scope:
+      - .forge/changes/CHG-0012-freeze-check-exempts-complete-changes/specification-drift.md
+      - .forge/changes/CHG-0012-freeze-check-exempts-complete-changes/verification.md
+      - src/forge_cli/validation/__init__.py
+      - tests/unit/test_freeze_check_exempts_complete_changes.py
+    targets: [CHG-0012-R002]
+    execution: {id: resolution-exec-chg0012-20260818-02, context_id: resolution-context-chg0012-20260818-02}
+    recorded_at: 2026-08-18T04:30:00Z
+    revision:
+      id: chg-0012-resolution-002
+      immutable_ref: {type: git_commit, value: e243604a1bc65bca30e4d11589e71253d0842740}
+      commit: e243604a1bc65bca30e4d11589e71253d0842740
+      description: >-
+        Resolution of independent Resolution Verification Iteration 2's
+        BLOCKER (CHG-0012-R002): _first_commit_where_state_complete now
+        walks the entire post-seal history and falls back to the original
+        HEAD-comparison behavior if state.current is ever observed reverted
+        after sealing, or if any post-seal snapshot cannot be parsed. New
+        regression test reproduces the Reviewer's own attack as a causal
+        RED (confirmed by temporarily neutering the fix), then GREEN. Full
+        suite: 377 passed. forge validate: exit 0. Engineer explicitly
+        chose this fix over accepting R002 as documented residual risk or
+        reverting CHG-0012 entirely.
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: claude-code
+      statement: >-
+        Self-recorded repository-native provenance for this Resolution
+        execution, distinct in Execution and Execution Context from
+        review-002 (the Reviewer execution whose BLOCKER this Resolution
+        addresses) and from resolution-001/review-001/implementation-001.
+        No provider-native or cryptographic attestation is claimed;
+        assurance is recorded.
+  - id: review-003
+    role: review
+    execution: {id: review-exec-chg0012-20260818-03, context_id: review-context-chg0012-20260818-03}
+    recorded_at: 2026-08-18T05:10:00Z
+    revision:
+      id: chg-0012-resolution-002
+      immutable_ref: {type: git_commit, value: e243604a1bc65bca30e4d11589e71253d0842740}
+      commit: e243604a1bc65bca30e4d11589e71253d0842740
+      description: >-
+        Strict Review Iteration 3 (kind: resolution_verification) of
+        resolution-002, verifying CHG-0012-R002. Independent Execution and
+        Execution Context from resolution-002, review-002, resolution-001,
+        review-001, and implementation-001. Verdict: REQUEST CHANGES (1
+        BLOCKER, CHG-0012-R003, class B — direct evidenced consequence of
+        resolution-002's own delta; 1 class D OBSERVATION recorded but not
+        counted) — see review.md Iteration 3 for full findings.
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: claude-code
+      statement: >-
+        Self-recorded repository-native provenance for the independent
+        Resolution Verification execution that evaluated resolution-002
+        against CHG-0012-R002. No provider-native or cryptographic
+        attestation is claimed; assurance is recorded, not verified or
+        externally proven. Computed the Resolution Delta directly via git
+        diff --name-status between the prior reviewed subject
+        (e0b4b141f3cd164299710a4249cbd71430592abf) and this subject
+        (e243604a1bc65bca30e4d11589e71253d0842740) and confirmed it matches
+        resolution-002's declared scope exactly. pytest (377 passed), forge
+        validate (exit 0), and forge doctor (all PASS) were run directly by
+        this execution against the frozen subject commit. CHG-0012-R002's
+        own scenario and several adjacent variants (double revert/reseal,
+        revert-and-tamper in one commit, mid-history YAML corruption
+        repaired before HEAD) were independently reconfirmed fixed via
+        hand-built, real-Git-backed reproductions, not mocked. A new defect
+        (CHG-0012-R003) was found and reproduced directly against
+        validate_project: deleting manifest.yml (invisible to the
+        --diff-filter=AM history walk), tampering with the reviewed file,
+        then recreating manifest.yml as complete again hides the tampering
+        entirely, defeating resolution-002's own "walks the entire
+        history"/"fails closed on ambiguous history" claim. A separate,
+        unrelated (class D) OBSERVATION was also recorded per FR-008: a
+        manifest.yml left genuinely malformed at HEAD causes zero findings
+        for that Change, not merely a skipped freeze-drift check; this
+        predates CHG-0012 and was not pursued further.
+  - id: resolution-003
+    role: resolution
+    scope:
+      - .forge/changes/CHG-0012-freeze-check-exempts-complete-changes/intent.md
+      - .forge/changes/CHG-0012-freeze-check-exempts-complete-changes/knowledge-capture.md
+      - .forge/changes/CHG-0012-freeze-check-exempts-complete-changes/specification-drift.md
+      - .forge/changes/CHG-0012-freeze-check-exempts-complete-changes/verification.md
+      - .forge/forge.yml
+      - CHANGELOG.md
+      - src/forge_cli/validation/__init__.py
+      - tests/unit/test_freeze_check_exempts_complete_changes.py
+    targets: [CHG-0012-R001, CHG-0012-R002, CHG-0012-R003]
+    execution: {id: resolution-exec-chg0012-20260818-03, context_id: resolution-context-chg0012-20260818-03}
+    recorded_at: 2026-08-18T16:29:23-03:00
+    revision:
+      id: chg-0012-resolution-003
+      immutable_ref: {type: git_commit, value: 03b51d1b251c11e1d52d6fefd5b40287213fb286}
+      commit: 03b51d1b251c11e1d52d6fefd5b40287213fb286
+      description: >-
+        Resolves CHG-0012's Non-Convergence (reached at Resolution
+        Verification Iteration 3, CHG-0012-R003) per the engineer's
+        explicit decision (Non-Convergence option C, accept_residual_risk).
+        A fourth, structurally different attempt (scope the comparison to
+        paths the frozen implementation itself touched, checked
+        permanently against HEAD, no dependency on state.current history)
+        was built and independently verified to close CHG-0012-R001, R002,
+        and R003 simultaneously, but was not adopted: it reintroduced real,
+        observed CI friction against CHG-0011's own validation, because
+        src/forge_cli/validation/__init__.py is itself a shared,
+        frequently-touched file this Change's own implementation touches.
+        Reverts _first_commit_where_state_complete and its history-walking
+        machinery entirely, back to Attempt 1's unconditional
+        state.current == "complete" exemption, with the accepted residual
+        risk explicitly documented in specification-drift.md as a
+        disclosed C-040 trade-off. Enables
+        review.convergence.allow_residual_risk_acceptance in
+        .forge/forge.yml, required by protocol/versions/2/specification.md
+        Section 13 for this decision option to be valid.
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: claude-code
+      statement: >-
+        Self-recorded repository-native provenance for the Resolution
+        execution that implemented the engineer's explicit Non-Convergence
+        decision. No provider-native or cryptographic attestation is
+        claimed; assurance is recorded, not verified or externally proven.
+        The decision itself (accept_residual_risk over the structurally
+        stronger but operationally costly Attempt 4) was made by the human
+        engineer in this session, not fabricated by the agent; the human
+        confirmation is not independently, cryptographically provable by
+        this record alone, consistent with every other Execution/Context
+        record in this Change and this system's existing assurance:
+        recorded trust model. Full suite (375 passed), forge validate
+        (exit 0), and forge doctor (all PASS) were run directly by this
+        execution against the resulting revision.
+  - id: review-004
+    role: review
+    execution: {id: review-exec-chg0012-20260818-04, context_id: review-context-chg0012-20260818-04}
+    recorded_at: 2026-08-18T16:35:00-03:00
+    revision:
+      id: chg-0012-resolution-003
+      immutable_ref: {type: git_commit, value: 03b51d1b251c11e1d52d6fefd5b40287213fb286}
+      commit: 03b51d1b251c11e1d52d6fefd5b40287213fb286
+      description: >-
+        Strict Review Iteration 4 (kind: initial_review, required by
+        protocol/versions/2/specification.md Section 13 immediately after
+        Non-Convergence was reached; a resolution_verification is invalid
+        at this position). Independent Execution and Execution Context
+        from resolution-003, review-003, resolution-002, review-002,
+        resolution-001, review-001, and implementation-001. Evaluated:
+        (a) procedural validity of the Non-Convergence decision itself
+        against protocol/versions/2/specification.md Section 13 and
+        protocol/versions/2/policies/review.yml's convergence rules;
+        (b) correctness and cleanliness of the reverted code;
+        (c) honesty of the rewritten test suite; (d) a full adversarial
+        pass across the standard review dimensions. Verdict: REQUEST
+        CHANGES (1 MAJOR, CHG-0012-R004; 2 non-blocking observations) --
+        see review.md Iteration 4 for full findings.
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: claude-code
+      statement: >-
+        Self-recorded repository-native provenance for the independent
+        Strict Review execution that evaluated resolution-003 and the
+        Non-Convergence decision it implements. No provider-native or
+        cryptographic attestation is claimed; assurance is recorded, not
+        verified or externally proven. Confirmed .forge/forge.yml declares
+        review.convergence.allow_residual_risk_acceptance: true and that
+        _residual_risk_permitted() in src/forge_cli/validation/__init__.py
+        reads exactly that field, so the precondition is mechanically
+        enforced, not decorative. Confirmed via grep across src/, tests/,
+        and docs/ that _first_commit_where_state_complete and
+        _implementation_touched_paths (Attempt 4) do not exist anywhere in
+        the tree. Read tests/unit/test_freeze_check_exempts_complete_changes.py
+        in full and confirmed it honestly asserts the accepted behavior,
+        including explicit non-detection of post-completion tampering on
+        the Change's own file, rather than a stale or misleading claim.
+        pytest (375 passed), forge validate (exit 0), forge doctor (all
+        PASS), and git diff --check across the full branch (df0cb42..HEAD
+        equivalent for this branch) were run directly by this execution.
+        Found CHG-0012-R004 (MAJOR): inspection.md's "Correction after
+        Strict Review Iteration 1" section was not updated by resolution-003
+        and still asserted, as current fact, that
+        _first_commit_where_state_complete "preserves detection for any
+        tampering between freeze and the genuine seal point" -- false
+        about the shipped code, which no longer contains that function.
+        intent.md, specification-drift.md, verification.md,
+        knowledge-capture.md, and CHANGELOG.md were all correctly updated
+        in resolution-003; inspection.md alone was missed. Also flagged a
+        trailing blank line at EOF in inspection.md (git diff --check).
+        Neither finding affects the correctness of the shipped code or the
+        validity of the Non-Convergence decision itself.
+  - id: resolution-004
+    role: resolution
+    scope:
+      - .forge/changes/CHG-0012-freeze-check-exempts-complete-changes/inspection.md
+    targets: [CHG-0012-R004]
+    execution: {id: resolution-exec-chg0012-20260818-04, context_id: resolution-context-chg0012-20260818-04}
+    recorded_at: 2026-08-18T16:37:18-03:00
+    revision:
+      id: chg-0012-resolution-004
+      immutable_ref: {type: git_commit, value: dad362b6713f42e84db0062ed5687a6ef3adb937}
+      commit: dad362b6713f42e84db0062ed5687a6ef3adb937
+      description: >-
+        Resolution of independent Strict Review Iteration 4's MAJOR
+        (CHG-0012-R004): updates inspection.md's "Correction after Strict
+        Review Iteration 1" section to describe the full four-attempt
+        history and the final decision, removing the false claim that
+        _first_commit_where_state_complete still exists and preserves
+        detection of pre-seal tampering. Also fixes a trailing blank line
+        at EOF in the same file.
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: claude-code
+      statement: >-
+        Self-recorded repository-native provenance for the Resolution
+        execution that fixed CHG-0012-R004. No provider-native or
+        cryptographic attestation is claimed; assurance is recorded, not
+        verified or externally proven. Full suite (375 passed), forge
+        validate (exit 0), and git diff --check (clean) were run directly
+        by this execution against the resulting revision. The independent
+        Resolution Verification that follows must run in a distinct
+        Execution and Execution Context per Protocol 2 and will record its
+        own review-role provenance separately.
+  - id: review-005
+    role: review
+    execution: {id: review-exec-chg0012-20260818-05, context_id: review-context-chg0012-20260818-05}
+    recorded_at: "2026-08-18T16:45:00-03:00"
+    revision:
+      id: chg-0012-resolution-004
+      immutable_ref: {type: git_commit, value: dad362b6713f42e84db0062ed5687a6ef3adb937}
+      commit: dad362b6713f42e84db0062ed5687a6ef3adb937
+      description: >-
+        Strict Review Iteration 5 (kind: resolution_verification) of
+        resolution-004, verifying CHG-0012-R004. Independent Execution and
+        Execution Context from resolution-004, review-004, resolution-003,
+        review-003, resolution-002, review-002, resolution-001, review-001,
+        and implementation-001. This is the first resolution_verification
+        Iteration in a fresh sequence -- Iteration 4 (kind: initial_review)
+        reset the convergence counter, so this Iteration does not reopen
+        the already-resolved Non-Convergence episode. Verdict: PASS (0
+        blocker, 0 major, 0 minor, 0 observation, 0 new_material_findings)
+        -- see review.md Iteration 5 for full findings.
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: claude-code
+      statement: >-
+        Self-recorded repository-native provenance for the independent
+        Resolution Verification execution that evaluated resolution-004
+        against CHG-0012-R004. No provider-native or cryptographic
+        attestation is claimed; assurance is recorded, not verified or
+        externally proven. Computed the Resolution Delta directly via git
+        diff --name-status between the prior reviewed subject
+        (03b51d1b251c11e1d52d6fefd5b40287213fb286) and this subject
+        (dad362b6713f42e84db0062ed5687a6ef3adb937): inspection.md only,
+        exactly matching resolution-004's declared scope, no Out-of-Scope
+        Mutation. Confirmed inspection.md no longer claims
+        _first_commit_where_state_complete exists or that pre-seal
+        tampering detection is preserved, and matches the shipped code
+        exactly. pytest (375 passed), forge validate (exit 0), forge
+        doctor (all PASS), and git diff --check (clean, both commit-level
+        and full-branch-range) were run directly by this execution.
