@@ -7,6 +7,7 @@ artifacts:
   intent: complete
   discovery: complete
   specification: complete
+  specification_drift: complete
   specification_review: complete
   architecture: complete
   test_strategy: approved
@@ -21,16 +22,33 @@ artifacts:
   documentation: pending
   knowledge_capture: complete
 requirements: {total: 16, implemented: 16, verified: 16}
-tdd: {status: compliant, cycles: 7}
+tdd: {status: compliant, cycles: 8}
 verification: {status: passed}
 review:
-  status: pending
-  iteration: 0
-  blockers: 0
-  majors: 0
-  minors: 0
-  observations: 0
-  iterations: []
+  status: failed
+  iteration: 1
+  blockers: 1
+  majors: 2
+  minors: 1
+  observations: 1
+  iterations:
+    - id: review-001
+      revision: chg-0011-implementation-002
+      subject_provenance: implementation-002
+      reviewer_provenance: review-001
+      kind: initial_review
+      status: failed
+      evidence_gap: >-
+        CHG-0011-R001 (BLOCKER): convergence decision has no binding to the
+        Non-Convergence episode it authorizes, allowing a single stale
+        decision to bypass the engineer-decision requirement for later,
+        independent episodes. CHG-0011-R002 (MAJOR): specification.md AC-009
+        contradicts FR-012/Protocol 2 Specification §13 and the actual
+        implementation regarding whether a decision is required to append a
+        new initial_review Iteration after Non-Convergence. CHG-0011-R003
+        (MAJOR): Resolution Scope containment is trivially defeated by an
+        unbounded glob (e.g. scope: ["*"]), untested. See review.md for full
+        findings (also CHG-0011-R004 MINOR, CHG-0011-R005 OBSERVATION).
 documentation:
   impact_evaluated: true
   update_required: true

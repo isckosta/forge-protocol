@@ -62,3 +62,82 @@ records:
         own pre-freeze-discipline mistake, not a new independent execution);
         the independent Strict Review Iteration that follows must still run
         in a distinct Execution and Execution Context from this one.
+  - id: review-001
+    role: review
+    execution: {id: review-exec-chg0011-20260817-932c60cd, context_id: review-context-chg0011-20260817-932c60cd}
+    recorded_at: 2026-08-17T23:00:00Z
+    revision:
+      id: chg-0011-implementation-002
+      immutable_ref: {type: git_commit, value: 3469d66dbb22765b8beb7d712fb6cefb67454616}
+      commit: 3469d66dbb22765b8beb7d712fb6cefb67454616
+      description: >-
+        Strict Review Iteration 1 (kind: initial_review) of CHG-0011's frozen
+        implementation-002 subject. Independent Execution and Execution
+        Context from the Implementation session that produced
+        implementation-001/implementation-002. Verdict: REQUEST CHANGES (1
+        BLOCKER, 2 MAJOR, 1 MINOR, 1 OBSERVATION) — see review.md for full
+        findings.
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: claude-code
+      statement: >-
+        Self-recorded repository-native provenance for the independent
+        Strict Review execution that evaluated CHG-0011's frozen
+        implementation-002 subject. No provider-native or cryptographic
+        attestation is claimed; assurance is recorded, not verified or
+        externally proven. pytest and forge validate were run directly by
+        this Review execution against the frozen worktree, and the
+        compatibility claim against CHG-0008/CHG-0010 was independently
+        cross-checked against a scratch git worktree of main at
+        02cd6899c6b704f0f3a301cc2fd6be54b0b0211c.
+  - id: resolution-001
+    role: resolution
+    scope:
+      - .forge/changes/CHG-0011-review-convergence-boundary/architecture.md
+      - .forge/changes/CHG-0011-review-convergence-boundary/knowledge-capture.md
+      - .forge/changes/CHG-0011-review-convergence-boundary/specification-drift.md
+      - .forge/changes/CHG-0011-review-convergence-boundary/specification.md
+      - .forge/changes/CHG-0011-review-convergence-boundary/tasks.md
+      - .forge/changes/CHG-0011-review-convergence-boundary/tdd-evidence.yml
+      - .forge/changes/CHG-0011-review-convergence-boundary/traceability.yml
+      - protocol/schemas/change-v2.schema.json
+      - protocol/versions/2/specification.md
+      - src/forge_cli/validation/__init__.py
+      - tests/unit/test_resolution_verification.py
+    targets: [CHG-0011-R001, CHG-0011-R002, CHG-0011-R003, CHG-0011-R004]
+    execution: {id: resolution-exec-chg0011-20260817-01, context_id: resolution-context-chg0011-20260817-01}
+    recorded_at: 2026-08-17T23:30:00Z
+    revision:
+      id: chg-0011-resolution-001
+      immutable_ref: {type: git_commit, value: e52000fd8f50a12096c043d454822483e2977e31}
+      commit: e52000fd8f50a12096c043d454822483e2977e31
+      description: >-
+        Resolution of independent Strict Review Iteration 1's findings.
+        CHG-0011-R001 (BLOCKER): convergence_decision moved from a shared
+        review.convergence.decision field to a per-Iteration field checked
+        at every historical Non-Convergence episode index, closing the
+        stale-decision-reuse bypass. CHG-0011-R002 (MAJOR): retracted
+        contradictory AC-009. CHG-0011-R003 (MAJOR): removed fnmatch glob
+        support from Resolution Scope; exact-path-only now. CHG-0011-R004
+        (MINOR): corrected an overstated Specification claim about
+        mechanical enforcement. CHG-0011-R005 (OBSERVATION): accepted by
+        design, not resolved. specification-drift.md records that R001-R003
+        are genuine Requirement corrections. Two new regression tests
+        (test_convergence_decision_cannot_be_reused_across_independent_episodes,
+        test_resolution_scope_wildcard_does_not_bypass_containment)
+        reproduce the exact bypasses the Reviewer demonstrated and now
+        correctly fail them. Full suite: 244 passed.
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: claude-code
+      statement: >-
+        Self-recorded repository-native provenance for this Resolution
+        execution, distinct in Execution and Execution Context from
+        review-001 (the Reviewer execution whose findings this Resolution
+        addresses) and from implementation-001/implementation-002. No
+        provider-native or cryptographic attestation is claimed; assurance
+        is recorded. This Resolution is itself the CHG-0011 mechanism's
+        first real use of `role: resolution` with declared scope/targets —
+        dogfooded, not merely specified.
