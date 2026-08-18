@@ -6,6 +6,7 @@ state: {current: strict_review}
 artifacts:
   intent: complete
   inspection: complete
+  specification_drift: complete
   tdd_evidence: complete
   implementation: complete
   provenance: complete
@@ -16,13 +17,32 @@ requirements: {total: 1, implemented: 1, verified: 1}
 tdd: {status: compliant, cycles: 1}
 verification: {status: passed}
 review:
-  status: pending
-  iteration: 0
-  blockers: 0
+  status: failed
+  iteration: 1
+  blockers: 1
   majors: 0
   minors: 0
   observations: 0
-  iterations: []
+  iterations:
+    - id: review-001
+      revision: chg-0012-implementation-001
+      subject_provenance: implementation-001
+      reviewer_provenance: review-001
+      kind: initial_review
+      status: failed
+      evidence_gap: >-
+        CHG-0012-R001 (BLOCKER): state.current: complete is a self-declared
+        field with no programmatic Completion Gate anywhere in this
+        codebase (no C-027/C-035 validator, no forge complete command), and
+        this fix's exemption turns it into a total, unscoped bypass of
+        C-026's freeze-drift protection for the Change's own reviewed
+        subject files, not just for unrelated repository activity —
+        reproduced directly against validate_project: a complete Change's
+        own reviewed file, silently edited after its Review passed,
+        produces zero findings, where the identical edit against a
+        non-complete Change is correctly caught. No other check in
+        _validate_protocol2_review_provenance compensates. See review.md
+        for full findings and a proposed scoped-diff alternative.
 documentation:
   impact_evaluated: true
   update_required: true

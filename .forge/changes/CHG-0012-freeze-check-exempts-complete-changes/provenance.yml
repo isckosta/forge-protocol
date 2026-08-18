@@ -28,3 +28,68 @@ records:
         external proof. The independent Strict Review Iteration that follows
         must run in a distinct Execution and Execution Context per Protocol
         2 and will record its own review-role provenance separately.
+  - id: review-001
+    role: review
+    execution: {id: review-exec-chg0012-20260818-01, context_id: review-context-chg0012-20260818-01}
+    recorded_at: 2026-08-18T03:10:00Z
+    revision:
+      id: chg-0012-implementation-001
+      immutable_ref: {type: git_commit, value: 47468fec276ceb4ab1137aa94f5a2b26760fc6da}
+      commit: 47468fec276ceb4ab1137aa94f5a2b26760fc6da
+      description: >-
+        Strict Review Iteration 1 (kind: initial_review) of CHG-0012's frozen
+        implementation-001 subject. Independent Execution and Execution
+        Context from the Implementation session that produced
+        implementation-001. Verdict: REQUEST CHANGES (1 BLOCKER) — see
+        review.md for full findings.
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: claude-code
+      statement: >-
+        Self-recorded repository-native provenance for the independent
+        Strict Review execution that evaluated CHG-0012's frozen
+        implementation-001 subject. No provider-native or cryptographic
+        attestation is claimed; assurance is recorded, not verified or
+        externally proven. pytest, forge validate, and forge doctor were run
+        directly by this Review execution against the frozen subject
+        commit, and the bypass finding (CHG-0012-R001) was reproduced
+        directly against validate_project with a hand-built, real-Git-backed
+        scenario, not mocked.
+  - id: resolution-001
+    role: resolution
+    scope:
+      - .forge/changes/CHG-0012-freeze-check-exempts-complete-changes/inspection.md
+      - .forge/changes/CHG-0012-freeze-check-exempts-complete-changes/intent.md
+      - .forge/changes/CHG-0012-freeze-check-exempts-complete-changes/specification-drift.md
+      - .forge/changes/CHG-0012-freeze-check-exempts-complete-changes/verification.md
+      - src/forge_cli/validation/__init__.py
+      - tests/unit/test_freeze_check_exempts_complete_changes.py
+    targets: [CHG-0012-R001]
+    execution: {id: resolution-exec-chg0012-20260818-01, context_id: resolution-context-chg0012-20260818-01}
+    recorded_at: 2026-08-18T03:30:00Z
+    revision:
+      id: chg-0012-resolution-001
+      immutable_ref: {type: git_commit, value: e0b4b141f3cd164299710a4249cbd71430592abf}
+      commit: e0b4b141f3cd164299710a4249cbd71430592abf
+      description: >-
+        Resolution of independent Strict Review Iteration 1's BLOCKER
+        (CHG-0012-R001): replaces the unconditional state.current==complete
+        exemption with a comparison against the first commit where the
+        Change's manifest recorded state.current==complete
+        (_first_commit_where_state_complete + _resolution_delta), preserving
+        detection of the Change's own reviewed files being tampered with
+        before that seal while still resolving the original CI false
+        positive for activity after it. New regression test reproduces the
+        Reviewer's own attack as a causal RED, then GREEN. Full suite: 376
+        passed. forge validate: exit 0.
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: claude-code
+      statement: >-
+        Self-recorded repository-native provenance for this Resolution
+        execution, distinct in Execution and Execution Context from
+        review-001 (the Reviewer execution whose BLOCKER this Resolution
+        addresses) and from implementation-001. No provider-native or
+        cryptographic attestation is claimed; assurance is recorded.
