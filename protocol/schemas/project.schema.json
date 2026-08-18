@@ -11,7 +11,21 @@
     "forge": {"type": "object", "additionalProperties": false, "required": ["protocol"], "properties": {"protocol": {"type": ["string", "integer"]}}},
     "flows": {"type": "object", "additionalProperties": false, "required": ["default", "allow_fast", "auto_escalation"], "properties": {"default": {"enum": ["fast", "standard", "full"]}, "allow_fast": {"type": "boolean"}, "auto_escalation": {"type": "boolean"}}},
     "testing": {"type": "object", "additionalProperties": false, "required": ["approach"], "properties": {"approach": {"const": "tdd_first"}}},
-    "review": {"type": "object", "additionalProperties": false, "required": ["strict"], "properties": {"strict": {"const": true}}},
+    "review": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["strict"],
+      "properties": {
+        "strict": {"const": true},
+        "convergence": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "allow_residual_risk_acceptance": {"type": "boolean"}
+          }
+        }
+      }
+    },
     "documentation": {"type": "object", "additionalProperties": false, "required": ["impact_evaluation"], "properties": {"impact_evaluation": {"const": "required"}}},
     "harnesses": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}}
   }

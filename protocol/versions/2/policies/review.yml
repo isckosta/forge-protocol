@@ -41,3 +41,22 @@ review:
     independent_from_resolution_execution: true
     target_resolution_revision: true
     target_concrete_immutable_revision: true
+  resolution_verification:
+    classification_optional: true
+    scope_and_targets_required_on_referenced_resolution: true
+    unrestricted_re_audit_forbidden: true
+    out_of_scope_mutation_requires_full_review_escalation: true
+    out_of_scope_mutation_cannot_pass: true
+    convergence_limit: 2
+    convergence_counter_source: core_derived_from_iterations
+    convergence_counter_self_declaration_authoritative: false
+    non_convergence_state: review_convergence_failed
+    non_convergence_blocks_passed_status: true
+    non_convergence_blocks_further_resolution_verification: true
+    non_convergence_requires_decision: true
+    decision_options: [new_full_review, return_to_earlier_phase, accept_residual_risk, abort_or_supersede]
+    accept_residual_risk_requires_project_policy_permission: true
+    unresolved_finding_recurrence_does_not_increment_counter: true
+    unrelated_latent_finding_does_not_increment_counter: true
+    unrelated_latent_finding_must_be_recorded: true
+    forge_selects_decision_automatically: false

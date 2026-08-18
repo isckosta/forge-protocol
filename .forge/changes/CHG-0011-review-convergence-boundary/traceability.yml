@@ -1,0 +1,25 @@
+schema: forge/traceability@1
+change: CHG-0011
+requirements:
+  FR-001: {tasks: [T-001], tests: [TDD-012], evidence: kind_optional_additive}
+  FR-002: {tasks: [T-009], tests: [TDD-020], evidence: subject_role_and_first_iteration_rejection}
+  FR-003: {tasks: [T-009], tests: [TDD-020], evidence: scope_and_targets_required}
+  FR-004: {tasks: [T-009], tests: [TDD-013, TDD-016], evidence: resolution_delta_two_commit_diff}
+  FR-005: {tasks: [T-009], tests: [TDD-016], evidence: uncovered_path_containment}
+  FR-006: {tasks: [T-009], tests: [TDD-016], evidence: out_of_scope_forces_failed_full_review_required}
+  FR-007: {tasks: [T-003], evidence: contract_c047_process_obligation}
+  FR-008: {tasks: [T-003], evidence: contract_c050_latent_finding_recorded}
+  FR-009: {tasks: [T-003], evidence: contract_c050_latent_finding_recorded}
+  FR-010: {tasks: [T-009], tests: [TDD-016], evidence: full_review_escalation_blocks_next_resolution_verification}
+  FR-011: {tasks: [T-009], tests: [TDD-014, TDD-018], evidence: core_derived_streak_class_bc_only}
+  FR-012: {tasks: [T-009], tests: [TDD-018], evidence: convergence_limit_two_historical_scan}
+  FR-013: {tasks: [T-009], tests: [TDD-020], evidence: new_material_findings_nonnegative_integer}
+  FR-014: {tasks: [T-009], tests: [TDD-018], evidence: forge_never_selects_option_automatically}
+  FR-015: {tasks: [T-001, T-009], tests: [TDD-018, TDD-020], evidence: decision_record_shape_and_residual_risk_policy_gate}
+  FR-016: {tasks: [T-009], tests: [TDD-012], evidence: unclassified_iterations_unaffected}
+  INV-001: {tasks: [T-009], evidence: scope_anchored_by_existing_provenance_history_authority}
+  INV-002: {tasks: [T-009], tests: [TDD-016, TDD-017], evidence: containment_mechanical_materiality_judgment}
+  INV-003: {tasks: [T-009], tests: [T-convergence-counter-disagreement], evidence: core_recomputed_counter_not_trusted}
+  INV-004: {tasks: [T-009], evidence: protocol2_independence_unchanged_for_every_kind}
+  INV-005: {tasks: [T-009], tests: [TDD-016], evidence: no_silent_completion_uncovered_or_nonconvergent}
+  INV-006: {tasks: [T-009], tests: [TDD-012], evidence: legacy_manifests_zero_new_findings}

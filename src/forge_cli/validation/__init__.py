@@ -1,6 +1,7 @@
 """Forge validation boundary."""
 from __future__ import annotations
 from dataclasses import dataclass
+import fnmatch
 from pathlib import Path
 import subprocess
 from typing import Any
@@ -60,15 +61,19 @@ def _untracked_paths(root:Path)->set[str]|None:
     q=subprocess.run(["git","ls-files","--others","--exclude-standard","-z","--"],cwd=root,capture_output=True,check=False)
     if q.returncode:return None
     return {_decode_git_path(p) for p in q.stdout.split(b"\0") if p}
+def _review_control_metadata_paths(root:Path,m:Path)->set[str]|None:
+    try:d=m.parent.resolve().relative_to(root).as_posix()
+    except ValueError:return None
+    return {f"{d}/manifest.yml",f"{d}/provenance.yml",f"{d}/review.md"}
 def _reviewable_workspace_delta(r:Path,m:Path,c:str)->set[str]|None:
     root=_git_root(r)
     if root is None:return None
     committed=_diff_paths(root,f"{c}..HEAD");staged=_diff_paths(root,"--cached");unstaged=_diff_paths(root);untracked=_untracked_paths(root)
     if any(x is None for x in(committed,staged,unstaged,untracked)):return None
     changed=set().union(committed or set(),staged or set(),unstaged or set(),untracked or set())
-    try:d=m.parent.resolve().relative_to(root).as_posix()
-    except ValueError:return changed
-    allowed={f"{d}/manifest.yml",f"{d}/provenance.yml",f"{d}/review.md"};reviewable=set()
+    allowed=_review_control_metadata_paths(root,m)
+    if allowed is None:return changed
+    reviewable=set()
     for path in changed:
         if path not in allowed:
             reviewable.add(path);continue
@@ -78,6 +83,120 @@ def _reviewable_workspace_delta(r:Path,m:Path,c:str)->set[str]|None:
 def _changed(r:Path,m:Path,c:str)->bool:
     delta=_reviewable_workspace_delta(r,m,c)
     return delta is None or bool(delta)
+def _resolution_delta(r:Path,m:Path,from_commit:str,to_commit:str)->set[str]|None:
+    """CHG-0011: committed diff between two already-frozen historical commits.
+
+    Unlike _reviewable_workspace_delta (a frozen commit vs. the *current*
+    workspace), both endpoints here are immutable history, so only the
+    committed-diff half of that machinery applies.
+    """
+    root=_git_root(r)
+    if root is None:return None
+    diff=_diff_paths(root,f"{from_commit}..{to_commit}")
+    if diff is None:return None
+    allowed=_review_control_metadata_paths(root,m)
+    return diff if allowed is None else diff-allowed
+def _uncovered_paths(paths:set[str],scope:object)->set[str]|None:
+    if not isinstance(scope,list)or not scope:return None
+    patterns=[p for p in scope if isinstance(p,str)and p]
+    if len(patterns)!=len(scope):return None
+    return {p for p in paths if not any(p==pat or fnmatch.fnmatch(p,pat)for pat in patterns)}
+def _residual_risk_permitted(r:Path)->bool:
+    cfg=_load_mapping(r/".forge/forge.yml")
+    if cfg is None:return False
+    review=cfg.get("review")
+    conv=review.get("convergence")if isinstance(review,dict)else None
+    return isinstance(conv,dict)and conv.get("allow_residual_risk_acceptance")is True
+def _validate_resolution_verification(r:Path,mpath:Path,m:dict,its:list,idx:dict)->list[ValidationFinding]:
+    out:list[ValidationFinding]=[]
+    if not any(isinstance(it,dict)and it.get("kind")in{"initial_review","resolution_verification"}for it in its):
+        return out
+    for pos,it in enumerate(its):
+        if not isinstance(it,dict)or it.get("kind")!="resolution_verification":continue
+        if pos==0:
+            out.append(_finding(r,mpath,"A resolution_verification Iteration MUST NOT be the first Review Iteration; there is no prior reviewed subject to compute a Resolution Delta against."));continue
+        sref=it.get("subject_provenance")
+        sub=idx.get(sref)if isinstance(sref,str)else None
+        if sub is None:
+            out.append(_finding(r,mpath,"A resolution_verification Iteration requires subject_provenance identifying the Resolution it verifies."));continue
+        sf=_record_fields(sub)
+        if sf is None:continue
+        _,srole,_,_,_,sim=sf
+        if srole!="resolution":
+            out.append(_finding(r,mpath,"A resolution_verification Iteration must reference resolution-role subject provenance; an implementation-role subject is definitionally an initial_review."));continue
+        scope,targets=sub.get("scope"),sub.get("targets")
+        if not(isinstance(scope,list)and scope)or not(isinstance(targets,list)and targets):
+            out.append(_finding(r,mpath,"The Resolution referenced by a resolution_verification Iteration must declare non-empty scope and targets before it can be mechanically verified as scoped."));continue
+        prior=its[pos-1]
+        pref=prior.get("subject_provenance")if isinstance(prior,dict)else None
+        psub=idx.get(pref)if isinstance(pref,str)else None
+        pf=_record_fields(psub)if psub is not None else None
+        if pf is None:
+            out.append(_finding(r,mpath,"resolution_verification cannot resolve the prior Iteration's subject provenance required to compute the Resolution Delta."));continue
+        pim=pf[5]
+        if sim[0]!="git_commit"or pim[0]!="git_commit":
+            out.append(_finding(r,mpath,"Resolution Delta computation requires git_commit immutable references on both the prior and current subject."));continue
+        delta=_resolution_delta(r,mpath,pim[1],sim[1])
+        if delta is None:
+            out.append(_finding(r,mpath,"Resolution Delta could not be determined from local Git history; validation fails closed."));continue
+        uncovered=_uncovered_paths(delta,scope)
+        if uncovered is None:
+            out.append(_finding(r,mpath,"Declared Resolution scope is malformed."));continue
+        status,full_review=it.get("status"),it.get("full_review_required")is True
+        if uncovered:
+            if status!="failed"or not full_review:
+                paths=", ".join(sorted(uncovered))
+                out.append(_finding(r,mpath,f"Resolution Delta contains Out-of-Scope Mutation not covered by declared scope ({paths}); a resolution_verification Iteration that detects this MUST be status: failed with full_review_required: true, never passed."))
+            continue
+        nmf=it.get("new_material_findings")
+        if status=="passed"and nmf not in(None,0):
+            out.append(_finding(r,mpath,"A passed resolution_verification Iteration MUST NOT declare new_material_findings greater than 0."))
+        elif status=="failed"and nmf is not None and(not isinstance(nmf,int)or isinstance(nmf,bool)or nmf<0):
+            out.append(_finding(r,mpath,"new_material_findings must be a non-negative integer."))
+    # FR-010: Full Review Escalation applies from the very first occurrence,
+    # independently of the (separate) Convergence Limit below — a single
+    # full_review_required Iteration already forbids the next Iteration from
+    # being another scoped resolution_verification.
+    for pos,it in enumerate(its):
+        if not(isinstance(it,dict)and it.get("full_review_required")is True):continue
+        if pos+1>=len(its):continue
+        nxt=its[pos+1]
+        if isinstance(nxt,dict)and nxt.get("kind")=="resolution_verification":
+            out.append(_finding(r,mpath,"A further resolution_verification Iteration is not valid immediately after full_review_required: true; only a new initial_review Iteration may continue the review lifecycle."))
+    streaks:list[int]=[];s=0
+    for it in its:
+        nmf=it.get("new_material_findings")if isinstance(it,dict)else None
+        qualifies=isinstance(it,dict)and it.get("kind")=="resolution_verification"and it.get("status")=="failed"and isinstance(nmf,int)and not isinstance(nmf,bool)and nmf>0
+        s=s+1 if qualifies else 0
+        streaks.append(s)
+    run=streaks[-1]if streaks else 0
+    review=m.get("review")if isinstance(m.get("review"),dict)else{}
+    conv=review.get("convergence")if isinstance(review,dict)else None
+    declared_count=conv.get("consecutive_unconverged_verifications")if isinstance(conv,dict)else None
+    if declared_count is not None and declared_count!=run:
+        out.append(_finding(r,mpath,f"Declared review.convergence.consecutive_unconverged_verifications ({declared_count!r}) disagrees with the Core-derived value ({run}); the convergence counter is derived, not self-declared."))
+    decision=conv.get("decision")if isinstance(conv,dict)else None
+    valid_decision=isinstance(decision,dict)and decision.get("option")in{"new_full_review","return_to_earlier_phase","accept_residual_risk","abort_or_supersede"}and isinstance(decision.get("reason"),str)and decision.get("reason")
+    if isinstance(decision,dict)and decision.get("option")=="accept_residual_risk"and not _residual_risk_permitted(r):
+        out.append(_finding(r,mpath,"review.convergence.decision.option accept_residual_risk requires the project configuration to explicitly permit it (review.convergence.allow_residual_risk_acceptance: true)."))
+    if run>=2:
+        declared_state=conv.get("state")if isinstance(conv,dict)else None
+        if declared_state!="review_convergence_failed":
+            out.append(_finding(r,mpath,"The Convergence Limit was reached (2 consecutive Resolution Verifications with new material findings); review.convergence.state MUST be review_convergence_failed."))
+        if review.get("status")=="passed":
+            out.append(_finding(r,mpath,"review.status MUST NOT be passed while the Change is in review_convergence_failed."))
+    # Historical scan (not just the current trailing run): every index where the
+    # limit was reached is checked, so appending a fresh initial_review later
+    # cannot silently erase an earlier, never-decided non-convergence episode
+    # (a self-declared/resettable counter would miss exactly this bypass).
+    for i,streak_i in enumerate(streaks):
+        if streak_i<2 or i+1>=len(its):continue
+        nxt=its[i+1]
+        if not valid_decision:
+            out.append(_finding(r,mpath,"An Iteration exists after the Convergence Limit was reached without a valid review.convergence.decision (option and reason)."))
+        if isinstance(nxt,dict)and nxt.get("kind")=="resolution_verification":
+            out.append(_finding(r,mpath,"A further resolution_verification Iteration is not valid once the Convergence Limit was reached; only a new initial_review Iteration may continue the review lifecycle."))
+    return out
 _HISTORY_ERROR=object()
 def _committed_history_mappings(r:Path,path:Path)->list[object]|None:
     root=_git_root(r)
@@ -229,6 +348,7 @@ def _validate_protocol2_review_provenance(r:Path)->list[ValidationFinding]:
             if sex==rex:out.append(_finding(r,mpath,"Strict Review is not independent: Reviewer and subject share the same Execution."))
             if sctx==rctx:out.append(_finding(r,mpath,"Strict Review is context-contaminated: Reviewer and subject share the same Execution Context."))
         if rev.get("status")=="passed"and not any(isinstance(i,dict)and i.get("status")=="passed"for i in its):out.append(_finding(r,mpath,"review.status is passed but no Review Iteration is passed."))
+        out.extend(_validate_resolution_verification(r,mpath,m,its,idx))
     return out
 def validate_project(project_root:Path,protocol_root:Path)->ValidationResult:
     f=project_root/".forge"

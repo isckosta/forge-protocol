@@ -53,3 +53,62 @@ Completion MUST NOT occur when a passed Strict Review lacks sufficient subject/R
 
 ## 9. Compatibility and evolution
 Protocol 1 remains frozen. Protocol 2 is the first integer Protocol version requiring independent Execution/Context and concrete revision-bound provenance. CHG-0008 defines Protocol 2 before release; corrections made inside this still-unmerged Change complete that original semantic promise rather than retroactively changing a released Protocol 2 instance.
+
+## 10. Resolution Verification
+A Review Iteration MAY declare `kind`: `initial_review` or
+`resolution_verification`. Absence of `kind` preserves exact pre-existing
+Protocol 2 behavior; nothing in §10–§13 applies to an unclassified Iteration.
+A `resolution_verification` Iteration MUST reference, via
+`subject_provenance`, a provenance record with `role: resolution`, and MUST
+NOT be the first entry of the manifest's `iterations` array. It remains
+subject to every independence, freeze, and provenance-authority invariant in
+§2–§8 without exception; classification narrows *scope and purpose*, not
+independence.
+
+## 11. Resolution Scope, Resolution Delta, and Out-of-Scope Mutation
+A `role: resolution` provenance record referenced by a
+`resolution_verification` Iteration MUST declare `scope` (repository-relative
+paths or glob patterns) and `targets` (Finding identifiers). Core computes
+the **Resolution Delta** as the committed diff between the immutable revision
+of the Iteration immediately preceding the `resolution_verification`
+Iteration and the immutable revision of its own subject — both already-frozen
+historical commits, not the current workspace — minus the exact Change-local
+`manifest.yml`/`provenance.yml`/`review.md` paths. This is distinct from, and
+does not replace, the §5 effective-workspace freeze against the *current*
+subject. Any Resolution Delta path not matched by a declared `scope` entry is
+**Out-of-Scope Mutation**. A `resolution_verification` Iteration whose
+Resolution Delta contains Out-of-Scope Mutation MUST be `status: failed` and
+MUST set `full_review_required: true`; it MUST NOT be `status: passed`. Once
+`full_review_required: true` is recorded, the next Iteration for that
+manifest MUST be `kind: initial_review` (or unclassified); a further
+`resolution_verification` Iteration is invalid until a new, unrestricted
+Initial Review occurs.
+
+## 12. Convergence
+Core derives `consecutive_unconverged_verifications` from the manifest's
+`iterations` array: the length of the trailing run of entries with
+`kind: resolution_verification`, `status: failed`, and
+`new_material_findings > 0`. `new_material_findings` counts Findings the
+Resolution itself is responsible for (resolution regressions and Out-of-Scope
+Mutation) discovered independently of the Findings that opened the current
+Resolution cycle; it MUST NOT count an unresolved original Finding recurring,
+and MUST NOT count an unrelated latent Finding that is not promoted to
+blocking severity. The Convergence Limit is 2. Any value the manifest
+declares for `review.convergence.state` or
+`.consecutive_unconverged_verifications` is advisory only; Core recomputes
+both on every validation and raises a finding on disagreement — the counter
+is not resettable by self-declaration.
+
+## 13. Non-convergence
+When the derived count reaches the Convergence Limit, the manifest MUST
+declare `review.convergence.state: review_convergence_failed`, and
+`review.status: passed` MUST NOT be asserted. No further
+`resolution_verification` Iteration is valid. A new `initial_review`
+Iteration remains valid only when `review.convergence.decision` is present
+with a recognized `option` (`new_full_review`, `return_to_earlier_phase`,
+`accept_residual_risk`, or `abort_or_supersede`) and a non-empty `reason`.
+`accept_residual_risk` additionally requires the effective project
+configuration to explicitly permit it
+(`review.convergence.allow_residual_risk_acceptance: true`); Core MUST reject
+it otherwise. Forge MUST NOT select an option automatically; reaching
+Non-Convergence returns authority to the engineer.

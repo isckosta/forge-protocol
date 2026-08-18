@@ -1,0 +1,43 @@
+schema: forge/change@2
+protocol: 2
+change: {id: CHG-0011, title: Review Convergence Boundary, kind: feature}
+flow: {initial: full, current: full, escalations: []}
+state: {current: strict_review}
+artifacts:
+  intent: complete
+  discovery: complete
+  specification: complete
+  specification_review: complete
+  architecture: complete
+  test_strategy: approved
+  plan: approved
+  tasks: active
+  traceability: complete
+  tdd_evidence: complete
+  implementation: complete
+  provenance: complete
+  verification: complete
+  review: pending
+  documentation: pending
+  knowledge_capture: complete
+requirements: {total: 16, implemented: 16, verified: 16}
+tdd: {status: compliant, cycles: 8}
+verification: {status: passed}
+review:
+  status: pending
+  iteration: 0
+  blockers: 0
+  majors: 0
+  minors: 0
+  observations: 0
+  iterations: []
+documentation:
+  impact_evaluated: true
+  update_required: true
+  reason: >-
+    This Change introduces Resolution Verification scoping and review
+    convergence termination semantics: new Contract rules (C-047-C-050), new
+    Protocol 2 Specification sections (10-13), a new resolution_verification
+    policy block, additive Schema fields, a compatibility subsection, and a
+    new Core validator boundary. All of the above are updated in this
+    Change's own diff.
