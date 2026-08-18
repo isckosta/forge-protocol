@@ -1,0 +1,30 @@
+schema: forge/execution-provenance@1
+change: CHG-0012
+records:
+  - id: implementation-001
+    role: implementation
+    execution: {id: implementation-exec-chg0012-20260818-01, context_id: implementation-context-chg0012-20260818-01}
+    recorded_at: 2026-08-18T02:35:00Z
+    revision:
+      id: chg-0012-implementation-001
+      immutable_ref: {type: git_commit, value: 47468fec276ceb4ab1137aa94f5a2b26760fc6da}
+      commit: 47468fec276ceb4ab1137aa94f5a2b26760fc6da
+      description: >-
+        Frozen CHG-0012 Implementation subject: one-condition fix to
+        src/forge_cli/validation/__init__.py's Protocol 2 freeze-drift check
+        (exempts state.current == complete, mirroring the existing exemption
+        at line 296), a new regression test module, and CHANGELOG update.
+        Fixes the exact failure on GitHub Actions run 32091880352.
+        Subsequent commits are restricted to Change-local review-control
+        metadata (this file and manifest.yml/review.md).
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: claude-code
+      statement: >-
+        Self-recorded repository-native provenance for the Implementation
+        execution that produced CHG-0012. No provider-native attestation is
+        claimed; assurance is recorded, not verified or cryptographic/
+        external proof. The independent Strict Review Iteration that follows
+        must run in a distinct Execution and Execution Context per Protocol
+        2 and will record its own review-role provenance separately.
