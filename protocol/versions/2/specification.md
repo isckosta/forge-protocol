@@ -67,8 +67,10 @@ independence.
 
 ## 11. Resolution Scope, Resolution Delta, and Out-of-Scope Mutation
 A `role: resolution` provenance record referenced by a
-`resolution_verification` Iteration MUST declare `scope` (repository-relative
-paths or glob patterns) and `targets` (Finding identifiers). Core computes
+`resolution_verification` Iteration MUST declare `scope` (exact
+repository-relative paths — not glob/wildcard patterns, which a Resolution
+could otherwise declare broadly enough to cover any path and defeat this
+section's purpose entirely) and `targets` (Finding identifiers). Core computes
 the **Resolution Delta** as the committed diff between the immutable revision
 of the Iteration immediately preceding the `resolution_verification`
 Iteration and the immutable revision of its own subject — both already-frozen
@@ -100,15 +102,21 @@ both on every validation and raises a finding on disagreement — the counter
 is not resettable by self-declaration.
 
 ## 13. Non-convergence
-When the derived count reaches the Convergence Limit, the manifest MUST
-declare `review.convergence.state: review_convergence_failed`, and
-`review.status: passed` MUST NOT be asserted. No further
-`resolution_verification` Iteration is valid. A new `initial_review`
-Iteration remains valid only when `review.convergence.decision` is present
-with a recognized `option` (`new_full_review`, `return_to_earlier_phase`,
-`accept_residual_risk`, or `abort_or_supersede`) and a non-empty `reason`.
-`accept_residual_risk` additionally requires the effective project
-configuration to explicitly permit it
+When the derived count reaches the Convergence Limit at historical index `i`
+of `iterations`, the manifest MUST declare
+`review.convergence.state: review_convergence_failed` while the current
+trailing count remains `>= 2`, and `review.status: passed` MUST NOT be
+asserted. For `iterations[i+1]`, if it exists: it is valid only when its own
+`convergence_decision` field — not a manifest-wide field — is present with a
+recognized `option` (`new_full_review`, `return_to_earlier_phase`,
+`accept_residual_risk`, or `abort_or_supersede`) and a non-empty `reason`,
+and it is `kind: initial_review` (or unclassified); a `resolution_verification`
+at `i+1` is invalid regardless of any decision. This check applies
+independently at every historical `i` where the limit was reached: a decision
+recorded on one episode's following Iteration does not authorize a different,
+later episode's following Iteration, since each is a distinct, independently
+immutable Iteration once committed. `accept_residual_risk` additionally
+requires the effective project configuration to explicitly permit it
 (`review.convergence.allow_residual_risk_acceptance: true`); Core MUST reject
 it otherwise. Forge MUST NOT select an option automatically; reaching
 Non-Convergence returns authority to the engineer.

@@ -24,9 +24,10 @@ already computes inline. No new Git-walking logic, and no staged/unstaged/
 untracked re-check (that remains §5's job against the *current* subject,
 unchanged).
 
-Path/glob containment reuses Python's standard `fnmatch.fnmatch` against
-POSIX-style repo-relative paths (already what `_diff_paths`/
-`_untracked_paths` decode to). No new dependency.
+Path containment is exact-match against the same POSIX-style repo-relative
+paths `_diff_paths`/`_untracked_paths` already decode to — no glob library,
+no new dependency (see CHG-0011-R003 correction below for why glob matching
+was rejected, not just deferred).
 
 ## Manifest shape (`forge/change@2`, additive)
 
@@ -43,13 +44,19 @@ review:
       new_material_findings: 1             # NEW, optional, required-if-kind+failed
       finding_classes: [resolution_regression]   # NEW, optional, informational
       evidence_gap: "CHG-0011-R002 (class B): ..."
+    - id: review-003                       # the Iteration immediately after
+      revision: chg-0011-fullreview-001    # a Non-Convergence episode ends
+      subject_provenance: fullreview-001
+      reviewer_provenance: review-003
+      kind: initial_review
+      status: passed
+      convergence_decision:                # NEW, optional, PER-ITERATION —
+        option: new_full_review            # not a manifest-wide field (see
+        reason: "..."                      # CHG-0011-R001 correction)
+        recorded_at: 2026-08-17T00:00:00Z
   convergence:                             # NEW, optional block
-    state: review_convergence_failed
-    consecutive_unconverged_verifications: 2
-    decision:
-      option: new_full_review
-      reason: "..."
-      recorded_at: 2026-08-17T00:00:00Z
+    state: nominal                         # current trailing state only
+    consecutive_unconverged_verifications: 0
 ```
 
 `review.convergence.state` and `.consecutive_unconverged_verifications` are
@@ -60,18 +67,38 @@ the Discovery risk (§Adversarial self-check risk) that a self-declared
 counter is resettable — it is not self-declared as far as enforcement is
 concerned; it is checked.
 
+`convergence_decision` deliberately lives on the specific Iteration it
+authorizes, not on `review.convergence` (a manifest-wide field was the
+original design — Strict Review Iteration 1 found, CHG-0011-R001 BLOCKER,
+that a single early decision could then silently authorize every later,
+independent Non-Convergence episode in the same manifest, because Core only
+checked "does *a* valid decision exist anywhere," not "does *this episode's*
+following Iteration carry one"). Per-Iteration placement closes this for
+free: committed Iterations are already immutable history (Protocol 2,
+CHG-0008), so a decision recorded for episode 1's following Iteration cannot
+be reinterpreted as authorizing episode 2's.
+
 ## Provenance shape (`forge/execution-provenance@1`, additive)
 
 ```yaml
 records:
   - id: resolution-001
     role: resolution
-    scope: ["src/forge_cli/validation/__init__.py", "tests/unit/test_*.py"]  # NEW, optional
+    scope: ["src/forge_cli/validation/__init__.py", "tests/unit/test_resolution_verification.py"]  # NEW, optional, EXACT paths only
     targets: ["CHG-0011-R001"]                                              # NEW, optional
     execution: {...}
     revision: {...}
     source: {...}
 ```
+
+`scope` entries are exact repository-relative paths, not glob patterns.
+Strict Review Iteration 1 found (CHG-0011-R003, MAJOR) that the original
+`fnmatch`-based implementation let `scope: ["*"]` cover every path,
+mechanically defeating Out-of-Scope Mutation detection entirely; `fnmatch`
+was removed rather than hardened against degenerate patterns, since exact
+paths are already what FR-003's motivating use case needs and glob
+specificity heuristics are their own adversarial surface this Change
+deliberately avoids building.
 
 `scope`/`targets` are ordinary fields on an existing record type. They
 inherit the existing Git-history-anchoring machinery
@@ -97,8 +124,8 @@ Per-Iteration checks (only for `kind: resolution_verification`):
 3. Subject provenance declares non-empty `scope` and `targets` (FR-003).
 4. Compute Resolution Delta against the immutable revision of the
    *immediately preceding* Iteration's subject provenance (FR-004).
-5. Compute uncovered paths = Resolution Delta − paths matched by any `scope`
-   glob (FR-005).
+5. Compute uncovered paths = Resolution Delta − paths exactly matching a
+   declared `scope` entry (FR-005; exact match only — CHG-0011-R003).
 6. If uncovered paths exist: Iteration MUST be `status: failed` AND
    `full_review_required: true`, else finding (FR-006).
 7. If `status == passed`: `new_material_findings` MUST be absent or `0`
@@ -107,19 +134,25 @@ Per-Iteration checks (only for `kind: resolution_verification`):
    `new_material_findings` MUST be a non-negative integer (FR-013); its
    presence/positivity feeds step 9's manifest-level pass.
 
-Manifest-level check (after per-Iteration checks):
-9. Derive `consecutive_unconverged_verifications` = length of the trailing
-   run of `iterations` entries with `kind == resolution_verification`,
-   `status == failed`, `new_material_findings > 0` (FR-011).
-10. If derived count `>= 2`: manifest MUST declare
+Manifest-level check (after per-Iteration checks), computed once as a
+per-index streak array, then walked twice:
+9. Derive `streaks[i]` = length of the run of `kind == resolution_verification`,
+   `status == failed`, `new_material_findings > 0` entries ending at index
+   `i` (FR-011); `consecutive_unconverged_verifications` = `streaks[-1]`
+   (current trailing state only).
+10. If `streaks[-1] >= 2`: manifest MUST declare
     `review.convergence.state == review_convergence_failed`; any declared
-    mismatching value is a finding. `review.status: passed` is a finding.
-    If any Iteration exists **after** the second such failed Iteration, it is
-    valid only if `review.convergence.decision.option` and `.reason` are
-    present and that later Iteration is `kind: initial_review` (or
-    unclassified) — anything else is a finding (FR-012, FR-014).
-11. If `review.convergence.decision.option == accept_residual_risk`: the
-    effective review policy must permit it. Because policy YAML is not
+    mismatching value or mismatching `consecutive_unconverged_verifications`
+    is a finding. `review.status: passed` is a finding.
+11. **For every historical index `i` where `streaks[i] >= 2`** (not only the
+    last one — CHG-0011-R001), if `iterations[i+1]` exists: it is valid only
+    if `iterations[i+1].convergence_decision.option` and `.reason` are
+    present **on that specific Iteration** and it is `kind: initial_review`
+    (or unclassified) — a `resolution_verification` at `i+1` is always a
+    finding, decision or not (FR-012, FR-014). A decision is read fresh from
+    each `i+1` Iteration; nothing is cached or reused across different `i`.
+12. If `iterations[i+1].convergence_decision.option == accept_residual_risk`:
+    the effective review policy must permit it. Because policy YAML is not
     parsed by Core today (Discovery finding — it is agent-followed, not
     machine-enforced), and this Change does not introduce a policy-YAML
     loader into Core (out of scope; would be new machinery for one boolean),
@@ -190,6 +223,6 @@ this Change's artifacts.
 
 No `forge/decision@1` schema, no generic Decision Gate reusable from
 Specification/Architecture stages, no recommendation engine. The decision
-record (`review.convergence.decision`) is a fixed-shape, four-option object
+record (`iterations[].convergence_decision`) is a fixed-shape, four-option object
 scoped only to this one convergence-failure state — it has no independent
 schema identity and is validated inline as part of `change-v2.schema.json`.

@@ -15,7 +15,7 @@ requirements:
   FR-012: {tasks: [T-009], tests: [TDD-018], evidence: convergence_limit_two_historical_scan}
   FR-013: {tasks: [T-009], tests: [TDD-020], evidence: new_material_findings_nonnegative_integer}
   FR-014: {tasks: [T-009], tests: [TDD-018], evidence: forge_never_selects_option_automatically}
-  FR-015: {tasks: [T-001, T-009], tests: [TDD-018, TDD-020], evidence: decision_record_shape_and_residual_risk_policy_gate}
+  FR-015: {tasks: [T-001, T-009, T-017], tests: [TDD-018, TDD-020, TDD-021], evidence: decision_record_shape_per_iteration_after_r001_correction}
   FR-016: {tasks: [T-009], tests: [TDD-012], evidence: unclassified_iterations_unaffected}
   INV-001: {tasks: [T-009], evidence: scope_anchored_by_existing_provenance_history_authority}
   INV-002: {tasks: [T-009], tests: [TDD-016, TDD-017], evidence: containment_mechanical_materiality_judgment}

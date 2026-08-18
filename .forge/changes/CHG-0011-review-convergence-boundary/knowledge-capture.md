@@ -39,6 +39,41 @@ status: complete
   `src/forge_cli/validation/__init__.py`. This was true before CHG-0011 and
   remains true after; noted here so a future Change does not assume schema
   validation is happening where it is not.
+- A shared "authorization" field that is checked only for *existence*, not
+  for binding to the specific thing it authorizes, is a reusable-bypass
+  pattern independent of this Protocol — the same shape as a stale approval
+  token, a cached permission grant, or (closer to home) the exact
+  self-declared-counter risk this Change's own Discovery phase flagged and
+  fixed for the *counter*. Independent Strict Review Iteration 1 found the
+  same shape had silently reappeared one field over, in the *decision*
+  record, which received no equivalent binding. General lesson for this
+  Protocol going forward: when a Change introduces a field whose presence is
+  meant to authorize a specific past event, ask explicitly whether the field
+  is bound to *that instance* of the event or merely to *the field's own
+  existence* — the latter is bypassable by construction once more than one
+  instance of the event can occur.
+- Permitting a general-purpose pattern language (glob/wildcard matching) for
+  a containment check is a broader attack surface than the containment
+  check's own author usually accounts for at design time — a scope narrowly
+  intended to mean "these specific files" can always be widened by a pattern
+  general enough to mean "everything." Preferring exact enumeration over
+  patterns, even at some ergonomic cost, is the safer default for this class
+  of allowlist.
+- **Pre-existing risk, not introduced here, surfaced by this Change's own
+  self-check:** `_first_committed_review_iteration`'s historical-authority
+  check (CHG-0008) only compares `revision`/`subject_provenance` between the
+  current and first-committed representation of an Iteration; `status` and
+  other lifecycle fields are documented as "independently mutable" by
+  CHG-0008's own architecture. That means a committed Iteration's `status`
+  could in principle be edited from `failed` to `passed` (or a
+  `convergence_decision` added retroactively) without a genuinely new review
+  execution, and today's mechanism would not catch it — the same gap applies
+  to `kind`, `full_review_required`, and `convergence_decision` introduced
+  here, since they inherit the same "lifecycle field" treatment. This is not
+  a regression CHG-0011 introduces; it is an existing boundary of what
+  Protocol 2's provenance-authority mechanism protects, worth flagging for a
+  future Change rather than silently discovering it again later. See final
+  report's Remaining Risks.
 - `CHG-0008`'s own completed manifest currently fails `forge validate` with
   a C-026 freeze finding, confirmed present on a clean `main` checkout with
   none of this Change's edits. It is not caused by CHG-0011 and is out of

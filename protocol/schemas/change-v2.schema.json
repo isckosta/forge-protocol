@@ -45,6 +45,16 @@
               "finding_classes": {
                 "type": "array",
                 "items": {"enum": ["unresolved_finding", "resolution_regression", "out_of_scope_mutation", "unrelated_latent_finding"]}
+              },
+              "convergence_decision": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["option", "reason"],
+                "properties": {
+                  "option": {"enum": ["new_full_review", "return_to_earlier_phase", "accept_residual_risk", "abort_or_supersede"]},
+                  "reason": {"type": "string", "minLength": 1},
+                  "recorded_at": {"type": "string", "format": "date-time"}
+                }
               }
             },
             "allOf": [
@@ -60,17 +70,7 @@
           "additionalProperties": false,
           "properties": {
             "state": {"enum": ["nominal", "review_convergence_failed"]},
-            "consecutive_unconverged_verifications": {"type": "integer", "minimum": 0},
-            "decision": {
-              "type": "object",
-              "additionalProperties": false,
-              "required": ["option", "reason"],
-              "properties": {
-                "option": {"enum": ["new_full_review", "return_to_earlier_phase", "accept_residual_risk", "abort_or_supersede"]},
-                "reason": {"type": "string", "minLength": 1},
-                "recorded_at": {"type": "string", "format": "date-time"}
-              }
-            }
+            "consecutive_unconverged_verifications": {"type": "integer", "minimum": 0}
           }
         }
       }

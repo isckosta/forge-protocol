@@ -503,7 +503,7 @@ def test_convergence_limit_blocks_further_resolution_verification_without_decisi
     result = validate_project(root, resolve_protocol_root())
     assert not result.passed
     messages = _messages(result)
-    assert any("without a valid review.convergence.decision" in m for m in messages)
+    assert any("requires its own valid convergence_decision" in m for m in messages)
     assert any("further resolution_verification Iteration is not valid" in m for m in messages)
 
 
@@ -518,24 +518,21 @@ def test_convergence_limit_allows_new_initial_review_after_decision(tmp_path: Pa
         "id": "review-004", "revision": "chg-9006-fullreview-001",
         "subject_provenance": "fullreview-001", "reviewer_provenance": "review-004",
         "kind": "initial_review", "status": "passed",
+        # CHG-0011-R001 fix: the decision lives on the specific Iteration it
+        # authorizes, not a shared manifest-wide field.
+        "convergence_decision": {
+            "option": "new_full_review",
+            "reason": "Two consecutive scoped Resolution Verifications produced independent material findings; engineer authorized a fresh unrestricted Initial Review.",
+            "recorded_at": "2026-08-17T01:00:00Z",
+        },
     }
     manifest_v4 = _manifest(
         "CHG-9006", manifest_v3["review"]["iterations"] + [it4], top_status="passed",
-        convergence={
-            # The trailing Core-derived state after this new initial_review
-            # Iteration is nominal/0 again (FR-011): the *decision* remains a
-            # permanent historical record of why escalation happened, but the
-            # counter and state fields must track current trailing reality,
-            # not the past episode, or they would themselves be a
-            # self-declared falsehood the validator must reject (INV-003).
-            "state": "nominal",
-            "consecutive_unconverged_verifications": 0,
-            "decision": {
-                "option": "new_full_review",
-                "reason": "Two consecutive scoped Resolution Verifications produced independent material findings; engineer authorized a fresh unrestricted Initial Review.",
-                "recorded_at": "2026-08-17T01:00:00Z",
-            },
-        },
+        # Trailing Core-derived state after this new initial_review Iteration
+        # is nominal/0 again (FR-011): only the counter/state track current
+        # trailing reality; the decision itself is per-Iteration, permanent
+        # history (INV-003 still applies to the counter/state fields).
+        convergence={"state": "nominal", "consecutive_unconverged_verifications": 0},
     )
     provenance_v4 = _provenance("CHG-9006", provenance_v3["records"] + [
         _record("fullreview-001", "implementation", a4, "chg-9006-fullreview-001", "fullreview-exec", "fullreview-ctx"),
@@ -547,17 +544,112 @@ def test_convergence_limit_allows_new_initial_review_after_decision(tmp_path: Pa
     assert result.passed, _messages(result)
 
 
+def test_convergence_decision_cannot_be_reused_across_independent_episodes(tmp_path: Path) -> None:
+    """CHG-0011-R001 (BLOCKER, found by independent Strict Review Iteration 1):
+
+    a decision recorded for one Non-Convergence episode must not silently
+    authorize a second, later, fully independent episode. Reproduces the
+    exact scenario from review.md's CHG-0011-R001: episode 1 legitimately
+    resolved with a valid decision and a following initial_review that
+    itself fails with an unrelated finding, then episode 2 (a fresh
+    Resolution -> two more consecutive resolution_verification failures)
+    occurs, then a final initial_review is marked passed while carrying no
+    convergence_decision of its own.
+    """
+    root = tmp_path
+    _init_repo(root)
+    change_dir = "CHG-9006-reuse"
+    manifest_v3, provenance_v3, a3 = _build_two_strike_manifest(root, change_dir)
+
+    # Episode 1: resolved with a valid decision; the following initial_review
+    # itself fails on a fresh, unrelated (non-convergence-counting) finding.
+    a4 = _freeze_commit(root, {"src/x.py": "v4 full rewrite\n"}, "full review after episode 1")
+    it4 = {
+        "id": "review-004", "revision": "chg-9006-fullreview-001",
+        "subject_provenance": "fullreview-001", "reviewer_provenance": "review-004",
+        "kind": "initial_review", "status": "failed",
+        "convergence_decision": {"option": "new_full_review", "reason": "Episode 1 authorization."},
+        "evidence_gap": "unrelated finding, not itself a convergence-counting resolution_verification failure",
+    }
+    manifest_v4 = _manifest("CHG-9006", manifest_v3["review"]["iterations"] + [it4],
+                             convergence={"state": "nominal", "consecutive_unconverged_verifications": 0})
+    provenance_v4 = _provenance("CHG-9006", provenance_v3["records"] + [
+        _record("fullreview-001", "implementation", a4, "chg-9006-fullreview-001", "fullreview-exec", "fullreview-ctx"),
+        _record("review-004", "review", a4, "chg-9006-fullreview-001", "review-exec-4", "review-ctx-4"),
+    ])
+    _write_metadata_commit(root, change_dir, manifest_v4, provenance_v4, "episode 1 full review, still failing")
+
+    # Episode 2: an entirely new, independent two-strike streak.
+    a5 = _freeze_commit(root, {"src/x.py": "v5\n"}, "resolution episode-2 attempt 1")
+    it5 = {
+        "id": "review-005", "revision": "chg-9006-resolution-010",
+        "subject_provenance": "resolution-010", "reviewer_provenance": "review-005",
+        "kind": "resolution_verification", "status": "failed", "new_material_findings": 1,
+        "evidence_gap": "episode 2, strike 1",
+    }
+    manifest_v5 = _manifest("CHG-9006", manifest_v4["review"]["iterations"] + [it5])
+    provenance_v5 = _provenance("CHG-9006", provenance_v4["records"] + [
+        _record("resolution-010", "resolution", a5, "chg-9006-resolution-010", "resolution-exec-10", "resolution-ctx-10",
+                extra={"scope": ["src/x.py"], "targets": ["CHG-9006-R010"]}),
+        _record("review-005", "review", a5, "chg-9006-resolution-010", "review-exec-5", "review-ctx-5"),
+    ])
+    _write_metadata_commit(root, change_dir, manifest_v5, provenance_v5, "episode 2 strike 1")
+
+    a6 = _freeze_commit(root, {"src/x.py": "v6\n"}, "resolution episode-2 attempt 2")
+    it6 = {
+        "id": "review-006", "revision": "chg-9006-resolution-011",
+        "subject_provenance": "resolution-011", "reviewer_provenance": "review-006",
+        "kind": "resolution_verification", "status": "failed", "new_material_findings": 1,
+        "evidence_gap": "episode 2, strike 2",
+    }
+    manifest_v6 = _manifest("CHG-9006", manifest_v5["review"]["iterations"] + [it6])
+    provenance_v6 = _provenance("CHG-9006", provenance_v5["records"] + [
+        _record("resolution-011", "resolution", a6, "chg-9006-resolution-011", "resolution-exec-11", "resolution-ctx-11",
+                extra={"scope": ["src/x.py"], "targets": ["CHG-9006-R011"]}),
+        _record("review-006", "review", a6, "chg-9006-resolution-011", "review-exec-6", "review-ctx-6"),
+    ])
+    _write_metadata_commit(root, change_dir, manifest_v6, provenance_v6, "episode 2 strike 2 -- second Non-Convergence episode")
+
+    # Illegitimate: a new initial_review passed with NO convergence_decision
+    # of its own for episode 2.
+    a7 = _freeze_commit(root, {"src/x.py": "v7\n"}, "silent bypass attempt")
+    it7 = {
+        "id": "review-007", "revision": "chg-9006-fullreview-002",
+        "subject_provenance": "fullreview-002", "reviewer_provenance": "review-007",
+        "kind": "initial_review", "status": "passed",
+    }
+    manifest_v7 = _manifest("CHG-9006", manifest_v6["review"]["iterations"] + [it7], top_status="passed",
+                             convergence={"state": "nominal", "consecutive_unconverged_verifications": 0})
+    provenance_v7 = _provenance("CHG-9006", provenance_v6["records"] + [
+        _record("fullreview-002", "implementation", a7, "chg-9006-fullreview-002", "fullreview-exec-2", "fullreview-ctx-2"),
+        _record("review-007", "review", a7, "chg-9006-fullreview-002", "review-exec-7", "review-ctx-7"),
+    ])
+    _write_metadata_commit(root, change_dir, manifest_v7, provenance_v7, "bypass attempt: no decision for episode 2")
+
+    result = validate_project(root, resolve_protocol_root())
+    assert not result.passed, "episode 2's Non-Convergence must require its own decision"
+    assert any("requires its own valid convergence_decision" in m for m in _messages(result))
+
+
 def test_accept_residual_risk_requires_project_policy_permission(tmp_path: Path) -> None:
     root = tmp_path
     _init_repo(root)  # default forge.yml: allow_residual_risk_acceptance absent -> not permitted
     change_dir = "CHG-9006-risk"
     manifest_v3, provenance_v3, a3 = _build_two_strike_manifest(root, change_dir)
-    manifest_v3["review"]["convergence"] = {
-        "state": "review_convergence_failed",
-        "consecutive_unconverged_verifications": 2,
-        "decision": {"option": "accept_residual_risk", "reason": "Cost outweighs remaining risk."},
+    a4 = _freeze_commit(root, {"src/x.py": "v4\n"}, "accept residual risk attempt")
+    it4 = {
+        "id": "review-004", "revision": "chg-9006-fullreview-001",
+        "subject_provenance": "fullreview-001", "reviewer_provenance": "review-004",
+        "kind": "initial_review", "status": "passed",
+        "convergence_decision": {"option": "accept_residual_risk", "reason": "Cost outweighs remaining risk."},
     }
-    _write_metadata_commit(root, change_dir, manifest_v3, provenance_v3, "record decision without policy permission")
+    manifest_v4 = _manifest("CHG-9006", manifest_v3["review"]["iterations"] + [it4], top_status="passed",
+                             convergence={"state": "nominal", "consecutive_unconverged_verifications": 0})
+    provenance_v4 = _provenance("CHG-9006", provenance_v3["records"] + [
+        _record("fullreview-001", "implementation", a4, "chg-9006-fullreview-001", "fullreview-exec", "fullreview-ctx"),
+        _record("review-004", "review", a4, "chg-9006-fullreview-001", "review-exec-4", "review-ctx-4"),
+    ])
+    _write_metadata_commit(root, change_dir, manifest_v4, provenance_v4, "record decision without policy permission")
 
     result = validate_project(root, resolve_protocol_root())
     assert not result.passed
@@ -569,15 +661,47 @@ def test_accept_residual_risk_permitted_by_project_policy(tmp_path: Path) -> Non
     _init_repo(root, forge_yml=FORGE_YML_ALLOW_RESIDUAL_RISK)
     change_dir = "CHG-9006-risk-ok"
     manifest_v3, provenance_v3, a3 = _build_two_strike_manifest(root, change_dir)
-    manifest_v3["review"]["convergence"] = {
-        "state": "review_convergence_failed",
-        "consecutive_unconverged_verifications": 2,
-        "decision": {"option": "accept_residual_risk", "reason": "Cost outweighs remaining risk; documented and approved."},
+    a4 = _freeze_commit(root, {"src/x.py": "v4\n"}, "accept residual risk, permitted")
+    it4 = {
+        "id": "review-004", "revision": "chg-9006-fullreview-001",
+        "subject_provenance": "fullreview-001", "reviewer_provenance": "review-004",
+        "kind": "initial_review", "status": "passed",
+        "convergence_decision": {"option": "accept_residual_risk", "reason": "Cost outweighs remaining risk; documented and approved."},
     }
-    _write_metadata_commit(root, change_dir, manifest_v3, provenance_v3, "record decision with policy permission")
+    manifest_v4 = _manifest("CHG-9006", manifest_v3["review"]["iterations"] + [it4], top_status="passed",
+                             convergence={"state": "nominal", "consecutive_unconverged_verifications": 0})
+    provenance_v4 = _provenance("CHG-9006", provenance_v3["records"] + [
+        _record("fullreview-001", "implementation", a4, "chg-9006-fullreview-001", "fullreview-exec", "fullreview-ctx"),
+        _record("review-004", "review", a4, "chg-9006-fullreview-001", "review-exec-4", "review-ctx-4"),
+    ])
+    _write_metadata_commit(root, change_dir, manifest_v4, provenance_v4, "record decision with policy permission")
 
     result = validate_project(root, resolve_protocol_root())
     assert result.passed, _messages(result)
+
+
+def test_resolution_scope_wildcard_does_not_bypass_containment(tmp_path: Path) -> None:
+    """CHG-0011-R003 (MAJOR, found by independent Strict Review Iteration 1):
+    a broad glob like scope: ["*"] must not cover paths it was never meant
+    to. Scope is exact-path-only; this proves a wildcard is simply a literal
+    string that matches nothing real, not a pattern that swallows the delta.
+    """
+    root, change_dir, manifest_v1, a1, a2, resolution_record = _out_of_scope_setup(tmp_path)
+    resolution_record["scope"] = ["*"]
+    manifest_v2 = _manifest("CHG-9002", manifest_v1["review"]["iterations"] + [{
+        "id": "review-002", "revision": "chg-9002-resolution-001",
+        "subject_provenance": "resolution-001", "reviewer_provenance": "review-002",
+        "kind": "resolution_verification", "status": "passed",
+    }], top_status="passed")
+    provenance_v2 = _provenance("CHG-9002", [
+        _impl_record(a1, "chg-9002-impl-001"), resolution_record,
+        _record("review-002", "review", a2, "chg-9002-resolution-001", "review-exec-2", "review-ctx-2"),
+    ])
+    _write_metadata_commit(root, change_dir, manifest_v2, provenance_v2, "wildcard scope bypass attempt")
+
+    result = validate_project(root, resolve_protocol_root())
+    assert not result.passed
+    assert any("Out-of-Scope Mutation" in m for m in _messages(result))
 
 
 # ---------------------------------------------------------------------------

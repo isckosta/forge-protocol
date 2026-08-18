@@ -1,7 +1,6 @@
 """Forge validation boundary."""
 from __future__ import annotations
 from dataclasses import dataclass
-import fnmatch
 from pathlib import Path
 import subprocess
 from typing import Any
@@ -97,10 +96,16 @@ def _resolution_delta(r:Path,m:Path,from_commit:str,to_commit:str)->set[str]|Non
     allowed=_review_control_metadata_paths(root,m)
     return diff if allowed is None else diff-allowed
 def _uncovered_paths(paths:set[str],scope:object)->set[str]|None:
+    """CHG-0011-R003: exact repository-relative path match only.
+
+    Glob/wildcard containment was found trivially defeatable (scope: ["*"]
+    covers every path); Resolution Scope declares the exact paths it
+    touches, not a pattern that can be widened to swallow the whole delta.
+    """
     if not isinstance(scope,list)or not scope:return None
     patterns=[p for p in scope if isinstance(p,str)and p]
     if len(patterns)!=len(scope):return None
-    return {p for p in paths if not any(p==pat or fnmatch.fnmatch(p,pat)for pat in patterns)}
+    return {p for p in paths if p not in patterns}
 def _residual_risk_permitted(r:Path)->bool:
     cfg=_load_mapping(r/".forge/forge.yml")
     if cfg is None:return False
@@ -175,10 +180,6 @@ def _validate_resolution_verification(r:Path,mpath:Path,m:dict,its:list,idx:dict
     declared_count=conv.get("consecutive_unconverged_verifications")if isinstance(conv,dict)else None
     if declared_count is not None and declared_count!=run:
         out.append(_finding(r,mpath,f"Declared review.convergence.consecutive_unconverged_verifications ({declared_count!r}) disagrees with the Core-derived value ({run}); the convergence counter is derived, not self-declared."))
-    decision=conv.get("decision")if isinstance(conv,dict)else None
-    valid_decision=isinstance(decision,dict)and decision.get("option")in{"new_full_review","return_to_earlier_phase","accept_residual_risk","abort_or_supersede"}and isinstance(decision.get("reason"),str)and decision.get("reason")
-    if isinstance(decision,dict)and decision.get("option")=="accept_residual_risk"and not _residual_risk_permitted(r):
-        out.append(_finding(r,mpath,"review.convergence.decision.option accept_residual_risk requires the project configuration to explicitly permit it (review.convergence.allow_residual_risk_acceptance: true)."))
     if run>=2:
         declared_state=conv.get("state")if isinstance(conv,dict)else None
         if declared_state!="review_convergence_failed":
@@ -187,13 +188,22 @@ def _validate_resolution_verification(r:Path,mpath:Path,m:dict,its:list,idx:dict
             out.append(_finding(r,mpath,"review.status MUST NOT be passed while the Change is in review_convergence_failed."))
     # Historical scan (not just the current trailing run): every index where the
     # limit was reached is checked, so appending a fresh initial_review later
-    # cannot silently erase an earlier, never-decided non-convergence episode
-    # (a self-declared/resettable counter would miss exactly this bypass).
+    # cannot silently erase an earlier, never-decided non-convergence episode.
+    # CHG-0011-R001: the decision is read from the *specific* Iteration that
+    # follows each episode (`convergence_decision`), never from one shared
+    # manifest-wide field — a decision recorded for one episode cannot be
+    # reused to silently authorize a later, independent episode, because each
+    # episode necessarily produces its own distinct following Iteration and
+    # historical Iterations are already immutable once committed (CHG-0008).
     for i,streak_i in enumerate(streaks):
         if streak_i<2 or i+1>=len(its):continue
         nxt=its[i+1]
+        decision=nxt.get("convergence_decision")if isinstance(nxt,dict)else None
+        valid_decision=isinstance(decision,dict)and decision.get("option")in{"new_full_review","return_to_earlier_phase","accept_residual_risk","abort_or_supersede"}and isinstance(decision.get("reason"),str)and decision.get("reason")
         if not valid_decision:
-            out.append(_finding(r,mpath,"An Iteration exists after the Convergence Limit was reached without a valid review.convergence.decision (option and reason)."))
+            out.append(_finding(r,mpath,"The Iteration immediately after the Convergence Limit was reached requires its own valid convergence_decision (option and reason); a decision recorded for a different episode does not authorize this one."))
+        elif decision.get("option")=="accept_residual_risk"and not _residual_risk_permitted(r):
+            out.append(_finding(r,mpath,"convergence_decision.option accept_residual_risk requires the project configuration to explicitly permit it (review.convergence.allow_residual_risk_acceptance: true)."))
         if isinstance(nxt,dict)and nxt.get("kind")=="resolution_verification":
             out.append(_finding(r,mpath,"A further resolution_verification Iteration is not valid once the Convergence Limit was reached; only a new initial_review Iteration may continue the review lifecycle."))
     return out

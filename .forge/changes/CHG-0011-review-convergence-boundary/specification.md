@@ -98,11 +98,21 @@ subject to compute a Resolution Delta against); Core MUST reject that case.
 ### FR-003 — Resolution declares scope and targets
 A `role: resolution` provenance record referenced by a
 `resolution_verification` Iteration MUST declare `scope` (non-empty array of
-repository-relative paths or `fnmatch`-style path globs) and MUST declare
-`targets` (non-empty array of Finding IDs). A `resolution_verification`
-Iteration whose subject provenance omits `scope` or `targets` MUST fail
-validation with an explicit finding (it cannot be mechanically verified as
-scoped; it must be reclassified `initial_review` or corrected).
+exact repository-relative paths — **not** glob/wildcard patterns; see
+CHG-0011-R003 below) and MUST declare `targets` (non-empty array of Finding
+IDs). A `resolution_verification` Iteration whose subject provenance omits
+`scope` or `targets` MUST fail validation with an explicit finding (it cannot
+be mechanically verified as scoped; it must be reclassified `initial_review`
+or corrected).
+
+> **CHG-0011-R003 correction (post-Review):** an earlier version of this
+> Specification permitted `fnmatch`-style glob patterns in `scope`. Strict
+> Review Iteration 1 found this trivially defeatable (`scope: ["*"]` covers
+> every path, mechanically satisfying FR-005 for any Resolution Delta). Scope
+> is exact-path-only; a Resolver lists every path it touches. This is the
+> minimal correction that closes the bypass without adding a
+> pattern-specificity heuristic that would itself need its own adversarial
+> hardening.
 
 ### FR-004 — Resolution Delta computation
 The Resolution Delta compares two already-frozen, immutable historical
@@ -119,9 +129,9 @@ Core MUST fail closed (same as the existing freeze mechanism) when required
 Git history cannot be established.
 
 ### FR-005 — Out-of-scope containment is mechanically checked
-Core MUST verify each path in the Resolution Delta is covered by at least one
-declared `scope` entry (exact path or glob match). Core MUST record which
-Resolution Delta paths, if any, are not covered.
+Core MUST verify each path in the Resolution Delta exactly matches at least
+one declared `scope` entry. Core MUST record which Resolution Delta paths, if
+any, are not covered.
 
 ### FR-006 — Out-of-scope mutation forces escalation, never a silent pass
 A `resolution_verification` Iteration MUST NOT be `status: passed` while its
@@ -175,47 +185,68 @@ disagrees with the Core-derived value.
 
 ### FR-012 — Convergence limit and non-convergence
 The Convergence Limit is 2. When Core's derived
-`consecutive_unconverged_verifications` reaches 2, Core MUST require
-`review.convergence.state == review_convergence_failed` and MUST reject
-`review.status: passed`. Any Iteration appended after the second such failed
-Iteration is valid only if both hold: a valid `review.convergence.decision`
-(§Failure Semantics) is present, and the new Iteration is `kind:
-initial_review` (or unclassified/legacy). A third `resolution_verification`
-— with or without a decision record — is always rejected once
-Non-Convergence is reached: Full Review Escalation, not another scoped
-Verification, is the only mechanized way to continue the review lifecycle.
-This check is evaluated against every point in `iterations` history where the
-limit was reached, not only the current trailing state — a later
-`initial_review` Iteration resets the *trailing* counter (FR-011) but MUST
-NOT retroactively excuse an earlier non-convergence episode that was never
-accompanied by a decision record.
+`consecutive_unconverged_verifications` reaches 2 at historical index `i`
+(0-based) of `iterations`, Core MUST require, for the Iteration at `i+1` if
+one exists: a valid `convergence_decision` (§FR-015) present **on that same
+Iteration**, and `kind: initial_review` (or unclassified/legacy) — a
+`resolution_verification` at `i+1` is always rejected once the limit was
+reached at `i`, decision or not. `review.convergence.state ==
+review_convergence_failed` is required and `review.status: passed` is
+rejected whenever the current trailing count (FR-011) is `>= 2`.
 
-### FR-013 — `new_material_findings` requires evidence
-`new_material_findings` MUST be a non-negative integer. When it is greater
-than zero, the Iteration's `evidence_gap` (or `review.md`) MUST identify at
-least that many class B/C Findings with IDs. Core does not re-derive the
-semantic truth of the count (same trust boundary as existing blocker/major/
-minor/observation counts); it only requires the count to be present,
-consistent (`>0` implies at least one B/C class recorded), and used
-consistently in the derived convergence run.
+This check is evaluated against **every** historical index `i` where the
+limit was reached, not only the current trailing state, and the decision is
+read from that specific `i+1` Iteration, never from a shared field — a
+decision that authorized one Non-Convergence episode does not authorize a
+later, independent one (see CHG-0011-R001 correction below). A later
+`initial_review` Iteration resets the *trailing counter* (FR-011) once it
+exists, but that Iteration's own `convergence_decision` remains permanent,
+Iteration-local history, not a manifest-wide switch.
+
+> **CHG-0011-R001 correction (post-Review):** an earlier version of this
+> Specification and its implementation stored the decision at
+> `review.convergence.decision`, a single manifest-wide field. Strict Review
+> Iteration 1 proved this let one early decision silently authorize
+> arbitrarily many later, fully independent Non-Convergence episodes — a
+> BLOCKER, since it defeats FR-014/C-049 for every episode after the first.
+> The decision now lives on `iterations[i+1].convergence_decision`, the
+> specific Iteration it authorizes; because committed Iterations are already
+> immutable (Protocol 2, CHG-0008), a decision cannot be retroactively
+> reused for a different episode's following Iteration.
+
+### FR-013 — `new_material_findings` is a self-declared, evidence-expected count
+`new_material_findings` MUST be a non-negative integer; Core mechanically
+rejects anything else. When it is greater than zero, the Reviewer is expected
+to identify at least that many class B/C Findings with IDs in `evidence_gap`
+or `review.md`, exactly as blocker/major/minor/observation counts elsewhere
+in Protocol 2 already rely on self-declared, evidence-expected values rather
+than mechanically re-derived ones (C-025 requires evidence for BLOCKER/MAJOR
+Findings; it does not require Core to parse and cross-check finding text
+against a numeric count). Core does not read `finding_classes` or
+`evidence_gap` content when computing the convergence run; it only requires
+`new_material_findings` to be present, well-typed, and used consistently as
+the *input* to that Core-derived run (FR-011). This is a trust boundary
+identical to the rest of Protocol 2, not a gap unique to this Change.
 
 ### FR-014 — Non-convergence returns authority to the engineer
-While `review.convergence.state == review_convergence_failed` and no valid
-decision is recorded, Core MUST NOT allow `review.status: passed`, and no
-new `resolution_verification` Iteration may legally continue the automatic
+While Core's derived trailing count (FR-011) is `>= 2` and no valid
+`convergence_decision` is recorded on the Iteration immediately following the
+point the limit was reached, Core MUST NOT allow `review.status: passed`, and
+no new `resolution_verification` Iteration may legally continue the automatic
 cycle. Forge MUST NOT itself select an option; the Change's own artifacts
-MUST NOT auto-populate `decision.option` without an explicit, attributable
-engineering statement in `reason`.
+MUST NOT auto-populate `convergence_decision.option` without an explicit,
+attributable engineering statement in `reason`.
 
 ### FR-015 — Decision record shape (minimal, non-generic)
-`review.convergence.decision`, when present, MUST contain `option` (one of
-`new_full_review`, `return_to_earlier_phase`, `accept_residual_risk`,
-`abort_or_supersede`) and a non-empty `reason`. This is the minimal escape
-valve required by this Change; it is not a general Decision Gate/Decision
-Analysis framework, has no recommendation engine, and has no delegation
-semantics. `accept_residual_risk` additionally requires the project's
-effective review policy to permit it (new optional policy field, defaulting
-to not-permitted/absent — see Compatibility); Core MUST reject
+`convergence_decision`, recorded on the specific Iteration it authorizes
+(FR-012; **not** a manifest-wide field — see CHG-0011-R001 correction),
+MUST contain `option` (one of `new_full_review`, `return_to_earlier_phase`,
+`accept_residual_risk`, `abort_or_supersede`) and a non-empty `reason`. This
+is the minimal escape valve required by this Change; it is not a general
+Decision Gate/Decision Analysis framework, has no recommendation engine, and
+has no delegation semantics. `accept_residual_risk` additionally requires the
+project's effective review policy to permit it (new optional policy field,
+defaulting to not-permitted/absent — see Compatibility); Core MUST reject
 `accept_residual_risk` when that policy permission is absent.
 
 ### FR-016 — No retroactive effect
@@ -259,8 +290,9 @@ Existing completed and in-flight manifests (including `CHG-0008` and
 This Change does not introduce a new integer Protocol identifier and does
 not introduce a new `forge/change@N` or `forge/execution-provenance@N` schema
 suffix. All new fields (`kind`, `full_review_required`, `new_material_findings`,
-`review.convergence`, provenance `scope`/`targets`) are optional additions to
-`forge/change@2` and `forge/execution-provenance@1`. Per
+`convergence_decision`, top-level `review.convergence` state/counter,
+provenance `scope`/`targets`) are optional additions to `forge/change@2` and
+`forge/execution-provenance@1`. Per
 `protocol/compatibility.md`, this is "optional artifacts whose absence
 preserves existing meaning" — compatible Protocol 2 evolution, not a breaking
 change: it removes no invariant, changes the meaning of no existing required
@@ -299,9 +331,15 @@ is no intent to eventually force `kind` classification onto historical data.
 - AC-008: the same case, with `review.convergence.state` written as anything
   other than `review_convergence_failed`, or omitted, still fails validation
   (state is cross-checked, not trusted).
-- AC-009: after Non-Convergence, appending a third `resolution_verification`
-  Iteration without a `decision` record fails validation; appending a new
-  `initial_review` Iteration (with or without a decision record) is legal.
+- AC-009 *(corrected — CHG-0011-R002)*: after Non-Convergence, appending
+  **any** Iteration — `resolution_verification` or `initial_review` — without
+  a valid `convergence_decision` on that specific Iteration fails validation.
+  A `resolution_verification` at that position fails regardless of
+  `convergence_decision`; a decision is unconditionally required, independent
+  of the next Iteration's `kind`. (The earlier text of this criterion —
+  "appending a new `initial_review` Iteration with or without a decision
+  record is legal" — was itself wrong, contradicted FR-012 and the actual
+  implementation, and is retracted, not merely superseded.)
 - AC-010: `accept_residual_risk` without effective policy permission fails
   validation.
 - AC-011: a class D (unrelated latent) Finding recorded on a
@@ -314,3 +352,11 @@ is no intent to eventually force `kind` classification onto historical data.
   regressions from CHG-0008 (R001–R008 equivalents) remain green.
 - AC-014: `pytest -q`, `forge validate`, `forge doctor` are green on the
   final Resolution subject.
+- AC-015 *(CHG-0011-R001)*: a decision recorded on the Iteration that
+  followed one Non-Convergence episode does not authorize a second,
+  independent Non-Convergence episode occurring later in the same manifest;
+  the second episode's own following Iteration requires its own
+  `convergence_decision`.
+- AC-016 *(CHG-0011-R003)*: `scope: ["*"]` (or any other glob/wildcard
+  pattern) does not cover any real Resolution Delta path; scope containment
+  is exact-match only.
