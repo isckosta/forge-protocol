@@ -3,8 +3,8 @@ forge:
   artifact: review
   schema: 1
 change: CHG-0010
-status: pending
-iteration: 5
+status: passed
+iteration: 6
 ---
 
 # Strict Review — Adapter CLI and Codex Installation UX
@@ -510,3 +510,221 @@ Protocol 2's provenance ledger:
   rewrite; if Iteration 6 finds yet another instance of this same class,
   that recommendation should be escalated explicitly rather than absorbed
   into a seventh scoped pass.
+
+## Iteration 6 — PASS
+
+**Revision reviewed:** `2b25ae0`.
+
+A sixth independent Reviewer — fresh, no access to the Resolver's
+self-review context beyond this file and `tdd-evidence.yml` — applied the
+Resolution Verification discipline named in the Pre-Iteration 6 note *by
+convention* (CHG-0010 is `forge/change@1` and predates CHG-0011's mechanical
+enforcement): scope bounded to (a) whether TDD-019 actually closes its two
+named call sites, (b) whether TDD-019's own delta introduces a new defect,
+(c) whether its Git delta stayed within the declared scope, and (d) whether
+the fix is genuinely complete for the six-iteration defect class or a
+seventh instance can be found. Method: read `review.md` Iterations 1-5 and
+the Pre-Iteration 6 note in full; read `git show 2b25ae0` in full (the
+complete diff, all six files); read the TDD-019 entry in
+`tdd-evidence.yml` including its RED reason and notes; re-read the entirety
+of the current `src/forge_cli/adapters/publisher.py` and
+`src/forge_cli/adapters/state.py` line by line, specifically hunting for any
+other place that reads or checks a path's content more than once for
+related decision/backup purposes; cross-checked `src/forge_cli/adapters/repository.py`
+and `configuration.py`'s read sites to confirm none of them pair a
+decision-read with a later same-content backup-read outside publisher.py's
+own module boundary; ran `.venv/bin/python -m pytest -q` and
+`.venv/bin/forge validate` directly.
+
+### (a) Verification: TDD-019 closes both declared call sites
+
+- **`_load_prior_installation_record`:** confirmed. It now performs exactly
+  one `path.read_bytes()`, decodes it once, and passes the decoded text to
+  the new pure-parsing `parse_installation_record(text)` -- which does no
+  I/O of its own. The prior two-physical-read shape (`path.read_bytes()`
+  followed by `load_installation_record(path)`'s own separate
+  `path.read_text()`) is gone; there is no window between the record used
+  for `_validate_prior_record_authorizes_plan` and the `raw` bytes used as
+  the rollback backup for them to diverge.
+- **Update/delete mutation-loop precondition recheck:** confirmed. Both
+  branches (`publisher.py` lines ~517-533 for UPDATE, ~541-558 for DELETE)
+  moved the digest comparison out of the short-circuiting `or` chain and
+  into a single `current_digest, original = _current_digest_and_bytes(target)`
+  call, checking the digest against `original` derived from the same
+  `path.read_bytes()`. The prior shape (`_current_digest(target)` -- its own
+  `path.read_text()` -- inside the `or` chain, then a separate
+  `target.read_bytes()` two lines later) is gone for both branches.
+
+### (b) New defect inside TDD-019's own delta
+
+None found. Specifically checked, per the task's own prompt:
+
+- **Error/encoding parity between `_current_digest` and
+  `_current_digest_and_bytes`:** identical. Both catch
+  `(OSError, UnicodeError)` and raise the same
+  `AdapterPublicationConflictError` with the same message shape; the new
+  function's `raw.decode("utf-8")` raises `UnicodeDecodeError`, a subclass
+  of `UnicodeError`, caught the same way `_current_digest`'s
+  `path.read_text(encoding="utf-8")` was.
+- **`state.py`'s split (`parse_installation_record` / `load_installation_record`):**
+  behaviorally equivalent to the pre-TDD-019 single function. The new
+  `load_installation_record` catches `OSError` from its own
+  `path.read_text()` and re-raises `InvalidAdapterInstallationRecordError`;
+  `parse_installation_record` catches `(TypeError, KeyError, ValidationError,
+  yaml.YAMLError)` from parsing -- together the same exception surface the
+  old single function exposed, just split across the read boundary. Its one
+  remaining caller (`repository.py`'s `_load_optional_record`, a single-read
+  snapshot site, not a decision+backup pair) is unaffected.
+- **`_current_digest_and_bytes` and the mutation loop's `or`-chain
+  restructuring:** confirmed the digest check still runs *after* the
+  existence/symlink guard (so a missing or symlinked target still raises
+  before any read is attempted) and *before* `applied.append(...)` and the
+  actual mutation, preserving the original ordering guarantees.
+- **Test-file diff:** the modified
+  `test_rollback_of_an_already_applied_operation_reuses_a_stale_target_path`
+  correctly re-targets `_current_digest_and_bytes` (the new call site) and
+  its updated comment accurately describes that only the mutation-loop
+  recheck calls it now, not the preflight loop (which still calls the
+  digest-only `_current_digest`). Confirmed correct by re-reading
+  `_preflight_operation`.
+
+### (c) Scope discipline
+
+`git show 2b25ae0 --stat` touches six files:
+`src/forge_cli/adapters/publisher.py`, `src/forge_cli/adapters/state.py`,
+`tests/integration/test_adapter_publisher.py` -- the three declared in the
+Pre-Iteration 6 note -- plus `.forge/changes/CHG-0010-adapter-cli-codex-ux/manifest.yml`,
+`review.md`, and `tdd-evidence.yml`. The latter three are not a scope
+violation: `manifest.yml`'s only change is `tdd.cycles: 50 -> 51` (the same
+bookkeeping convention Iteration 2's MINOR established), `tdd-evidence.yml`
+is the TDD-019 log entry itself, and `review.md`'s change is the
+Pre-Iteration 6 note this Iteration was asked to read -- all three are
+required companions to declaring and logging the resolution, not
+independent production changes. No file outside the declared set was
+touched.
+
+### (d) Hunt for a seventh instance
+
+Actively re-read `publish_adapter_plan` and every helper it calls,
+specifically for any remaining place that reads a path's content more than
+once for related decision/backup purposes. Found none:
+
+- `_preflight_operation`'s three `_current_digest(target)` calls (UNCHANGED,
+  DELETE_GENERATED, UPDATE) are advisory fail-fast checks only -- no backup
+  is captured at preflight time, and per TDD-014/016/017's established
+  pattern, the mutation loop always freshly and authoritatively re-resolves
+  and re-reads immediately before mutating, never trusting the preflight
+  result. This is not the same defect class: there is no "authorize once,
+  reuse later" relationship between the preflight read and anything
+  downstream.
+- `repository.py`'s `_snapshot_artifact` (plan-build-time digest) and
+  `_load_optional_record` are a different, already-reviewed boundary -- the
+  plan/execute split every prior iteration examined, gated by the
+  `expected_current_digest` conflict check publisher.py re-validates
+  independently at publish time via its own fresh read. Not a same-content
+  decision+backup pair.
+- `_rollback_publication` re-resolves every path via `_safe_target`
+  immediately before restoring (TDD-018) and uses only bytes already
+  captured earlier (`applied`, `prior_installation`) -- no new read of
+  current on-disk content occurs during rollback itself.
+- `_validate_record_matches_plan`'s comparison inputs
+  (`installation_record`) are constructed in-memory by the caller with zero
+  disk I/O, confirmed sound in Iteration 3 and unchanged here.
+
+No seventh instance of the defect class found.
+
+### Test quality: TDD-019's two new regression tests
+
+Both exercise genuine desynchronization, not trivial assertions:
+
+- **`test_prior_record_read_is_not_desynchronized_by_a_concurrent_content_change`**
+  monkeypatches `parse_installation_record` to rewrite the on-disk file with
+  a forged record *and then* delegate to the real parser. Because the
+  production code now derives the text passed to the parser from bytes
+  already captured before this call, the returned `record` and `raw`
+  reflect the pre-race legitimate content, not the forged rewrite -- the
+  test asserts exactly that (`raw == legit_bytes`, record shows
+  `legit.md`). Against the pre-TDD-019 two-read shape, the equivalent
+  attack (rewrite between the caller's `read_bytes()` and
+  `load_installation_record`'s own internal `read_text()`) would have
+  desynchronized the two.
+- **`test_update_precondition_digest_and_rollback_backup_come_from_the_same_read`**
+  monkeypatches `_current_digest_and_bytes` to rewrite the target with
+  attacker content immediately before delegating to the real combined read,
+  then asserts `publish_adapter_plan` raises `AdapterPublicationConflictError`
+  and the target is left with the attacker's rewritten content untouched
+  (no partial mutation). This proves the digest comparison and the would-be
+  rollback-backup bytes are always drawn from the identical physical read --
+  a race can only ever produce a *consistent* (matching) or *safely
+  rejected* (mismatched, aborted) outcome, never a decision authorized
+  against one version of the content with a backup silently captured from
+  another.
+
+Both tests are confirmed RED before the fix (`tdd-evidence.yml`'s TDD-019
+`red.reason`) and GREEN after.
+
+### Observations (non-blocking, new this iteration)
+
+1. **DELETE precondition recheck has no dedicated race regression test
+   symmetric to UPDATE's.** `test_update_precondition_digest_and_rollback_backup_come_from_the_same_read`
+   only exercises the UPDATE branch. The DELETE branch (`publisher.py` lines
+   ~541-558) applies the structurally identical `_current_digest_and_bytes`
+   fix and was verified correct by direct code reading, so this is a
+   coverage-symmetry gap rather than an unverified defect -- not escalated.
+2. **Pre-existing, out-of-scope encoding gap, unrelated to the TOCTOU
+   class:** neither the old `load_installation_record` nor the new
+   `_load_prior_installation_record`/`state.load_installation_record`
+   catches a raw `UnicodeDecodeError` arising from invalid-UTF-8 bytes in
+   `installation.yml` outside the `(OSError, TypeError, KeyError,
+   ValidationError, yaml.YAMLError)` handler -- a mis-encoded on-disk record
+   would surface as an uncaught internal error (the same FR-023
+   "uncoded exception" pattern found and fixed for other raise sites in
+   Iterations 1-3) rather than a stable `E_FORGE_*` exit. Confirmed this
+   predates TDD-019 -- the identical gap existed in the pre-TDD-019
+   `load_installation_record` -- so it is not a regression introduced by
+   this commit and is not the TOCTOU defect class this Iteration is scoped
+   to. Recorded for a future pass, not escalated here.
+
+### Full suite and `forge validate`
+
+`.venv/bin/python -m pytest -q` -- 356 passed, matching `tdd-evidence.yml`'s
+claim. `.venv/bin/forge validate` reported exactly the two pre-existing,
+out-of-scope findings already flagged for this Iteration (the CHG-0008
+freeze/C-026 issue and CHG-0010's own `forge/change@1` vs. Protocol 2 schema
+mismatch, also C-026) -- no new `forge validate` finding.
+
+### Answer to the required question: is the sixth-iteration pattern actually closed?
+
+**Closed for the currently-existing call sites, as far as this Reviewer's
+exhaustive re-read of `publish_adapter_plan` and every helper it calls can
+determine -- but I recommend the structural fd-anchored rewrite regardless,
+not because I found a seventh instance, but because of what six iterations
+of this exact search pattern demonstrates about the strategy itself.** Every
+one of Iterations 1 through 6 found its instance by the same method: a
+fresh Reviewer (or, this time, the Resolver in self-review) manually
+enumerating every read/check site in one file and reasoning about pairwise
+ordering. That method has a perfect record of finding one more instance
+each time it has been tried, which is not evidence the class is now
+exhausted -- it is evidence that manual enumeration in a file that repeats
+the same "safe-target then syscall" shape at every mutation point is
+inherently susceptible to missing one. `configuration.py`'s dir-fd-anchored,
+`O_NOFOLLOW` write path (Iteration 1's Observation #3, still standing after
+six iterations) eliminates this whole class *by construction* -- a swapped
+ancestor cannot redirect an fd-relative operation regardless of timing --
+so no future Reviewer needs to re-derive the same enumeration to check
+whether this pass's fix was complete. This does not change the PASS verdict
+below: TDD-019 correctly closes what it claims to close, introduces nothing
+new, and stayed in scope. But given this is now the sixth consecutive
+iteration of the identical class, I recommend the engineer treat the
+structural rewrite as due, not merely available, before this file sees a
+seventh.
+
+## Final finding counts (Iteration 6)
+
+- BLOCKER: 0
+- MAJOR: 0
+- MINOR: 0
+- OBSERVATION: 2 new (non-blocking; Iteration 1's three stand unchanged,
+  bringing the running total to 5)
+
+Decision: **PASS.**

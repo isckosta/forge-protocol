@@ -6,6 +6,33 @@ CLI releases will follow Semantic Versioning when releases begin. Protocol versi
 
 ## Unreleased
 
+### Adapter CLI and Codex Installation UX
+
+Added:
+
+- an Adapter CLI command group — `forge adapter list`, `configure`, `plan`,
+  `install`, `validate`, `doctor`, `update` — completing the documented
+  `forge init` → `forge adapter install codex` v1 onboarding path;
+- deterministic plan-before-mutation, ownership-aware publication, collision
+  and stale-state protection, drift diagnostics, and safe/idempotent updates
+  for Adapter installation through the generic Adapter Core;
+- stable `E_FORGE_*` exit codes for publication conflicts, unsafe paths, and
+  stale on-disk installation records, replacing internal-error fallthrough
+  for expected, well-understood domain/validation failures.
+
+Fixed:
+
+- a class of TOCTOU (time-of-check/time-of-use) defects in adapter
+  publication where a path resolved once and reused across preflight,
+  authorization, mutation, and rollback allowed a directory-to-symlink swap
+  to redirect installation-record reads/writes, or a rollback restore,
+  outside the repository root, including cases that could forge the
+  authorization used for a publication or exfiltrate original file content
+  during rollback. Closed through six independent Strict Review iterations
+  (`.forge/changes/CHG-0010-adapter-cli-codex-ux/review.md`) that each
+  re-resolve the affected path immediately before use rather than reusing a
+  path captured earlier in the operation.
+
 ### Protocol 2 — Verifiable Review Independence
 
 Added:
