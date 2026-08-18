@@ -345,7 +345,7 @@ def _validate_protocol2_review_provenance(r:Path)->list[ValidationFinding]:
             explicit=isinstance(sub.get("revision"),dict)and sub["revision"].get("immutable_ref") is not None
             if explicit and sim[0]=="git_commit":
                 if not _git_exists(r,sim[1]):out.append(_finding(r,mpath,"C-026 review subject immutable git commit does not exist in the local repository."))
-                elif status in{"pending","passed"} and _changed(r,mpath,sim[1]):out.append(_finding(r,mpath,"C-026 review subject changed after its immutable revision freeze; create new subject provenance."))
+                elif status in{"pending","passed"} and st.get("current")!="complete" and _changed(r,mpath,sim[1]):out.append(_finding(r,mpath,"C-026 review subject changed after its immutable revision freeze; create new subject provenance."))
             if status!="passed":continue
             if not isinstance(rref,str)or not rref:out.append(_finding(r,mpath,"A passed Protocol 2 Review Iteration requires reviewer_provenance."));continue
             reviewer=idx.get(rref)

@@ -6,6 +6,16 @@ CLI releases will follow Semantic Versioning when releases begin. Protocol versi
 
 ## Unreleased
 
+### Freeze check exempts complete Changes
+
+Fixed:
+
+- `forge validate`'s Protocol 2 review-subject freeze-drift check no longer
+  fires for a passed Review Iteration once its Change's `state.current` is
+  `complete`; unrelated, expected commits from other Changes continuing
+  development on the same branch no longer resurrect a closed, already
+  independently-reviewed Change as a validation failure.
+
 ### Adapter CLI and Codex Installation UX
 
 Added:

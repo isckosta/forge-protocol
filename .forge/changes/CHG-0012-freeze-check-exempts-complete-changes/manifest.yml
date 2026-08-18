@@ -1,0 +1,33 @@
+schema: forge/change@2
+protocol: 2
+change: {id: CHG-0012, title: Freeze check exempts complete Changes, kind: bugfix}
+flow: {initial: fast, current: fast, escalations: []}
+state: {current: strict_review}
+artifacts:
+  intent: complete
+  inspection: complete
+  tdd_evidence: complete
+  implementation: complete
+  provenance: complete
+  verification: complete
+  review: pending
+  documentation: pending
+requirements: {total: 1, implemented: 1, verified: 1}
+tdd: {status: compliant, cycles: 1}
+verification: {status: passed}
+review:
+  status: pending
+  iteration: 0
+  blockers: 0
+  majors: 0
+  minors: 0
+  observations: 0
+  iterations: []
+documentation:
+  impact_evaluated: true
+  update_required: true
+  reason: >-
+    Internal Core validation behavior correction affecting CI-visible
+    `forge validate` output for every completed Protocol 2 Change; recorded
+    in CHANGELOG.md under a new "Freeze check exempts complete Changes"
+    entry. No user-facing CLI surface, schema, or Contract text changed.
