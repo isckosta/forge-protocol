@@ -1,0 +1,182 @@
+schema: forge/execution-provenance@1
+change: CHG-0011
+records:
+  - id: implementation-001
+    role: implementation
+    execution: {id: implementation-exec-chg0011-20260817-01, context_id: implementation-context-chg0011-20260817-01}
+    recorded_at: 2026-08-17T22:00:00Z
+    revision:
+      id: chg-0011-implementation-001
+      immutable_ref: {type: git_commit, value: 4dd8e3f88067a94547b244edb147bf2895a58b30}
+      commit: 4dd8e3f88067a94547b244edb147bf2895a58b30
+      description: >-
+        Frozen CHG-0011 Implementation subject: Resolution Verification
+        scoping and review convergence termination semantics (Contract
+        C-047-C-050, Protocol 2 Specification 10-13, review policy,
+        additive change-v2/execution-provenance schemas, Core validator
+        boundary in src/forge_cli/validation/__init__.py, 14 new adversarial
+        tests, ADR-0011, and this Change's own Specification/Architecture/
+        Test Strategy/Plan/Tasks/Verification/Knowledge Capture artifacts).
+        Subsequent commits are restricted to Change-local review-control
+        metadata (this file and manifest.yml/review.md).
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: claude-code
+      statement: >-
+        Self-recorded repository-native provenance for the Implementation
+        execution that produced CHG-0011. No provider-native attestation is
+        claimed; assurance is recorded, not verified or cryptographic/
+        external proof. The independent Strict Review Iteration that follows
+        must run in a distinct Execution and Execution Context per Protocol
+        2 (unchanged by this Change) and will record its own review-role
+        provenance separately.
+  - id: implementation-002
+    role: implementation
+    execution: {id: implementation-exec-chg0011-20260817-01, context_id: implementation-context-chg0011-20260817-01}
+    recorded_at: 2026-08-17T22:30:00Z
+    revision:
+      id: chg-0011-implementation-002
+      immutable_ref: {type: git_commit, value: 3469d66dbb22765b8beb7d712fb6cefb67454616}
+      commit: 3469d66dbb22765b8beb7d712fb6cefb67454616
+      description: >-
+        Superseding frozen CHG-0011 Implementation subject. The
+        implementation-001 subject was invalidated by a post-freeze
+        correction to tdd-evidence.yml (schema conformance with
+        forge/tdd-evidence@1, discovered by
+        tests/contract/test_protocol_contract.py) — a reviewable file
+        outside the manifest.yml/provenance.yml/review.md exception, so per
+        this Change's own effective-workspace-freeze invariant (Protocol 2
+        §5, unchanged) it required a new subject rather than a rewrite of
+        implementation-001. implementation-001 remains historical, unedited
+        evidence of that lesson; it is not the subject the independent
+        Reviewer should evaluate. implementation-002 is the actual review
+        subject.
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: claude-code
+      statement: >-
+        Self-recorded repository-native provenance. Same Execution/Context
+        as implementation-001 (same Implementation session correcting its
+        own pre-freeze-discipline mistake, not a new independent execution);
+        the independent Strict Review Iteration that follows must still run
+        in a distinct Execution and Execution Context from this one.
+  - id: review-001
+    role: review
+    execution: {id: review-exec-chg0011-20260817-932c60cd, context_id: review-context-chg0011-20260817-932c60cd}
+    recorded_at: 2026-08-17T23:00:00Z
+    revision:
+      id: chg-0011-implementation-002
+      immutable_ref: {type: git_commit, value: 3469d66dbb22765b8beb7d712fb6cefb67454616}
+      commit: 3469d66dbb22765b8beb7d712fb6cefb67454616
+      description: >-
+        Strict Review Iteration 1 (kind: initial_review) of CHG-0011's frozen
+        implementation-002 subject. Independent Execution and Execution
+        Context from the Implementation session that produced
+        implementation-001/implementation-002. Verdict: REQUEST CHANGES (1
+        BLOCKER, 2 MAJOR, 1 MINOR, 1 OBSERVATION) — see review.md for full
+        findings.
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: claude-code
+      statement: >-
+        Self-recorded repository-native provenance for the independent
+        Strict Review execution that evaluated CHG-0011's frozen
+        implementation-002 subject. No provider-native or cryptographic
+        attestation is claimed; assurance is recorded, not verified or
+        externally proven. pytest and forge validate were run directly by
+        this Review execution against the frozen worktree, and the
+        compatibility claim against CHG-0008/CHG-0010 was independently
+        cross-checked against a scratch git worktree of main at
+        02cd6899c6b704f0f3a301cc2fd6be54b0b0211c.
+  - id: resolution-001
+    role: resolution
+    scope:
+      - .forge/changes/CHG-0011-review-convergence-boundary/architecture.md
+      - .forge/changes/CHG-0011-review-convergence-boundary/knowledge-capture.md
+      - .forge/changes/CHG-0011-review-convergence-boundary/specification-drift.md
+      - .forge/changes/CHG-0011-review-convergence-boundary/specification.md
+      - .forge/changes/CHG-0011-review-convergence-boundary/tasks.md
+      - .forge/changes/CHG-0011-review-convergence-boundary/tdd-evidence.yml
+      - .forge/changes/CHG-0011-review-convergence-boundary/traceability.yml
+      - protocol/schemas/change-v2.schema.json
+      - protocol/versions/2/specification.md
+      - src/forge_cli/validation/__init__.py
+      - tests/unit/test_resolution_verification.py
+    targets: [CHG-0011-R001, CHG-0011-R002, CHG-0011-R003, CHG-0011-R004]
+    execution: {id: resolution-exec-chg0011-20260817-01, context_id: resolution-context-chg0011-20260817-01}
+    recorded_at: 2026-08-17T23:30:00Z
+    revision:
+      id: chg-0011-resolution-001
+      immutable_ref: {type: git_commit, value: e52000fd8f50a12096c043d454822483e2977e31}
+      commit: e52000fd8f50a12096c043d454822483e2977e31
+      description: >-
+        Resolution of independent Strict Review Iteration 1's findings.
+        CHG-0011-R001 (BLOCKER): convergence_decision moved from a shared
+        review.convergence.decision field to a per-Iteration field checked
+        at every historical Non-Convergence episode index, closing the
+        stale-decision-reuse bypass. CHG-0011-R002 (MAJOR): retracted
+        contradictory AC-009. CHG-0011-R003 (MAJOR): removed fnmatch glob
+        support from Resolution Scope; exact-path-only now. CHG-0011-R004
+        (MINOR): corrected an overstated Specification claim about
+        mechanical enforcement. CHG-0011-R005 (OBSERVATION): accepted by
+        design, not resolved. specification-drift.md records that R001-R003
+        are genuine Requirement corrections. Two new regression tests
+        (test_convergence_decision_cannot_be_reused_across_independent_episodes,
+        test_resolution_scope_wildcard_does_not_bypass_containment)
+        reproduce the exact bypasses the Reviewer demonstrated and now
+        correctly fail them. Full suite: 244 passed.
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: claude-code
+      statement: >-
+        Self-recorded repository-native provenance for this Resolution
+        execution, distinct in Execution and Execution Context from
+        review-001 (the Reviewer execution whose findings this Resolution
+        addresses) and from implementation-001/implementation-002. No
+        provider-native or cryptographic attestation is claimed; assurance
+        is recorded. This Resolution is itself the CHG-0011 mechanism's
+        first real use of `role: resolution` with declared scope/targets —
+        dogfooded, not merely specified.
+  - id: review-002
+    role: review
+    execution: {id: review-exec-chg0011-20260818-4f2a19be, context_id: review-context-chg0011-20260818-4f2a19be}
+    recorded_at: 2026-08-18T00:15:00Z
+    revision:
+      id: chg-0011-resolution-001
+      immutable_ref: {type: git_commit, value: e52000fd8f50a12096c043d454822483e2977e31}
+      commit: e52000fd8f50a12096c043d454822483e2977e31
+      description: >-
+        Strict Review Iteration 2 (kind: resolution_verification) of
+        resolution-001, the Resolution that addressed Strict Review
+        Iteration 1's CHG-0011-R001-R004. Independent Execution and
+        Execution Context from resolution-001 and from review-001. Verdict:
+        PASS (0 BLOCKER, 0 MAJOR, 0 MINOR, 0 new-Iteration OBSERVATION;
+        new_material_findings: 0). R001-R004 verified genuinely fixed by
+        reading the actual code/spec diff and by adversarially re-probing
+        both the convergence_decision per-Iteration binding and the
+        exact-path scope containment against real validate_project, beyond
+        the two shipped regression tests. Resolution Delta
+        (3469d66..e52000f) computed independently and matches
+        resolution-001's declared scope exactly; no Out-of-Scope Mutation.
+        See review.md Iteration 2 for full findings and the framing note on
+        Resolution-Verification-bounded authority vs. unrestricted re-audit.
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: claude-code
+      statement: >-
+        Self-recorded repository-native provenance for the independent
+        Strict Review execution that evaluated CHG-0011's frozen
+        resolution-001 subject. No provider-native or cryptographic
+        attestation is claimed; assurance is recorded, not verified or
+        externally proven. pytest and forge validate were run directly by
+        this Review execution against the frozen worktree; the Resolution
+        Delta was recomputed independently via git diff --name-status rather
+        than trusted from resolution-001's declared scope; R001/R003's fixes
+        were adversarially re-probed with scenarios not present in the
+        shipped test suite, executed against the real validate_project
+        function on real Git-backed manifests, not mocked.

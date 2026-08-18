@@ -55,6 +55,25 @@ Protocol 1 and Protocol 2 both retain FAST, STANDARD, and FULL and the common qu
 
 Protocol 2 adds the same review-provenance quality invariant to FAST, STANDARD, and FULL. FAST reduces ceremony, not quality.
 
+## Protocol 2 — Resolution Verification boundary (CHG-0011)
+
+CHG-0011 adds Resolution Verification scoping and review convergence
+termination semantics entirely as optional fields on `forge/change@2`
+(`review.iterations[].kind`, `.full_review_required`,
+`.new_material_findings`, `.finding_classes`, top-level `review.convergence`)
+and `forge/execution-provenance@1` (`scope`, `targets`). No integer Protocol
+identifier changes and no new schema suffix is introduced. This falls under
+"optional artifacts whose absence preserves existing meaning": it removes no
+invariant, changes the meaning of no existing required field, and does not
+invalidate a previously valid conforming instance — verified directly
+against this repository's own `CHG-0008` (completed) and `CHG-0010`
+(in-flight) manifests, neither of which sets any of the new fields and both
+of which continue to validate unchanged. A manifest that never declares
+`kind` makes no claim this Change's new Contract rules (C-047–C-050) speak
+to, and is therefore unaffected by them. There is no migration and no future
+intent to force `kind` classification onto historical or Protocol 1 data;
+legacy semantics are permanent, not a transitional grace period.
+
 ## Schema catalog
 
 `schemas/catalog.yml` is the portable list of schemas shipped by the distribution. Catalog presence does not imply that every schema is normative for every Protocol version. Applicability is defined by the selected Protocol contract and the artifact's own identifier. Cross-field semantic constraints that JSON Schema cannot express remain deterministic Core validation responsibilities.

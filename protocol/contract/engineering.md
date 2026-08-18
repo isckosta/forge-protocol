@@ -144,3 +144,28 @@ and minimum obligations of existing valid instances under that identifier.
 Removing or weakening an invariant, changing an existing required field or Gate
 meaning, or invalidating a previously valid conforming instance MUST require a
 new integer Protocol identifier.
+
+## C-047 — Resolution Verification is scoped
+A Review Iteration classified as Resolution Verification MUST NOT be
+conducted as an unrestricted re-audit of the review subject. Its authority is
+bounded to the Findings it targets, defects within its Resolution Delta, and
+Out-of-Scope Mutation. This rule binds a Change only once it opts into
+Resolution Verification classification; it does not create a new obligation
+for a Review Iteration that does not.
+
+## C-048 — Material out-of-scope mutation requires Full Review Escalation
+A Resolution that materially mutates the review subject outside its declared
+Resolution Scope MUST NOT receive approval through a scoped Resolution
+Verification. It MUST escalate to a new, unrestricted Initial Review.
+
+## C-049 — Review convergence has deterministic termination semantics
+A Resolution → Resolution Verification cycle MUST NOT be allowed to continue
+automatically and indefinitely. Reaching the applicable Convergence Limit
+MUST stop automatic progression, MUST NOT produce a passed Review, and MUST
+require an explicit engineering decision before the cycle may continue.
+
+## C-050 — Unrelated latent findings are recorded, not discarded or amplified
+A Resolution Verification that discovers a Finding unrelated to the
+Resolution under review MUST record it rather than silently discard it, and
+MUST NOT treat that Finding alone as license to become an unrestricted
+re-audit of unrelated pre-existing scope.
