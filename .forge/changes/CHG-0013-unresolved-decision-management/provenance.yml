@@ -1,0 +1,40 @@
+schema: forge/execution-provenance@1
+change: CHG-0013
+records:
+  - id: implementation-001
+    role: implementation
+    execution: {id: chg-0013-impl-session-1, context_id: chg-0013-impl-context-1}
+    recorded_at: "2026-08-18T18:00:00Z"
+    revision:
+      id: chg-0013-implementation-001
+      immutable_ref: {type: git_commit, value: 40dbfb94dfda9909c47ad158c1e5f6b6d2da903e}
+      commit: 40dbfb94dfda9909c47ad158c1e5f6b6d2da903e
+    source: {assurance: recorded, observed_by: self}
+  - id: resolution-001
+    role: resolution
+    execution: {id: chg-0013-impl-session-1, context_id: chg-0013-impl-context-1}
+    recorded_at: "2026-08-18T19:00:00Z"
+    scope:
+      - .forge/changes/CHG-0013-unresolved-decision-management/architecture.md
+      - .forge/changes/CHG-0013-unresolved-decision-management/knowledge-capture.md
+      - .forge/changes/CHG-0013-unresolved-decision-management/tdd-evidence.yml
+      - .forge/changes/CHG-0013-unresolved-decision-management/traceability.yml
+      - .forge/changes/CHG-0013-unresolved-decision-management/verification.md
+      - .forge/changes/CHG-0013-unresolved-decision-management/review.md
+      - src/forge_cli/validation/__init__.py
+      - tests/unit/test_unresolved_decisions.py
+    targets: [CHG-0013-R001, CHG-0013-R002, CHG-0013-R003]
+    revision:
+      id: chg-0013-resolution-001
+      immutable_ref: {type: git_commit, value: 695fab81489f7bad6938dc944dbbdecdf912860f}
+      commit: 695fab81489f7bad6938dc944dbbdecdf912860f
+    source: {assurance: recorded, observed_by: self}
+  - id: review-002
+    role: review
+    execution: {id: chg-0013-verify-session-1, context_id: chg-0013-verify-context-1}
+    recorded_at: "2026-08-18T20:40:00Z"
+    revision:
+      id: chg-0013-resolution-001
+      immutable_ref: {type: git_commit, value: 695fab81489f7bad6938dc944dbbdecdf912860f}
+      commit: 695fab81489f7bad6938dc944dbbdecdf912860f
+    source: {assurance: recorded, observed_by: self}

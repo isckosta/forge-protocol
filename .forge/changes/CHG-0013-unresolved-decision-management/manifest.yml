@@ -1,0 +1,90 @@
+schema: forge/change@2
+protocol: 2
+change: {id: CHG-0013, title: Unresolved Decision Management, kind: feature}
+flow: {initial: full, current: full, escalations: []}
+state: {current: complete}
+artifacts:
+  intent: complete
+  discovery: complete
+  specification: complete
+  specification_drift: complete
+  specification_review: complete
+  architecture: complete
+  test_strategy: approved
+  plan: approved
+  tasks: complete
+  traceability: complete
+  tdd_evidence: complete
+  implementation: complete
+  provenance: complete
+  verification: complete
+  review: complete
+  documentation: complete
+  knowledge_capture: complete
+requirements: {total: 18, implemented: 18, verified: 18}
+tdd: {status: compliant, cycles: 11}
+verification: {status: passed}
+review:
+  status: passed
+  iteration: 2
+  blockers: 0
+  majors: 0
+  minors: 0
+  observations: 3
+  iterations:
+    - id: review-001
+      revision: chg-0013-implementation-001
+      subject_provenance: implementation-001
+      status: failed
+      kind: initial_review
+      evidence_gap: >-
+        CHG-0013-R001 (BLOCKER): verification.md misattributed the
+        forge validate C-026 finding to pre-existing untracked files; the
+        real cause is that the post-freeze commit ba5b880 mutated
+        verification.md, which is not in the Protocol 2 Section 5 exempt
+        set. CHG-0013-R002 (MAJOR): the product/contract human-authority
+        floor was checked only via the (authority, resolved_via) pair, not
+        as a property of class, and was bypassable by declaring authority
+        directly. CHG-0013-R003 (MINOR): invalidates referencing an
+        artifact key absent from artifacts silently passed. CHG-0013-R004
+        (MAJOR): the disclosed TDD-ordering deviation needs an explicit
+        human accept/reject decision, not silent disclosure. See review.md
+        for full findings (also R005, R006 OBSERVATION).
+    - id: review-002
+      revision: chg-0013-resolution-001
+      subject_provenance: resolution-001
+      reviewer_provenance: review-002
+      status: passed
+      kind: resolution_verification
+      new_material_findings: 0
+      finding_classes: [unrelated_latent_finding]
+      evidence_gap: >-
+        R001, R002, and R003 verified genuinely resolved by independent
+        re-reproduction (not taken on the artifacts' word), including
+        re-running the exact git-stash sequence against the corrected
+        freeze and adversarially probing the R002/R003 checks with
+        hand-crafted manifests. Resolution Delta (40dbfb9..695fab8)
+        recomputed independently; matches resolution-001's declared scope
+        (manifest.yml/provenance.yml bookkeeping outside scope treated as
+        non-blocking review-control metadata, consistent with CHG-0011's
+        own resolution-001/review-002 precedent for the same pattern); no
+        Out-of-Scope Mutation. One new OBSERVATION (CHG-0013-R009: an
+        artifacts value of null, not absent, still bypasses the C-057
+        invalidates check; no real code path produces this, recorded as
+        follow-up). R004's human decision record found plausible,
+        structurally conformant, and internally consistent across
+        review.md/tdd-evidence.yml/knowledge-capture.md.
+documentation:
+  impact_evaluated: true
+  update_required: true
+  reason: >-
+    This Change introduces a new normative Protocol concept (Unresolved
+    Decision Management): new Contract rules C-051-C-059 in both
+    protocol/contract/engineering.md and protocol/versions/2/contract/
+    engineering.md (the latter also backfilled with the previously-missing
+    C-047-C-050), a new protocol/specification.md Section 39, a new
+    protocol/policies/decision.yml canonical Policy plus its schema, an
+    additive decisions[] field on both forge/change@1 and forge/change@2, a
+    new Core validator boundary, a compatibility.md subsection, an ADR
+    (docs/adr/0012), and one added sentence in ARCHITECTURE.md Section 17.
+    All of the above are updated in this Change's own diff.

@@ -116,7 +116,7 @@ Initial severities are BLOCKER, MAJOR, MINOR, and OBSERVATION. BLOCKER always bl
 
 ## 17. Gates
 
-Initial conceptual Gates include Classification, Specification, Architecture, RED, Verification, Review, Documentation, and Completion. A Gate may be PASSED, FAILED, WARNING, or SKIPPED; SKIPPED requires an explicit reason.
+Initial conceptual Gates include Classification, Specification, Architecture, RED, Verification, Review, Documentation, and Completion. A Gate may be PASSED, FAILED, WARNING, or SKIPPED; SKIPPED requires an explicit reason. A Gate MUST NOT be asserted passed while an Artifact within its dependency set has a Material Unresolved Decision it owns in an open, unresolved Lifecycle state (Unresolved Decision Management, `protocol/specification.md` §39).
 
 ## 18. Documentation and Knowledge
 

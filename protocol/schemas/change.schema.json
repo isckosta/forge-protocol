@@ -15,6 +15,30 @@
     "tdd": {"type": "object", "additionalProperties": false, "required": ["status"], "properties": {"status": {"enum": ["pending", "active", "compliant", "not_applicable", "exception"]}, "reason": {"type": "string", "minLength": 1}, "cycles": {"type": "integer", "minimum": 0}}, "allOf": [{"if": {"properties": {"status": {"enum": ["not_applicable", "exception"]}}, "required": ["status"]}, "then": {"required": ["reason"]}}]},
     "verification": {"type": "object", "additionalProperties": false, "required": ["status"], "properties": {"status": {"enum": ["pending", "active", "passed", "failed"]}}},
     "review": {"type": "object", "additionalProperties": false, "required": ["status", "blockers", "majors", "minors", "observations"], "properties": {"status": {"enum": ["pending", "active", "passed", "failed"]}, "iteration": {"type": "integer", "minimum": 0}, "blockers": {"type": "integer", "minimum": 0}, "majors": {"type": "integer", "minimum": 0}, "minors": {"type": "integer", "minimum": 0}, "observations": {"type": "integer", "minimum": 0}}},
-    "documentation": {"type": "object", "additionalProperties": false, "required": ["impact_evaluated"], "properties": {"impact_evaluated": {"type": "boolean"}, "update_required": {"type": "boolean"}, "reason": {"type": "string"}}}
+    "documentation": {"type": "object", "additionalProperties": false, "required": ["impact_evaluated"], "properties": {"impact_evaluated": {"type": "boolean"}, "update_required": {"type": "boolean"}, "reason": {"type": "string"}}},
+    "decisions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "class", "materiality", "status", "authority", "owning_artifact", "discovered_in"],
+        "properties": {
+          "id": {"type": "string", "pattern": "^DEC-[0-9]{3,}$"},
+          "class": {"enum": ["product", "contract", "architectural", "technical"]},
+          "materiality": {"enum": ["material", "non_material"]},
+          "status": {"enum": ["open", "analyzing", "awaiting_decision", "resolved", "superseded"]},
+          "authority": {"enum": ["human", "agent", "agent_with_review"]},
+          "owning_artifact": {"type": "string", "minLength": 1},
+          "discovered_in": {"type": "string", "minLength": 1},
+          "resolved_via": {"enum": ["evidence", "autonomous_decision", "human_decision", null]},
+          "supersedes": {"type": ["string", "null"], "pattern": "^DEC-[0-9]{3,}$"},
+          "superseded_by": {"type": ["string", "null"], "pattern": "^DEC-[0-9]{3,}$"},
+          "invalidates": {"type": "array", "items": {"type": "string", "minLength": 1}}
+        },
+        "allOf": [
+          {"if": {"properties": {"status": {"const": "resolved"}}, "required": ["status"]}, "then": {"required": ["resolved_via"]}}
+        ]
+      }
+    }
   }
 }

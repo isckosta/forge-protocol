@@ -169,3 +169,47 @@ A Resolution Verification that discovers a Finding unrelated to the
 Resolution under review MUST record it rather than silently discard it, and
 MUST NOT treat that Finding alone as license to become an unrestricted
 re-audit of unrelated pre-existing scope.
+
+## C-051 — Material Unresolved Decisions block dependent Gates
+A Gate MUST NOT be asserted passed while an Artifact within its dependency
+set has a Material Unresolved Decision it owns in an Open-blocking
+Lifecycle state (`open`, `analyzing`, or `awaiting_decision`).
+
+## C-052 — Decisions are owned by the Artifact with subject-matter authority
+An Unresolved Decision's owning Artifact MUST be the Artifact type with
+semantic authority over its subject matter, regardless of which Artifact or
+stage discovered it. A downstream Artifact MUST NOT resolve a Decision it
+does not own.
+
+## C-053 — Evidence and analysis precede escalation
+Before an Unresolved Decision may reach a human-authority escalation,
+available repository evidence and delegated engineering analysis MUST be
+attempted and recorded, regardless of outcome.
+
+## C-054 — Recommendation is not Decision
+A Recommendation MUST NOT be recorded as a Decision unless the Decision's
+Authority explicitly permits autonomous resolution of its Class.
+
+## C-055 — Human-authority Decisions require an explicit human act
+A Decision whose Authority is human MUST NOT reach `resolved` status
+through an autonomous agent act. Recommendation Confidence MUST NOT
+substitute for authorization.
+
+## C-056 — Assumptions must not launder material decisions
+A Material Assumption MUST be registered as an Unresolved Decision.
+Declaring an Assumption MUST NOT substitute for creating or resolving the
+Decision it is material to.
+
+## C-057 — Backward invalidation is explicit
+When a Decision resolves in a way that changes or supersedes an
+already-complete Artifact, the Change MUST declare which downstream
+Artifacts it invalidates, and those Artifacts MUST NOT remain complete or
+approved until revisited.
+
+## C-058 — Non-material questions require no Decision record
+Forge MUST NOT require a recorded Unresolved Decision, escalation, or human
+interruption for a Non-material question.
+
+## C-059 — Reviewer discovering a missing material decision requests changes
+A Reviewer that discovers a Material Unresolved Decision MUST record a
+Finding and MUST NOT resolve it within the same Review.

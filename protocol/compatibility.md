@@ -74,6 +74,31 @@ to, and is therefore unaffected by them. There is no migration and no future
 intent to force `kind` classification onto historical or Protocol 1 data;
 legacy semantics are permanent, not a transitional grace period.
 
+## Unresolved Decision Management (CHG-0013)
+
+CHG-0013 adds a top-level, optional `decisions` array to both `forge/change@1`
+and `forge/change@2`, a new `forge/policy/decision@1` canonical Policy, and
+Contract rules C-051–C-059. Unlike CHG-0011, this capability is not scoped to
+Protocol 2: it depends on nothing in Protocol 2's Execution/Context
+independence model, so it applies identically to a Protocol 1 or Protocol 2
+project and its Contract rules live in the shared canonical
+`protocol/contract/engineering.md`. This is again "optional artifacts whose
+absence preserves existing meaning": every historical manifest in this
+repository (`CHG-0001`–`CHG-0012`) declares no `decisions` field and
+continues to validate and mean exactly what it meant before. No integer
+Protocol identifier changes and no new `forge/change@N` schema suffix is
+introduced.
+
+This Change also backfills C-047–C-050 (introduced by CHG-0011) into
+`protocol/versions/2/contract/engineering.md`, which — despite CHG-0011's own
+`discovery.md` asserting otherwise — already existed at the time CHG-0011
+was authored and is the file `resolve_effective_contract` actually resolves
+for a `protocol: 2` project (as this repository's own `.forge/forge.yml`
+declares). The backfill copies already-normative, already-shipped rule text
+into the one place Protocol 2's own resolver requires it; it changes no rule's
+meaning and adds no new obligation beyond what `protocol/contract/engineering.md`
+already stated.
+
 ## Schema catalog
 
 `schemas/catalog.yml` is the portable list of schemas shipped by the distribution. Catalog presence does not imply that every schema is normative for every Protocol version. Applicability is defined by the selected Protocol contract and the artifact's own identifier. Cross-field semantic constraints that JSON Schema cannot express remain deterministic Core validation responsibilities.

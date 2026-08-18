@@ -2,6 +2,7 @@
 from __future__ import annotations
 from dataclasses import dataclass
 from pathlib import Path
+import re
 import subprocess
 from typing import Any
 import yaml
@@ -360,6 +361,117 @@ def _validate_protocol2_review_provenance(r:Path)->list[ValidationFinding]:
         if rev.get("status")=="passed"and not any(isinstance(i,dict)and i.get("status")=="passed"for i in its):out.append(_finding(r,mpath,"review.status is passed but no Review Iteration is passed."))
         out.extend(_validate_resolution_verification(r,mpath,m,its,idx))
     return out
+_DEC_CLASSES={"product","contract","architectural","technical"}
+_DEC_MATERIALITY={"material","non_material"}
+_DEC_STATUSES={"open","analyzing","awaiting_decision","resolved","superseded"}
+_DEC_OPEN_BLOCKING={"open","analyzing","awaiting_decision"}
+_DEC_AUTHORITIES={"human","agent","agent_with_review"}
+_DEC_RESOLVED_VIA={"evidence","autonomous_decision","human_decision"}
+_DEC_OWNING_BY_CLASS={"product":{"specification"},"contract":{"specification","compatibility"},"architectural":{"architecture"},"technical":{"plan","tasks"}}
+_DEC_AUTHORITY_FLOOR={"product":"human","contract":"human"}
+_DEC_ID_RE=re.compile(r"^DEC-[0-9]{3,}$")
+def _dec_finding(r:Path,p:Path,m:str)->ValidationFinding:return ValidationFinding("C-051",str(p.relative_to(r)),m,p)
+def _decision_gates(m:dict)->list[tuple[str,set[str]|None]]:
+    """CHG-0013: which already-passed Gates a manifest currently asserts.
+
+    `None` scope means the Gate depends on every owning Artifact
+    (before_completion/review_passed); a concrete set means the Gate only
+    depends on Decisions owned by those specific Artifacts.
+    """
+    artifacts=m.get("artifacts")if isinstance(m.get("artifacts"),dict)else{}
+    review=m.get("review")if isinstance(m.get("review"),dict)else{}
+    state=m.get("state")if isinstance(m.get("state"),dict)else{}
+    gates:list[tuple[str,set[str]|None]]=[]
+    if artifacts.get("specification_review")in{"complete","passed"}:gates.append(("specification_review_passed",{"specification","compatibility"}))
+    if artifacts.get("architecture")=="complete":gates.append(("before_implementation",{"architecture"}))
+    if review.get("status")=="passed":gates.append(("review_passed",None))
+    if state.get("current")=="complete":gates.append(("before_completion",None))
+    return gates
+def _validate_unresolved_decisions(r:Path,mpath:Path,m:dict)->list[ValidationFinding]:
+    """CHG-0013: C-051-C-059 / FR-009/FR-013/FR-014 mechanical slice.
+
+    Protocol-version-independent (unlike Protocol-2-only review provenance):
+    absence of `decisions` is the compatibility guard and returns no
+    findings, exactly like CHG-0011's `kind`-absence guard.
+    """
+    out:list[ValidationFinding]=[]
+    decisions=m.get("decisions")
+    if not decisions:return out
+    if not isinstance(decisions,list):return[_dec_finding(r,mpath,"decisions must be a list.")]
+    seen_ids:set[str]=set();valid:list[dict]=[]
+    for entry in decisions:
+        if not isinstance(entry,dict):out.append(_dec_finding(r,mpath,"Each decisions[] entry must be a mapping."));continue
+        did,cls,materiality,status,authority,owning,discovered,resolved_via,invalidates=(
+            entry.get("id"),entry.get("class"),entry.get("materiality"),entry.get("status"),
+            entry.get("authority"),entry.get("owning_artifact"),entry.get("discovered_in"),
+            entry.get("resolved_via"),entry.get("invalidates"))
+        bad=False
+        if not(isinstance(did,str)and _DEC_ID_RE.match(did)):out.append(_dec_finding(r,mpath,f"Decision id {did!r} must match ^DEC-[0-9]{{3,}}$."));bad=True
+        elif did in seen_ids:out.append(_dec_finding(r,mpath,f"Duplicate Decision id {did!r}."));bad=True
+        else:seen_ids.add(did)
+        if cls not in _DEC_CLASSES:out.append(_dec_finding(r,mpath,f"Decision {did!r} has an invalid class {cls!r}."));bad=True
+        if materiality not in _DEC_MATERIALITY:out.append(_dec_finding(r,mpath,f"Decision {did!r} has an invalid materiality {materiality!r}."));bad=True
+        if status not in _DEC_STATUSES:out.append(_dec_finding(r,mpath,f"Decision {did!r} has an invalid status {status!r}."));bad=True
+        if authority not in _DEC_AUTHORITIES:out.append(_dec_finding(r,mpath,f"Decision {did!r} has an invalid authority {authority!r}."));bad=True
+        if not(isinstance(owning,str)and owning):out.append(_dec_finding(r,mpath,f"Decision {did!r} is missing owning_artifact."));bad=True
+        if not(isinstance(discovered,str)and discovered):out.append(_dec_finding(r,mpath,f"Decision {did!r} is missing discovered_in."));bad=True
+        if resolved_via is not None and resolved_via not in _DEC_RESOLVED_VIA:out.append(_dec_finding(r,mpath,f"Decision {did!r} has an invalid resolved_via {resolved_via!r}."));bad=True
+        if invalidates is not None and not(isinstance(invalidates,list)and all(isinstance(x,str)for x in invalidates)):out.append(_dec_finding(r,mpath,f"Decision {did!r} invalidates must be a list of artifact keys."));bad=True
+        if bad:continue
+        # FR-009/C-054/C-055: resolved_via <-> status consistency. A `superseded`
+        # Decision was `resolved` before being superseded and legitimately
+        # retains its historical resolved_via; only an Open-blocking status
+        # (never yet resolved) must carry none.
+        if status in{"resolved","superseded"}and resolved_via is None:out.append(_dec_finding(r,mpath,f"Decision {did!r} is {status!r} but declares no resolved_via."))
+        if status in _DEC_OPEN_BLOCKING and resolved_via is not None:out.append(_dec_finding(r,mpath,f"Decision {did!r} declares resolved_via {resolved_via!r} while status is {status!r} (not yet resolved)."))
+        if authority=="human"and resolved_via=="autonomous_decision":out.append(_dec_finding(r,mpath,f"Decision {did!r}: human-authority Decisions MUST NOT be resolved via autonomous_decision (C-055)."))
+        # CHG-0013-R002: the product/contract authority floor (C-055, FR-017,
+        # protocol/policies/decision.yml authority_floor) is a property of the
+        # Class itself, not only of the (authority, resolved_via) pair above —
+        # a manifest that sets authority away from `human` on a product/contract
+        # Decision bypassed the floor entirely under the narrower check alone.
+        floor=_DEC_AUTHORITY_FLOOR.get(cls)
+        if floor is not None and authority!=floor:
+            out.append(_dec_finding(r,mpath,f"Decision {did!r}: class {cls!r} has a non-negotiable authority floor of {floor!r}; authority {authority!r} MUST NOT be declared (C-055)."))
+        # INV-003: owning_artifact must be a valid Owning Artifact for the Class.
+        allowed_owning=_DEC_OWNING_BY_CLASS.get(cls)
+        if allowed_owning is not None and owning not in allowed_owning:
+            out.append(_dec_finding(r,mpath,f"Decision {did!r}: owning_artifact {owning!r} is not a valid owning Artifact for class {cls!r} (expected one of {sorted(allowed_owning)})."))
+        valid.append(entry)
+    # C-051/INV-001: a material, Open-blocking Decision conflicts with any
+    # Gate already asserted passed and depending on its owning Artifact.
+    gates=_decision_gates(m)
+    for entry in valid:
+        if entry.get("materiality")!="material"or entry.get("status")not in _DEC_OPEN_BLOCKING:continue
+        did,owning=entry.get("id"),entry.get("owning_artifact")
+        for gate_name,scope in gates:
+            if scope is None or owning in scope:
+                out.append(_dec_finding(r,mpath,f"Gate {gate_name!r} MUST NOT be asserted passed while material Decision {did!r} (owned by {owning!r}) remains {entry.get('status')!r} (C-051)."))
+    # C-057: a declared invalidation target must actually reflect invalidated
+    # status, not silently remain complete/approved.
+    artifacts=m.get("artifacts")if isinstance(m.get("artifacts"),dict)else{}
+    for entry in valid:
+        for key in entry.get("invalidates")or[]:
+            if key not in artifacts:
+                # CHG-0013-R003: artifacts.get(key) is None for a missing key,
+                # which is not in {"complete","approved"} — the check below
+                # would silently pass a typo'd or never-tracked artifact key,
+                # dropping the invalidation obligation entirely. A declared
+                # invalidation target must name a real, tracked Artifact.
+                out.append(_dec_finding(r,mpath,f"Decision {entry.get('id')!r} declares invalidates: {key!r}, but {key!r} is not tracked in artifacts at all (C-057)."))
+                continue
+            current=artifacts.get(key)
+            if current in{"complete","approved"}:
+                out.append(_dec_finding(r,mpath,f"Decision {entry.get('id')!r} declares invalidates: {key!r}, but artifacts.{key} is still {current!r}; it must become invalidated until revisited (C-057)."))
+    return out
+def _validate_all_unresolved_decisions(r:Path)->list[ValidationFinding]:
+    out:list[ValidationFinding]=[];changes=r/".forge/changes"
+    if not changes.is_dir():return out
+    for mpath in sorted(changes.glob("*/manifest.yml")):
+        m=_load_mapping(mpath)
+        if m is None:continue
+        out.extend(_validate_unresolved_decisions(r,mpath,m))
+    return out
 def validate_project(project_root:Path,protocol_root:Path)->ValidationResult:
     f=project_root/".forge"
     if not f.is_dir():return ValidationResult((ValidationFinding("E_FORGE_NOT_INITIALIZED",".forge/","Forge is not initialized. Run `forge init` from this Git repository.",f),))
@@ -374,4 +486,5 @@ def validate_project(project_root:Path,protocol_root:Path)->ValidationResult:
     try:resolve_effective_contract(protocol_root,project_root,pid)
     except CanonicalContractUnavailableError as e:out.append(ValidationFinding("E_FORGE_CANONICAL_CONTRACT_UNAVAILABLE",f"protocol/{pid}/contract/engineering.md",str(e),protocol_root))
     if pid==2:out.extend(_validate_protocol2_review_provenance(project_root))
+    out.extend(_validate_all_unresolved_decisions(project_root))
     return ValidationResult(tuple(out))

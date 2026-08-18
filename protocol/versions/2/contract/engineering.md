@@ -153,3 +153,42 @@ Changes that retain an integer Protocol identifier MUST preserve the meaning and
 
 ## C-046 — Breaking changes require a new Protocol identifier
 Removing or weakening an invariant, changing an existing required field or Gate meaning, or invalidating a previously valid conforming instance MUST require a new integer Protocol identifier.
+
+## C-047 — Resolution Verification is scoped
+A Review Iteration classified as Resolution Verification MUST NOT be conducted as an unrestricted re-audit of the review subject. Its authority is bounded to the Findings it targets, defects within its Resolution Delta, and Out-of-Scope Mutation. This rule binds a Change only once it opts into Resolution Verification classification; it does not create a new obligation for a Review Iteration that does not.
+
+## C-048 — Material out-of-scope mutation requires Full Review Escalation
+A Resolution that materially mutates the review subject outside its declared Resolution Scope MUST NOT receive approval through a scoped Resolution Verification. It MUST escalate to a new, unrestricted Initial Review.
+
+## C-049 — Review convergence has deterministic termination semantics
+A Resolution → Resolution Verification cycle MUST NOT be allowed to continue automatically and indefinitely. Reaching the applicable Convergence Limit MUST stop automatic progression, MUST NOT produce a passed Review, and MUST require an explicit engineering decision before the cycle may continue.
+
+## C-050 — Unrelated latent findings are recorded, not discarded or amplified
+A Resolution Verification that discovers a Finding unrelated to the Resolution under review MUST record it rather than silently discard it, and MUST NOT treat that Finding alone as license to become an unrestricted re-audit of unrelated pre-existing scope.
+
+## C-051 — Material Unresolved Decisions block dependent Gates
+A Gate MUST NOT be asserted passed while an Artifact within its dependency set has a Material Unresolved Decision it owns in an Open-blocking Lifecycle state (`open`, `analyzing`, or `awaiting_decision`).
+
+## C-052 — Decisions are owned by the Artifact with subject-matter authority
+An Unresolved Decision's owning Artifact MUST be the Artifact type with semantic authority over its subject matter, regardless of which Artifact or stage discovered it. A downstream Artifact MUST NOT resolve a Decision it does not own.
+
+## C-053 — Evidence and analysis precede escalation
+Before an Unresolved Decision may reach a human-authority escalation, available repository evidence and delegated engineering analysis MUST be attempted and recorded, regardless of outcome.
+
+## C-054 — Recommendation is not Decision
+A Recommendation MUST NOT be recorded as a Decision unless the Decision's Authority explicitly permits autonomous resolution of its Class.
+
+## C-055 — Human-authority Decisions require an explicit human act
+A Decision whose Authority is human MUST NOT reach `resolved` status through an autonomous agent act. Recommendation Confidence MUST NOT substitute for authorization.
+
+## C-056 — Assumptions must not launder material decisions
+A Material Assumption MUST be registered as an Unresolved Decision. Declaring an Assumption MUST NOT substitute for creating or resolving the Decision it is material to.
+
+## C-057 — Backward invalidation is explicit
+When a Decision resolves in a way that changes or supersedes an already-complete Artifact, the Change MUST declare which downstream Artifacts it invalidates, and those Artifacts MUST NOT remain complete or approved until revisited.
+
+## C-058 — Non-material questions require no Decision record
+Forge MUST NOT require a recorded Unresolved Decision, escalation, or human interruption for a Non-material question.
+
+## C-059 — Reviewer discovering a missing material decision requests changes
+A Reviewer that discovers a Material Unresolved Decision MUST record a Finding and MUST NOT resolve it within the same Review.
