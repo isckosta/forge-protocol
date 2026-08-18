@@ -1,0 +1,48 @@
+schema: forge/change@2
+protocol: 2
+change: {id: CHG-0013, title: Unresolved Decision Management, kind: feature}
+flow: {initial: full, current: full, escalations: []}
+state: {current: strict_review}
+artifacts:
+  intent: complete
+  discovery: complete
+  specification: complete
+  specification_drift: complete
+  specification_review: complete
+  architecture: complete
+  test_strategy: approved
+  plan: approved
+  tasks: complete
+  traceability: complete
+  tdd_evidence: complete
+  implementation: complete
+  provenance: pending
+  verification: complete
+  review: pending
+  documentation: complete
+  knowledge_capture: complete
+requirements: {total: 18, implemented: 18, verified: 18}
+tdd: {status: compliant, cycles: 9}
+verification: {status: passed}
+review:
+  status: pending
+  iteration: 0
+  blockers: 0
+  majors: 0
+  minors: 0
+  observations: 0
+  iterations: []
+documentation:
+  impact_evaluated: true
+  update_required: true
+  reason: >-
+    This Change introduces a new normative Protocol concept (Unresolved
+    Decision Management): new Contract rules C-051-C-059 in both
+    protocol/contract/engineering.md and protocol/versions/2/contract/
+    engineering.md (the latter also backfilled with the previously-missing
+    C-047-C-050), a new protocol/specification.md Section 39, a new
+    protocol/policies/decision.yml canonical Policy plus its schema, an
+    additive decisions[] field on both forge/change@1 and forge/change@2, a
+    new Core validator boundary, a compatibility.md subsection, an ADR
+    (docs/adr/0012), and one added sentence in ARCHITECTURE.md Section 17.
+    All of the above are updated in this Change's own diff.

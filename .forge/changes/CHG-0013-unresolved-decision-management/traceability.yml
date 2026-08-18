@@ -1,0 +1,27 @@
+schema: forge/traceability@1
+change: CHG-0013
+requirements:
+  FR-001: {tasks: [T-003, T-005], evidence: contract_c051_c059_and_spec_39_creation_trigger}
+  FR-002: {tasks: [T-009, T-010], tests: [test_malformed_fields_are_findings_without_raising], evidence: class_enum_shape_validation}
+  FR-003: {tasks: [T-009, T-010], tests: [test_non_material_entry_never_blocks], evidence: materiality_gates_blocking_participation}
+  FR-004: {tasks: [T-003, T-006], evidence: contract_c053_process_obligation}
+  FR-005: {tasks: [T-003, T-006], evidence: contract_c053_and_policy_evidence_resolution_block}
+  FR-006: {tasks: [T-003, T-006], evidence: contract_c054_and_policy_default_authority}
+  FR-007: {tasks: [T-003, T-006], evidence: contract_c055_human_authority_floor}
+  FR-008: {tasks: [T-006], evidence: policy_decision_yml_recommendation_required_fields}
+  FR-009: {tasks: [T-009, T-010], tests: [test_resolved_without_resolved_via_is_a_finding, test_resolved_via_without_resolved_status_is_a_finding, test_human_authority_cannot_be_resolved_autonomously, test_human_authority_evidence_resolution_is_allowed], evidence: resolved_via_status_authority_cross_field_checks}
+  FR-010: {tasks: [T-006], evidence: policy_decision_yml_clarification_format_block}
+  FR-011: {tasks: [T-001, T-009, T-010], tests: [test_malformed_fields_are_findings_without_raising, test_superseded_decision_does_not_block], evidence: lifecycle_status_enum_and_open_blocking_set}
+  FR-012: {tasks: [T-001, T-002], evidence: decisions_array_schema_plus_decisions_md_convention_in_architecture_md}
+  FR-013: {tasks: [T-009, T-010], tests: [test_open_blocking_status_conflicts_with_passed_gate, test_resolved_material_decision_does_not_block, test_superseded_decision_does_not_block], evidence: gate_conflict_detection}
+  FR-014: {tasks: [T-009, T-010], tests: [test_invalidates_target_still_complete_is_a_finding, test_owning_artifact_inconsistent_with_class], evidence: invalidates_and_owning_artifact_checks}
+  FR-015: {tasks: [T-003], evidence: contract_c059_reviewer_resolver_separation_reuse}
+  FR-016: {tasks: [T-003], evidence: contract_c056_assumption_laundering}
+  FR-017: {tasks: [T-002, T-006], evidence: policy_decision_schema_const_defaults}
+  FR-018: {tasks: [T-003, T-009, T-010], tests: [test_non_material_entry_never_blocks], evidence: contract_c058_and_non_material_short_circuit}
+  INV-001: {tasks: [T-009, T-010], tests: [test_open_blocking_status_conflicts_with_passed_gate], evidence: open_blocking_gate_conflict}
+  INV-002: {tasks: [T-009, T-010], tests: [test_human_authority_evidence_resolution_is_allowed], evidence: evidence_resolution_permitted_regardless_of_authority}
+  INV-003: {tasks: [T-009, T-010], tests: [test_owning_artifact_inconsistent_with_class], evidence: owning_artifact_by_class_table_lookup}
+  INV-004: {tasks: [T-003], evidence: decisions_md_append_only_convention_in_architecture_md}
+  INV-005: {tasks: [T-001], evidence: schema_confidence_not_representable_as_number_by_design}
+  compatibility: {tasks: [T-001, T-002, T-003, T-004, T-007], tests: [test_absent_or_empty_decisions_short_circuits, test_legacy_manifests_are_unaffected], evidence: additive_fields_absence_preserves_meaning}

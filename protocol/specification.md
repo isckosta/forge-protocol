@@ -185,3 +185,49 @@ vocabulary, and schema catalog rules are defined in `compatibility.md`.
 A Protocol 1 revision MUST NOT weaken canonical invariants, change the meaning
 of existing required fields or Gates, or invalidate previously valid conforming
 instances. Such changes require a new integer Protocol identifier.
+
+## 39. Unresolved Decision Management
+
+An Unresolved Decision is a material decision required for an Artifact or
+Gate to be considered sufficiently determined, whose answer does not yet
+have valid normative authority. Detection MUST NOT be followed by silent
+resolution: an agent MUST NOT choose an answer to a material question and
+represent it as settled fact in any Artifact.
+
+Every Unresolved Decision MUST be classified into exactly one Decision
+Class — `product`, `contract`, `architectural`, or `technical` — which
+determines its owning Artifact and its default Decision Authority
+(`human`, `agent`, or `agent_with_review`) per `protocol/policies/decision.yml`.
+A question MUST first be assessed for Materiality; a question that would not
+change a Requirement, Acceptance Criterion, public Contract, Schema,
+Compatibility boundary, Security posture, domain Invariant, ownership
+boundary, failure semantics, state transition, Architecture, Verification
+Strategy, or operational behavior is Non-material and requires no Decision
+record, no escalation, and no workflow interruption.
+
+Before escalating a Material Unresolved Decision, Forge MUST attempt
+Evidence Resolution: citing an already-existing source of normative
+authority that determines the answer. When Decision Authority permits
+autonomous resolution, Forge MUST perform Analysis and produce a
+Recommendation before resolving the Decision itself. When Decision
+Authority is `human`, Forge MUST perform Analysis, produce Alternatives and
+Trade-offs, and produce a Recommendation, then stop and require an explicit
+human Decision; a Recommendation, regardless of Confidence, MUST NOT be
+treated as a Decision the agent is authorized to enact.
+
+A Gate MUST NOT be asserted passed while a dependent Artifact has a Material
+Unresolved Decision it owns in an Open-blocking Lifecycle state (`open`,
+`analyzing`, `awaiting_decision`). A downstream Artifact MUST NOT resolve a
+Decision owned by an upstream Artifact; when a downstream stage discovers
+one, the owning Artifact MUST be revisited and any Gate it already passed
+MUST be re-satisfied. A Decision's resolution that changes an
+already-complete upstream Artifact MUST explicitly declare which downstream
+Artifacts it invalidates.
+
+Full normative detail — Decision Lifecycle states, record shape, the
+Class taxonomy rationale, and Gate-integration mechanics — is defined by
+`protocol/policies/decision.yml` and enforced, to the extent deterministically
+checkable from repository-native Change state, by Core validation. This
+section applies independently of declared Protocol version; a Change that
+records no Decision makes no claim this section speaks to and is
+unaffected by it.

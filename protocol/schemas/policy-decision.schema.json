@@ -1,0 +1,132 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://forge.dev/schemas/policy-decision.schema.json",
+  "title": "Forge Unresolved Decision Management Policy",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "decision"],
+  "properties": {
+    "schema": {"const": "forge/policy/decision@1"},
+    "decision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["classes", "default_authority", "authority_floor", "materiality", "resolution_paths", "evidence_resolution", "recommendation", "clarification_format", "lifecycle", "gate_blocking", "ownership", "backward_invalidation", "project_override"],
+      "properties": {
+        "classes": {"const": ["product", "contract", "architectural", "technical"]},
+        "default_authority": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["product", "contract", "architectural", "technical"],
+          "properties": {
+            "product": {"const": "human"},
+            "contract": {"const": "human"},
+            "architectural": {"const": "agent_with_review"},
+            "technical": {"const": "agent"}
+          }
+        },
+        "authority_floor": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["product", "contract"],
+          "properties": {
+            "product": {"const": "human"},
+            "contract": {"const": "human"}
+          }
+        },
+        "materiality": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["material_when_changes", "incompatible_downstream_implementations_test", "non_material_requires_no_record"],
+          "properties": {
+            "material_when_changes": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string"}},
+            "incompatible_downstream_implementations_test": {"const": true},
+            "non_material_requires_no_record": {"const": true}
+          }
+        },
+        "resolution_paths": {"const": ["evidence", "autonomous_decision", "human_decision"]},
+        "evidence_resolution": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["requires_citable_source", "agent_inference_is_not_evidence"],
+          "properties": {
+            "requires_citable_source": {"const": true},
+            "agent_inference_is_not_evidence": {"const": true}
+          }
+        },
+        "recommendation": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["required_fields", "confidence_scale", "confidence_is_not_authorization"],
+          "properties": {
+            "required_fields": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string"}},
+            "confidence_scale": {"const": ["high", "medium", "low"]},
+            "confidence_is_not_authorization": {"const": true}
+          }
+        },
+        "clarification_format": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["prefer_structured_alternatives_over_open_question", "open_question_allowed_when_no_real_alternatives_exist"],
+          "properties": {
+            "prefer_structured_alternatives_over_open_question": {"const": true},
+            "open_question_allowed_when_no_real_alternatives_exist": {"const": true}
+          }
+        },
+        "lifecycle": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["states", "open_blocking_states"],
+          "properties": {
+            "states": {"const": ["open", "analyzing", "awaiting_decision", "resolved", "superseded"]},
+            "open_blocking_states": {"const": ["open", "analyzing", "awaiting_decision"]}
+          }
+        },
+        "gate_blocking": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["material_open_blocking_decision_blocks_owning_gate"],
+          "properties": {
+            "material_open_blocking_decision_blocks_owning_gate": {"const": true}
+          }
+        },
+        "ownership": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["owning_artifact_by_class", "downstream_must_not_resolve_upstream_owned_decision"],
+          "properties": {
+            "owning_artifact_by_class": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["product", "contract", "architectural", "technical"],
+              "properties": {
+                "product": {"type": "string", "minLength": 1},
+                "contract": {"type": "string", "minLength": 1},
+                "architectural": {"type": "string", "minLength": 1},
+                "technical": {"type": "string", "minLength": 1}
+              }
+            },
+            "downstream_must_not_resolve_upstream_owned_decision": {"const": true}
+          }
+        },
+        "backward_invalidation": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["invalidation_scope_is_explicit_not_inferred", "invalidated_artifacts_must_be_revisited"],
+          "properties": {
+            "invalidation_scope_is_explicit_not_inferred": {"const": true},
+            "invalidated_artifacts_must_be_revisited": {"const": true}
+          }
+        },
+        "project_override": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["allowed", "may_not_relax_below_human_for"],
+          "properties": {
+            "allowed": {"type": "boolean"},
+            "may_not_relax_below_human_for": {"const": ["product", "contract"]}
+          }
+        }
+      }
+    }
+  }
+}

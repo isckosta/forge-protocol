@@ -1,0 +1,59 @@
+schema: forge/policy/decision@1
+
+decision:
+  classes: [product, contract, architectural, technical]
+  default_authority:
+    product: human
+    contract: human
+    architectural: agent_with_review
+    technical: agent
+  authority_floor:
+    product: human
+    contract: human
+  materiality:
+    material_when_changes:
+      - requirement
+      - acceptance_criteria
+      - public_contract
+      - schema
+      - compatibility_boundary
+      - security_posture
+      - domain_invariant
+      - ownership_or_authority_boundary
+      - failure_or_error_semantics
+      - state_transition
+      - architecture
+      - verification_strategy
+      - rollout_or_migration_behavior
+      - operational_behavior
+    incompatible_downstream_implementations_test: true
+    non_material_requires_no_record: true
+  resolution_paths: [evidence, autonomous_decision, human_decision]
+  evidence_resolution:
+    requires_citable_source: true
+    agent_inference_is_not_evidence: true
+  recommendation:
+    required_fields: [recommendation, rationale, alternatives, trade_offs, evidence, confidence]
+    confidence_scale: [high, medium, low]
+    confidence_is_not_authorization: true
+  clarification_format:
+    prefer_structured_alternatives_over_open_question: true
+    open_question_allowed_when_no_real_alternatives_exist: true
+  lifecycle:
+    states: [open, analyzing, awaiting_decision, resolved, superseded]
+    open_blocking_states: [open, analyzing, awaiting_decision]
+  gate_blocking:
+    material_open_blocking_decision_blocks_owning_gate: true
+  ownership:
+    owning_artifact_by_class:
+      product: specification
+      contract: specification
+      architectural: architecture
+      technical: plan_or_tasks
+    downstream_must_not_resolve_upstream_owned_decision: true
+  backward_invalidation:
+    invalidation_scope_is_explicit_not_inferred: true
+    invalidated_artifacts_must_be_revisited: true
+  project_override:
+    allowed: true
+    may_not_relax_below_human_for: [product, contract]
