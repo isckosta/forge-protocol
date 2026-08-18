@@ -132,6 +132,62 @@ def test_complete_change_is_exempt_from_post_completion_freeze_drift(tmp_path: P
     assert not any("review subject changed after its immutable revision freeze" in m for m in _messages(result)), _messages(result)
 
 
+def test_tampering_between_freeze_and_completion_is_still_detected(tmp_path: Path) -> None:
+    """CHG-0012-R001 (BLOCKER, found by independent Strict Review Iteration 1):
+    the fix must not silently disable freeze protection for the Change's own
+    reviewed files -- only for genuinely unrelated repository activity. This
+    reproduces the Reviewer's own attack: the subject's own file, tampered
+    with after Review passed but *before* the Change is sealed as complete,
+    must still be caught.
+    """
+    root = tmp_path
+    _init_repo(root)
+    (root / "reviewed_module.py").write_text("original reviewed content\n", encoding="utf-8")
+    frozen = _commit(root, "implementation")
+    change_dir = "CHG-9011-example"
+    manifest = _manifest("strict_review")  # not complete yet
+    provenance = _provenance(frozen)
+    _write_metadata_commit(root, change_dir, manifest, provenance, "record passed review")
+
+    # Tamper with the Change's own reviewed file before it is sealed complete.
+    (root / "reviewed_module.py").write_text("silently swapped content\n", encoding="utf-8")
+    _commit(root, "tamper with the reviewed file before sealing complete")
+
+    # Now seal it complete -- the tampering happened before this commit.
+    manifest_complete = _manifest("complete")
+    _write_metadata_commit(root, change_dir, manifest_complete, provenance, "seal complete after tampering")
+
+    result = validate_project(root, resolve_protocol_root())
+
+    assert any("review subject changed after its immutable revision freeze" in m for m in _messages(result)), _messages(result)
+
+
+def test_tampering_after_completion_is_a_disclosed_residual_limitation(tmp_path: Path) -> None:
+    """Documents the accepted, disclosed trade-off (not the R001 bypass):
+    once a Change is genuinely sealed complete, further edits to its files
+    are no longer this freeze check's concern -- that is a different
+    Change's responsibility. This is intentionally different from
+    CHG-0012-R001 (tampering *before* sealing, which must still be caught,
+    per the test above)."""
+    root = tmp_path
+    _init_repo(root)
+    (root / "reviewed_module.py").write_text("original reviewed content\n", encoding="utf-8")
+    frozen = _commit(root, "implementation")
+    change_dir = "CHG-9012-example"
+    manifest_complete = _manifest("complete")
+    provenance = _provenance(frozen)
+    _write_metadata_commit(root, change_dir, manifest_complete, provenance, "seal complete immediately")
+
+    # A later, independent Change edits the same file -- ordinary shared-file
+    # evolution, not a bypass of this Change's own freeze.
+    (root / "reviewed_module.py").write_text("legitimately evolved by a later Change\n", encoding="utf-8")
+    _commit(root, "later Change edits the same shared file")
+
+    result = validate_project(root, resolve_protocol_root())
+
+    assert not any("review subject changed after its immutable revision freeze" in m for m in _messages(result)), _messages(result)
+
+
 def test_active_change_still_detects_freeze_drift(tmp_path: Path) -> None:
     """Regression guard: this exemption must not weaken the freeze for a
     Change that has not completed -- CHG-0008/CHG-0011's active-review

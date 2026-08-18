@@ -35,12 +35,20 @@ exemption.
 
 ## Goal
 
-A passed Review Iteration's frozen-subject-drift check MUST NOT fire once
-the Change's own `state.current` is `complete`. The freeze exists to protect
-review integrity *while a decision can still be influenced* — before
-Completion. After Completion, the Change is closed history; unrelated,
-expected activity elsewhere in the repository must not resurrect it as a
-validation failure.
+A passed Review Iteration's frozen-subject-drift check MUST NOT fire for
+activity unrelated to the Change's own reviewed subject once the Change's
+`state.current` is `complete` — but it MUST continue to detect the Change's
+own reviewed files being tampered with between the freeze and the moment
+the Change was genuinely sealed complete. See `specification-drift.md`: the
+first attempt at this Change exempted `complete` unconditionally, which
+independent Strict Review Iteration 1 found (CHG-0012-R001, BLOCKER) also
+silently disabled the true positive, not only the false positive. The
+corrected approach compares the frozen subject against the commit where
+`state.current` first became `complete` (not against a perpetually moving
+`HEAD`), preserving protection through the entire window a human/agent
+judgment could still be influenced, while accepting that unrelated activity
+occurring *after* that seal — including a later Change legitimately editing
+a shared file — is a different Change's concern, not this freeze's.
 
 ## Non-goals
 

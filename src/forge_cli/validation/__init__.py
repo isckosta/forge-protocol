@@ -233,6 +233,34 @@ def _committed_history_mappings(r:Path,path:Path)->list[object]|None:
             documents.append(_HISTORY_ERROR);continue
         documents.append(loaded)
     return documents
+def _first_commit_where_state_complete(r:Path,path:Path)->str|None:
+    """CHG-0012: the commit where this manifest first recorded state.current == complete.
+
+    Used to stop comparing a passed Review Iteration's frozen subject
+    against a perpetually moving HEAD once the Change is genuinely
+    complete: the freeze protects the subject only up to the point a human/
+    agent judgment (Completion) was reached, not forever after, once other
+    Changes inevitably continue touching the same files on a shared branch
+    (CHG-0012-R001: the previous attempt exempted `complete` unconditionally
+    instead, silently disabling protection for the Change's own reviewed
+    files too, not only for unrelated repository activity).
+    """
+    root=_git_root(r)
+    if root is None:return None
+    try:rel=path.resolve().relative_to(root).as_posix()
+    except(OSError,ValueError):return None
+    history=subprocess.run(["git","log","--format=%H","--reverse","--diff-filter=AM","--",rel],cwd=root,capture_output=True,text=True,check=False)
+    if history.returncode:return None
+    for commit in(line.strip() for line in history.stdout.splitlines()):
+        if not commit:continue
+        snapshot=subprocess.run(["git","show",f"{commit}:{rel}"],cwd=root,capture_output=True,check=False)
+        if snapshot.returncode:continue
+        try:loaded=yaml.safe_load(snapshot.stdout.decode("utf-8"))or{}
+        except(UnicodeDecodeError,yaml.YAMLError):continue
+        if not isinstance(loaded,dict):continue
+        state=loaded.get("state")
+        if isinstance(state,dict)and state.get("current")=="complete":return commit
+    return None
 def _first_committed_provenance_record(r:Path,path:Path,record_id:str):
     documents=_committed_history_mappings(r,path)
     if documents is None:return _HISTORY_ERROR
@@ -345,7 +373,14 @@ def _validate_protocol2_review_provenance(r:Path)->list[ValidationFinding]:
             explicit=isinstance(sub.get("revision"),dict)and sub["revision"].get("immutable_ref") is not None
             if explicit and sim[0]=="git_commit":
                 if not _git_exists(r,sim[1]):out.append(_finding(r,mpath,"C-026 review subject immutable git commit does not exist in the local repository."))
-                elif status in{"pending","passed"} and st.get("current")!="complete" and _changed(r,mpath,sim[1]):out.append(_finding(r,mpath,"C-026 review subject changed after its immutable revision freeze; create new subject provenance."))
+                elif status in{"pending","passed"}:
+                    if isinstance(st,dict)and st.get("current")=="complete":
+                        sealed=_first_commit_where_state_complete(r,mpath)
+                        drift=_resolution_delta(r,mpath,sim[1],sealed)if sealed is not None else None
+                        if drift is None:
+                            if _changed(r,mpath,sim[1]):out.append(_finding(r,mpath,"C-026 review subject changed after its immutable revision freeze; create new subject provenance."))
+                        elif drift:out.append(_finding(r,mpath,"C-026 review subject changed after its immutable revision freeze; create new subject provenance."))
+                    elif _changed(r,mpath,sim[1]):out.append(_finding(r,mpath,"C-026 review subject changed after its immutable revision freeze; create new subject provenance."))
             if status!="passed":continue
             if not isinstance(rref,str)or not rref:out.append(_finding(r,mpath,"A passed Protocol 2 Review Iteration requires reviewer_provenance."));continue
             reviewer=idx.get(rref)

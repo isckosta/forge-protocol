@@ -58,3 +58,21 @@ Protocol concept. No architectural, security-model, or cross-module change.
   rewriting) — unaffected; `test_active_change_still_detects_freeze_drift`
   proves the freeze remains exactly as strict for a non-complete Change.
 - CHG-0008/CHG-0011's own historical manifests — unmodified by this Change.
+
+## Correction after Strict Review Iteration 1 (see `specification-drift.md`)
+
+The first implementation attempt exempted `state.current == "complete"`
+unconditionally from the drift check. Independent Strict Review Iteration 1
+found this a BLOCKER (CHG-0012-R001): it also silently disabled detection of
+the Change's *own* reviewed files being tampered with, not only unrelated
+repository activity — reproduced directly against `validate_project`.
+
+The corrected approach adds `_first_commit_where_state_complete`, which
+finds the *first* commit where this Change's manifest recorded
+`state.current == "complete"`, and compares the frozen subject against
+*that* commit (via `_resolution_delta`, reused from CHG-0011) instead of
+either (a) the previous unconditional exemption or (b) `HEAD`. This
+preserves detection for any tampering between freeze and the genuine seal
+point, while still resolving the original CI false positive for activity
+occurring after that seal.
+
