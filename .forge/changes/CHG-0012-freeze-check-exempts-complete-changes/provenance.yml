@@ -93,3 +93,75 @@ records:
         review-001 (the Reviewer execution whose BLOCKER this Resolution
         addresses) and from implementation-001. No provider-native or
         cryptographic attestation is claimed; assurance is recorded.
+  - id: review-002
+    role: review
+    execution: {id: review-exec-chg0012-20260818-02, context_id: review-context-chg0012-20260818-02}
+    recorded_at: 2026-08-18T04:10:00Z
+    revision:
+      id: chg-0012-resolution-001
+      immutable_ref: {type: git_commit, value: e0b4b141f3cd164299710a4249cbd71430592abf}
+      commit: e0b4b141f3cd164299710a4249cbd71430592abf
+      description: >-
+        Strict Review Iteration 2 (kind: resolution_verification) of
+        resolution-001, verifying CHG-0012-R001. Independent Execution and
+        Execution Context from resolution-001, review-001, and
+        implementation-001. Verdict: REQUEST CHANGES (1 BLOCKER,
+        CHG-0012-R002, class B Resolution Regression) — see review.md
+        Iteration 2 for full findings.
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: claude-code
+      statement: >-
+        Self-recorded repository-native provenance for the independent
+        Resolution Verification execution that evaluated resolution-001
+        against CHG-0012-R001. No provider-native or cryptographic
+        attestation is claimed; assurance is recorded, not verified or
+        externally proven. Computed the Resolution Delta directly via git
+        diff --name-status between the prior reviewed subject
+        (47468fec276ceb4ab1137aa94f5a2b26760fc6da) and this subject
+        (e0b4b141f3cd164299710a4249cbd71430592abf) and confirmed it matches
+        resolution-001's declared scope exactly. pytest, forge validate, and
+        forge doctor were run directly by this execution against the frozen
+        subject commit. CHG-0012-R001's own scenario was independently
+        reconfirmed fixed via the shipped regression tests. A new defect
+        (CHG-0012-R002) was found and reproduced directly against
+        validate_project with a hand-built, real-Git-backed scenario
+        (state.current reverted from complete and re-sealed, hiding
+        tampering in between), not mocked.
+  - id: resolution-002
+    role: resolution
+    scope:
+      - .forge/changes/CHG-0012-freeze-check-exempts-complete-changes/specification-drift.md
+      - .forge/changes/CHG-0012-freeze-check-exempts-complete-changes/verification.md
+      - src/forge_cli/validation/__init__.py
+      - tests/unit/test_freeze_check_exempts_complete_changes.py
+    targets: [CHG-0012-R002]
+    execution: {id: resolution-exec-chg0012-20260818-02, context_id: resolution-context-chg0012-20260818-02}
+    recorded_at: 2026-08-18T04:30:00Z
+    revision:
+      id: chg-0012-resolution-002
+      immutable_ref: {type: git_commit, value: e243604a1bc65bca30e4d11589e71253d0842740}
+      commit: e243604a1bc65bca30e4d11589e71253d0842740
+      description: >-
+        Resolution of independent Resolution Verification Iteration 2's
+        BLOCKER (CHG-0012-R002): _first_commit_where_state_complete now
+        walks the entire post-seal history and falls back to the original
+        HEAD-comparison behavior if state.current is ever observed reverted
+        after sealing, or if any post-seal snapshot cannot be parsed. New
+        regression test reproduces the Reviewer's own attack as a causal
+        RED (confirmed by temporarily neutering the fix), then GREEN. Full
+        suite: 377 passed. forge validate: exit 0. Engineer explicitly
+        chose this fix over accepting R002 as documented residual risk or
+        reverting CHG-0012 entirely.
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: claude-code
+      statement: >-
+        Self-recorded repository-native provenance for this Resolution
+        execution, distinct in Execution and Execution Context from
+        review-002 (the Reviewer execution whose BLOCKER this Resolution
+        addresses) and from resolution-001/review-001/implementation-001.
+        No provider-native or cryptographic attestation is claimed;
+        assurance is recorded.

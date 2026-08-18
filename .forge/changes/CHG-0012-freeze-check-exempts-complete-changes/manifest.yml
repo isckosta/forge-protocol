@@ -18,7 +18,7 @@ tdd: {status: compliant, cycles: 1}
 verification: {status: passed}
 review:
   status: failed
-  iteration: 1
+  iteration: 2
   blockers: 1
   majors: 0
   minors: 0
@@ -43,6 +43,26 @@ review:
         non-complete Change is correctly caught. No other check in
         _validate_protocol2_review_provenance compensates. See review.md
         for full findings and a proposed scoped-diff alternative.
+    - id: review-002
+      revision: chg-0012-resolution-001
+      subject_provenance: resolution-001
+      reviewer_provenance: review-002
+      kind: resolution_verification
+      status: failed
+      new_material_findings: 1
+      evidence_gap: >-
+        CHG-0012-R002 (BLOCKER, class B Resolution Regression):
+        _first_commit_where_state_complete anchors on the first commit
+        where state.current recorded complete, with no check that
+        state.current never reverted afterward. Reproduced directly against
+        validate_project: seal complete (C3, untouched file) -> revert
+        state.current to strict_review (C4) -> tamper the reviewed file
+        (C5) -> re-seal complete (C6) -> zero findings; the tampering in C5
+        is invisible because the drift comparison only ever runs against
+        C3. CHG-0012-R001's own scenario (single tamper, single seal) is
+        confirmed fixed; the Resolution Delta matches its declared scope
+        exactly (no Out-of-Scope Mutation). See review.md Iteration 2 for
+        full findings.
 documentation:
   impact_evaluated: true
   update_required: true
