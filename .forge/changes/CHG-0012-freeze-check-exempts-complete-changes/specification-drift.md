@@ -31,3 +31,25 @@ detects the exact tampering scenario R001 demonstrated) while remaining
 strictly more precise than the pre-CHG-0012 baseline (it no longer fires for
 activity unrelated to the Change's own subject, resolving the original CI
 breakage).
+
+- **CHG-0012-R002 (BLOCKER, found by independent Resolution Verification
+  Iteration 2).** `_first_commit_where_state_complete` trusted the *first*
+  commit where `state.current` recorded `complete`, with no check that the
+  field never reverted afterward: seal complete → revert to
+  `strict_review` → tamper the reviewed file → re-seal complete → zero
+  findings, because the drift comparison always targeted the first seal
+  commit. This is a resolution regression directly caused by R001's own fix
+  introducing `state.current` history as a new trust anchor — before R001,
+  no code path trusted that field's history at all. The engineer was
+  offered three options (accept as documented residual risk, fix by
+  detecting reversion, or revert CHG-0012 entirely) and chose to fix it:
+  `_first_commit_where_state_complete` now walks the *entire* history after
+  the first seal and returns `None` (falling back to comparing against
+  current HEAD/workspace, exactly as for a non-complete Change — the
+  original, more conservative behavior) if `state.current` is ever observed
+  as anything other than `complete` afterward, or if any post-seal snapshot
+  cannot be parsed at all. This is a genuine Requirement correction:
+  trusting the *first* seal was itself the defect, not an implementation
+  slip; the corrected invariant ("trust a seal only if it was never
+  reverted") is what `intent.md`/`inspection.md` should have stated
+  originally.

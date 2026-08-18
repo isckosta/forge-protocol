@@ -38,12 +38,28 @@ documents the accepted, disclosed trade-off (drift *after* the genuine
 completion seal is a different Change's concern) as distinct from the
 BLOCKER (drift *before* sealing, which must and does still fire).
 
+### Resolution 3 (Resolution Verification Iteration 2 finding)
+RED: `test_reverting_and_resealing_complete_cannot_hide_tampering`, built
+directly from independent Resolution Verification Iteration 2's own
+reproduction, confirmed to fail against Resolution 2's code by temporarily
+neutering the revert-detection branch (`elif current!="complete":return
+None` -> `pass`) and re-running just that test — `AssertionError: []`,
+proving the test exercises the real causal path, not a tautology.
+
+GREEN: `_first_commit_where_state_complete` now walks the entire post-seal
+history (not just the first `complete` commit) and returns `None` — falling
+back to the original HEAD-comparison behavior — if `state.current` is ever
+observed reverted, or if any post-seal snapshot fails to parse. All five
+regression tests pass; the temporarily-neutered version was restored
+immediately after confirming RED.
+
 ## Full suite and CLI
 ```
-pytest -q            -> 376 passed (372 pre-existing + 4 new; zero regressions)
-forge validate        -> exit 0, "Forge project is valid" (both CI-breaking
-                          findings gone; reproduces the fix closing the exact
-                          failure from GitHub Actions run 32091880352)
+pytest -q            -> 377 passed (372 pre-existing + 5 new; zero regressions)
+forge validate        -> exit 0, "Forge project is valid" (all three
+                          CI-breaking/BLOCKER-reproducing scenarios closed;
+                          reproduces the fix closing the exact failure from
+                          GitHub Actions run 32091880352)
 forge doctor          -> exit 0, all PASS
 ```
 

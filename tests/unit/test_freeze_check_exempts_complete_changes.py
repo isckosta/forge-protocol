@@ -188,6 +188,33 @@ def test_tampering_after_completion_is_a_disclosed_residual_limitation(tmp_path:
     assert not any("review subject changed after its immutable revision freeze" in m for m in _messages(result)), _messages(result)
 
 
+def test_reverting_and_resealing_complete_cannot_hide_tampering(tmp_path: Path) -> None:
+    """CHG-0012-R002 (BLOCKER, found by independent Resolution Verification
+    Iteration 2): state.current is hand-editable with no programmatic gate.
+    Sealing complete, reverting to strict_review, tampering with the
+    reviewed file, then re-sealing complete must not hide the tampering
+    just because the *first* seal commit looked clean.
+    """
+    root = tmp_path
+    _init_repo(root)
+    (root / "reviewed_module.py").write_text("original reviewed content\n", encoding="utf-8")
+    frozen = _commit(root, "implementation")
+    change_dir = "CHG-9013-example"
+    provenance = _provenance(frozen)
+
+    _write_metadata_commit(root, change_dir, _manifest("complete"), provenance, "seal complete (clean)")
+    _write_metadata_commit(root, change_dir, _manifest("strict_review"), provenance, "revert to strict_review")
+
+    (root / "reviewed_module.py").write_text("silently swapped after revert\n", encoding="utf-8")
+    _commit(root, "tamper with the reviewed file while reverted")
+
+    _write_metadata_commit(root, change_dir, _manifest("complete"), provenance, "re-seal complete (hiding the tamper)")
+
+    result = validate_project(root, resolve_protocol_root())
+
+    assert any("review subject changed after its immutable revision freeze" in m for m in _messages(result)), _messages(result)
+
+
 def test_active_change_still_detects_freeze_drift(tmp_path: Path) -> None:
     """Regression guard: this exemption must not weaken the freeze for a
     Change that has not completed -- CHG-0008/CHG-0011's active-review

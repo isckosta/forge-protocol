@@ -244,6 +244,17 @@ def _first_commit_where_state_complete(r:Path,path:Path)->str|None:
     (CHG-0012-R001: the previous attempt exempted `complete` unconditionally
     instead, silently disabling protection for the Change's own reviewed
     files too, not only for unrelated repository activity).
+
+    CHG-0012-R002: `state.current` is a hand-editable field with no
+    programmatic gate. Sealing complete, reverting to something else,
+    tampering with a reviewed file, then re-sealing complete would hide the
+    tampering if only the *first* seal commit were trusted. This walks the
+    *entire* history after the first seal and refuses to trust it (returns
+    None, causing the caller to fall back to comparing against current
+    HEAD/workspace, exactly as for a non-complete Change) if `state.current`
+    is ever observed as anything other than `complete` afterward, or if any
+    post-seal snapshot cannot be parsed at all -- fails closed rather than
+    silently trusting an ambiguous history.
     """
     root=_git_root(r)
     if root is None:return None
@@ -251,16 +262,26 @@ def _first_commit_where_state_complete(r:Path,path:Path)->str|None:
     except(OSError,ValueError):return None
     history=subprocess.run(["git","log","--format=%H","--reverse","--diff-filter=AM","--",rel],cwd=root,capture_output=True,text=True,check=False)
     if history.returncode:return None
+    sealed:str|None=None
     for commit in(line.strip() for line in history.stdout.splitlines()):
         if not commit:continue
         snapshot=subprocess.run(["git","show",f"{commit}:{rel}"],cwd=root,capture_output=True,check=False)
-        if snapshot.returncode:continue
+        if snapshot.returncode:
+            if sealed is not None:return None
+            continue
         try:loaded=yaml.safe_load(snapshot.stdout.decode("utf-8"))or{}
-        except(UnicodeDecodeError,yaml.YAMLError):continue
-        if not isinstance(loaded,dict):continue
+        except(UnicodeDecodeError,yaml.YAMLError):
+            if sealed is not None:return None
+            continue
+        if not isinstance(loaded,dict):
+            if sealed is not None:return None
+            continue
         state=loaded.get("state")
-        if isinstance(state,dict)and state.get("current")=="complete":return commit
-    return None
+        current=state.get("current")if isinstance(state,dict)else None
+        if sealed is None:
+            if current=="complete":sealed=commit
+        elif current!="complete":return None
+    return sealed
 def _first_committed_provenance_record(r:Path,path:Path,record_id:str):
     documents=_committed_history_mappings(r,path)
     if documents is None:return _HISTORY_ERROR
