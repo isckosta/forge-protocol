@@ -31,3 +31,34 @@ records:
         must run in a distinct Execution and Execution Context per Protocol
         2 (unchanged by this Change) and will record its own review-role
         provenance separately.
+  - id: implementation-002
+    role: implementation
+    execution: {id: implementation-exec-chg0011-20260817-01, context_id: implementation-context-chg0011-20260817-01}
+    recorded_at: 2026-08-17T22:30:00Z
+    revision:
+      id: chg-0011-implementation-002
+      immutable_ref: {type: git_commit, value: 3469d66dbb22765b8beb7d712fb6cefb67454616}
+      commit: 3469d66dbb22765b8beb7d712fb6cefb67454616
+      description: >-
+        Superseding frozen CHG-0011 Implementation subject. The
+        implementation-001 subject was invalidated by a post-freeze
+        correction to tdd-evidence.yml (schema conformance with
+        forge/tdd-evidence@1, discovered by
+        tests/contract/test_protocol_contract.py) — a reviewable file
+        outside the manifest.yml/provenance.yml/review.md exception, so per
+        this Change's own effective-workspace-freeze invariant (Protocol 2
+        §5, unchanged) it required a new subject rather than a rewrite of
+        implementation-001. implementation-001 remains historical, unedited
+        evidence of that lesson; it is not the subject the independent
+        Reviewer should evaluate. implementation-002 is the actual review
+        subject.
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: claude-code
+      statement: >-
+        Self-recorded repository-native provenance. Same Execution/Context
+        as implementation-001 (same Implementation session correcting its
+        own pre-freeze-discipline mistake, not a new independent execution);
+        the independent Strict Review Iteration that follows must still run
+        in a distinct Execution and Execution Context from this one.
