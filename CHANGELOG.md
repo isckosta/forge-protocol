@@ -6,6 +6,40 @@ CLI releases will follow Semantic Versioning when releases begin. Protocol versi
 
 ## Unreleased
 
+### Unresolved Decision Management
+
+Added:
+
+- a new normative Protocol concept, **Unresolved Decision**: a material
+  decision required for an Artifact or Gate to be sufficiently determined,
+  whose answer has no valid normative authority yet — classified into
+  `product`, `contract`, `architectural`, or `technical`, each with a
+  default Decision Authority (`human`, `agent`, or `agent_with_review`,
+  `protocol/policies/decision.yml`);
+- Contract rules C-051–C-059 (`protocol/contract/engineering.md` and
+  `protocol/versions/2/contract/engineering.md`, the latter also backfilled
+  with the previously-missing C-047–C-050 from CHG-0011) requiring
+  evidence-first investigation before escalation, a Recommendation distinct
+  from a Decision, a non-negotiable human-authority floor for `product`/
+  `contract` Decisions, and explicit backward invalidation when an upstream
+  Decision changes after downstream Artifacts already depended on its
+  absence;
+- `protocol/specification.md` §39 and a new `forge/policy/decision@1`
+  canonical Policy and schema;
+- an optional, additive `decisions[]` field on both `forge/change@1` and
+  `forge/change@2`, and a new `forge validate` mechanical boundary
+  (`_validate_unresolved_decisions`) enforcing Gate-blocking, `resolved_via`/
+  authority consistency, and invalidation-target shape.
+
+Known limitation (accepted, documented follow-up — see
+`.forge/changes/CHG-0013-unresolved-decision-management/knowledge-capture.md`):
+
+- `supersedes`/`superseded_by` are schema-declared but not yet mechanically
+  cross-checked for existence/consistency; Decision findings are all tagged
+  with the single umbrella code `C-051`; an `artifacts` value of `null`
+  (as opposed to absent or a real status) still bypasses the invalidation
+  check — none reachable through any code path in this repository today.
+
 ### Freeze check exempts complete Changes
 
 Fixed:

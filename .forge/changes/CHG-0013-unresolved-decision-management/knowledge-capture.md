@@ -113,13 +113,27 @@ status: complete
   this case, a disclosed rationale) is not a Decision merely because it is
   well-reasoned and transparent.
 - **Deferred, not fixed in this Change (Strict Review CHG-0013-R005,
-  R006):** `supersedes`/`superseded_by` are schema-declared but never
+  R006, R009):** `supersedes`/`superseded_by` are schema-declared but never
   mechanically cross-checked for existence/consistency; every Decision
   finding is tagged with the single umbrella code `C-051` regardless of
-  which of the ~15 distinct checks actually failed. Both accepted as
-  documented follow-up work rather than expanded into this Change's own
-  Resolution scope — recorded here so a future Change does not have to
-  rediscover them.
+  which of the ~15 distinct checks actually failed; an `artifacts` value of
+  `None`/`null` (as opposed to absent or `"complete"`/`"approved"`) still
+  bypasses the C-057 `invalidates` check (found during Resolution
+  Verification, Iteration 2, while adversarially probing the R003 fix —
+  no code path in this repository writes a `null` artifact value today).
+  All three accepted as documented follow-up work rather than expanded
+  into this Change's own Resolution scope — recorded here so a future
+  Change does not have to rediscover them.
+- **A Resolution Delta legitimately touching `manifest.yml`/
+  `provenance.yml` outside a Resolution's declared `scope` is not
+  Out-of-Scope Mutation, provided the content is only review-control
+  bookkeeping.** This was already true by construction (CHG-0011's own
+  `_resolution_delta` excludes exactly `{manifest.yml, provenance.yml,
+  review.md}` from the Delta it computes), but this Change's own Iteration
+  2 independently confirmed the *interpretation* by precedent-matching
+  against CHG-0011's own `resolution-001`, which did the same thing and
+  was ruled the same way — useful confirmation that the exemption
+  reasoning generalizes beyond the one Change that established it.
 - F-008 ("Material Protocol Changes require RFC") is satisfied in this
   repository's actual practice by an ADR alone for Contract/Specification-
   level Changes below the scale of introducing a new integer Protocol

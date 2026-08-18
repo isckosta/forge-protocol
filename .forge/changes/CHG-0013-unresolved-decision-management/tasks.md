@@ -3,7 +3,7 @@ forge:
   artifact: tasks
   schema: 1
 change: CHG-0013
-status: ready
+status: complete
 ---
 # Tasks — CHG-0013
 
@@ -29,15 +29,22 @@ status: ready
 - [x] T-013 `docs/adr/0012-unresolved-decision-management.md`,
       `knowledge-capture.md`, `traceability.yml`, `tdd-evidence.yml`; RFC
       requirement evaluated (not required — see ADR-0012/knowledge-capture.md).
-- [ ] T-014 Freeze this Change's own Implementation subject; record
-      `implementation`-role provenance.
-- [ ] T-015 Independent Strict Review Iteration 1 (`kind: initial_review`,
-      separate Execution/Context).
-- [ ] T-016 Resolution of any blocking Findings, re-review, Completion —
-      only after independent PASS and all FULL Completion Gates.
+- [x] T-014 Froze Implementation subject (`implementation-001`,
+      `40dbfb9`); later superseded by `resolution-001` (`695fab8`) after
+      Resolution of Iteration 1 findings.
+- [x] T-015 Independent Strict Review Iteration 1 (`kind: initial_review`,
+      separate Execution/Context) — REQUEST CHANGES: 1 BLOCKER
+      (CHG-0013-R001), 2 MAJOR (R002, R004), 1 MINOR (R003), 2 OBSERVATION
+      (R005, R006). Resolution 1 fixed R001-R003 with genuine RED-first
+      TDD; R004 escalated to the human user as a structured Decision and
+      resolved (`accept_residual_risk`, no history rewrite). Independent
+      Resolution Verification (Iteration 2, separate Execution/Context
+      again) — PASS, `full_review_required: false`, one new OBSERVATION
+      (R009, deferred). See `review.md`.
+- [x] T-016 Completion: all FULL Gates satisfied (Verification passed,
+      Review passed, Documentation Impact evaluated and updated, Knowledge
+      Capture complete, no unresolved BLOCKER findings).
 
 ## Status
 
-T-001 through T-013 complete. T-014 (freeze/provenance) is next, followed by
-an independent Strict Review Iteration in a separate Execution/Context from
-this Implementation session — never this same session.
+All tasks complete. `manifest.yml` `state.current: complete`.
