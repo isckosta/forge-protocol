@@ -2,7 +2,7 @@ schema: forge/change@2
 protocol: 2
 change: {id: CHG-0012, title: Freeze check exempts complete Changes, kind: bugfix}
 flow: {initial: fast, current: fast, escalations: []}
-state: {current: strict_review}
+state: {current: complete}
 artifacts:
   intent: complete
   inspection: complete
@@ -12,16 +12,16 @@ artifacts:
   implementation: complete
   provenance: complete
   verification: complete
-  review: pending
-  documentation: pending
+  review: complete
+  documentation: complete
 requirements: {total: 1, implemented: 1, verified: 1}
 tdd: {status: compliant, cycles: 1}
 verification: {status: passed}
 review:
-  status: failed
-  iteration: 4
+  status: passed
+  iteration: 5
   blockers: 0
-  majors: 1
+  majors: 0
   minors: 0
   observations: 2
   convergence:
@@ -144,6 +144,25 @@ review:
         this Iteration independently confirmed procedurally valid,
         honestly documented, and correctly implemented. See review.md
         Iteration 4 for full findings.
+    - id: review-005
+      revision: chg-0012-resolution-004
+      subject_provenance: resolution-004
+      reviewer_provenance: review-005
+      kind: resolution_verification
+      status: passed
+      new_material_findings: 0
+      evidence_gap: >-
+        No finding. Resolution Delta (git diff --name-status
+        03b51d1..dad362b) is exactly resolution-004's declared scope
+        (inspection.md only) -- no Out-of-Scope Mutation. inspection.md
+        confirmed to correctly describe the full four-attempt history and
+        final decision, matching the shipped code exactly, with no
+        remaining claim that _first_commit_where_state_complete exists or
+        that pre-seal tampering detection is preserved. This is the first
+        resolution_verification Iteration in a fresh sequence -- Iteration
+        4 (kind: initial_review) reset the convergence counter, so this
+        Iteration does not reopen the already-resolved Non-Convergence
+        episode. See review.md Iteration 5 for full findings.
 documentation:
   impact_evaluated: true
   update_required: true

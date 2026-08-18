@@ -3,8 +3,8 @@ forge:
   artifact: review
   schema: 1
 change: CHG-0012
-status: failed
-iteration: 3
+status: passed
+iteration: 5
 ---
 
 # Strict Review — Freeze check exempts complete Changes
@@ -225,3 +225,43 @@ Finding counts (this Iteration):
 Per `blocking: [blocker, major]`, this MAJOR must be resolved before Completion. The Non-Convergence decision itself — Section 13 procedure, `accept_residual_risk` eligibility, the reverted code, and the test suite — is independently confirmed sound and honestly documented; this is not a re-litigation of the accepted trade-off, only a cross-file documentation-consistency gap the revert missed.
 
 **`convergence_decision`:** `option: accept_residual_risk`. **Reason:** recorded verbatim in `manifest.yml`'s `review.iterations[3].convergence_decision.reason` (this Iteration independently confirms it is procedurally valid per Section 13 and factually accurate against the reviewed code).
+
+## Iteration 5 — PASS (`kind: resolution_verification` of `resolution-004`)
+
+Reviewed revision: `dad362b6713f42e84db0062ed5687a6ef3adb937` (`resolution-004`, per `provenance.yml`), a Resolution of Strict Review Iteration 4's MAJOR (`targets: [CHG-0012-R004]`).
+
+Reviewer Execution: `review-exec-chg0012-20260818-05`.
+Reviewer Execution Context: `review-context-chg0012-20260818-05`.
+Assurance: `recorded` (self-recorded repository-native provenance; no cryptographic/external attestation claimed).
+
+Independent in Execution and Execution Context from `resolution-004`, `review-004`, `resolution-003`, `review-003`, `resolution-002`, `review-002`, `resolution-001`, `review-001`, and `implementation-001`. This is the first `resolution_verification` Iteration in a fresh sequence: Iteration 4 (`kind: initial_review`) reset the convergence counter (it does not feed the `resolution_verification`-only streak), so this Iteration does not reopen the already-resolved Non-Convergence episode. Authority is bound to the same four questions as prior Resolution Verifications: (a) is CHG-0012-R004 genuinely fixed; (b) did `resolution-004` introduce a new defect (class B); (c) did the Resolution Delta stay within its declared `scope`; (d) provenance/revision/subject correctness.
+
+### Verification performed
+
+- Read `review.md` (Iterations 1-4, especially Iteration 4) and `provenance.yml`'s `resolution-004` entry in full.
+- Read `inspection.md` in full and cross-checked its "Correction after Strict Review Iteration 1, and the final decision" section against the actual shipped code.
+- Computed the Resolution Delta directly: `git diff --name-status 03b51d1..dad362b` → `inspection.md` only.
+- `grep -rn "_first_commit_where_state_complete\|preserves detection"` across `src/`, `tests/`, `docs/`, and this Change's own artifacts — confirmed every remaining hit is correctly-framed historical narrative, with no stale current-fact claim anywhere, including in `inspection.md` itself.
+- `.venv/bin/python -m pytest -q`: **375 passed**. `.venv/bin/forge validate`: exit 0. `.venv/bin/forge doctor`: all 7 PASS. `git diff --check`: clean, both commit-level and across the full branch range.
+- Confirmed `resolution-004`'s Execution/Context IDs are distinct from all 8 other provenance records in this Change.
+
+### Assessment against Resolution Verification's bounded authority
+
+- **(a) Is CHG-0012-R004 fixed?** Yes. `inspection.md` now correctly narrates all four attempts and the final decision, explicitly states `_first_commit_where_state_complete` does not exist in the shipped code, and no longer claims pre-seal tampering detection is preserved. Matches the actual shipped code exactly. The trailing-blank-line-at-EOF observation is also fixed.
+- **(b) Resolution regression?** No. The diff is a single-file, two-hunk prose edit; no code, test, or config touched.
+- **(c) Resolution Scope respected?** Yes — the Resolution Delta is exactly the declared 1-path `scope`, no Out-of-Scope Mutation.
+- **(d) Provenance/revision/subject correctness?** `resolution-004` correctly declares `role: resolution`, `targets: [CHG-0012-R004]`, non-empty exact-path `scope`, and an Execution/Context distinct from every prior record. No defect found here.
+
+### Verdict
+
+**PASS**
+
+Finding counts (this Iteration):
+
+- BLOCKER: 0
+- MAJOR: 0
+- MINOR: 0
+- OBSERVATION: 0
+- new_material_findings: 0
+
+CHG-0012-R004 is genuinely closed. Combined with Iteration 4's independent confirmation that the Non-Convergence decision itself is procedurally valid, honestly documented, and correctly implemented, zero unresolved BLOCKER or MAJOR findings remain across all five Iterations. Per C-027, Completion may proceed.

@@ -358,3 +358,42 @@ records:
         Resolution Verification that follows must run in a distinct
         Execution and Execution Context per Protocol 2 and will record its
         own review-role provenance separately.
+  - id: review-005
+    role: review
+    execution: {id: review-exec-chg0012-20260818-05, context_id: review-context-chg0012-20260818-05}
+    recorded_at: "2026-08-18T16:45:00-03:00"
+    revision:
+      id: chg-0012-resolution-004
+      immutable_ref: {type: git_commit, value: dad362b6713f42e84db0062ed5687a6ef3adb937}
+      commit: dad362b6713f42e84db0062ed5687a6ef3adb937
+      description: >-
+        Strict Review Iteration 5 (kind: resolution_verification) of
+        resolution-004, verifying CHG-0012-R004. Independent Execution and
+        Execution Context from resolution-004, review-004, resolution-003,
+        review-003, resolution-002, review-002, resolution-001, review-001,
+        and implementation-001. This is the first resolution_verification
+        Iteration in a fresh sequence -- Iteration 4 (kind: initial_review)
+        reset the convergence counter, so this Iteration does not reopen
+        the already-resolved Non-Convergence episode. Verdict: PASS (0
+        blocker, 0 major, 0 minor, 0 observation, 0 new_material_findings)
+        -- see review.md Iteration 5 for full findings.
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: claude-code
+      statement: >-
+        Self-recorded repository-native provenance for the independent
+        Resolution Verification execution that evaluated resolution-004
+        against CHG-0012-R004. No provider-native or cryptographic
+        attestation is claimed; assurance is recorded, not verified or
+        externally proven. Computed the Resolution Delta directly via git
+        diff --name-status between the prior reviewed subject
+        (03b51d1b251c11e1d52d6fefd5b40287213fb286) and this subject
+        (dad362b6713f42e84db0062ed5687a6ef3adb937): inspection.md only,
+        exactly matching resolution-004's declared scope, no Out-of-Scope
+        Mutation. Confirmed inspection.md no longer claims
+        _first_commit_where_state_complete exists or that pre-seal
+        tampering detection is preserved, and matches the shipped code
+        exactly. pytest (375 passed), forge validate (exit 0), forge
+        doctor (all PASS), and git diff --check (clean, both commit-level
+        and full-branch-range) were run directly by this execution.
