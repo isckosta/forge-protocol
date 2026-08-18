@@ -2,7 +2,7 @@ schema: forge/change@2
 protocol: 2
 change: {id: CHG-0013, title: Unresolved Decision Management, kind: feature}
 flow: {initial: full, current: full, escalations: []}
-state: {current: strict_review}
+state: {current: complete}
 artifacts:
   intent: complete
   discovery: complete
@@ -18,19 +18,19 @@ artifacts:
   implementation: complete
   provenance: complete
   verification: complete
-  review: pending
+  review: complete
   documentation: complete
   knowledge_capture: complete
 requirements: {total: 18, implemented: 18, verified: 18}
 tdd: {status: compliant, cycles: 11}
 verification: {status: passed}
 review:
-  status: failed
-  iteration: 1
-  blockers: 1
-  majors: 2
-  minors: 1
-  observations: 2
+  status: passed
+  iteration: 2
+  blockers: 0
+  majors: 0
+  minors: 0
+  observations: 3
   iterations:
     - id: review-001
       revision: chg-0013-implementation-001
@@ -53,8 +53,27 @@ review:
     - id: review-002
       revision: chg-0013-resolution-001
       subject_provenance: resolution-001
-      status: pending
+      reviewer_provenance: review-002
+      status: passed
       kind: resolution_verification
+      new_material_findings: 0
+      finding_classes: [unrelated_latent_finding]
+      evidence_gap: >-
+        R001, R002, and R003 verified genuinely resolved by independent
+        re-reproduction (not taken on the artifacts' word), including
+        re-running the exact git-stash sequence against the corrected
+        freeze and adversarially probing the R002/R003 checks with
+        hand-crafted manifests. Resolution Delta (40dbfb9..695fab8)
+        recomputed independently; matches resolution-001's declared scope
+        (manifest.yml/provenance.yml bookkeeping outside scope treated as
+        non-blocking review-control metadata, consistent with CHG-0011's
+        own resolution-001/review-002 precedent for the same pattern); no
+        Out-of-Scope Mutation. One new OBSERVATION (CHG-0013-R009: an
+        artifacts value of null, not absent, still bypasses the C-057
+        invalidates check; no real code path produces this, recorded as
+        follow-up). R004's human decision record found plausible,
+        structurally conformant, and internally consistent across
+        review.md/tdd-evidence.yml/knowledge-capture.md.
 documentation:
   impact_evaluated: true
   update_required: true

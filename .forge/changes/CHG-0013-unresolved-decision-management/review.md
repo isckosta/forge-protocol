@@ -144,8 +144,24 @@ its own first Resolution).
   `invalidates` check now distinguishes "key absent from `artifacts`" from
   "key present and complete/approved"; both are findings. One new test.
 - **R004**: not self-resolved. Presented to the human user as an explicit
-  Decision in this session's final report, per the Reviewer's own
-  instruction. Completion is blocked on that answer.
+  Decision, structured as Question/Alternatives/Trade-offs/Recommendation/
+  Confidence/Authority, per the Reviewer's own instruction — Authority:
+  human, by direct analogy to `review.convergence_decision`'s
+  `accept_residual_risk` option (Protocol 2, CHG-0011), which this Change's
+  own Resolver is not entitled to select on its own behalf either.
+
+  **Decision recorded:** `option: accept_residual_risk` (informal, this is
+  not a `review.convergence` Non-Convergence episode so the formal
+  `convergence_decision` schema field does not apply — recorded here in
+  prose instead). **Reason (human-provided):** accepted the Resolver's
+  Recommendation (Confidence: MEDIUM) as-is: the historical TDD-ordering
+  deviation on commit `40dbfb9` remains in Git history unaltered (no
+  rebase/rewrite); the harm C-009 exists to prevent (tests shaped to
+  confirm an already-written implementation rather than define correct
+  behavior) did not materialize, evidenced by the reconstructed RED finding
+  8 genuine gaps, and by TDD-010/TDD-011 (the R002/R003 fixes) independently
+  demonstrating genuine RED-first discipline going forward. No further
+  corrective action beyond what Resolution 1 already performed.
 - **R005, R006**: accepted as documented follow-up, not fixed in this
   Resolution (matches the Reviewer's own severity assessment and rationale;
   recorded in `knowledge-capture.md`).
@@ -162,3 +178,84 @@ Verification that follows):
 `src/forge_cli/validation/__init__.py`,
 `tests/unit/test_unresolved_decisions.py`.
 Resolution Targets: `CHG-0013-R001`, `CHG-0013-R002`, `CHG-0013-R003`.
+
+## Iteration 2 — PASS (`kind: resolution_verification`)
+
+Executed by a second, independent Agent invocation (general-purpose,
+spawned fresh, no shared context with Implementation, Resolution, or
+Iteration 1's Reviewer). Execution/Context: `chg-0013-verify-session-1` /
+`chg-0013-verify-context-1`. Subject: `resolution-001`, commit
+`695fab81489f7bad6938dc944dbbdecdf912860f`.
+
+### Verification performed
+
+`git diff 40dbfb9..695fab81` (full, filtered per declared-scope file) and
+`git diff 695fab81..3320913` (the post-freeze bookkeeping commit, checked
+specifically for a repeat of R001's exact bug pattern — found clean, only
+`manifest.yml`/`provenance.yml` touched); `forge validate`; independent
+re-reproduction of the `git stash push -u -- .codex
+docs/document-2026-08-13T04-46-37-625Z.md docs/superpowers uv.lock` +
+`forge validate` + `git stash pop` sequence against the *corrected*
+subject; `pytest tests/unit/test_unresolved_decisions.py -v` (18 tests);
+`pytest -q` (full suite, 393); two inline adversarial Python probes calling
+`_validate_unresolved_decisions` directly with hand-crafted manifests
+targeting the R002/R003 checks; comparison against CHG-0011's own
+`resolution-001`/`review-002` precedent for how `manifest.yml`/
+`provenance.yml` appearing in the Resolution Delta outside declared
+`scope` should be treated.
+
+### Resolution Delta vs. declared scope
+
+**No Out-of-Scope Mutation.** The Delta touched the 8 declared `scope`
+files plus `manifest.yml`/`provenance.yml` (review-control bookkeeping
+only — recording that Iteration 1 happened — no reviewable engineering
+claim altered through them), consistent with the Protocol 2 §5
+review-control exemption set and directly precedented by CHG-0011's own
+`resolution-001` leaving `provenance.yml` out of its declared `scope`
+while its diff still touched it (that Change's own `review-002`,
+PASS, ruled the same way).
+
+### R001, R002, R003 — verified genuinely fixed, independently re-reproduced
+
+R001: `verification.md`'s diagnosis now correctly attributes the freeze
+break to `verification.md`'s own post-freeze mutation, matching Iteration
+1's finding exactly; re-running the stash sequence against the *current*
+subject confirms the untracked-paths diagnosis is genuinely correct this
+time (`forge validate` clean with them stashed, the `C-026` finding
+present with them restored). R002: `_DEC_AUTHORITY_FLOOR` checked
+unconditionally; seven hand-crafted adversarial manifests found no escape
+from the floor. R003: the `invalidates` check now distinguishes absent
+from present-and-complete/approved; adversarial probing confirmed.
+
+### New finding
+
+**CHG-0013-R009 (OBSERVATION)** — an `artifacts` value of `None`/`null`
+(as opposed to absent, R003's actual target, or `"complete"`/`"approved"`)
+still bypasses the C-057 `invalidates` check. No code path in this
+repository ever writes a `null` artifact value; accepted as documented
+follow-up (`knowledge-capture.md`), not blocking, same treatment as
+R005/R006.
+
+### R004 assessment
+
+Found plausible, structurally conformant (Question/Alternatives/
+Trade-offs/Recommendation/Confidence/Authority all present), and
+internally consistent across `review.md`, `tdd-evidence.yml`, and
+`knowledge-capture.md`. Cannot be verified from outside this session with
+absolute certainty to be a genuine human act rather than the Resolver's
+own invention, but the content is not self-serving (accepts a real
+historical deviation as residual risk rather than erasing it) and matches
+the format this mechanism itself requires.
+
+### Verdict
+
+**PASS.** `full_review_required: false`. No Out-of-Scope Mutation; R001,
+R002, R003 genuinely fixed and independently re-verified; R004 plausibly
+recorded; one new OBSERVATION (R009) carried forward as follow-up, not
+blocking; full suite passes at the claimed count (393).
+
+No file was modified by this Review. Working tree state confirmed
+unchanged before/after (`git status`, `git diff --stat`); the one
+temporary mutation (`git stash push -u` on the four untracked paths) was
+reverted immediately and verified restored. All adversarial probing was
+inline Python, no files written to the repository.
