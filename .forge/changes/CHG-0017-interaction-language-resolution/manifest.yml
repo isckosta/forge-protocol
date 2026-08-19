@@ -1,0 +1,62 @@
+schema: forge/change@2
+protocol: 2
+change:
+  id: CHG-0017
+  title: Interaction Language Resolution
+  kind: feature
+flow: {initial: full, current: full, escalations: []}
+state: {current: in_progress}
+artifacts:
+  intent: complete
+  discovery: complete
+  specification: complete
+  specification_review: complete
+  architecture: complete
+  test_strategy: approved
+  plan: approved
+  tasks: complete
+  traceability: complete
+  tdd_evidence: complete
+  implementation: complete
+  provenance: in_progress
+  verification: complete
+  review: pending
+  documentation: complete
+  knowledge_capture: pending
+requirements: {total: 10, implemented: 10, verified: 10}
+tdd: {status: compliant, cycles: 2}
+verification: {status: passed}
+review:
+  status: pending
+  iteration: 0
+  blockers: 0
+  majors: 0
+  minors: 0
+  observations: 0
+  iterations: []
+documentation:
+  impact_evaluated: true
+  update_required: true
+  reason: >-
+    Updated: CHANGELOG.md, ROADMAP.md (status flip for this section),
+    docs/adr/0015-interaction-language-resolution.md. No RFC (F-008's RFC
+    threshold is "Material Protocol Changes"; this Change is additive
+    configuration/Contract guidance of the same weight as CHG-0013's and
+    CHG-0016's own ADR-only precedent).
+decisions:
+  - id: DEC-001
+    class: product
+    materiality: material
+    status: resolved
+    authority: human
+    owning_artifact: specification
+    discovered_in: discovery
+    resolved_via: human_decision
+  - id: DEC-002
+    class: architectural
+    materiality: material
+    status: resolved
+    authority: agent_with_review
+    owning_artifact: architecture
+    discovered_in: architecture
+    resolved_via: autonomous_decision

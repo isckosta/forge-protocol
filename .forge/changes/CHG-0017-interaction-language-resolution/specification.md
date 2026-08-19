@@ -187,9 +187,9 @@ verifiable; compliance is not (C-073).
 
 ### DEC-001 — Precedence chain scope (three levels vs. four)
 
-**Class**: `product`/`contract` (affects a public Contract surface and the
-shape of a Requirement this Specification states — non-negotiable `human`
-Authority floor per `protocol/policies/decision.yml`).
+**Class**: `product` (affects the shape of a Requirement this
+Specification states — non-negotiable `human` Authority floor per
+`protocol/policies/decision.yml`, matching `contract`'s own floor).
 
 **Question**: Does this Change implement the ROADMAP's full four-level
 precedence chain (explicit config → repository/context language →

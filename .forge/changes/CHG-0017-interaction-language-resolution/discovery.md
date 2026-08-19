@@ -118,7 +118,7 @@ rules are automatically visible the moment they exist.
 
 This Change touches: a Protocol schema (`project.schema.json`), the
 Contract (`engineering.md`, both copies), the Specification
-(`specification.md` §42), a new ADR recording a `product`/`contract`-class
+(`specification.md` §42), a new ADR recording a `product`-class
 Decision, and executable Adapter projection code with new tests. Per
 `protocol/contract/engineering.md` C-003 (semantic classification) and
 matching every prior Change that touched Contract + Specification +
@@ -154,7 +154,7 @@ evaluation is recorded at Completion.
 
 ## Open Questions Requiring Human Decision
 
-**DEC-001 (`product`/`contract` class, `human` authority per the
+**DEC-001 (`product` class, `human` authority per the
 non-negotiable floor)**: The ROADMAP proposes a four-level precedence
 chain (explicit config → repository/context language → active chat
 language → English fallback). The third level is genuinely a Harness

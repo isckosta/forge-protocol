@@ -18,9 +18,9 @@ English fallback.
 "repository/context language" heuristic level between explicit
 configuration and the chat hint, and explicitly left open which of its
 levels were deterministic configuration versus Harness-only hints. That
-question is this ADR's `DEC-001` (`product`/`contract` class,
-non-negotiable `human` Authority floor per
-`protocol/policies/decision.yml`): resolved by explicit human decision in
+question is this ADR's `DEC-001` (`product` class, non-negotiable
+`human` Authority floor per `protocol/policies/decision.yml`, matching
+`contract`'s own floor): resolved by explicit human decision in
 favor of the three-level chain (Alternative A). The fourth level is
 deferred, not built, because no deterministic, offline mechanism exists
 for inferring a repository's interaction language from its content — any
