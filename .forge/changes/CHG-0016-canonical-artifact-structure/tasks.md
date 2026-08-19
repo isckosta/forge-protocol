@@ -43,7 +43,7 @@ status: ready
       assumed); `CHANGELOG.md` entry; `knowledge-capture.md`;
       `traceability.yml`; `tdd-evidence.yml` (all produced from real
       Implementation evidence, not drafted ahead of it — `plan.md` step 7).
-- [ ] T-013 Freeze Implementation subject; record provenance.
+- [x] T-013 Freeze Implementation subject; record provenance.
 - [ ] T-014 Independent Strict Review (`kind: initial_review`, separate
       Execution/Context from Implementation).
 - [ ] T-015 Resolve any blocking Findings; independent Resolution
@@ -54,11 +54,13 @@ status: ready
 
 ## Status
 
-T-001 through T-012 complete, including `verification.md` (PASS, not
-separately numbered above — see `plan.md` step 5/`test-strategy.md`
-Completion Criteria). T-013 (freeze + provenance) is next, performed by
-this same session. T-014 onward requires a distinct Execution and
-Execution Context per Protocol 2 (Reviewer/Resolver independence,
+T-001 through T-013 complete, including `verification.md` (PASS) and
+`provenance.yml` (Implementation subject frozen at commit `e50d3c5`).
+T-014 onward requires a distinct Execution and Execution Context per
+Protocol 2 (Reviewer/Resolver independence,
 `protocol/versions/2/specification.md` §2) — this session cannot perform
 Strict Review on its own Implementation without constituting self-review,
-and does not attempt to.
+and does not attempt to. Subsequent commits are restricted to
+Change-local review-control metadata (this file, `manifest.yml`,
+`provenance.yml`, `review.md`), per the same freeze discipline
+`CHG-0015` established.
