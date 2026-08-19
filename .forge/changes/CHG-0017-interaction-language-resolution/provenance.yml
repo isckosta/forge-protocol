@@ -108,3 +108,72 @@ records:
         the "Checked and found sound" record of everything I verified and
         found correct are in review.md; I resolved nothing myself, per
         C-025.
+  - id: resolution-001
+    role: resolution
+    execution: {id: implementation-exec-chg0017-20260819-01, context_id: implementation-context-chg0017-20260819-01}
+    recorded_at: "2026-08-19T15:57:17-03:00"
+    scope:
+      - .forge/changes/CHG-0017-interaction-language-resolution/specification.md
+      - .forge/changes/CHG-0017-interaction-language-resolution/tdd-evidence.yml
+      - protocol/specification.md
+    targets: [R001, R002]
+    revision:
+      id: chg-0017-resolution-001
+      immutable_ref: {type: git_commit, value: 21ee358ce426ee2c981713e763e31ba9298d4256}
+      description: >-
+        Resolution of review.md Iteration 1's two non-blocking MINOR
+        Findings. Same Execution/Execution Context as implementation-001 --
+        Contract C-026 requires Reviewer independence from Implementation,
+        not Resolver independence from Implementation, and Protocol §25
+        requires only that Reviewer and Resolver are separate Roles, which
+        review-001 (a distinct Execution/Context) already establishes,
+        matching CHG-0016's own resolution-001 precedent for the identical
+        reasoning. No resolution_verification re-review follows this record:
+        both targeted Findings were MINOR, non-blocking per
+        protocol/policies/review.yml (`blocking: [blocker, major]`), and
+        review_passed was already achieved on Iteration 1 before this
+        Resolution existed -- unlike CHG-0016's resolution-001, which was
+        required to reach review_passed at all. manifest.yml's own
+        review.iterations[0] (review-001) is intentionally left unmodified,
+        per C-026's immutable-binding requirement (a bound Iteration's
+        subject/revision binding MUST NOT be rewritten after its first
+        committed record) -- this Resolution record is the correct
+        mechanism for representing "reviewable content changed after
+        review-001's freeze," not an edit to review-001 itself.
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: claude-code
+      statement: >-
+        Self-recorded repository-native provenance for the Resolution
+        execution that addressed review.md Iteration 1's two non-blocking
+        MINOR Findings (R001, R002). scope lists the exact
+        repository-relative paths this Resolution touched, excluding this
+        Change's own manifest.yml/provenance.yml/review.md per
+        protocol/versions/2/specification.md §11's Resolution Delta
+        computation, which already subtracts those paths before comparison.
+        targets lists both Findings this Resolution addressed by id.
+        R001's fix corrects protocol/specification.md §42's citation from
+        "§2 and §33" to "§28 and §33" (§2, titled "Change," supports no part
+        of the claim; §28, "Repository-native state," does), applying the
+        identical correction to this Change's own specification.md copy
+        (FR-003) per the Reviewer's own explicit guidance that
+        intent.md/discovery.md/test-strategy.md's equivalent wording is
+        historical record and does not need retroactive correction. R002's
+        fix changes tdd-evidence.yml's top-level status from `compliant` to
+        `exception` with a `reason`, matching this repository's own
+        CHG-0007 precedent for the identical "test and implementation land
+        in the same commit" fact pattern, and corrects manifest.yml's `tdd`
+        summary and two stale `pending` artifact-status fields
+        (`review`, `knowledge_capture`) left over from the original
+        manifest draft, which predated review-001 and this Change's actual
+        knowledge-capture.md content. After this commit, `forge validate`
+        correctly reports a C-026 finding on review-001's own binding
+        (reviewable content now differs from the 410c4c6 revision that
+        Iteration passed against) -- this is the freeze-drift mechanism
+        working as intended for a non-complete Change (mirrors CHG-0012's
+        own documented design: the check is exempted only once
+        `state.current` reaches `complete`), not a defect introduced by
+        this Resolution. `pytest -q` was re-run after this commit: 437
+        passed, unchanged (this Resolution touched only prose/YAML, no
+        executable code).
