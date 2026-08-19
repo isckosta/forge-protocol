@@ -5,7 +5,7 @@ change:
   title: Golden Path Baseline and Codex Onboarding Validation
   kind: feature
 flow: {initial: standard, current: standard, escalations: []}
-state: {current: review_complete}
+state: {current: complete}
 artifacts:
   intent: complete
   discovery: complete

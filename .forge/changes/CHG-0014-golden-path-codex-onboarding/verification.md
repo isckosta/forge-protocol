@@ -230,6 +230,36 @@ Review Iteration must be `kind: resolution_verification` per
 `protocol/versions/2/specification.md` §10–§11, scoped to
 `CHG-0014-R001`/`R002`/`R003` and this Resolution's declared `scope`.
 
+## Completion
+
+`protocol/flows/standard.yml`'s `before_completion` Gate requires
+`verification_passed`, `review_passed`, `blocking_review_threads_resolved`,
+`documentation_impact_evaluated`, `required_documentation_updated`,
+`tdd_compliant_or_explicitly_excepted`:
+
+- `verification_passed` — this document; `verification.status: passed` in
+  `manifest.yml`.
+- `review_passed` — independent Strict Review Iteration 1 (REQUEST CHANGES,
+  1 BLOCKER/1 MAJOR/1 MINOR) followed by an independent Resolution
+  Verification Iteration 2 (PASS, 0 `new_material_findings`, no
+  Out-of-Scope Mutation against `resolution-001`'s declared scope) —
+  `review.md`, `provenance.yml`; `review.status: passed` in `manifest.yml`.
+- `blocking_review_threads_resolved` — no external review surface (PR or
+  equivalent) exists for this Change; satisfied trivially per
+  `protocol/specification.md` §22.
+- `documentation_impact_evaluated` / `required_documentation_updated` — see
+  Documentation Impact reason in `manifest.yml`; `README.md`, `ROADMAP.md`,
+  `examples/README.md`, `CHANGELOG.md` all updated and committed.
+- `tdd_compliant_or_explicitly_excepted` — `tdd.status: compliant` (5
+  cycles, `tdd-evidence.yml`), no exception needed.
+
+No unresolved BLOCKER Finding exists (`review.md` Iteration 2). No
+Unresolved Decision was recorded for this Change (`protocol/specification.md`
+§39 does not apply — none was discovered). Manifest state matches observed
+repository reality, re-confirmed directly by this session immediately before
+marking `state.current: complete`: full suite 407 passed, `forge validate`
+exit 0, `forge doctor` exit 0, `git status --porcelain -uall` clean.
+
 ## Layer C — not executed by this session
 
 This session has no Codex tool access. `examples/golden-path-standard/
