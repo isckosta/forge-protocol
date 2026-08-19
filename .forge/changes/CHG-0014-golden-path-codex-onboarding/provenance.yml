@@ -78,3 +78,53 @@ records:
         forge doctor Adapter-readiness warning-to-PASS relabeling against a
         throwaway repository — none of these reused a shipped test as-is.
         See review.md for full findings.
+  - id: resolution-001
+    role: resolution
+    scope:
+      - .forge/changes/CHG-0014-golden-path-codex-onboarding/tdd-evidence.yml
+      - .forge/changes/CHG-0014-golden-path-codex-onboarding/verification.md
+      - src/forge_cli/app.py
+      - src/forge_cli/doctor/__init__.py
+      - tests/golden_path/test_golden_path_standard.py
+      - tests/unit/test_doctor_diagnostics.py
+    targets: [CHG-0014-R001, CHG-0014-R002, CHG-0014-R003]
+    execution: {id: resolution-exec-chg0014-20260819-01, context_id: resolution-context-chg0014-20260819-01}
+    recorded_at: "2026-08-19T00:20:00-03:00"
+    revision:
+      id: chg-0014-resolution-001
+      immutable_ref: {type: git_commit, value: 02a116e8dad2f549583ab8e2f6426baa83860c50}
+      commit: 02a116e8dad2f549583ab8e2f6426baa83860c50
+      description: >-
+        Resolution of independent Strict Review Iteration 1's Findings.
+        CHG-0014-R002 (MAJOR) fixed via genuine TDD (TDD-004,
+        tdd-evidence.yml): _adapter_readiness_checks now maps warning to
+        warning instead of passed; app.py's doctor() command gained the
+        previously-missing "warning": "WARN" label. CHG-0014-R003 (MINOR)
+        fixed by correcting an overstated docstring/comment in
+        tests/golden_path/test_golden_path_standard.py. CHG-0014-R001
+        (BLOCKER) was resolved outside this commit's scope: the four
+        unrelated, never-committed untracked files the Reviewer found were
+        removed from the working tree after explicit user confirmation, with
+        no associated code diff to record here — verify directly via
+        `git status --porcelain -uall` against this revision. Full suite:
+        407 passed. forge validate: exit 0. forge doctor: exit 0.
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: claude-code
+      statement: >-
+        Self-recorded repository-native provenance for this Resolution
+        execution, distinct in Execution and Execution Context from
+        review-001 (the independent Reviewer execution whose Findings this
+        Resolution addresses) and from implementation-001. No
+        provider-native or cryptographic attestation is claimed; assurance
+        is recorded, not verified or externally proven. The same underlying
+        session that performed implementation-001 performed this Resolution
+        — permitted under C-026 (Reviewer and Resolver are the two roles
+        required to be distinct; Protocol 2 §2 requires Review, not
+        Resolution, to run independently of Implementation) — but review-001
+        itself ran in a genuinely separate Execution/Context with no memory
+        of that session, which is what independence actually protects here.
+        The independent Resolution Verification that follows must run in its
+        own distinct Execution and Execution Context per Protocol 2 and will
+        record its own review-role provenance separately.
