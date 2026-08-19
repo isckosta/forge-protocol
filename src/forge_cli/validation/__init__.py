@@ -472,6 +472,159 @@ def _validate_all_unresolved_decisions(r:Path)->list[ValidationFinding]:
         if m is None:continue
         out.extend(_validate_unresolved_decisions(r,mpath,m))
     return out
+# --- CHG-0015: Delegated Execution Authority (C-060-C-066) ---------------
+_DELEG_ROLE="delegated_task"
+def _content_fingerprint(root:Path,rel:str)->str|None:
+    target=root/rel
+    if not target.exists()or target.is_symlink()or not target.is_file():return None
+    q=subprocess.run(["git","hash-object",rel],cwd=root,capture_output=True,text=True,check=False)
+    return None if q.returncode else q.stdout.strip()
+def _current_dirty_fingerprint(root:Path)->dict[str,str]|None:
+    staged=_diff_paths(root,"--cached");unstaged=_diff_paths(root);untracked=_untracked_paths(root)
+    if any(x is None for x in(staged,unstaged,untracked)):return None
+    paths=set().union(staged or set(),unstaged or set(),untracked or set())
+    out:dict[str,str]={}
+    for p in paths:
+        fp=_content_fingerprint(root,p)
+        if fp is not None:out[p]=fp
+    return out
+def _valid_baseline_shape(b:object)->bool:
+    if not isinstance(b,dict):return False
+    head,dirty=b.get("head"),b.get("dirty")
+    if not(isinstance(head,str)and len(head)==40 and all(c in"0123456789abcdefABCDEF"for c in head)):return False
+    if not isinstance(dirty,list):return False
+    for entry in dirty:
+        if not isinstance(entry,dict):return False
+        p,h=entry.get("path"),entry.get("hash")
+        if not(isinstance(p,str)and p and isinstance(h,str)and h):return False
+    return True
+def _delegated_execution_effect(root:Path,mpath:Path,baseline:dict,close_revision:str)->set[str]|None:
+    """CHG-0015: baseline-vs-now Observed Effect for a delegated_task Execution.
+
+    Generalizes _reviewable_workspace_delta's frozen-commit-vs-current-
+    workspace comparison to an arbitrary delegation-open baseline, with a
+    content-identity `dirty` map so a delegating Execution's own pre-
+    existing uncommitted work is not misattributed to its delegate. The
+    review-control-metadata exclusion is reused for the same reason it
+    exists elsewhere in this file: the primary Execution's own bookkeeping
+    write of this delegate's provenance record is unavoidable noise, not
+    part of the delegate's effect. Self-authorization (C-062) is checked
+    separately, by history comparison, not by this path-diff.
+    """
+    if not _git_exists(root,baseline["head"]):return None
+    committed=_diff_paths(root,f"{baseline['head']}..{close_revision}")
+    if committed is None:return None
+    current=_current_dirty_fingerprint(root)
+    if current is None:return None
+    base_dirty={e["path"]:e["hash"]for e in baseline["dirty"]}
+    effect=set(committed)
+    for p,fp in current.items():
+        if base_dirty.get(p)!=fp:effect.add(p)
+    allowed=_review_control_metadata_paths(root,mpath)
+    if allowed:effect-=allowed
+    return effect
+def _deleg_uncovered(paths,scope:list[str])->set[str]:
+    """Exact-path coverage check where an empty `scope` legitimately means
+    'nothing authorized' (CHG-0015's `minItems: 0` relaxation), unlike
+    _uncovered_paths (CHG-0011), which treats an empty scope as malformed
+    input because Resolution Scope is never legitimately empty."""
+    return {p for p in paths if p not in scope}
+def _deleg_close_commit(rec:dict)->str|None:
+    rev=rec.get("revision")
+    if not isinstance(rev,dict):return None
+    im=rev.get("immutable_ref")
+    if isinstance(im,dict)and im.get("type")=="git_commit"and isinstance(im.get("value"),str):return im["value"]
+    com=rev.get("commit")
+    return com if isinstance(com,str)else None
+def _deleg_finding(r:Path,p:Path,code:str,m:str)->ValidationFinding:return ValidationFinding(code,str(p.relative_to(r)),m,p)
+def _deleg_first_committed_scope(r:Path,path:Path,record_id:str):
+    """Like _first_committed_provenance_record, but for delegated_task
+    records specifically: _record_fields hardcodes the Protocol-2 Reviewer/
+    Resolver role set (implementation/resolution/review) and would reject
+    every delegated_task candidate, which is correct for that machinery but
+    wrong here. Same 'first committed representation is authority' rule
+    (C-026 precedent), narrower acceptance check."""
+    documents=_committed_history_mappings(r,path)
+    if documents is None:return _HISTORY_ERROR
+    for document in documents:
+        if document is _HISTORY_ERROR:return _HISTORY_ERROR
+        assert isinstance(document,dict)
+        records=document.get("records")
+        if not isinstance(records,list):continue
+        matches=[rec for rec in records if isinstance(rec,dict)and rec.get("id")==record_id and rec.get("role")==_DELEG_ROLE]
+        if len(matches)>1:return _HISTORY_ERROR
+        if not matches:continue
+        scope=matches[0].get("scope")
+        return scope if isinstance(scope,list)else _HISTORY_ERROR
+    return None
+def _validate_delegated_authority(r:Path,mpath:Path)->list[ValidationFinding]:
+    out:list[ValidationFinding]=[]
+    ppath=mpath.parent/"provenance.yml"
+    p=_load_mapping(ppath)
+    if p is None or p.get("schema")not in{"forge/execution-provenance@1","forge/execution-provenance@2"}:return out
+    records=p.get("records")
+    if not isinstance(records,list):return out
+    idx:dict[str,dict]={}
+    for rec in records:
+        if isinstance(rec,dict)and isinstance(rec.get("id"),str)and rec.get("id"):idx[rec["id"]]=rec
+    delegated=[rec for rec in records if isinstance(rec,dict)and rec.get("role")==_DELEG_ROLE]
+    if not delegated:return out
+    prefix=f".forge/changes/{mpath.parent.name}/"
+    for deleg in delegated:
+        did=deleg.get("id")
+        if not(isinstance(did,str)and did):
+            out.append(_deleg_finding(r,ppath,"C-060","A delegated_task record is missing a valid id."));continue
+        execution,scope,baseline=deleg.get("execution"),deleg.get("scope"),deleg.get("baseline")
+        delegated_by=execution.get("delegated_by")if isinstance(execution,dict)else None
+        shape_ok=(isinstance(execution,dict)
+                  and isinstance(execution.get("id"),str)and execution.get("id")
+                  and isinstance(execution.get("context_id"),str)and execution.get("context_id")
+                  and isinstance(delegated_by,str)and delegated_by
+                  and isinstance(scope,list)and all(isinstance(x,str)and x for x in scope)
+                  and _valid_baseline_shape(baseline))
+        if not shape_ok:
+            out.append(_deleg_finding(r,ppath,"C-060",f"delegated_task record {did!r} has an invalid shape: execution.delegated_by, baseline, and scope (possibly empty) are all required (C-060/FR-001)."));continue
+        close_commit=_deleg_close_commit(deleg)
+        if close_commit is None:
+            out.append(_deleg_finding(r,ppath,"C-060",f"delegated_task record {did!r} has no resolvable immutable revision."));continue
+        delegator=idx.get(delegated_by)
+        if delegator is None:
+            out.append(_deleg_finding(r,ppath,"C-065",f"delegated_task record {did!r}: delegated_by {delegated_by!r} does not reference any record in this ledger; the Delegation Ceiling cannot be established, and validation fails closed."));continue
+        # C-063 Delegation Ceiling.
+        if delegator.get("role")==_DELEG_ROLE:
+            d_scope=delegator.get("scope")
+            if not isinstance(d_scope,list):
+                out.append(_deleg_finding(r,ppath,"C-065",f"delegated_task record {did!r}: delegator {delegated_by!r} has no valid scope; the Delegation Ceiling cannot be established, and validation fails closed."))
+            else:
+                excess=_deleg_uncovered(scope,d_scope)
+                if excess:out.append(_deleg_finding(r,ppath,"C-063",f"delegated_task record {did!r} was granted scope exceeding its delegator {delegated_by!r}'s own scope: {', '.join(sorted(excess))}."))
+        else:
+            d_scope=delegator.get("scope")
+            if isinstance(d_scope,list):
+                excess=_deleg_uncovered(scope,d_scope)
+            else:
+                excess={x for x in scope if not x.startswith(prefix)}
+            if excess:out.append(_deleg_finding(r,ppath,"C-063",f"delegated_task record {did!r} was granted scope exceeding its delegator's Authorized Scope (or the conservative default {prefix!r} when none is declared): {', '.join(sorted(excess))}."))
+        # C-061 Out-of-Scope Mutation.
+        effect=_delegated_execution_effect(r,mpath,baseline,close_commit)
+        if effect is None:
+            out.append(_deleg_finding(r,ppath,"C-065",f"delegated_task record {did!r}: Observed Effect could not be determined from local Git history; validation fails closed."))
+        else:
+            oos=_deleg_uncovered(effect,scope)
+            if oos:out.append(_deleg_finding(r,mpath,"C-061",f"delegated_task record {did!r} produced Out-of-Scope Mutation not covered by its declared scope: {', '.join(sorted(oos))}."))
+        # C-062 self-authorization: compare against first committed representation.
+        first_scope=_deleg_first_committed_scope(r,ppath,did)
+        if first_scope is _HISTORY_ERROR:
+            out.append(_deleg_finding(r,ppath,"C-065",f"delegated_task record {did!r}: committed provenance history could not be determined; validation fails closed."))
+        elif isinstance(first_scope,list)and set(first_scope)!=set(scope):
+            out.append(_deleg_finding(r,ppath,"C-062",f"delegated_task record {did!r} declares scope {scope!r} differing from its first committed representation {first_scope!r}; an Execution MUST NOT rewrite the declaration of its own Authority (C-062)."))
+    return out
+def _validate_all_delegated_authority(r:Path)->list[ValidationFinding]:
+    out:list[ValidationFinding]=[];changes=r/".forge/changes"
+    if not changes.is_dir():return out
+    for mpath in sorted(changes.glob("*/manifest.yml")):
+        out.extend(_validate_delegated_authority(r,mpath))
+    return out
 def validate_project(project_root:Path,protocol_root:Path)->ValidationResult:
     f=project_root/".forge"
     if not f.is_dir():return ValidationResult((ValidationFinding("E_FORGE_NOT_INITIALIZED",".forge/","Forge is not initialized. Run `forge init` from this Git repository.",f),))
@@ -487,4 +640,5 @@ def validate_project(project_root:Path,protocol_root:Path)->ValidationResult:
     except CanonicalContractUnavailableError as e:out.append(ValidationFinding("E_FORGE_CANONICAL_CONTRACT_UNAVAILABLE",f"protocol/{pid}/contract/engineering.md",str(e),protocol_root))
     if pid==2:out.extend(_validate_protocol2_review_provenance(project_root))
     out.extend(_validate_all_unresolved_decisions(project_root))
+    out.extend(_validate_all_delegated_authority(project_root))
     return ValidationResult(tuple(out))

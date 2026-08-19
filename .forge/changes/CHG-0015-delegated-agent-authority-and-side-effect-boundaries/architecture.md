@@ -18,10 +18,13 @@ parallel one:
   schema-general, narrowed today only by Protocol 2 §11 prose to
   `role: resolution`.
 - `_reviewable_workspace_delta`/`_resolution_delta`/`_uncovered_paths`/
-  `_review_control_metadata_paths`/`_first_committed_provenance_record`
+  `_review_control_metadata_paths`/`_committed_history_mappings`
   (`src/forge_cli/validation/__init__.py`) — the existing Git-native
-  diff-and-cover primitives and the existing "first committed
-  representation is authority" mechanism C-026 already established.
+  diff-and-cover primitives and the existing committed-history-walking
+  machinery C-026's "first committed representation is authority" rule
+  already established (a sibling function reuses the walk, not
+  `_first_committed_provenance_record` itself — see Validator changes,
+  step 6, for why that one specifically does not fit).
 - Protocol 2 §4's `claimed`/`recorded`/`verified` assurance vocabulary.
 - Unresolved Decision Management (`decisions[]`, C-051–C-059) — used below
   to actually resolve `DEC-002`, now that Architecture (its owning
@@ -134,9 +137,11 @@ correction was right to worry about, because C-062 (self-authorization) is
 **not** implemented as part of the path-diff at all — see "Self-
 authorization (C-062)" in Validator changes below, which instead compares
 a `delegated_task` record's own declared fields against its first
-committed representation, reusing `_first_committed_provenance_record`
-verbatim (the same "immutable once committed" authority Protocol 2 §5/
-C-026 already established for exactly this purpose). A delegate rewriting
+committed representation, walking committed history the same way
+`_first_committed_provenance_record` does (the same "immutable once
+committed" authority Protocol 2 §5/C-026 already established for exactly
+this purpose — see Validator changes step 6 for why a sibling function,
+not that one verbatim, is what actually gets reused). A delegate rewriting
 its own already-committed `scope` to claim a broader grant is caught there,
 by content comparison against history — not by flagging the mere
 existence of a `provenance.yml` diff, which cannot distinguish legitimate
@@ -258,16 +263,27 @@ gated on `protocol == 2`):
    `scope` under DEC-001 — and it declares no `scope` of its own (the
    common case: primary Executions are not required to), the first
    delegate's grant is checked against the **conservative default**
-   Specification's FR-007 correction requires: the delegating Change's own
-   governed Artifact and source paths — for a Forge-internal Change, this
-   repository's own established convention: `.forge/changes/<this
-   Change>/**` plus whatever `src`/`tests` paths the Change's own
-   `intent.md`/`specification.md` name as in-scope (a deterministic,
-   already-available Discovery-stage fact, not a new authoring burden). If
-   that same primary record *does* declare a `scope` (it may, optionally),
-   the first delegate's grant is checked against it exactly like any other
-   hop, not the conservative default — the default applies only when
-   nothing else is available.
+   Specification's FR-007 correction requires. **Implementability
+   correction, made while writing GREEN**: the originally-worded default
+   ("the Change's own governed Artifact and source paths... plus whatever
+   `src`/`tests` paths the Change's own `intent.md`/`specification.md`
+   name as in-scope") is not deterministically extractable from free-form
+   Markdown prose — parsing it would itself be an unreliable heuristic,
+   not the deterministic check C-039/C-065's fail-closed discipline
+   requires. The implemented default is narrower and fully deterministic:
+   exactly the paths whose repository-relative form is prefixed
+   `.forge/changes/<change_id>/` (the Change's own directory, computed
+   from `provenance.yml`'s own `change` field — no parsing required). A
+   first-hop delegate granted write Scope outside its own Change's
+   directory, when its delegator declares no `scope`, is conservatively
+   rejected; a Change that genuinely needs a first-hop delegate to touch
+   `src`/`tests` directly MUST have its primary Execution declare an
+   explicit `scope` instead of relying on the default — the default is a
+   safety floor, not a substitute for declaration when broader access is
+   actually needed. If the primary record *does* declare a `scope` (it
+   may, optionally), the first delegate's grant is checked against it
+   exactly like any other hop, not the conservative default — the default
+   applies only when nothing else is available.
 5. **Out-of-Scope Mutation (C-061/INV-004):** calls
    `_delegated_execution_effect`; any returned path not covered by the
    delegate's `scope` is a finding. `None` (fail-closed) is itself a
@@ -275,24 +291,34 @@ gated on `protocol == 2`):
    Mutation so a human can tell "we don't know" from "we know it violated
    scope."
 6. **Self-authorization (C-062/INV-002) — a separate check, not part of
-   the path-diff at all:** for each `delegated_task` record, reuses
-   `_first_committed_provenance_record(root, provenance_path, record["id"])`
-   **verbatim** (the exact function that already establishes C-026's
-   "first committed representation is authority; later rewrites are
-   invalid" rule) to fetch the record's own first committed
-   representation. If one exists and its `scope` is not equal to the
-   current record's `scope` — under path-set equality, not merely
-   coverage, since a delegate narrowing its own already-committed grant is
-   not an attack but *widening* it is — that is a C-062 finding: the
-   record rewrote the declaration of its own Authority after the fact.
-   This is the mechanism that actually catches self-authorization: it
-   compares a record's declared Authority against its own history,
-   independent of whether `manifest.yml`/`provenance.yml` happen to be
-   excluded from the unrelated path-diff computation in step 5 — the two
-   checks are deliberately orthogonal, so excluding those paths from one
-   cannot silently defeat the other. `_first_committed_provenance_record`
-   returning `_HISTORY_ERROR` (shallow/unavailable history) is itself a
-   C-065 fail-closed finding here too, matching its existing C-026 callers.
+   the path-diff at all:** for each `delegated_task` record, a new
+   function `_deleg_first_committed_scope(root, provenance_path,
+   record_id)` fetches the record's own first committed `scope` by
+   walking committed history the same way `_first_committed_provenance_record`
+   already does (`_committed_history_mappings`, reused). **Found while
+   writing GREEN, not anticipated here originally:** the obvious move —
+   reusing `_first_committed_provenance_record` itself verbatim — fails for
+   every `delegated_task` record, because that function's acceptance check
+   calls `_record_fields`, which hardcodes the Protocol-2 Reviewer/Resolver
+   role set (`implementation`/`resolution`/`review`) and rejects any other
+   `role` value by design (correct for C-026's own purpose; wrong for this
+   one). `_deleg_first_committed_scope` is the narrower, correct sibling:
+   same "first committed representation is authority" rule (C-026
+   precedent, `_committed_history_mappings` genuinely reused), a
+   `role: delegated_task`-only acceptance check instead. If a first
+   committed `scope` exists and is not equal (as a set, not merely
+   coverage — narrowing one's own already-committed grant is not an
+   attack, widening it is) to the current record's `scope`, that is a
+   C-062 finding: the record rewrote the declaration of its own Authority
+   after the fact. This is the mechanism that actually catches self-
+   authorization: it compares a record's declared Authority against its
+   own history, independent of whether `manifest.yml`/`provenance.yml`
+   happen to be excluded from the unrelated path-diff computation in step
+   5 — the two checks are deliberately orthogonal, so excluding those
+   paths from one cannot silently defeat the other. History that cannot be
+   determined (`_HISTORY_ERROR`) is itself a C-065 fail-closed finding
+   here too, matching `_first_committed_provenance_record`'s own existing
+   C-026 callers.
 
 This mirrors `_validate_resolution_verification`'s shape exactly: small,
 pure functions operating on already-loaded YAML mappings and local Git

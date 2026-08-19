@@ -101,9 +101,10 @@ exclusion fails this test first, not silently.
 
 Primary Execution's own provenance record declares no `scope` (the common
 case under DEC-001). Delegate is granted `scope: ["docs/unrelated.md"]`, a
-path outside this Change's own governed paths
-(`.forge/changes/CHG-0015-*/**` plus its declared `src`/`tests` paths).
-Expect one finding: the grant itself exceeds the conservative default.
+path outside the deterministic conservative default (`.forge/changes/
+<change_id>/**`, per Architecture's implementability correction — no
+Markdown-prose parsing). Expect one finding: the grant itself exceeds the
+conservative default.
 This check depends only on the `scope` declared in the delegate's
 provenance record, not on its Observed Effect — so it is checkable as
 soon as the delegate's record exists, independent of TDD-003/005's
