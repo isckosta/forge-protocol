@@ -6,6 +6,37 @@ CLI releases will follow Semantic Versioning when releases begin. Protocol versi
 
 ## Unreleased
 
+### Delegated Agent Authority and Side-Effect Boundaries
+
+Added:
+
+- a normative distinction between Capability (what an Execution can
+  technically do) and Authority (what a specific delegation permits it to
+  do), motivated by a real incident: a research subagent explicitly
+  delegated read-only work during `CHG-0014`'s Discovery overwrote that
+  Change's `intent.md` directly, detected only because a human-equivalent
+  Execution happened to notice — no Forge mechanism could have caught it
+  (`docs/adr/0013`);
+- `forge/execution-provenance@2`: a new `role: delegated_task`, an
+  `execution.delegated_by` chain reference, a `baseline` field capturing
+  Execution Boundary open-state (a commit plus a content-identity map of
+  already-dirty paths, so a delegating Execution's own concurrent work is
+  never misattributed to its delegate), and a `scope` `minItems: 0`
+  relaxation so zero-write-authority (read-only) delegation is
+  representable at all — `@1` is unchanged and remains valid;
+- Contract rules C-060 through C-066 (Capability is not Authority,
+  Out-of-Scope Mutation for delegated Executions, no self-authorization,
+  Delegation Ceiling, Detection as the mandatory floor with Prevention
+  optional, fail-closed on indeterminate authorization, harness honesty),
+  binding only once a Change records a `role: delegated_task` provenance
+  entry — every historical Change remains unaffected;
+- `forge validate` now mechanically detects Out-of-Scope Mutation and
+  self-authorization for delegated Executions using local Git-native state
+  only, independent of Change lifecycle stage (including before any
+  Review-subject freeze, the exact point the motivating incident occurred
+  at) — no Harness cooperation required, no Harness capability change
+  added (none currently supports Prevention).
+
 ### Golden Path Baseline and Codex Onboarding Validation
 
 Added:

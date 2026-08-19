@@ -5,7 +5,7 @@ change:
   title: Delegated Agent Authority and Side-Effect Boundaries
   kind: feature
 flow: {initial: full, current: full, escalations: []}
-state: {current: tasks}
+state: {current: implementation}
 artifacts:
   intent: complete
   discovery: complete
@@ -14,16 +14,16 @@ artifacts:
   architecture: complete
   test_strategy: approved
   plan: approved
-  tasks: ready
-  tdd_evidence: pending
+  tasks: complete
+  tdd_evidence: complete
   implementation: pending
   provenance: pending
-  verification: pending
+  verification: complete
   review: pending
-  documentation: pending
-  knowledge_capture: pending
-tdd: {status: pending}
-verification: {status: pending}
+  documentation: complete
+  knowledge_capture: complete
+tdd: {status: compliant, cycles: 16}
+verification: {status: passed}
 review:
   status: pending
   iteration: 0
@@ -33,7 +33,15 @@ review:
   observations: 0
   iterations: []
 documentation:
-  impact_evaluated: false
+  impact_evaluated: true
+  update_required: true
+  reason: >-
+    CHANGELOG.md (new "Delegated Agent Authority and Side-Effect
+    Boundaries" entry), ARCHITECTURE.md SS27 (one added sentence),
+    docs/adr/0013-delegated-execution-authority-boundaries.md, and this
+    Change's own knowledge-capture.md updated; no RFC (F-008 evaluated,
+    ADR-only per established CHG-0008/CHG-0011/CHG-0013 precedent, see
+    ADR-0013's own Decision section and knowledge-capture.md).
 decisions:
   - id: DEC-001
     class: contract

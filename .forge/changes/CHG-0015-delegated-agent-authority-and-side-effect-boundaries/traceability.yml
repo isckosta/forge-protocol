@@ -1,0 +1,40 @@
+schema: forge/traceability@1
+change: CHG-0015
+requirements:
+  FR-001: {tasks: [T-001, T-008], tests: [test_delegated_task_missing_scope_is_a_finding], evidence: schema_scope_minitems_0_plus_C-060_shape_check}
+  FR-002: {tasks: [T-002, T-003], evidence: contract_c060_capability_is_not_authority}
+  FR-003: {tasks: [T-001, T-008], tests: [test_read_only_delegate_that_only_reads, test_scoped_writer_within_declared_paths], evidence: execution_provenance_v2_scope_field_reused}
+  FR-004: {tasks: [T-008], tests: [test_incident_class_read_only_delegate_writes_outside_scope], evidence: delegated_execution_effect_baseline_vs_now}
+  FR-005: {tasks: [T-002, T-008], tests: [test_incident_class_read_only_delegate_writes_outside_scope, test_scoped_writer_partially_outside_declared_paths], evidence: contract_c061_plus_deleg_uncovered_check}
+  FR-006: {tasks: [T-002, T-008], tests: [test_self_authorization_rewriting_own_scope], evidence: contract_c062_plus_deleg_first_committed_scope_check}
+  FR-007: {tasks: [T-002, T-008], tests: [test_delegation_ceiling_conservative_default_exceeded, test_delegation_ceiling_within_conservative_default, test_nested_delegation_attempts_to_widen], evidence: contract_c063_plus_delegation_ceiling_check}
+  FR-008: {tasks: [T-008], tests: [test_nested_delegation_narrows_correctly, test_nested_delegation_attempts_to_widen], evidence: transitive_delegation_ceiling_check}
+  FR-009: {tasks: [T-008], tests: [test_missing_delegator_reference], evidence: execution_delegated_by_plus_assurance_reuse}
+  FR-010: {tasks: [T-011], evidence: architecture_deliberately_not_built_now_no_adapter_capability}
+  FR-011: {tasks: [T-002, T-008], tests: [test_incident_class_read_only_delegate_writes_outside_scope], evidence: contract_c064_delegated_execution_effect_local_git_only}
+  FR-012: {tasks: [T-002], evidence: contract_c060_c066_failure_semantics_text}
+  FR-013: {tasks: [T-002, T-008], tests: [test_fail_closed_on_unavailable_baseline_history], evidence: contract_c065_plus_git_exists_guard}
+  FR-014: {tasks: [T-002], evidence: contract_c066_plus_architecture_md_ss27_sentence}
+  FR-015: {tasks: [T-008], tests: [test_legacy_repository_is_unaffected, test_absent_provenance_file_is_unaffected], evidence: prospective_only_binding_no_delegated_task_no_findings}
+  FR-016: {tasks: [T-002], evidence: authority_defining_artifact_functional_definition_not_enumerated}
+  FR-017: {tasks: [T-002], evidence: contract_c060_c066_scope_limited_to_repository_mutation}
+  INV-001: {tasks: [T-008], evidence: capability_never_treated_as_authority_no_such_code_path_exists}
+  INV-002: {tasks: [T-008], tests: [test_self_authorization_rewriting_own_scope], evidence: deleg_first_committed_scope_equality_check}
+  INV-003: {tasks: [T-008], tests: [test_delegation_ceiling_conservative_default_exceeded, test_nested_delegation_attempts_to_widen], evidence: delegation_ceiling_transitive_check}
+  INV-004: {tasks: [T-008], tests: [test_incident_class_read_only_delegate_writes_outside_scope], evidence: c061_finding_blocks_silent_validity}
+  INV-005: {tasks: [T-008], tests: [test_fail_closed_on_unavailable_baseline_history, test_missing_delegator_reference], evidence: c065_fail_closed_paths}
+  DEC-001: {tasks: [T-002], evidence: human_decision_alternative_4_specification_md}
+  DEC-002: {tasks: [T-002], evidence: architecture_stage_autonomous_decision_alternative_2}
+acceptance:
+  AC-001: [test_delegated_task_missing_scope_is_a_finding]
+  AC-002: []
+  AC-003: [test_incident_class_read_only_delegate_writes_outside_scope, test_scoped_writer_partially_outside_declared_paths]
+  AC-004: [test_v2_schema_accepts_empty_scope_v1_still_rejects_it]
+  AC-005: [test_self_authorization_rewriting_own_scope]
+  AC-006: [test_delegation_ceiling_conservative_default_exceeded, test_nested_delegation_attempts_to_widen]
+  AC-007: []
+  AC-008: []
+  AC-009: [test_legacy_repository_is_unaffected]
+  AC-010: [test_legacy_repository_is_unaffected, test_absent_provenance_file_is_unaffected]
+  AC-011: [test_incident_class_read_only_delegate_writes_outside_scope]
+  AC-012: [test_incident_class_read_only_delegate_writes_outside_scope]
