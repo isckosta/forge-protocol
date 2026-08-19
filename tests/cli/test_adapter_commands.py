@@ -350,3 +350,25 @@ def test_adapter_list_maps_unexpected_registry_preparation_failure_to_internal_e
     assert result.exit_code == 70
     assert result.stdout == "E_FORGE_INTERNAL_ERROR: registry preparation exploded\n"
     assert not isinstance(result.exception, RuntimeError)
+
+
+@pytest.mark.parametrize("adapter_id", ["codex", "claude-code"])
+def test_adapter_install_then_doctor_succeeds_for_every_registered_adapter(
+    adapter_id: str, tmp_path: Path, monkeypatch
+) -> None:
+    """CHG-0018 FR-008/C-074 (shared conformance): the real CLI install ->
+    doctor round trip must work identically for every registered Adapter,
+    not only Codex."""
+    _initialize_project(tmp_path, monkeypatch)
+
+    installed = runner.invoke(app, ["adapter", "install", adapter_id])
+    assert installed.exit_code == 0, installed.output
+
+    doctored = runner.invoke(app, ["adapter", "doctor", adapter_id])
+    assert doctored.exit_code == 0, doctored.output
+    assert "generated_drift" in doctored.stdout
+    assert "FAIL" not in doctored.stdout
+
+    reinstalled = runner.invoke(app, ["adapter", "install", adapter_id])
+    assert reinstalled.exit_code == 0, reinstalled.output
+    assert "No changes required." in reinstalled.stdout

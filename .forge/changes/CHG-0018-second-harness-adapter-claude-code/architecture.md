@@ -35,6 +35,29 @@ user asked to explore for no compensating benefit. **Resolved via**:
 is decisive and mechanically checkable (Strict Review can verify no Core
 signature changed).
 
+**Correction found during Implementation, before any freeze**:
+`ownership.require_publication_root_ownership` requires *every* generated
+artifact to be a strict descendant of one publication root
+(`root not in artifact.parents` raises). `.claude/CLAUDE.md` is a sibling
+of `.claude/skills/forge`, not a descendant of it — so the Skill and the
+CLAUDE.md pointer cannot share Codex's pattern of "publication root =
+skill directory." Resolution: this Adapter's `default_target`/
+`publication.yml` is `.claude` (the shared Claude Code configuration
+root), not `.claude/skills/forge`; the Skill's own artifacts are placed
+at `skills/forge/...` relative to it and CLAUDE.md at `CLAUDE.md`
+relative to it — both remain strict descendants of `.claude`, satisfying
+the existing generic check with zero Core change, exactly as originally
+argued, just via a different publication-root value than first drafted.
+This also removes the need for any Claude-Code-owned reserved-path rule
+symmetrical to Codex's `.codex` reservation: unlike Codex's default
+target (which does *not* live under `.codex/`), this Adapter's default
+target *is* `.claude` itself, so there is no unrelated, always-forbidden
+sibling directory to protect — every path Forge generates under it uses
+Forge-owned names, already protected by the existing generic
+FORGE_OWNED/digest-conflict machinery. `claude_code/targets.py` has no
+reserved-path rule beyond the generic path-safety checks it already
+shares with Codex's `_checked()` shape.
+
 ## DEC-002 — Hook placement and invariant
 
 **Class**: `architectural`. **Authority**: `agent_with_review`.
@@ -122,10 +145,14 @@ Change's evidence was actually fetched, not Codex's unrelated
 ### `claude_code/resources/publication.yml`
 
 ```yaml
-target: .claude/skills/forge
+target: .claude
 source: https://code.claude.com/docs/en/skills
 observed_on: "2026-08-19"
 ```
+
+(`.claude`, not `.claude/skills/forge` — see DEC-001's Correction, above:
+the Skill and CLAUDE.md pointer must share one common ownership-root
+ceiling.)
 
 ### `claude_code/projection.py`
 
@@ -163,8 +190,8 @@ already generic).
   imported by both `codex/driver.py` and `claude_code/driver.py`.
 - `adapters/configuration.py` / `adapter-configuration.schema.json`: the
   `.codex` clause removed; `codex/targets.py` keeps its own, now-sole
-  copy; `claude_code/targets.py` gets its own equivalent reservation for
-  its own default-target prefix (`.claude`), scoped the same way.
+  copy. `claude_code/targets.py` has no equivalent reservation — DEC-001's
+  Correction explains why one isn't justified.
 
 ## Compatibility
 

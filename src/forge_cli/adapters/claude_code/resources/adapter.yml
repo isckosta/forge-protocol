@@ -1,0 +1,15 @@
+schema: forge/adapter@1
+adapter:
+  id: claude-code
+  version: 0.1.0
+  harness: claude-code
+protocol:
+  min: 1
+  max_exclusive: 3
+capabilities:
+  persistent_instructions: true
+  commands: true
+  skills: true
+  hooks: true
+  agent_roles: true
+  generated_files: true

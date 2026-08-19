@@ -1,0 +1,25 @@
+evidence:
+  - capability: agent_roles
+    status: supported
+    source: https://code.claude.com/docs/en/overview
+    observed_on: 2026-08-19
+  - capability: commands
+    status: supported
+    source: https://code.claude.com/docs/en/skills
+    observed_on: 2026-08-19
+  - capability: generated_files
+    status: supported
+    source: https://code.claude.com/docs/en/overview
+    observed_on: 2026-08-19
+  - capability: hooks
+    status: supported
+    source: https://code.claude.com/docs/en/hooks
+    observed_on: 2026-08-19
+  - capability: persistent_instructions
+    status: supported
+    source: https://code.claude.com/docs/en/memory
+    observed_on: 2026-08-19
+  - capability: skills
+    status: supported
+    source: https://code.claude.com/docs/en/skills
+    observed_on: 2026-08-19
