@@ -125,6 +125,33 @@ unaffected. No integer Protocol identifier changes; `forge/execution-
 provenance@1` is not deprecated and continues to mean exactly what it
 meant before.
 
+## Canonical Artifact Structure (CHG-0016)
+
+CHG-0016 adds one new canonical file, `protocol/artifact-structure.md`,
+a new `protocol/specification.md` §41, and Contract rules C-067–C-069 to
+both `protocol/contract/engineering.md` and `protocol/versions/2/contract/
+engineering.md`, following the same dual-file pattern CHG-0011/CHG-0013/
+CHG-0015 already established. Unlike CHG-0015, this Change adds no new
+Schema, Schema suffix, or Gate: C-067 states explicitly that conformance
+to the new guidance MUST NOT be treated as a Gate condition and MUST NOT
+be validated by `forge validate`. This is the same "optional artifact
+whose absence preserves existing meaning" pattern already used three
+times: every historical Change (`CHG-0001`–`CHG-0015`) is silent on
+`protocol/artifact-structure.md` and continues to validate and mean
+exactly what it meant before. No integer Protocol identifier changes and
+no new `forge/change@N` schema suffix is introduced.
+
+This resolution reflects `CHG-0016`'s own Specification DEC-001
+(`contract`-class, `human`-authority): the alternative considered —
+elevating the Verification/Review outcome-heading recommendation to a
+`MUST`, Gate-checked obligation — was evaluated and not selected. Had it
+been selected, it would have required a new integer Protocol under this
+document's own "change the meaning of an existing required field, stage,
+Gate" criterion above, prospectively binding only Changes that opted into
+that Protocol integer; it would not have retroactively invalidated
+`CHG-0001`–`CHG-0015`, exactly as Protocol 2 itself did not retroactively
+invalidate Protocol 1's completed Changes.
+
 ## Schema catalog
 
 `schemas/catalog.yml` is the portable list of schemas shipped by the distribution. Catalog presence does not imply that every schema is normative for every Protocol version. Applicability is defined by the selected Protocol contract and the artifact's own identifier. Cross-field semantic constraints that JSON Schema cannot express remain deterministic Core validation responsibilities.

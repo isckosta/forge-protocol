@@ -215,3 +215,12 @@ When Core cannot reliably determine whether a delegated Execution's Observed Eff
 No statement of delegated-Execution authority enforcement MAY represent Detection as if it were Prevention.
 
 C-060 through C-066 bind a Change only once it records a `role: delegated_task` provenance entry. C-063 additionally binds only where the delegate is itself a `role: delegated_task` record; a primary Execution's own direct, undelegated work never triggers it.
+
+## C-067 — Canonical Artifact Structure is guidance, not a Gate condition
+`protocol/artifact-structure.md` defines canonical, non-binding guidance for the information architecture of human Forge Artifacts. Agents SHOULD follow it for their Artifact's type. Conformance to it MUST NOT be treated as a Gate condition, and MUST NOT be validated by `forge validate` beyond what a future Contract revision explicitly adds.
+
+## C-068 — Verification and Review SHOULD present outcome before evidence
+Verification SHOULD present its Result before supporting evidence. Review SHOULD present an aggregate Verdict before per-iteration detail. Both recommendations are defined in `protocol/artifact-structure.md`.
+
+## C-069 — Approved Plans SHOULD NOT silently absorb Implementation history
+An approved Plan SHOULD NOT be edited to silently absorb an Implementation-time discovery. Such a discovery SHOULD be recorded in Verification, a Decision record, or a documented re-Plan, per `protocol/artifact-structure.md`.

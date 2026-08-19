@@ -33,7 +33,7 @@ Translation between canonical Forge concepts and Harness-specific primitives.
 
 ## 5. Canonical Protocol
 
-The canonical Protocol lives in `protocol/` and contains the Engineering Contract, Flow definitions, Policies, Schemas, Artifact semantics, Gate semantics, and Role semantics.
+The canonical Protocol lives in `protocol/` and contains the Engineering Contract, Flow definitions, Policies, Schemas, Artifact semantics, Gate semantics, and Role semantics. Artifact semantics' presentation layer — the recommended, non-binding information architecture of human Artifacts — is `protocol/artifact-structure.md` (CHG-0016).
 
 ## 6. Project workspace
 

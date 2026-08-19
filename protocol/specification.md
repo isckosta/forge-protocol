@@ -265,3 +265,16 @@ mechanics — is defined by `CHG-0015`'s own Architecture record and
 enforced by Core validation. C-060 through C-066 bind a Change only once
 it records a `role: delegated_task` provenance entry; a Change that never
 delegates makes no claim this section speaks to and is unaffected by it.
+
+## 41. Canonical Artifact Structure
+
+Forge's Protocol defines Artifact semantics but not Artifact presentation.
+`protocol/artifact-structure.md` provides canonical, non-binding guidance
+for the information architecture of human Forge Artifacts — Progressive
+Disclosure, Artifact Responsibility, Result-Before-Evidence, Scanability,
+Proportionality, and Extensibility, plus recommended structure per
+Artifact type. Conformance to it MUST NOT be treated as a Gate condition.
+
+Full normative detail is defined by `protocol/artifact-structure.md` and
+`protocol/contract/engineering.md` C-067–C-069. This section applies
+independently of declared Protocol version.
