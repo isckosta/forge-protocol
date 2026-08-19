@@ -7,7 +7,7 @@ from forge_cli.adapters.ownership import DriftKind
 from forge_cli.adapters.plan import OperationIntent, OwnershipMode
 from forge_cli.adapters.planner import RepositoryArtifactState
 from forge_cli.adapters.codex import load_codex_adapter_descriptor
-from forge_cli.adapters.codex.assessment import assess_invariant, to_generic_limitation
+from forge_cli.adapters.assessment import assess_invariant, to_generic_limitation
 from forge_cli.adapters.codex.projection import CodexProjectionInput, generate_codex_projection_bundle
 from forge_cli.adapters.codex.targets import resolve_publication_target
 

@@ -55,8 +55,6 @@ def _checked_target(target: str) -> str:
     parts = target.split("/")
     if any(part in {"", ".", ".."} for part in parts):
         raise InvalidAdapterConfigurationError("Adapter configuration target must be a normalized path.")
-    if parts[0] == ".codex":
-        raise InvalidAdapterConfigurationError("Adapter configuration target must not use .codex.")
     return target
 
 

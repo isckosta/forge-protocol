@@ -81,10 +81,12 @@ def test_adapter_installation_v2_schema_requires_publication_root_ownership() ->
 
 @pytest.mark.parametrize(
     "target",
-    [".", "./target", "target//child", "/tmp/target", "a/../target", r"a\\target", "C:/target", ".codex/forge", "~/forge"],
+    [".", "./target", "target//child", "/tmp/target", "a/../target", r"a\\target", "C:/target", "~/forge"],
 )
 def test_adapter_configuration_schema_rejects_unsafe_target_shapes(target: str) -> None:
-    """Catch a schema that admits a target the configuration boundary cannot safely publish."""
+    """Catch a schema that admits a target the configuration boundary cannot safely publish.
+    No vendor-specific reservation (e.g. `.codex`) belongs in this generic
+    schema (CHG-0018 FR-001); that is a per-Adapter driver concern."""
     schema = _catalog_schemas()["forge/adapter-configuration@1"]
 
     with pytest.raises(ValidationError):

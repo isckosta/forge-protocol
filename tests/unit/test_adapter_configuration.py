@@ -197,11 +197,21 @@ def test_unsafe_adapter_id_is_rejected(adapter_id: str) -> None:
         AdapterConfiguration(adapter_id=adapter_id, target="safe/path")
 
 
-@pytest.mark.parametrize("target", ["/tmp/x", "../x", r"x\\y", "C:/x", ".codex/forge", "~/forge"])
+@pytest.mark.parametrize("target", ["/tmp/x", "../x", r"x\\y", "C:/x", "~/forge"])
 def test_invalid_or_forbidden_target_is_rejected(target: str) -> None:
-    """Catch unsafe, cross-platform, or global Codex target acceptance."""
+    """Catch unsafe or cross-platform target acceptance. The generic Core
+    has no vendor-specific reserved-path rule (CHG-0018 FR-001): a
+    per-Adapter reservation like Codex's own `.codex` prefix lives in that
+    Adapter's own `validate_publication_root`, not here."""
     with pytest.raises(InvalidAdapterConfigurationError):
         AdapterConfiguration(adapter_id="codex", target=target)
+
+
+def test_vendor_specific_prefix_is_no_longer_rejected_by_the_generic_core() -> None:
+    """CHG-0018 FR-001: `.codex` is not a generic Core concept. A second
+    Adapter's own configured target under a similarly-shaped prefix must
+    not be rejected by logic that only ever made sense for one vendor."""
+    AdapterConfiguration(adapter_id="claude-code", target=".codex/anything")
 
 
 def test_load_rejects_malformed_yaml_without_returning_configuration(tmp_path: Path) -> None:

@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import pytest
+
 from forge_cli.adapters.configuration import AdapterConfiguration
 from forge_cli.adapters.codex.driver import CodexDriver
 
@@ -75,3 +77,22 @@ def test_unsafe_target_shape_is_rejected_before_generic_planning() -> None:
         except ValueError:
             continue
         raise AssertionError(f"unsafe target accepted: {path!r}")
+
+
+def test_codex_owned_reserved_path_is_rejected() -> None:
+    """CHG-0018 FR-001: `.codex` is a Codex-owned reservation, not a
+    generic Core concept (the generic Core copy was removed). Codex's own
+    `validate_publication_root`/`resolve_publication_target` must still
+    reject it directly."""
+    _require_behavior()
+    for path in (".codex", ".codex/forge"):
+        try:
+            resolve_publication_target(explicit_target=path)
+        except ValueError:
+            continue
+        raise AssertionError(f"Codex-reserved target accepted: {path!r}")
+
+    from forge_cli.adapters.codex.targets import validate_publication_root
+
+    with pytest.raises(ValueError):
+        validate_publication_root(".codex/forge")

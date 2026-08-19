@@ -3,7 +3,7 @@ from __future__ import annotations
 import pytest
 
 try:
-    from forge_cli.adapters.codex.assessment import (
+    from forge_cli.adapters.assessment import (
         InvariantAssessment,
         InvariantSupport,
         assess_invariant,
@@ -17,10 +17,10 @@ except ImportError:
 
 
 def _require_behavior() -> None:
-    assert InvariantAssessment is not None, "Codex invariant assessment is not implemented yet"
-    assert InvariantSupport is not None, "Codex invariant support classification is not implemented yet"
-    assert assess_invariant is not None, "Codex invariant assessment behavior is not implemented yet"
-    assert to_generic_limitation is not None, "Codex generic limitation conversion is not implemented yet"
+    assert InvariantAssessment is not None, "Invariant assessment is not implemented yet"
+    assert InvariantSupport is not None, "Invariant support classification is not implemented yet"
+    assert assess_invariant is not None, "Invariant assessment behavior is not implemented yet"
+    assert to_generic_limitation is not None, "Generic limitation conversion is not implemented yet"
 
 
 def test_skill_representation_without_technical_mechanism_is_represented() -> None:

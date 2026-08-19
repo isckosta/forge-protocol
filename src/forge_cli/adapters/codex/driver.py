@@ -9,7 +9,7 @@ import yaml
 
 from forge_cli.adapters.capabilities import CapabilityLimitation
 from forge_cli.adapters.codex.descriptor import load_codex_adapter_descriptor
-from forge_cli.adapters.codex.assessment import assess_invariant, to_generic_limitation
+from forge_cli.adapters.assessment import assess_invariant, to_generic_limitation
 from forge_cli.adapters.codex.projection import generate_codex_skill_bundle
 from forge_cli.adapters.codex.targets import (
     load_packaged_publication_target,
