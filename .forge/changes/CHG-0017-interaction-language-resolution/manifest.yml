@@ -27,13 +27,50 @@ requirements: {total: 10, implemented: 10, verified: 10}
 tdd: {status: compliant, cycles: 2}
 verification: {status: passed}
 review:
-  status: pending
-  iteration: 0
+  status: passed
+  iteration: 1
   blockers: 0
   majors: 0
-  minors: 0
-  observations: 0
-  iterations: []
+  minors: 2
+  observations: 1
+  iterations:
+    - id: review-001
+      revision: chg-0017-implementation-001
+      subject_provenance: implementation-001
+      reviewer_provenance: review-001
+      kind: initial_review
+      status: passed
+      evidence_gap: >-
+        R001 (MINOR): protocol/specification.md SS42 cites SS2 ("per SS2 and
+        SS33, the chat is the runtime and Core has no access to live chat
+        state") for a claim SS2 does not make -- SS2 is titled "Change" and
+        contains no chat/runtime content; the real textual support is SS28
+        ("Repository-native state"). The miscitation is repeated verbatim
+        across intent.md, discovery.md, this Change's own specification.md,
+        and test-strategy.md, and was not caught by specification-review.md.
+        R002 (MINOR): tdd-evidence.yml's top-level `status: compliant`
+        understates a self-disclosed C-009/C-010 RED gap -- the four
+        test_project_configuration.py interaction-language companion tests
+        landed in the same commit (d1d0feb) as the schema edit they test, so
+        no RED was observed for them, confirmed directly via `git show
+        d1d0feb --stat`. CHG-0007's own tdd-evidence.yml used `status:
+        exception` with a top-level `reason` for the identical "test and
+        implementation land together" fact pattern; CHG-0017 kept
+        `compliant` and disclosed the gap only in a cycle-level note, which
+        manifest.yml's own compact tdd summary does not surface. Also 1
+        OBSERVATION (DEC-002's Alternatives/Trade-offs are presented at
+        Architecture stage, but Specification's own FR-004 had already fixed
+        the "interpolated line" outcome; both were authored in the same
+        commit df1a87a, so DEC-002 cannot be independently confirmed as a
+        live choice rather than a post-hoc record -- not a Finding, since
+        DEC-002's architectural classification and owning artifact are
+        correct on their substance regardless). Neither MINOR is blocking
+        per protocol/policies/review.yml `blocking: [blocker, major]`. Every
+        mechanical claim in verification.md and tdd-evidence.yml (437
+        passed, forge validate/doctor clean, both SKILL.md rendering
+        variants, Contract dual-file parity, validate_conformance
+        untouched) was independently reproduced. See review.md for full
+        findings and the "Checked and found sound" record.
 documentation:
   impact_evaluated: true
   update_required: true

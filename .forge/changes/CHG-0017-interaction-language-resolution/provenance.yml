@@ -36,3 +36,75 @@ records:
         and will record its own review-role provenance separately; this
         session does not and cannot produce that record itself without
         constituting self-review.
+  - id: review-001
+    role: review
+    execution: {id: review-exec-chg0017-20260819-75b3559f, context_id: review-context-chg0017-20260819-68f62b16}
+    recorded_at: "2026-08-19T15:49:04-03:00"
+    revision:
+      id: chg-0017-implementation-001
+      immutable_ref: {type: git_commit, value: 410c4c6e379e4ace86caf706f3d2b74af6473443}
+      description: >-
+        PASS, Iteration 1. 2 MINOR (specification.md SS42 miscites SS2 for a
+        claim SS2 does not make; tdd-evidence.yml's top-level `status:
+        compliant` understates a self-disclosed RED gap against this
+        repository's own CHG-0007 `exception` precedent), 1 OBSERVATION
+        (DEC-002 authored in the same commit as the FR-004 outcome it
+        purports to independently decide). No BLOCKER or MAJOR. Every
+        mechanical claim in verification.md and tdd-evidence.yml
+        independently reproduced.
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: claude-code
+      statement: >-
+        Self-recorded repository-native provenance for the Strict Review
+        Execution that produced this Change's review-001 Iteration. This
+        Execution and Execution Context are distinct from the Implementation
+        session that produced implementation-001 -- I was launched cold, as
+        a fresh subagent with no prior conversation about CHG-0017 and no
+        access to the Implementation session's transcript, reasoning, or any
+        context beyond this repository's own committed state at HEAD
+        (0c8d9ac at launch, one commit ahead of the frozen Implementation
+        subject 410c4c6, which I treated as the reviewed subject per this
+        Change's own freeze). No provider-native attestation is claimed;
+        assurance is recorded, not verified or cryptographic/external proof.
+        What I actually did, independently: read every one of this Change's
+        own Artifacts (intent, discovery, specification,
+        specification-review, architecture, plan, tasks, test-strategy,
+        traceability, tdd-evidence, verification, knowledge-capture,
+        manifest, provenance) and the governing Protocol/Contract/Policy
+        files this task named; ran `git diff 85c8ce0..410c4c6` and read the
+        code diff directly in src/forge_cli/adapters/{driver.py,service.py,
+        codex/projection.py,codex/driver.py} and confirmed
+        src/forge_cli/adapters/validation.py has an empty diff; ran `python
+        -m pytest -q` myself and got 437 passed, matching the claimed
+        figure; ran `forge validate` (exit 0, "Forge project is valid") and
+        `forge doctor` (7/7 PASS) myself; built two fresh scratch Git
+        repositories with `forge init` / `forge adapter install codex` /
+        `forge adapter update codex` and read the actual generated SKILL.md
+        content for both the auto case and an explicit
+        `interaction.language: pt-BR` case, confirming both match
+        verification.md's claimed line text character-for-character, and
+        that `forge doctor` reports `adapter:codex:generated_drift` PASS
+        after the update; tested the FR-001 regex directly in Python against
+        every example specification-review.md and specification.md name;
+        diffed C-070-C-073 between both Contract files and confirmed
+        byte-identical content modulo each file's own pre-existing wrapping
+        convention; read every new test body in
+        tests/unit/test_project_configuration.py,
+        test_codex_projection_bundle.py, and test_codex_skill_projection.py
+        and confirmed each asserts on the actual behavior it claims to, not
+        a tautology; checked `git show d1d0feb --stat` and `git log -p` for
+        the schema file and its companion tests to verify tdd-evidence.yml's
+        own disclosed RED-gap timing claim, which I found accurate; and
+        cross-checked DEC-001/DEC-002's Class/Authority/Owning Artifact
+        against protocol/policies/decision.yml's actual rules directly
+        rather than accepting manifest.yml's recorded values on their own
+        word. The one thing I could not and did not attempt to verify,
+        because Forge Core structurally cannot: what language any live
+        Harness chat session actually produces -- I checked, adversarially,
+        that no Artifact this Change produced claims otherwise (C-073/
+        INV-001), and found none that do. My full findings, evidence, and
+        the "Checked and found sound" record of everything I verified and
+        found correct are in review.md; I resolved nothing myself, per
+        C-025.
