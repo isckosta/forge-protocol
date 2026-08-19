@@ -126,3 +126,85 @@ records:
         this record's own immutable_ref) must be checked against for
         Out-of-Scope Mutation -- this statement does not itself compute or
         assert that check.
+  - id: review-002
+    role: review
+    execution: {id: review-exec-chg0016-20260819-6b41c07e, context_id: review-context-chg0016-20260819-9af3d182}
+    recorded_at: "2026-08-19T14:42:11-03:00"
+    revision:
+      id: chg-0016-resolution-001
+      immutable_ref: {type: git_commit, value: 848adc992d63bc510f3fae2917d47557095c9049}
+      description: >-
+        Resolution Verification (kind: resolution_verification) of CHG-0016's
+        frozen resolution-001 subject -- the Iteration-level
+        subject_provenance binding is recorded in manifest.yml's
+        review.iterations[] entry per protocol/schemas/change-v2.schema.json.
+        Scoped per protocol/versions/2/specification.md SS10-SS11 and Contract
+        C-047 to the eleven Findings resolution-001 targets (R001-R008, R010,
+        R011, R012), defects within resolution-001's Resolution Delta, and
+        Out-of-Scope Mutation -- explicitly NOT an unrestricted re-audit of
+        implementation-001, whose content Iteration 1 already evaluated.
+        Independent Execution and Execution Context from implementation-001
+        and resolution-001 (both implementation-exec-chg0016-20260819-01 /
+        implementation-context-chg0016-20260819-01) and from review-001
+        (review-exec-chg0016-20260819-add11f8d /
+        review-context-chg0016-20260819-d20e2d8c); this session has no memory
+        of any of those three. Verdict: PASS -- no Out-of-Scope Mutation,
+        0 new material findings, full_review_required false, 2 new
+        non-blocking OBSERVATIONs (R013, R014). See review.md Iteration 2.
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: claude-code
+      statement: >-
+        Self-recorded repository-native provenance for the independent
+        Resolution Verification execution that evaluated CHG-0016's frozen
+        resolution-001 subject. No provider-native, cryptographic, or external
+        attestation is claimed and none is available; assurance is recorded,
+        not verified -- the independence asserted here rests on this statement
+        and on the distinct execution identifiers above, not on proof a third
+        party could check. This execution computed the Resolution Delta itself
+        as `git diff --name-only e50d3c5..848adc9` (review-001's subject to
+        resolution-001's own immutable_ref, both frozen historical commits)
+        minus this Change's exact manifest.yml/provenance.yml/review.md paths
+        per SS11, obtaining twelve paths, and compared that set against
+        resolution-001's twelve declared scope entries programmatically: the
+        sets are exactly equal in both directions, so there is no Out-of-Scope
+        Mutation and no Scope padding. Each of the eleven targeted Findings was
+        re-checked against actual repository state rather than against
+        knowledge-capture.md or commit messages: the NFR-002 grep over
+        protocol/artifact-structure.md (zero hits) and `grep -rn
+        ARCHITECTURE.md protocol/` (none) for R001; an independent census of
+        all 29 verification.md/review.md files under .forge/changes/ (25 carry
+        the forge: block on line 1; only CHG-0003 and CHG-0005 do not,
+        confirming SS4's new claim) for R002; direct reading of the reworded
+        protocol/specification.md SS41 and artifact-structure.md SS1 for
+        R003/R004; traceability.yml for R005 and R008; the examples' Summary
+        table against their enumerated Findings for R006; `grep -n '^# '` over
+        all three affected files for R007; architecture.md's DEC-002 record and
+        manifest.yml for R008; tdd-evidence.yml for R010; tasks.md and a
+        repository-wide TDD-008 grep for R011. For R012 the fix was verified
+        three ways: reading both provenance-schema checks in
+        validation/__init__.py (lines 320 and 564, now an identical
+        two-element set), running `forge validate` against this repository's
+        own bound Iteration 1 with its @2 ledger ("Forge project is valid",
+        exit 0, where Iteration 1 recorded exit 2), and independently
+        reproducing TDD-004's RED by temporarily reverting line 320 to its
+        pre-fix single-schema form and running the new regression test, which
+        failed with `assert 2 == 0` exactly as recorded, after which the file
+        was restored (git diff clean). Full suite, forge validate, and forge
+        doctor were all run directly by this execution: 430 passed, "Forge
+        project is valid" exit 0, 7/7 doctor checks PASS. Two new OBSERVATION
+        Findings inside the Resolution Delta are recorded (R013: the forge:
+        block the Resolution added to both canonical examples sits on line 3
+        behind a disclaimer comment, so it is not parseable frontmatter and
+        does not match the placement SS4 now prescribes; R014: SS4's new
+        "omitting it is a defect" register sits in tension with SS1's "not
+        non-conforming"). Both are non-blocking under
+        protocol/policies/review.yml `blocking: [blocker, major]` and are
+        therefore not counted in new_material_findings, which SS12 reserves for
+        material Resolution-caused Findings and which Core independently
+        forbids being non-zero on a passed Iteration. Per Contract C-025 this
+        Reviewer resolved nothing: only review.md, manifest.yml, and this
+        record were written, and nothing in the Resolution Delta or the
+        Implementation subject was modified. Per C-047 no part of
+        implementation-001's already-reviewed content was re-audited.

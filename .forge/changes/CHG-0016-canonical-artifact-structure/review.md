@@ -3,7 +3,7 @@ forge:
   artifact: review
   schema: 1
 change: CHG-0016
-status: active
+status: passed
 ---
 # Strict Review — CHG-0016
 
@@ -14,10 +14,25 @@ status: active
 
 ## Verdict
 
-**REQUEST CHANGES (Iteration 1)** — 1 BLOCKER, 2 MAJOR, 6 MINOR, 3 OBSERVATION.
+**PASS (final, Iteration 2 — `kind: resolution_verification`).** No blocking
+Findings remain outstanding.
+
+- **Iteration 1** (`kind: initial_review`) — **REQUEST CHANGES**: 1 BLOCKER,
+  2 MAJOR, 6 MINOR, 3 OBSERVATION.
+- **Iteration 2** (`kind: resolution_verification`) — **PASS**: all 11 targeted
+  Findings verified resolved against repository state; R009 confirmed as a
+  correctly-excluded standing limitation, not a dropped Finding; **no
+  Out-of-Scope Mutation**; **0 new material findings**; 2 new non-blocking
+  OBSERVATIONs recorded (R013, R014).
 
 `protocol/policies/review.yml` sets `blocking: [blocker, major]`, so the BLOCKER
-and both MAJOR Findings are blocking for this project.
+and both MAJOR Findings raised in Iteration 1 were blocking for this project.
+All three are resolved. The two Findings Iteration 2 adds are OBSERVATION
+severity and therefore non-blocking.
+
+Everything below this Summary down to the end of `## Conclusion` is Iteration 1's
+verbatim historical record, unaltered. Iteration 2 is appended at the end of this
+file.
 
 The BLOCKER (R012) is not a defect in this Change's Implementation subject — it
 is a latent defect in `src/forge_cli/validation/__init__.py` inherited from
@@ -39,12 +54,23 @@ convention-loss failure mode it was written to prevent.
 
 ## Summary
 
-| Severity | Count | Blocking |
-| --- | --- | --- |
-| BLOCKER | 1 | yes |
-| MAJOR | 2 | yes |
-| MINOR | 6 | no |
-| OBSERVATION | 3 | no |
+Counting semantics, stated explicitly because the Protocol fixes them nowhere
+(this is the ambiguity Iteration 1's R006 named): **Raised** is cumulative — every
+Finding ever recorded in this Review, in the Iteration that recorded it.
+**Outstanding** is the state *after* the final Iteration, and is what
+`manifest.yml`'s `review.blockers`/`majors`/`minors`/`observations` carry.
+
+| Severity | Raised (It. 1) | Raised (It. 2) | Raised total | Outstanding | Blocking |
+| --- | --- | --- | --- | --- | --- |
+| BLOCKER | 1 | 0 | 1 | 0 | yes |
+| MAJOR | 2 | 0 | 2 | 0 | yes |
+| MINOR | 6 | 0 | 6 | 0 | no |
+| OBSERVATION | 3 | 2 | 5 | 3 | no |
+
+The three outstanding OBSERVATIONs are R009 (a standing limitation of what any
+Reviewer can verify from squashed Git history — never actionable, never
+"resolved"), and R013/R014 (recorded by Iteration 2, non-blocking, left to the
+Change's own judgment or to a future Change).
 
 ## Review Subject
 
@@ -575,3 +601,406 @@ an Execution and Execution Context distinct from the Resolution that addresses
 these Findings.
 
 **REQUEST CHANGES.**
+
+## Iteration 2 — PASS (`kind: resolution_verification`)
+
+### Iteration 2 scope and authority
+
+This Iteration is a **Resolution Verification**, not a second Initial Review. Per
+`protocol/contract/engineering.md` C-047 and
+`protocol/versions/2/specification.md` §10, its authority is bounded to three
+things and was exercised as exactly those three:
+
+1. the Findings `resolution-001` targets;
+2. defects within `resolution-001`'s Resolution Delta;
+3. Out-of-Scope Mutation.
+
+It is deliberately **not** a re-audit of `implementation-001`. Nothing in
+Iteration 1's "Checked and found sound" section was re-litigated, and no opinion
+is offered here on `protocol/artifact-structure.md`'s per-type design in general —
+Iteration 1 evaluated that content and did not flag it, and re-opening it is
+precisely what C-047 forbids.
+
+### Iteration 2 execution independence
+
+Executed cold, from committed repository state, in an Execution and Execution
+Context distinct from all three prior records: `implementation-001` and
+`resolution-001` (both
+`implementation-exec-chg0016-20260819-01` /
+`implementation-context-chg0016-20260819-01`) and `review-001`
+(`review-exec-chg0016-20260819-add11f8d` /
+`review-context-chg0016-20260819-d20e2d8c`). This session has no memory of any of
+them and read `review.md` Iteration 1, `provenance.yml`, `manifest.yml`, and the
+Protocol/Contract text directly. No claim in `knowledge-capture.md`,
+`tdd-evidence.yml`, or any commit message was accepted without independent
+reproduction against the actual files, tests, and code. See `provenance.yml`
+record `review-002`.
+
+Subject: `resolution-001`, frozen at
+`848adc992d63bc510f3fae2917d47557095c9049` (revision `chg-0016-resolution-001`).
+`HEAD` at the time of this Review is `67766d3`, whose only difference from the
+subject is `provenance.yml` (48 added lines — `resolution-001`'s own record).
+That is Change-local review-control metadata, which the §5 effective-workspace
+freeze permits; `git status --porcelain` is otherwise clean.
+
+### Resolution Delta, computed independently — no Out-of-Scope Mutation
+
+Computed per §11 as the committed diff between the immutable revision of the
+Iteration immediately preceding this one (`review-001`'s subject,
+`e50d3c594c49a33c0816b5febcaf0c3e78c9cb2d`) and this Iteration's own subject
+(`848adc99…`) — both already-frozen historical commits, not the current
+workspace — minus this Change's exact `manifest.yml`, `provenance.yml`, and
+`review.md` paths:
+
+```
+git diff --name-only e50d3c5..848adc9 -- . \
+  ':(exclude).forge/changes/CHG-0016-canonical-artifact-structure/manifest.yml' \
+  ':(exclude).forge/changes/CHG-0016-canonical-artifact-structure/provenance.yml' \
+  ':(exclude).forge/changes/CHG-0016-canonical-artifact-structure/review.md'
+```
+
+Twelve paths result. `resolution-001` declares twelve `scope` entries. The two
+sets are **exactly equal** — set difference is empty in both directions
+(no uncovered path, and no declared-but-untouched path either, so the Scope is not
+padded to swallow a wider delta than was taken):
+
+| # | Resolution Delta path | Covered by declared `scope` |
+| --- | --- | --- |
+| 1 | `.forge/changes/CHG-0016-canonical-artifact-structure/architecture.md` | yes |
+| 2 | `.forge/changes/CHG-0016-canonical-artifact-structure/knowledge-capture.md` | yes |
+| 3 | `.forge/changes/CHG-0016-canonical-artifact-structure/tasks.md` | yes |
+| 4 | `.forge/changes/CHG-0016-canonical-artifact-structure/tdd-evidence.yml` | yes |
+| 5 | `.forge/changes/CHG-0016-canonical-artifact-structure/traceability.yml` | yes |
+| 6 | `.forge/changes/CHG-0016-canonical-artifact-structure/verification.md` | yes |
+| 7 | `examples/canonical-artifacts/review.md` | yes |
+| 8 | `examples/canonical-artifacts/verification.md` | yes |
+| 9 | `protocol/artifact-structure.md` | yes |
+| 10 | `protocol/specification.md` | yes |
+| 11 | `src/forge_cli/validation/__init__.py` | yes |
+| 12 | `tests/cli/test_validate.py` | yes |
+
+**Out-of-Scope Mutation: none.** This is the mechanical §11 result, not a
+judgment. Consequently `full_review_required` is `false`, C-048 does not engage,
+and this Iteration is eligible to be `status: passed`.
+
+**Core independently agrees, and I proved the check is live rather than
+vacuously silent.** After recording this Iteration, `forge validate` runs
+`_validate_resolution_verification`, which recomputes the Delta from
+`provenance.yml` and compares it against the declared `scope` itself — it returns
+"Forge project is valid", exit 0. To confirm that result is a real agreement and
+not a check that silently skipped, I removed a single entry
+(`protocol/artifact-structure.md`) from `resolution-001`'s declared `scope` and
+re-ran: `forge validate` exits 2 with "Resolution Delta contains Out-of-Scope
+Mutation not covered by declared scope (protocol/artifact-structure.md); a
+resolution_verification Iteration that detects this MUST be status: failed with
+full_review_required: true, never passed." I then restored the file. My
+hand-computed Delta and Core's are the same set.
+
+The narrower, genuinely discretionary check — whether anything nominally inside a
+declared-scope path exceeds "fixing the eleven targeted Findings" — was also run,
+against `git diff --stat` and then the diffs themselves. It comes back clean. The
+largest production change is **one line** (`validation/__init__.py`, an `!=`
+equality widened to a two-element set membership). The largest content change is
+`protocol/artifact-structure.md` at +50/−~15, every hunk of which maps to a named
+Finding (R001 §5, R002 §4, R004 §1, R007 §4 ×2). `knowledge-capture.md` grows by
+46 lines, all of it three new lessons corresponding to R001, R002, and R008 — the
+established shape of that artifact, not an unrelated rewrite. No file in the Delta
+contains an edit I could not attribute to a targeted Finding.
+
+### The eleven targeted Findings, each verified against repository state
+
+`resolution-001.targets` reads `[R001, R002, R003, R004, R005, R006, R007, R008,
+R010, R011, R012]` — confirmed against the actual file, eleven ids, and it
+matches the eleven Findings Iteration 1 raised other than R009.
+
+**R012 (BLOCKER) — resolved.** `src/forge_cli/validation/__init__.py:320` now
+reads `p.get("schema")not in{"forge/execution-provenance@1","forge/execution-provenance@2"}`,
+byte-identical in its accepted set to the pre-existing line 564. Verified three
+ways, none of them by trusting the record:
+
+- `grep -n 'execution-provenance@' src/forge_cli/validation/__init__.py` returns
+  exactly two lines (320 and 564) with the identical two-element set. The fix is
+  a widening to the already-blessed set, not a loosening: any schema outside those
+  two still takes the same rejection path, and `p is None` is still checked first.
+- `forge validate` against this repository — which now carries a *real* bound
+  Review Iteration (`review-001`, `subject_provenance: implementation-001`)
+  against a `forge/execution-provenance@2` ledger — returns **"Forge project is
+  valid", exit 0**. Iteration 1 recorded exit 2 with a C-026 finding at this exact
+  state. That is R012's manifestation disappearing under the fix, observed
+  directly.
+- **The regression test is genuinely RED against the pre-fix code, and I proved
+  it rather than reading the claim.** I reverted line 320 to its pre-fix
+  single-schema equality form in a scratch copy of the working tree and ran
+  `test_protocol2_accepts_execution_provenance_v2_ledger_for_bound_review_iteration`:
+  it fails with `assert 2 == 0` on `result.exit_code` — the same exit code and the
+  same cause `tdd-evidence.yml` TDD-004 records. I then restored the file
+  (`git diff` clean). This is the one RED claim in this Change that *is*
+  independently verifiable after the fact, and it verifies.
+
+The test also tests what it claims. `_base_protocol2_manifest()` supplies a
+`review.iterations[0]` with both `subject_provenance` and `reviewer_provenance`
+and `status: passed`, so line 304's guard does not short-circuit and line 320 is
+actually reached; the only thing the test varies from the adjacent passing
+fixture is `provenance["schema"] = "forge/execution-provenance@2"`. It is a
+one-variable test on the exact predicate that was wrong.
+
+**R001 (MAJOR) — resolved.** `grep -ni "codex\|claude\|anthropic\|openai\|cursor"
+protocol/artifact-structure.md` — the falsification test
+`specification-review.md` itself nominated for NFR-002 — now returns **zero
+hits**. `grep -rn "ARCHITECTURE.md" protocol/` returns **nothing**, so the
+dangling unpackaged-document pointer is gone too. §5 keeps its generic first
+sentence and its Protocol §34 citation. `traceability.yml`'s false evidence token
+is replaced with
+`artifact_structure_md_section_5_no_named_harness_after_r001_resolution`, which is
+a true statement of the file as shipped. Both halves of the Finding — the
+Requirement violation and the false evidence record — are addressed.
+
+**R002 (MAJOR) — resolved.** `protocol/artifact-structure.md` §4 now opens with a
+paragraph documenting the `forge:` frontmatter block generically ("Every entry's
+structural core additionally includes, as its very first element…"), with the
+per-type non-repetition rationale stated. Its factual claim is true: I ran an
+independent census of all 29 `verification.md`/`review.md` files under
+`.forge/changes/` — 25 carry the block as line 1, and the only four that do not
+are `CHG-0003` and `CHG-0005`, exactly as the paragraph says. The block is
+restored in `CHG-0016/verification.md` (line 1) and in both
+`examples/canonical-artifacts/` files. See R013 below for a residual, non-blocking
+placement wrinkle in the two examples.
+
+**R003 (MINOR) — resolved.** `protocol/specification.md` §41 now reads "The full
+non-binding guidance is defined by `protocol/artifact-structure.md`; its normative
+binding strength is defined by `protocol/contract/engineering.md` C-067–C-069."
+The normative and non-normative halves are no longer described with the same word,
+which is what the Required Resolution asked for. §41 no longer contradicts itself.
+
+**R004 (MINOR) — resolved.** `artifact-structure.md` §1's paraphrase is gone,
+replaced with a pointer: "see `protocol/contract/engineering.md` C-067 for the
+exact, authoritative statement of what that means; it is not restated here
+(INV-001, below)." The narrowing — the dropped
+"beyond what a future Contract revision explicitly adds" escape clause — cannot
+recur, because no restatement remains to drift. INV-001 is satisfied at the one
+place Iteration 1 found it violated.
+
+**R005 (MINOR) — resolved.** `traceability.yml` now records `AC-004: []`,
+consistent with the eleven other non-mechanical Acceptance Criteria. The two tests
+remain correctly mapped to AC-009, where Iteration 1 confirmed they belong.
+
+**R006 (MINOR) — resolved.** `examples/canonical-artifacts/review.md`'s Summary
+table now reads `MINOR 1 / OBSERVATION 1`, and its body enumerates exactly one
+MINOR (`R001`, Iteration 1) and one numbered OBSERVATION (`R002 — OBSERVATION —
+Local variable naming…`, Iteration 2), which the Resolution promoted from
+unnumbered prose. Table and body now agree. The Resolution additionally states the
+counting semantics it demonstrates ("cumulative across every iteration … stated
+explicitly because the Protocol does not fix this counting semantics anywhere"),
+which is the second half of the Required Resolution and the more valuable half.
+
+**R007 (MINOR) — resolved.** `# PASS` and `# PASS (final, Iteration 2)` are gone
+from all three files, replaced with `**PASS.**` / `**PASS (final, Iteration 2).**`.
+`grep -n '^# '` over all three now returns exactly one H1 each — the title.
+Iteration 1's optional half was also taken: §4's Verification and Review entries
+each now carry an explicit rendering recommendation, so the next author does not
+have to infer it from the examples. **Regression check performed:** nothing
+referenced the removed headings. `TDD-008` residue aside (see R011), no
+cross-reference anywhere in the repository points at `# PASS` as a heading, and
+the full suite passes, so no test or projection asserted on the old shape.
+
+**R008 (MINOR) — resolved.** `manifest.yml` now records
+`DEC-002: resolved_via: autonomous_decision`. `architecture.md`'s record gains an
+explicit **Resolution path** paragraph that accounts for all three sub-questions
+(two by citation, the third — file identity and shape — as design reasoning) and
+states the governing principle ("classified by its weakest link, not its
+strongest"). The miscounting "Both sub-answers were reached by direct citation"
+sentence is gone; **Confidence: high** now stands alone, which is honest.
+`traceability.yml`'s mislabelled evidence token is corrected from
+`architecture_stage_evidence_resolution_specification_md_dec_002` to
+`architecture_md_dec_002_autonomous_decision`, naming the artifact the Decision
+actually lives in. This also brings the Change into line with `CHG-0015`'s
+structurally comparable Decision, which Iteration 1 cited as precedent.
+
+**R010 (OBSERVATION) — resolved.** `tdd-evidence.yml` gains a note stating plainly
+that both `AdapterProjectionContext` construction sites call
+`resolve_effective_artifact_structure` unconditionally and that it raises rather
+than returning `""`, so the omit-branch TDD-002 protects "is exercised only by
+direct library callers and by the test itself, not by any shipped production path
+today." That is exactly the honesty gap Iteration 1 described, closed without
+removing the branch — which is what Iteration 1 explicitly did not ask for.
+
+**R011 (OBSERVATION) — resolved.** `tasks.md` T-008 is now `- [ ] ~~T-008~~
+**Not performed, by design.**` — unchecked, struck through in actual Markdown
+rather than "in spirit", with the reason retained rather than the task silently
+dropped. T-009's `TDD-008` residue is corrected to `TDD-001/TDD-002/TDD-003`,
+which are the three cycles `test-strategy.md` actually defines. `grep -rn
+"TDD-008"` over the Change directory now hits only `review.md` and
+`manifest.yml`'s `evidence_gap` — both of which are historical records *of* the
+Finding and must keep the string.
+
+### Disposition of R009 (not targeted) — confirmed correctly excluded, not dropped
+
+R009 is deliberately absent from `resolution-001.targets`, and that remains the
+accurate characterization. Iteration 1's own text asks for nothing: it states "I
+found no indication of misrepresentation", records the limitation as "a standing
+limitation of what a Reviewer can verify from squashed history", and notes the
+same commit pattern predates this Change. There is no Required Resolution
+paragraph in R009 — the only Finding in Iteration 1 without one. `resolution-001`
+declares the exclusion explicitly in its `revision.description` and its `source.statement`
+rather than leaving it to be inferred. That is the correct disposition of a
+non-actionable OBSERVATION under C-050: recorded, not discarded, not amplified.
+
+Worth noting as a genuine improvement rather than merely an absence of harm: the
+Resolution's own new cycle, TDD-004, is the first cycle in this Change whose RED
+*is* independently verifiable after the fact, and I verified it (above). R009's
+limitation does not extend to the Resolution's own work.
+
+### New Findings introduced by the Resolution
+
+Two, both **OBSERVATION** severity, both strictly inside the Resolution Delta,
+both introduced by the Resolution's own edits. Neither is blocking under
+`protocol/policies/review.yml` (`blocking: [blocker, major]`); neither is counted
+in `new_material_findings` — see "Convergence accounting" below for why.
+
+#### R013 — OBSERVATION — the frontmatter block the Resolution added to both canonical examples is not on line 1, so it is not parseable frontmatter and does not match the placement §4 now prescribes
+
+**Problem:** `examples/canonical-artifacts/verification.md` and
+`examples/canonical-artifacts/review.md` open with
+`<!-- Illustrative example, not a real Change. See README.md. -->`, a blank line,
+and *then* the `---`/`forge:` block on line 3. A YAML frontmatter block is
+frontmatter only when it is the first line of the file; preceded by anything, it
+is a literal `---` thematic break followed by plain text in every standard
+Markdown frontmatter parser.
+
+**Evidence:** `git show 848adc9 -- examples/canonical-artifacts/` shows the
+Resolution inserting the block *after* the pre-existing disclaimer comment in both
+files. The same commit's §4 paragraph prescribes the block "as its very first
+element … before the `# <Type> — <title>` heading". Independent census: all 25
+real `verification.md`/`review.md` files in this repository that carry the block
+put it on line 1, without exception — the exemplars are the only two artifacts
+anywhere that place it elsewhere.
+
+**Impact:** Functionally nil — Iteration 1 already established that no Core code
+parses the block, and `forge validate`/`pytest` are unaffected. The impact is the
+one this Change exists to care about: the two files whose declared purpose
+(`examples/canonical-artifacts/README.md`) is to be the copyable model demonstrate
+a placement the guidance's own new paragraph rules out, in the very convention
+R002 was raised to restore. There is a real counter-argument, which is why this is
+an OBSERVATION and not a MINOR: the disclaimer comment is a "this is not a real
+Artifact" marker, and hoisting genuine-looking frontmatter to line 1 would make
+the file read as a real Change's artifact. If that is the reasoning, it is
+defensible — it is simply nowhere stated.
+
+**Suggested disposition (not required):** either move the block to line 1 and the
+disclaimer comment beneath it, or add one clause to the README or to the files'
+own annotations saying the disclaimer deliberately precedes the frontmatter and is
+not part of what a copier copies. Not resolved here, per C-025.
+
+#### R014 — OBSERVATION — §4's new "omitting it is a defect, not a style choice" sits in tension with §1's "not non-conforming"
+
+**Problem:** The R002 paragraph the Resolution added to §4 ends: "omitting it is a
+defect, not a style choice, unless a Change states explicitly why a given Artifact
+does not carry it." §1 of the same document says "An Artifact that does not follow
+this structure is not non-conforming", and C-067 makes conformance to the whole
+document non-Gate-checked.
+
+**Evidence:** the two sentences are 100 lines apart in
+`protocol/artifact-structure.md`. "Is a defect" plus an exception clause phrased
+as a condition (`unless a Change states explicitly…`) reads as a requirement with
+a documented-waiver escape hatch, which is a stronger register than any other
+recommendation in §4 — every one of which is phrased as "recommended", "reads
+well here", or "closely follows precedent".
+
+**Impact:** Narrow, and arguably none: "defect" is a quality judgment and
+"non-conforming" is a Gate judgment, and those are genuinely different things, so
+the two sentences can be read compatibly. But this is structurally the *same*
+class of defect as R003 — a document being imprecise about how binding it is, two
+sections apart — in a document whose §1 exists to settle exactly that question. It
+is recorded because the Resolution introduced the sentence, not because it changes
+anything mechanical.
+
+**Suggested disposition (not required):** soften to the register §4 uses
+elsewhere ("its omission is a gap worth stating a reason for"), or say explicitly
+that "defect" here means a quality gap and not non-conformance in C-067's sense.
+Not resolved here, per C-025.
+
+### Independent mechanical verification
+
+Every figure below was produced by this execution, not read from
+`verification.md`, `knowledge-capture.md`, or any commit message.
+
+- `python -m pytest -q` → **430 passed** in 33.61s. Matches the Resolution's
+  claimed 430 (up from Iteration 1's independently-reproduced 429; the delta is
+  exactly TDD-004's one new test).
+- `forge validate` → **"Forge project is valid", exit 0**, both before this
+  Iteration's writes and after them (with `review-002`, the
+  `resolution_verification` entry, and the advanced `state.current` all recorded).
+  This is the material change from Iteration 1, which recorded exit 2 with a C-026
+  finding at this same bound-Iteration state.
+- `forge doctor` → **7/7 PASS**, exit 0.
+- `git status --porcelain` → clean at `67766d3` before this Review's own writes.
+- Pre-fix RED reproduction for TDD-004 → confirmed failing, `assert 2 == 0`,
+  file restored afterwards (see R012 above).
+
+### Scope discipline (C-047 / C-050)
+
+No unrelated latent Finding was discovered in this Iteration. Had one been, C-050
+requires it be recorded and *not* treated as license for an unrestricted re-audit;
+R013 and R014 are not unrelated latent Findings — both are inside the Resolution
+Delta and are the Resolution's own responsibility, which is squarely within
+C-047's second authorized category.
+
+For the record of what was deliberately **not** done: the per-Artifact-type design
+of `protocol/artifact-structure.md`, the Adapter projection mechanism, the
+dataclass compatibility argument, the wheel probe, the Contract dual-file parity,
+and every factual claim Iteration 1 spot-checked were all left alone. Iteration 1
+examined them and found them sound; re-examining them would be the unrestricted
+re-audit C-047 forbids, and it would also be a poor use of an independent
+Reviewer, since the second look adds nothing the first did not already establish.
+
+One item that *is* in scope and worth stating rather than leaving silent:
+`verification.md` still records "429 passed" while the suite is now 430. That is
+correct as written — `verification.md` is the verification record of the frozen
+`implementation-001` subject, and 429 was the true figure at that subject. The
+Resolution's own post-fix figure is recorded in `tdd-evidence.yml` TDD-004 and in
+`848adc9`'s commit message. No Finding.
+
+### Convergence accounting
+
+`new_material_findings: 0`, and `full_review_required: false`.
+
+The reasoning, stated because §12's definition is precise and this is the field
+that drives C-049's automatic-termination machinery:
+
+- There is no Out-of-Scope Mutation to count (mechanically established above).
+- R013 and R014 *are* Findings the Resolution is responsible for, but the field
+  counts **material** new findings, and both are OBSERVATION severity —
+  non-blocking under this project's `blocking: [blocker, major]`. §12's own
+  exclusions point the same way: the counter exists to stop a Resolution cycle
+  that keeps breaking things, not to register cosmetic residue in guidance prose.
+- Core enforces the same reading: `_validate_resolution_verification` rejects a
+  `passed` Iteration that declares `new_material_findings > 0`. A verdict of PASS
+  on non-blocking Findings and a non-zero counter are mutually exclusive by
+  construction, and the blocking policy is what decides which of the two applies.
+- No original Finding recurs, so nothing is countable on that basis either — and
+  §12 forbids counting recurrences regardless.
+
+Derived `consecutive_unconverged_verifications` is therefore **0**; the trailing
+run of `resolution_verification` + `failed` + `nmf > 0` entries is empty. The
+Convergence Limit (2) is not approached, `review.convergence.state` remains
+nominal, and §13 does not engage. `manifest.yml` declares no `convergence` block,
+which agrees with the Core-derived value of 0 — Core raises a finding only on
+disagreement with a *declared* value.
+
+### Verdict
+
+**PASS.**
+
+All eleven targeted Findings are resolved in repository state, verified file by
+file rather than accepted from the record. R009's exclusion is correct. The
+Resolution Delta contains no Out-of-Scope Mutation, and the declared Resolution
+Scope is exact in both directions — no uncovered path, and no padding. The one
+production-code change is a single line that widens a check to a set that already
+existed ten lines-of-logic away, guarded by a regression test I confirmed is red
+against the pre-fix code and green against the fixed one. `forge validate` exits 0
+for the first time since Iteration 1 was recorded, which is R012's resolution
+observable from outside the code.
+
+Two non-blocking OBSERVATIONs (R013, R014) are recorded for the Change's judgment.
+Per C-025 this Reviewer resolved neither, and nothing outside `review.md`,
+`manifest.yml`, and `provenance.yml` was written by this Iteration.

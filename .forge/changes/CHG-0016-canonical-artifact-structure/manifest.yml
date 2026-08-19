@@ -5,7 +5,7 @@ change:
   title: Canonical Artifact Structure for Human-Readable Change Documentation
   kind: feature
 flow: {initial: full, current: full, escalations: []}
-state: {current: strict_review}
+state: {current: completion}
 artifacts:
   intent: complete
   discovery: complete
@@ -19,18 +19,18 @@ artifacts:
   implementation: complete
   provenance: complete
   verification: complete
-  review: active
+  review: complete
   documentation: complete
   knowledge_capture: complete
 requirements: {total: 14, implemented: 14, verified: 14}
 tdd: {status: compliant, cycles: 3}
 verification: {status: passed}
 review:
-  status: failed
-  iteration: 1
-  blockers: 1
-  majors: 2
-  minors: 6
+  status: passed
+  iteration: 2
+  blockers: 0
+  majors: 0
+  minors: 0
   observations: 3
   iterations:
     - id: review-001
@@ -91,6 +91,15 @@ review:
         found sound" record of what was independently reproduced (429
         tests, forge validate/doctor, Contract dual-file parity, wheel-probe
         strengthening, every cited factual claim).
+    - id: review-002
+      revision: chg-0016-resolution-001
+      subject_provenance: resolution-001
+      reviewer_provenance: review-002
+      kind: resolution_verification
+      status: passed
+      full_review_required: false
+      new_material_findings: 0
+      finding_classes: [resolution_regression]
 documentation:
   impact_evaluated: true
   update_required: true
