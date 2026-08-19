@@ -55,3 +55,26 @@ status: complete
   correct schema addition benefits from being sequenced after its own
   test, not batched ahead of it purely because it "obviously" belongs
   with the surrounding prose edits.
+
+- **Fixing a Reviewer-identified Finding, even a non-blocking MINOR one,
+  in already-reviewed content immediately trips `forge validate`'s C-026
+  freeze-drift check — correctly, not as friction.** After independent
+  Strict Review passed with two MINOR Findings, fixing `protocol/
+  specification.md` §42's citation error (R001) and `tdd-evidence.yml`'s
+  status label (R002) made `forge validate` report "C-026 review subject
+  changed after its immutable revision freeze" against `review-001`'s own
+  binding — because reviewable content genuinely now differs from the
+  commit that Iteration passed against, and `state.current` was still
+  `in_progress`. This is `CHG-0012`'s own documented exemption design
+  working exactly as intended (the check stands down only once a Change
+  reaches `complete`), not a bug introduced by this Resolution, and not
+  something to route around by rewriting `review-001`'s binding — C-026
+  explicitly forbids that ("immutable Review Iteration subject binding
+  differs from its first committed authority"). The correct response was
+  the one this repository's own Protocol already names: record a
+  `role: resolution` provenance entry for the new revision and proceed
+  toward Completion, at which point the exemption applies. General
+  lesson: a genuinely non-blocking Finding fix can still leave `forge
+  validate` red for a Change that has not yet reached Completion — that
+  is a legitimate transient state the mechanism is designed to produce,
+  not evidence something went wrong.

@@ -5,7 +5,7 @@ change:
   title: Interaction Language Resolution
   kind: feature
 flow: {initial: full, current: full, escalations: []}
-state: {current: in_progress}
+state: {current: complete}
 artifacts:
   intent: complete
   discovery: complete
