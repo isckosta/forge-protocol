@@ -44,3 +44,106 @@ records:
         and will record its own review-role provenance separately; this
         session does not and cannot produce that record itself without
         constituting self-review.
+  - id: review-001
+    role: review
+    execution: {id: review-exec-chg0018-20260819-f27d37ea, context_id: review-context-chg0018-20260819-6e5e2500}
+    recorded_at: "2026-08-19T17:33:35-03:00"
+    revision:
+      id: chg-0018-implementation-001
+      immutable_ref: {type: git_commit, value: 6214390dc0f36ee982b0ce83185b1eaa08f21d7d}
+      description: >-
+        Independent Strict Review, Iteration 1: PASS, 1 MINOR finding
+        (R001, non-blocking), 0 BLOCKER/MAJOR. The two pre-existing Core
+        leaks (FR-001/.codex hardcoding, FR-002/misfiled generic invariant-
+        assessment logic) are genuinely fixed, verified by direct grep and
+        execution. NFR-001 (no vendor name outside the disclosed
+        packaged.py composition-root exception) verified by direct grep of
+        every adapters/*.py file. The Claude Code Adapter installs and
+        projects all three mechanisms correctly against a real scratch
+        repository, is idempotent, and forge adapter doctor reports 6/6
+        PASS + 1 honest WARN. The shared conformance suite exercises
+        substantive, driver-agnostic assertions (determinism, ownership-
+        root containment, honest limitation representation) against both
+        concrete Drivers. C-074 is byte-identical between both Contract
+        files. R001: the FR-006 hook's substring-only pattern matching
+        denies a plausible compound Git command (an unrelated `>`
+        elsewhere in the same command line as an ordinary git add/commit
+        of a protected path), demonstrated by piping real JSON payloads to
+        the actual generated hook script; non-blocking because Architecture
+        already discloses the abstract risk class and FR-006 does not
+        claim broader enforcement than the hook has. The dogfooded Layer C
+        claim was independently verified, not accepted from prose.
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: claude-code
+      statement: >-
+        Self-recorded repository-native provenance for the independent
+        Strict Review Execution of CHG-0018, run in an Execution and
+        Execution Context distinct from the Implementation session
+        (per Contract C-026 and Protocol 2 SS2), with no access to the
+        Implementation conversation and no prior memory of this Change
+        beyond committed repository state. No provider-native attestation
+        is claimed; assurance is recorded, not verified or cryptographic/
+        external proof. What was independently verified: (1) the full
+        pytest suite (504 passed, matching the claimed figure, with the
+        67-new-test arithmetic independently recomputed via
+        --collect-only, not merely trusted); forge validate and forge
+        doctor, both clean; (2) FR-001/FR-002/NFR-001/NFR-002 by direct
+        grep and code reading (codex/assessment.py no longer exists;
+        adapters/assessment.py exists and is imported by both drivers;
+        the schema regex's Xcodex bug is fixed, confirmed by compiling the
+        actual packaged regex against test strings in a standalone Python
+        script; codex/targets.py still rejects .codex directly); (3) the
+        three Claude Code projection mechanisms, by running `forge init`
+        then `forge adapter install claude-code` against a real fresh
+        scratch repository and inspecting the generated
+        .claude/skills/forge/SKILL.md, .claude/CLAUDE.md, and hook script
+        directly, plus idempotent reinstall and `forge adapter doctor
+        claude-code`; (4) the FR-006 hook's actual behavior, by piping
+        real JSON tool-call payloads to the generated script for both
+        denied (sed -i/perl -i/truncate/redirection) and allowed (git add,
+        git commit, cat, ls, grep, git status/diff) commands, which
+        surfaced R001 (a compound-command false positive) beyond the
+        existing test suite's coverage; (5) the shared conformance suite's
+        content, read directly, confirming its assertions are substantive
+        and genuinely driver-agnostic; (6) C-074's wording in both
+        Contract files, and protocol/specification.md SS34-38's claimed
+        pre-existing harness-neutrality, both read directly; (7) two of
+        the six capability-evidence citations (code.claude.com/docs/en/
+        hooks and /memory) fetched live and confirmed to say what
+        capabilities.yml/discovery.md claim. On Layer C specifically: I
+        located and inspected the actual surviving scratch Git repository
+        this Change's own Implementation produced
+        (.../scratchpad/golden-path-cc-live), verified its real commit
+        history (139a23c/cb193ee/55f7cf7/7828e3d/9c79dac) and file
+        contents directly, and independently re-executed the claimed
+        AttributeError-vs-ValueError regression and fix myself in Python
+        against the actual checked-out commits (not against a description
+        of them). I also read the raw Claude Code session transcripts
+        (~/.claude/projects/.../*.jsonl) for that scratch directory,
+        which corroborate the account mechanically -- a skill_listing
+        attachment naming "forge" at session start and a Skill tool_use
+        as the session's first action, and an earlier session's stalled
+        state consistent with knowledge-capture.md's disclosed
+        --permission-mode dead end. Beyond inspecting the original
+        artifacts, I then independently built my own fresh scratch
+        repository from examples/golden-path-claude-code/starter/, ran
+        forge init / forge adapter install claude-code / forge doctor
+        (exit 0) myself, confirmed the real `claude` binary on PATH
+        (version 2.1.236), and ran my own non-interactive `claude -p`
+        session with a different but similarly-shaped, Forge-silent
+        prompt. That fresh, independent session auto-discovered and
+        invoked the forge Skill as its first action (confirmed in its own
+        raw transcript), explicitly followed TDD (real RED via an actual
+        pytest subprocess run before any production-code edit, then
+        GREEN), and unprompted recognized Protocol 2's C-026 independence
+        requirement, spawning its own independent subagent for review
+        (PASS, one non-blocking observation). This reproduction did not
+        replicate the exact same bug-and-fix sequence or produce formal
+        .forge/changes/ artifacts (it explicitly declined to fabricate
+        provenance it judged uncertain) -- an expected divergence given
+        LLM non-determinism, not a gap in verifying the mechanism itself,
+        which fired correctly. I did not have to fall back on "cannot
+        access claude" or "impractical to reproduce": the binary was
+        available and the reproduction succeeded.

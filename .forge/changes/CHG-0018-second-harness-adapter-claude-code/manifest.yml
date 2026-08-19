@@ -20,20 +20,55 @@ artifacts:
   implementation: complete
   provenance: complete
   verification: complete
-  review: pending
+  review: complete
   documentation: complete
   knowledge_capture: complete
 requirements: {total: 10, implemented: 10, verified: 10}
 tdd: {status: compliant, cycles: 4}
 verification: {status: passed}
 review:
-  status: pending
-  iteration: 0
+  status: passed
+  iteration: 1
   blockers: 0
   majors: 0
-  minors: 0
+  minors: 1
   observations: 0
-  iterations: []
+  iterations:
+    - id: review-001
+      revision: chg-0018-implementation-001
+      subject_provenance: implementation-001
+      reviewer_provenance: review-001
+      kind: initial_review
+      status: passed
+      evidence_gap: >-
+        R001 (MINOR): the FR-006 illustrative PreToolUse hook's substring
+        pattern matching over the whole `tool_input.command` string denies a
+        plausible compound Git command (e.g. `git status > /tmp/status.txt
+        && git add .forge/changes/.../manifest.yml`, or a `git commit -m`
+        whose message text happens to contain a literal `>`), even though
+        FR-006 explicitly requires ordinary `git add`/`git commit` of the
+        three protected paths to remain unaffected. Confirmed by piping real
+        JSON payloads to the actual generated hook script
+        (.claude/skills/forge/hooks/check-manifest-edit.sh) from a fresh
+        `forge adapter install claude-code` run. Not covered by
+        test_hook_script_denies_in_place_mutation_of_review_control_paths's
+        existing `allowed` list, which only exercises atomic, single-clause
+        commands. Non-blocking: Architecture's own Risks section already
+        discloses, in the abstract, that "an unusual but legitimate command
+        could match" the pattern, and FR-006 requires only that the hook not
+        claim broader enforcement than it has -- which it does not. Every
+        mechanical claim in verification.md and tdd-evidence.yml (504
+        passed, forge validate/doctor clean, both Core-leak fixes, NFR-001's
+        grep-clean claim, C-074 dual-file parity, the shared conformance
+        suite's real assertions) was independently reproduced, and the
+        dogfooded Layer C Golden Path claim was verified through three
+        independent lines of evidence: inspecting the real surviving scratch
+        repository and its actual commit history/content, reading raw
+        Claude Code session transcripts corroborating Skill auto-discovery
+        and the self-disclosed methodology defect, and running a fresh,
+        independent claude -p reproduction that exhibited the same
+        mechanism. See review.md for full findings and the "Checked and
+        found sound" record.
 documentation:
   impact_evaluated: true
   update_required: true
