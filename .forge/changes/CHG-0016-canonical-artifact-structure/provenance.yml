@@ -31,3 +31,50 @@ records:
         review-role provenance separately; this session does not and
         cannot produce that record itself without constituting
         self-review.
+  - id: review-001
+    role: review
+    execution: {id: review-exec-chg0016-20260819-add11f8d, context_id: review-context-chg0016-20260819-d20e2d8c}
+    recorded_at: "2026-08-19T11:50:07-03:00"
+    revision:
+      id: chg-0016-implementation-001
+      immutable_ref: {type: git_commit, value: e50d3c594c49a33c0816b5febcaf0c3e78c9cb2d}
+      description: >-
+        Strict Review Iteration 1 (kind: initial_review) of CHG-0016's frozen
+        implementation-001 subject. Independent Execution and Execution
+        Context from the Implementation session that produced
+        implementation-001. Verdict: REQUEST CHANGES (1 BLOCKER, 2 MAJOR,
+        6 MINOR, 3 OBSERVATION; BLOCKER and MAJOR are both blocking per
+        protocol/policies/review.yml) -- see review.md for full findings.
+        The BLOCKER (R012) is an unrelated latent finding inherited from
+        CHG-0015: validation/__init__.py:320 rejects
+        forge/execution-provenance@2 in the C-026 bound-Review-Iteration
+        check, so recording this Iteration makes forge validate exit 2.
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: claude-code
+      statement: >-
+        Self-recorded repository-native provenance for the independent Strict
+        Review execution that evaluated CHG-0016's frozen implementation-001
+        subject. This Review ran as a distinct subagent Execution and
+        Execution Context from the Implementation session, started cold with
+        no access to that session's conversation, reading only committed
+        repository state. No provider-native, cryptographic, or external
+        attestation is claimed and none is available; assurance is recorded,
+        not verified -- the independence asserted here rests on this
+        statement and on the distinct execution identifiers above, not on
+        proof a third party could check. pytest, forge validate, and forge
+        doctor were run directly by this Review execution against the working
+        tree (429 passed; "Forge project is valid", exit 0; 7/7 doctor checks
+        PASS), and tests/integration/test_adapter_distribution.py was run in
+        isolation to confirm the installed-wheel probe genuinely executes.
+        Every diff was read via git show / git diff 7985080..e50d3c5 rather
+        than trusted from commit messages or verification.md, and every
+        factual claim spot-checked in protocol/artifact-structure.md and
+        docs/adr/0014 was re-derived from the cited files. RED-before-GREEN
+        chronology could NOT be verified from git history -- tests and
+        implementation land in a single commit (70478ae) and all four commits
+        were authored within four minutes -- and review.md R009 states that
+        limitation explicitly rather than asserting a conclusion this
+        execution cannot support. Per Contract C-025 this Reviewer resolved
+        nothing: only review.md, manifest.yml, and this record were written.

@@ -19,20 +19,78 @@ artifacts:
   implementation: complete
   provenance: complete
   verification: complete
-  review: pending
+  review: active
   documentation: complete
   knowledge_capture: complete
 requirements: {total: 14, implemented: 14, verified: 14}
 tdd: {status: compliant, cycles: 3}
 verification: {status: passed}
 review:
-  status: pending
-  iteration: 0
-  blockers: 0
-  majors: 0
-  minors: 0
-  observations: 0
-  iterations: []
+  status: failed
+  iteration: 1
+  blockers: 1
+  majors: 2
+  minors: 6
+  observations: 3
+  iterations:
+    - id: review-001
+      revision: chg-0016-implementation-001
+      subject_provenance: implementation-001
+      reviewer_provenance: review-001
+      kind: initial_review
+      status: failed
+      evidence_gap: >-
+        R012 (BLOCKER, unrelated latent finding inherited from CHG-0015, not
+        authored by CHG-0016's Implementation subject):
+        src/forge_cli/validation/__init__.py:320 hard-codes
+        `forge/execution-provenance@1` in the C-026 bound-Review-Iteration
+        check and rejects `forge/execution-provenance@2`, the ledger schema
+        CHG-0015 introduced and catalogued; CHG-0015 widened its own new
+        check at line 564 to accept both but not this one. Consequently
+        recording this Review Iteration makes `forge validate` exit 2 with
+        "Protocol 2 bound Review Iterations require supported
+        repository-native provenance", and CHG-0016 cannot reach
+        review_passed with a valid project. CHG-0015 will hit the identical
+        wall when its own Review is recorded. The evasion (dropping
+        subject_provenance so line 308 short-circuits) would discard the
+        Reviewer-independence binding C-026 exists to enforce and was
+        deliberately not taken. R001 (MAJOR): protocol/artifact-structure.md SS5 line 267 names the
+        Codex Adapter and points at ARCHITECTURE.md SS25, violating NFR-002
+        ("no Codex-specific, Claude-specific, or other single-provider
+        content") -- the exact grep specification-review.md nominated as
+        NFR-002's falsification test returns a hit -- while
+        traceability.yml records
+        `NFR-002: evidence: artifact_structure_md_contains_no_harness_specific_content`,
+        an evidence token asserting the opposite; ARCHITECTURE.md is also
+        not packaged in the wheel (pyproject force-includes only protocol/),
+        so the pointer is dangling in every project that receives the file
+        through this Change's own FR-009 projection. R002 (MAJOR): the
+        `forge:` YAML frontmatter block that opens 13/15 historical
+        verification.md and 12/14 review.md files is documented for no
+        Artifact type in protocol/artifact-structure.md SS4, and this
+        Change's own verification.md plus both examples/canonical-artifacts/
+        exemplars drop it -- reproducing, in the guidance's own new
+        artifacts, the convention-loss failure mode the Change exists to
+        prevent, against architecture.md's own stated method of recognizing
+        real conventions rather than inventing them. Also 6 MINOR (R003
+        SS41 calls a non-normative document the source of "full normative
+        detail"; R004 SS1 restates and narrows C-067 contrary to INV-001;
+        R005 traceability.yml maps AC-004 to two tests that do not verify
+        it; R006 the canonical review.md example's Summary table
+        contradicts its own enumerated Findings; R007 both examples and
+        this Change's verification.md nest an H1 inside an H2; R008
+        DEC-002's `resolved_via: evidence` is unsupported by its own record,
+        which names a residual autonomous design choice) and 3 OBSERVATION
+        (R009 RED-before-GREEN chronology is not verifiable from squashed
+        git history, stated as a limitation rather than a conclusion; R010
+        the has_artifact_structure omit-branch is unreachable from
+        production; R011 tasks.md marks T-008 [x] while describing it as
+        "Not performed", and T-009 cites a non-existent TDD-008). MAJOR is
+        blocking per protocol/policies/review.yml `blocking: [blocker,
+        major]`. See review.md for full findings and for the "Checked and
+        found sound" record of what was independently reproduced (429
+        tests, forge validate/doctor, Contract dual-file parity, wheel-probe
+        strengthening, every cited factual claim).
 documentation:
   impact_evaluated: true
   update_required: true
