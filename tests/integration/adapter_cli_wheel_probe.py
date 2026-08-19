@@ -162,6 +162,7 @@ def _effective_reference_links(skill: str, skill_root: Path) -> dict[str, Path]:
     links = re.findall(r"- \[[^]]+\]\(([^)]+)\)", section.group("links"))
     expected = [
         "references/engineering-contract.md",
+        "references/artifact-structure.md",
         "references/flows/fast.yml",
         "references/flows/full.yml",
         "references/flows/standard.yml",
@@ -260,6 +261,9 @@ def main(
     resolved_references = _effective_reference_links(skill, skill_root)
     contract = resolved_references["references/engineering-contract.md"]
     assert contract.read_bytes() == (versioned_protocol / "contract" / "engineering.md").read_bytes()
+
+    artifact_structure = resolved_references["references/artifact-structure.md"]
+    assert artifact_structure.read_bytes() == (expected_protocol / "artifact-structure.md").read_bytes()
 
     generated_flow_paths = {
         path.relative_to(skill_root / "references" / "flows").with_suffix("").as_posix()

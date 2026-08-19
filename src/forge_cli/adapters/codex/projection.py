@@ -18,6 +18,7 @@ class CodexProjectionInput:
     flow_content: str
     contract_content: str
     protocol_id: int = 1
+    artifact_structure_content: str = ""
 
 
 @dataclass(frozen=True)
@@ -142,17 +143,23 @@ def _gate_instructions(flows: Iterable[tuple[str, str]], protocol_id: int) -> st
     return "\n\n".join(sections)
 
 
-def _reference_links(flows: Iterable[tuple[str, str]]) -> str:
+def _reference_links(flows: Iterable[tuple[str, str]], *, has_artifact_structure: bool) -> str:
     flow_ids = tuple(sorted(flow_id for flow_id, _ in flows))
     return "\n".join((
         "## Effective Forge references",
         "",
         "- [Engineering Contract](references/engineering-contract.md)",
+        *(("- [Artifact Structure](references/artifact-structure.md)",) if has_artifact_structure else ()),
         *(f"- [Flow `{flow_id}`](references/flows/{flow_id}.yml)" for flow_id in flow_ids),
     ))
 
 
-def _skill_content(flows: Iterable[tuple[str, str]], protocol_id: int) -> str:
+def _skill_content(
+    flows: Iterable[tuple[str, str]],
+    protocol_id: int,
+    *,
+    has_artifact_structure: bool,
+) -> str:
     effective_flows = tuple(flows)
     gate_instructions = _gate_instructions(effective_flows, protocol_id)
     return "\n".join((
@@ -163,7 +170,7 @@ def _skill_content(flows: Iterable[tuple[str, str]], protocol_id: int) -> str:
         "",
         load_workflow_skill_template(),
         "",
-        _reference_links(effective_flows),
+        _reference_links(effective_flows, has_artifact_structure=has_artifact_structure),
         "",
         gate_instructions,
     ))
@@ -174,6 +181,7 @@ def generate_codex_skill_bundle(
     contract_content: str,
     flows: Iterable[tuple[str, str]],
     protocol_id: int = 1,
+    artifact_structure_content: str = "",
 ) -> CodexProjectionBundle:
     """Render only the already-resolved effective Forge inputs for Codex."""
     effective_flows = tuple(flows)
@@ -185,9 +193,14 @@ def generate_codex_skill_bundle(
         seen_flow_ids.add(flow_id)
         flow_resources.append(_resource(f"references/flows/{flow_id}.yml", flow_content))
 
+    has_artifact_structure = bool(artifact_structure_content)
     resources = (
-        _resource("SKILL.md", _skill_content(effective_flows, protocol_id)),
+        _resource(
+            "SKILL.md",
+            _skill_content(effective_flows, protocol_id, has_artifact_structure=has_artifact_structure),
+        ),
         _resource("references/engineering-contract.md", contract_content),
+        *((_resource("references/artifact-structure.md", artifact_structure_content),) if has_artifact_structure else ()),
         *flow_resources,
     )
     return CodexProjectionBundle(
@@ -203,4 +216,5 @@ def generate_codex_projection_bundle(canonical: CodexProjectionInput) -> CodexPr
         contract_content=canonical.contract_content,
         flows=((canonical.flow_id, canonical.flow_content),),
         protocol_id=canonical.protocol_id,
+        artifact_structure_content=canonical.artifact_structure_content,
     )

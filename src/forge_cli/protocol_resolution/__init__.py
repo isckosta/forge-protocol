@@ -25,6 +25,10 @@ class CanonicalContractUnavailableError(ProtocolResolutionError):
     """Raised when the canonical Engineering Contract cannot be resolved."""
 
 
+class CanonicalArtifactStructureUnavailableError(ProtocolResolutionError):
+    """Raised when the canonical Artifact Structure guidance cannot be resolved."""
+
+
 _ALLOWED_PROJECT_FLOW_KEYS = {"schema", "flow", "review", "testing"}
 
 
@@ -132,3 +136,26 @@ def resolve_effective_contract(
         canonical=canonical,
         project_extension=project_extension,
     )
+
+
+def resolve_effective_artifact_structure(
+    protocol_root: Path,
+    protocol_id: int = 1,
+) -> str:
+    """Resolve the canonical, version-independent Artifact Structure guidance.
+
+    Unlike the Engineering Contract, this guidance (CHG-0016) has no project
+    extension layer and no per-Protocol-version copy: it applies identically
+    regardless of declared Protocol version. A missing version-specific file
+    falls back to the canonical root, matching how `resolve_effective_flow`
+    already falls back for canonical Flow resources.
+    """
+    versioned_root = _versioned_protocol_root(protocol_root, protocol_id)
+    candidate = versioned_root / "artifact-structure.md"
+    if not candidate.is_file():
+        candidate = protocol_root / "artifact-structure.md"
+    if not candidate.is_file():
+        raise CanonicalArtifactStructureUnavailableError(
+            f"Canonical Artifact Structure guidance is unavailable at {candidate}."
+        )
+    return candidate.read_text(encoding="utf-8")

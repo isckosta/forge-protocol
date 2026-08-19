@@ -99,6 +99,33 @@ def test_codex_skill_links_only_the_effective_contract_and_flows_deterministical
     ]
 
 
+def test_codex_projection_includes_artifact_structure_reference_when_present() -> None:
+    """CHG-0016 FR-009/AC-009: projected by reference, not paraphrased, and
+    absent entirely for callers that supply no `artifact_structure_content`
+    (backward compatibility, TDD-002)."""
+    without = CodexDriver().project(_context())
+    without_paths = {item.path for item in without.artifacts}
+    assert ".agents/skills/forge/references/artifact-structure.md" not in without_paths
+
+    context = AdapterProjectionContext(
+        project_protocol=1,
+        flows=(("standard", FLOW.format(flow_id="standard")),),
+        contract_content="# Engineering Contract\nCanonical contract text.\n",
+        artifact_structure_content="# Canonical Artifact Structure\nProgressive Disclosure.\n",
+        target=".agents/skills/forge",
+    )
+    projection = CodexDriver().project(context)
+    by_path = {item.path: item.content for item in projection.artifacts}
+
+    assert ".agents/skills/forge/references/artifact-structure.md" in by_path
+    assert "Progressive Disclosure" in by_path[
+        ".agents/skills/forge/references/artifact-structure.md"
+    ]
+    skill = by_path[".agents/skills/forge/SKILL.md"]
+    assert "Progressive Disclosure" not in skill
+    assert "references/artifact-structure.md" in skill
+
+
 def test_codex_projection_reports_skill_only_gates_as_generic_limitations() -> None:
     """Claiming technical TDD or Strict Review enforcement must fail this contract."""
     projection = CodexDriver().project(_context())

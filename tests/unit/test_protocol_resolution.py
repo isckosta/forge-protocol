@@ -79,3 +79,30 @@ def test_fails_when_canonical_contract_is_unavailable(tmp_path: Path) -> None:
 
     with pytest.raises(protocol_resolution.CanonicalContractUnavailableError):
         protocol_resolution.resolve_effective_contract(protocol_root, tmp_path)
+
+
+def test_resolves_effective_artifact_structure_from_canonical_root() -> None:
+    """CHG-0016 FR-009: version-independent, no project-extension layer."""
+    content = protocol_resolution.resolve_effective_artifact_structure(PROTOCOL_ROOT)
+
+    assert "# Canonical Artifact Structure" in content
+    assert "Progressive Disclosure" in content
+
+
+def test_resolves_effective_artifact_structure_falls_back_from_versioned_root() -> None:
+    """CHG-0016: unlike the Engineering Contract, this guidance has no
+    per-Protocol-version copy; Protocol 2 falls back to the canonical root,
+    matching how `resolve_effective_flow` already falls back for Flows."""
+    content = protocol_resolution.resolve_effective_artifact_structure(
+        PROTOCOL_ROOT, protocol_id=2
+    )
+
+    assert "# Canonical Artifact Structure" in content
+
+
+def test_fails_when_canonical_artifact_structure_is_unavailable(tmp_path: Path) -> None:
+    protocol_root = tmp_path / "protocol"
+    protocol_root.mkdir()
+
+    with pytest.raises(protocol_resolution.CanonicalArtifactStructureUnavailableError):
+        protocol_resolution.resolve_effective_artifact_structure(protocol_root)

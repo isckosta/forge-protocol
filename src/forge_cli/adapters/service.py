@@ -50,6 +50,7 @@ from forge_cli.configuration import (
 from forge_cli.protocol_resources import resolve_protocol_root
 from forge_cli.protocol_resolution import (
     ProtocolResolutionError,
+    resolve_effective_artifact_structure,
     resolve_effective_contract,
     resolve_effective_flow,
 )
@@ -441,6 +442,9 @@ class AdapterService:
                         contract_content=resolve_effective_contract(
                             resolve_protocol_root(), root, protocol_id
                         ).text,
+                        artifact_structure_content=resolve_effective_artifact_structure(
+                            resolve_protocol_root(), protocol_id
+                        ),
                         target=target,
                     )
                 )
@@ -602,6 +606,9 @@ class AdapterService:
                 contract_content=resolve_effective_contract(
                     resolve_protocol_root(), root, protocol_id
                 ).text,
+                artifact_structure_content=resolve_effective_artifact_structure(
+                    resolve_protocol_root(), protocol_id
+                ),
                 target=target,
             )
         )

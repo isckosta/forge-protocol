@@ -43,6 +43,7 @@ class CodexDriver:
             contract_content=context.contract_content,
             flows=context.flows,
             protocol_id=context.project_protocol,
+            artifact_structure_content=context.artifact_structure_content,
         )
         stages, gates, has_tdd, has_strict_review = _flow_representation(context.flows)
         limitations = _limitations(

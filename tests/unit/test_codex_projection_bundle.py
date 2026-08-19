@@ -74,6 +74,40 @@ def test_projection_resources_are_immutable() -> None:
         raise AssertionError("Projection bundle must be immutable")
 
 
+def test_projection_bundle_omits_artifact_structure_resource_when_not_provided() -> None:
+    """Backward compatibility: existing callers that never pass the new field
+    must keep getting exactly the same resource set as before CHG-0016."""
+    projection = _projection_module()
+
+    bundle = projection.generate_codex_projection_bundle(_canonical_input())
+
+    assert "references/artifact-structure.md" not in {
+        resource.name for resource in bundle.resources
+    }
+
+
+def test_projection_bundle_includes_artifact_structure_when_provided() -> None:
+    """CHG-0016 FR-009/AC-009: the canonical guidance is projected by
+    reference, the same way Contract and Flow content already are."""
+    projection = _projection_module()
+
+    bundle = projection.generate_codex_skill_bundle(
+        contract_content="# Engineering Contract\nRepository-native Forge state is authoritative.\n",
+        flows=(("full", "stages:\n  - id: specification\n  - id: verification\n"),),
+        artifact_structure_content="# Canonical Artifact Structure\nProgressive Disclosure.\n",
+    )
+
+    by_name = {resource.name: resource for resource in bundle.resources}
+    assert "references/artifact-structure.md" in by_name
+    resource = by_name["references/artifact-structure.md"]
+    assert "Progressive Disclosure" in resource.content
+    assert resource.digest
+
+    skill = by_name["SKILL.md"].content
+    assert "Canonical Artifact Structure" not in skill
+    assert "references/artifact-structure.md" in skill
+
+
 def test_projection_bundle_rejects_conflicting_duplicate_effective_flow_ids() -> None:
     """Duplicate IDs must fail before the public renderer can emit any links."""
     projection = _projection_module()

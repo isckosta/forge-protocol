@@ -17,6 +17,7 @@ class AdapterProjectionContext:
     flows: tuple[tuple[str, str], ...]
     contract_content: str
     target: str
+    artifact_structure_content: str = ""
 
 
 @dataclass(frozen=True)
