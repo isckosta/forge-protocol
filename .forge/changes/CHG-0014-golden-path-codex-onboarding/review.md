@@ -3,7 +3,7 @@ forge:
   artifact: review
   schema: 1
 change: CHG-0014
-status: failed
+status: passed
 ---
 
 # Strict Review — Golden Path Baseline and Codex Onboarding Validation
@@ -96,3 +96,78 @@ Finding counts (this Iteration):
 Per C-027/C-035, Completion MUST NOT proceed with an unresolved BLOCKER Finding present, and per `blocking: [blocker, major]` the MAJOR must also be resolved. CHG-0014-R001 blocks even attempting a `passed` Review Iteration today, independent of the Implementation's own quality — it is a workspace-hygiene precondition, not a defect in the reviewed diff, but Protocol 2's freeze invariant does not distinguish the two and this repository's own validator confirms that mechanically. CHG-0014-R002 is a genuine, reproducible defect inside the reviewed diff itself and must be fixed (or the aggregation's status mapping otherwise corrected to preserve `warning` fidelity) with regression coverage added for the `warning` path before the next Review Iteration. CHG-0014-R003 does not block Completion by itself but should be addressed alongside the others.
 
 This Iteration is recorded with `status: failed` and no `reviewer_provenance`-gated pass condition is asserted; `review.status` remains `failed` (not `passed`) in `manifest.yml`, and `state.current` remains `strict_review` — Completion has not been evaluated and is not claimed by this Review.
+
+## Iteration 2 — PASS (`kind: resolution_verification`)
+
+Reviewed revision: `02a116e8dad2f549583ab8e2f6426baa83860c50` (`resolution-001`, per `provenance.yml`), the Resolution that resolved Iteration 1's Findings.
+
+Reviewer Execution: `review-exec-chg0014-20260819-02`.
+Reviewer Execution Context: `review-context-chg0014-20260819-02`.
+Assurance: `recorded` (self-recorded repository-native provenance; no cryptographic/external attestation claimed).
+
+This is a `resolution_verification` Iteration (Protocol 2 §10). It is independent in Execution and Execution Context from `implementation-001` (`implementation-exec-chg0014-20260818-01` / `implementation-context-chg0014-20260818-01`), `review-001` (`review-exec-chg0014-20260818-01` / `review-context-chg0014-20260818-01`), and `resolution-001` (`resolution-exec-chg0014-20260819-01` / `resolution-context-chg0014-20260819-01`). This session has no memory of any of those three and independently re-derived every claim below. Per C-047, this Iteration's authority is bounded to: the Findings `resolution-001` targets (CHG-0014-R001/R002/R003), defects within `resolution-001`'s declared Resolution Delta, and Out-of-Scope Mutation. It does **not** reopen judgment on parts of the `6734847..4b4405c` Implementation diff that Iteration 1 already accepted and that this Resolution Delta does not touch (e.g. `_gate_instructions`/`projection.py` were not re-audited).
+
+### Resolution Delta computed independently
+
+Per `protocol/versions/2/specification.md` §11, the Resolution Delta is the committed diff between the immutable revision of the Iteration immediately preceding this one (`review-001`'s subject, `implementation-001` @ `4b4405c`) and `resolution-001`'s own subject (`02a116e`), minus the exact Change-local `manifest.yml`/`provenance.yml`/`review.md` paths.
+
+```
+$ git diff 4b4405c..02a116e --name-only
+.forge/changes/CHG-0014-golden-path-codex-onboarding/manifest.yml       <- excluded (review-control metadata)
+.forge/changes/CHG-0014-golden-path-codex-onboarding/provenance.yml     <- excluded (review-control metadata)
+.forge/changes/CHG-0014-golden-path-codex-onboarding/review.md          <- excluded (review-control metadata)
+.forge/changes/CHG-0014-golden-path-codex-onboarding/tdd-evidence.yml
+.forge/changes/CHG-0014-golden-path-codex-onboarding/verification.md
+src/forge_cli/app.py
+src/forge_cli/doctor/__init__.py
+tests/golden_path/test_golden_path_standard.py
+tests/unit/test_doctor_diagnostics.py
+```
+
+Resolution Delta (6 paths): `.forge/changes/CHG-0014-golden-path-codex-onboarding/tdd-evidence.yml`, `.../verification.md`, `src/forge_cli/app.py`, `src/forge_cli/doctor/__init__.py`, `tests/golden_path/test_golden_path_standard.py`, `tests/unit/test_doctor_diagnostics.py`.
+
+`resolution-001`'s declared `scope` in `provenance.yml` is exactly these same 6 paths, in the same set. **Every Resolution Delta path is covered by the declared scope — zero uncovered paths, therefore no Out-of-Scope Mutation.** `src/forge_cli/validation/__init__.py::_resolution_delta`/`_uncovered_paths` was read and its logic reproduced by hand to confirm this matches Core's own mechanical computation exactly (same base/target commits, same exclusion set, same exact-path-match — no glob).
+
+### Findings verified as resolved
+
+- **CHG-0014-R001 (BLOCKER, workspace hygiene)** — resolved *outside* the Resolution Delta (no associated code diff; the four untracked files never existed in any commit). Verified directly: `git status --porcelain -uall` against the current HEAD (`f27e98d`) is **empty** — no untracked paths of any kind remain, related or unrelated. This is not merely "fewer untracked files" but zero, which is the exact bar Iteration 1 set. Resolved.
+
+- **CHG-0014-R002 (MAJOR, `forge doctor` warning relabeled as PASS)** — verified resolved within the Resolution Delta:
+  - `git diff 4b4405c..02a116e -- src/forge_cli/doctor/__init__.py`: `_adapter_readiness_checks`'s `status_map` changed from `{"passed": "passed", "failed": "failed", "warning": "passed"}` to `{"passed": "passed", "failed": "failed", "warning": "warning"}` (line 143). Warning status is no longer relabeled as passed.
+  - `git diff 4b4405c..02a116e -- src/forge_cli/app.py`: `doctor()`'s `labels` dict gained `"warning": "WARN"` (line 134), eliminating the latent `KeyError` risk the Reviewer noted and giving the CLI layer a correct rendering for the now-preserved `warning` status.
+  - End-to-end reproduction, independent of any shipped test, in a throwaway repository (`/tmp/.../scratchpad/repro`): `git init` → `.venv/bin/forge init` → `.venv/bin/forge adapter install codex` → corrupted `.forge/forge.yml` to `not: [valid yaml` → `.venv/bin/forge doctor`. Result: `WARN adapter:codex:compatibility: Protocol compatibility cannot be checked until project configuration is valid.`, `WARN adapter:codex:conformance: ...`, `WARN adapter:codex:limitations: ...` — all three lines that Iteration 1 showed as self-contradictory `PASS ... cannot be checked` now correctly render `WARN`. Exit code 2 (from the genuine `FAIL project_configuration`/`FAIL adapter:codex:configuration` lines), consistent with `DoctorResult.passed` semantics unchanged by this fix.
+  - Regression test: `tests/unit/test_doctor_diagnostics.py` gained `test_doctor_preserves_adapter_warning_status_instead_of_relabeling_as_passed`, which reproduces the exact throwaway-repo scenario above via the CLI runner and asserts `compatibility.status == "warning"` and `"cannot be checked" in compatibility.message`. Inspected (not reverted) against the pre-fix code: with the old `status_map` (`"warning": "passed"`), `compatibility.status` would be `"passed"`, and the assertion `compatibility.status == "warning"` would fail — this is a genuine, non-vacuous regression test for CHG-0014-R002, not one that would pass regardless of the fix. `test_doctor_reports_installed_adapter_readiness` was also honestly tightened: the old blanket `assert all(check.status == "passed" ...)` (which was only true *because of* the R002 bug) was replaced with `assert all(check.status != "failed" ...)` plus explicit checks that `adapter:codex:limitations` is `"warning"` and `adapter:codex:configuration` is `"passed"` — the distinction is now asserted, not hidden.
+  - Ran `.venv/bin/python -m pytest tests/unit/test_doctor_diagnostics.py -v`: **8 passed** (up from 7 in Iteration 1), including the new regression test.
+  - Resolved.
+
+- **CHG-0014-R003 (MINOR, self-referential ordering-assertion docstring)** — verified resolved within the Resolution Delta: `git diff 4b4405c..02a116e -- tests/golden_path/test_golden_path_standard.py`. The module docstring and the inline comment above the `git merge-base --is-ancestor` assertions (lines 282-291 post-fix) were rewritten to state precisely what Iteration 1 required: the ordering assertions are "regression protection against this script's own future edits reordering its `_commit_all` calls, not an independent proof against some other, differently-behaving actor," and `production_diff_before_green` is now explicitly identified as the assertion that "actually, independently rules out production code preceding RED." This matches the finding's own framing exactly — the fix does not merely soften the language, it correctly redirects the reader to the one assertion (`production_diff_before_green`) that Iteration 1 confirmed genuinely carries independent evidentiary weight. Resolved.
+
+### New Findings introduced by this Resolution
+
+None found. The Resolution Delta is minimal and surgical: a one-line status-map fix, a one-line label-dict addition, one new regression test plus one tightened pre-existing assertion, and two comment/docstring corrections. `tdd-evidence.yml` and `verification.md` were extended (not rewritten) with an honest account of TDD-004 and the R001/R002/R003 resolution narrative, cross-checked against the actual diffs above and found accurate. `new_material_findings: 0`.
+
+### Independent full-suite and mechanical verification
+
+- `source .venv/bin/activate && python -m pytest tests/ -q`: **407 passed**, 0 failed, 0 skipped — matches `resolution-001`'s own claim exactly, independently re-run by this session.
+- `.venv/bin/forge validate` (this repository, current HEAD): exit 0, "Forge project is valid".
+- `.venv/bin/forge doctor` (this repository, current HEAD): all 7 checks PASS, exit 0 (no Adapter installed in this repository, consistent with prior Iterations' CON-001 observation — unrelated to the throwaway-repo reproduction above, which used a separate disposable repository specifically to exercise the installed-Adapter/warning path).
+- `git log --oneline -8` and `git status --porcelain -uall` independently re-confirmed the commit sequence (`4b4405c` implementation → `2d30413` metadata → `3381286` Iteration 1 metadata → `02a116e` Resolution → `f27e98d` Resolution metadata) and a clean working tree.
+
+### Scope discipline (C-047/C-050)
+
+No unrelated Finding was discovered while investigating the Resolution Delta. This Iteration did not re-open `_gate_instructions`, `projection.py`, the golden-path fixture's TDD-001A/001B/002/003 cycles, or any other part of the `6734847..4b4405c` Implementation diff that Iteration 1 already accepted and that `resolution-001`'s scope does not touch — consistent with C-047's bound on Resolution Verification authority. Had an unrelated genuine defect been noticed incidentally, it would have been recorded per C-050 without becoming license for a wider re-audit; none was.
+
+### Verdict
+
+**PASS**
+
+- BLOCKER: 0
+- MAJOR: 0
+- MINOR: 0
+- OBSERVATION: 0
+- Out-of-Scope Mutation: none (Resolution Delta ⊆ declared scope)
+- `new_material_findings`: 0
+
+All three Findings targeted by `resolution-001` (CHG-0014-R001, CHG-0014-R002, CHG-0014-R003) are verified resolved, entirely within (R002, R003) or accounted for outside (R001, per its own nature) the Resolution Delta, with zero Out-of-Scope Mutation and zero new material Findings. `review.status: passed` and `review.iteration: 2` are recorded in `manifest.yml`, with cumulative `blockers/majors/minors/observations` all reset to `0` to reflect the current resolved state.
+
+**Completion has not been evaluated by this Iteration and is not claimed here.** `state.current` is updated to `review_complete` to reflect that Strict Review (across both Iterations) is done, but Completion is a distinct, not-yet-assessed step — no Completion claim, Documentation Impact re-check beyond what Iteration 1 already confirmed, or Change-closure action is made or implied by this Resolution Verification.

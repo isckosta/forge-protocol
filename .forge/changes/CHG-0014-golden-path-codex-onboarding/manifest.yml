@@ -5,7 +5,7 @@ change:
   title: Golden Path Baseline and Codex Onboarding Validation
   kind: feature
 flow: {initial: standard, current: standard, escalations: []}
-state: {current: strict_review}
+state: {current: review_complete}
 artifacts:
   intent: complete
   discovery: complete
@@ -15,17 +15,17 @@ artifacts:
   tdd_evidence: complete
   implementation: complete
   verification: complete
-  review: active
+  review: complete
   documentation: complete
 requirements: {total: 9, implemented: 9, verified: 9}
 tdd: {status: compliant, cycles: 5}
 verification: {status: passed}
 review:
-  status: failed
-  iteration: 1
-  blockers: 1
-  majors: 1
-  minors: 1
+  status: passed
+  iteration: 2
+  blockers: 0
+  majors: 0
+  minors: 0
   observations: 0
   iterations:
     - id: review-001
@@ -65,6 +65,13 @@ review:
         the genuinely non-vacuous RED/GREEN content assertions are
         independently confirmed sound. See review.md Iteration 1 for full
         findings, evidence, and positive observations.
+    - id: review-002
+      revision: chg-0014-resolution-001
+      subject_provenance: resolution-001
+      reviewer_provenance: review-002
+      kind: resolution_verification
+      status: passed
+      new_material_findings: 0
 documentation:
   impact_evaluated: true
   update_required: true

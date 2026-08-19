@@ -128,3 +128,53 @@ records:
         The independent Resolution Verification that follows must run in its
         own distinct Execution and Execution Context per Protocol 2 and will
         record its own review-role provenance separately.
+  - id: review-002
+    role: review
+    execution: {id: review-exec-chg0014-20260819-02, context_id: review-context-chg0014-20260819-02}
+    recorded_at: "2026-08-19T02:00:00-03:00"
+    revision:
+      id: chg-0014-resolution-001
+      immutable_ref: {type: git_commit, value: 02a116e8dad2f549583ab8e2f6426baa83860c50}
+      commit: 02a116e8dad2f549583ab8e2f6426baa83860c50
+      description: >-
+        Resolution Verification (kind: resolution_verification) of CHG-0014's
+        frozen resolution-001 subject, scoped per Protocol 2 §10-§11 to
+        CHG-0014-R001/R002/R003 (the Findings resolution-001 targets),
+        defects within resolution-001's declared Resolution Delta, and
+        Out-of-Scope Mutation -- not an unrestricted re-audit of
+        implementation-001. Independent Execution and Execution Context from
+        implementation-001 (implementation-exec-chg0014-20260818-01 /
+        implementation-context-chg0014-20260818-01), review-001
+        (review-exec-chg0014-20260818-01 / review-context-chg0014-20260818-01),
+        and resolution-001 (resolution-exec-chg0014-20260819-01 /
+        resolution-context-chg0014-20260819-01); this session has no memory
+        of any of those three. Verdict: PASS -- see review.md Iteration 2 for
+        full evidence.
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: claude-code
+      statement: >-
+        Self-recorded repository-native provenance for the independent
+        Resolution Verification execution that evaluated CHG-0014's frozen
+        resolution-001 subject. No provider-native or cryptographic
+        attestation is claimed; assurance is recorded. This execution
+        independently computed the Resolution Delta as
+        `git diff 4b4405c..02a116e --name-only` minus this Change's exact
+        manifest.yml/provenance.yml/review.md paths (protocol/versions/2/
+        specification.md §11), confirmed every resulting path is covered by
+        resolution-001's declared `scope` (no Out-of-Scope Mutation), verified
+        CHG-0014-R001 by running `git status --porcelain -uall` (clean),
+        verified CHG-0014-R002 by reading the diffs of
+        src/forge_cli/doctor/__init__.py and src/forge_cli/app.py, running
+        `python -m pytest tests/unit/test_doctor_diagnostics.py -v` (8
+        passed, including the new regression test), and independently
+        reproducing the end-to-end throwaway-repository scenario (`forge
+        init` -> `forge adapter install codex` -> corrupt `.forge/forge.yml`
+        -> `forge doctor`) confirming WARN (not PASS) on the
+        previously-mislabeled lines, and verified CHG-0014-R003 by reading
+        the corrected docstring/comment in
+        tests/golden_path/test_golden_path_standard.py. Also ran the full
+        suite (`python -m pytest tests/ -q`: 407 passed), `forge validate`
+        (exit 0), and `forge doctor` (exit 0) against this repository. See
+        review.md for full findings.
