@@ -238,3 +238,6 @@ When a project's `interaction.language` is explicitly set to a value other than 
 An Adapter projecting interaction-language guidance MUST NOT represent that projection as a guarantee of the Harness's actual output language. Core can project an instruction; it cannot verify Harness compliance with it.
 
 Neither C-072 nor C-073 is validated by `forge validate`; both are honesty and precedence obligations on the Harness/Adapter, not mechanically checked Gate conditions, matching C-067's own disclaimer for a different concern.
+
+## C-074 — A new Harness Adapter MUST pass the shared conformance suite
+A Change introducing a new Harness Adapter MUST pass the shared, Harness-agnostic Adapter conformance test suite before Completion. This formalizes conformance testing as a durable obligation for every future Harness Adapter, not a one-time exercise performed only for the first two.
