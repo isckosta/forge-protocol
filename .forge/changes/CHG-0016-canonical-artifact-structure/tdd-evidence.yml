@@ -1,7 +1,7 @@
 schema: forge/tdd-evidence@1
 change: CHG-0016
 status: compliant
-cycle_count: 3
+cycle_count: 4
 cycles:
   - id: TDD-001
     title: Codex Adapter projects protocol/artifact-structure.md by reference (FR-009/AC-009)
@@ -18,5 +18,12 @@ cycles:
     requirements: [AC-013, CON-004]
     red: {observed: false, failure_reason: "Compatibility regression guard, not a new-behavior assertion -- see test-strategy.md TDD-003 for the full baseline methodology."}
     green: {observed: true, evidence: "Pre-Implementation baseline (HEAD 7985080): forge validate -> 'Forge project is valid' (exit 0), forge doctor -> 7/7 PASS, pytest -q tests/contract -> 35 passed. Post-Implementation: forge validate -> 'Forge project is valid' (exit 0), forge doctor -> 7/7 PASS, pytest -q (full suite) -> 429 passed, 0 failed. No historical Change (CHG-0001-CHG-0015) reports a new finding."}
+  - id: TDD-004
+    title: "Resolution of Strict Review R012 (BLOCKER): C-026 accepts forge/execution-provenance@2 for bound Review Iterations"
+    requirements: [R012]
+    red: {observed: true, failure_reason: "AssertionError: assert 2 == 0 (forge validate exit code) -- pytest -q tests/cli/test_validate.py::test_protocol2_accepts_execution_provenance_v2_ledger_for_bound_review_iteration, first run against the unmodified validation/__init__.py:320, 2026-08-19. Reproduces review.md R012's own manually-observed failure (forge validate exit 2, C-026 finding) as an automated regression test."}
+    green: {observed: true, evidence: "validation/__init__.py:320 widened from a single-schema equality check to the same two-schema set line 564 already used for _validate_delegated_authority; test_protocol2_accepts_execution_provenance_v2_ledger_for_bound_review_iteration passes; forge validate against this repository's own CHG-0016 manifest/provenance (bound Iteration 1, @2 ledger) returns to 'Forge project is valid', exit 0"}
+    notes: ["This is Resolution work addressing a Strict Review Finding (R012), not a Specification Requirement from this Change's own FR-xxx list -- src/forge_cli/validation/ was explicitly out of CHG-0016's original declared scope (architecture.md 'What This Change Deliberately Does Not Build'); the fix was authorized explicitly by the human (Resolution scope question, 2026-08-19) after the BLOCKER was found, not silently absorbed."]
 notes:
   - "The prose deliverables (protocol/artifact-structure.md, Contract/Specification/Compatibility text, ARCHITECTURE.md sentence, ADR, CHANGELOG, canonical examples) are not TDD cycles: Protocol §19 marks TDD not_applicable for non-executable normative/documentation content. They are covered by Strict Review (test-strategy.md Non-mechanical Validation), not by a RED/GREEN cycle here."
+  - "Strict Review R010 (OBSERVATION): both AdapterProjectionContext construction sites in service.py call resolve_effective_artifact_structure unconditionally and it raises rather than returning \"\", so the omit branch TDD-002 protects is exercised only by direct library callers and by the test itself, not by any shipped production path today. Recorded honestly rather than implying TDD-002 covers a currently-reachable production scenario -- it protects the public API's documented additive-compatibility contract, not an observed runtime state."

@@ -25,13 +25,14 @@ status: ready
       environment failure.
 - [x] T-007 GREEN: implement the resource load and bundle field in
       `projection.py`.
-- [x] T-008 **Not performed.** DEC-001 resolved as Alternative A
-      (human, 2026-08-19): no `## Result`/`## Verdict` heading-presence
-      Core validation check is built. Retained here, struck through in
-      spirit, as the recorded reason this task does not exist rather
-      than a silently dropped one.
-- [x] T-009 Refactor as needed; TDD-001/TDD-002 (and TDD-008 if
-      applicable) remain GREEN throughout (C-014).
+- [ ] ~~T-008~~ **Not performed, by design.** DEC-001 resolved as
+      Alternative A (human, 2026-08-19): no `## Result`/`## Verdict`
+      heading-presence Core validation check is built. Left unchecked
+      (Strict Review R011: a checked box is a scanable "done" signal
+      this task does not have) with the reason recorded, rather than
+      silently removed from the list.
+- [x] T-009 Refactor as needed; TDD-001/TDD-002/TDD-003 remain GREEN
+      throughout (C-014).
 - [x] T-010 `pytest -q`, `forge validate`, `forge doctor` — record exact
       results against the pre-Implementation baseline captured in
       `plan.md` step 5 (TDD-003).

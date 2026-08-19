@@ -275,6 +275,7 @@ Disclosure, Artifact Responsibility, Result-Before-Evidence, Scanability,
 Proportionality, and Extensibility, plus recommended structure per
 Artifact type. Conformance to it MUST NOT be treated as a Gate condition.
 
-Full normative detail is defined by `protocol/artifact-structure.md` and
-`protocol/contract/engineering.md` C-067–C-069. This section applies
-independently of declared Protocol version.
+The full non-binding guidance is defined by `protocol/artifact-structure.md`;
+its normative binding strength is defined by `protocol/contract/engineering.md`
+C-067–C-069. This section applies independently of declared Protocol
+version.

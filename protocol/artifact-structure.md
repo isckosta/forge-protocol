@@ -10,13 +10,10 @@ should be organized for a human reader. This document fills that gap: it
 is canonical guidance for the information architecture of Forge's human
 Markdown Artifacts, introduced by `CHG-0016`.
 
-This document is guidance, not obligation. `protocol/contract/engineering.md`
-C-067 states this explicitly: conformance to this document MUST NOT be
-treated as a Gate condition, and `forge validate` performs no check
-against it. An Artifact that does not follow this structure is not
-non-conforming. A future Change MAY elevate a specific recommendation to
-a binding Contract rule; until it does, everything below is a
-recommendation, not a requirement.
+This document is guidance, not obligation — see
+`protocol/contract/engineering.md` C-067 for the exact, authoritative
+statement of what that means; it is not restated here (INV-001, below).
+An Artifact that does not follow this structure is not non-conforming.
 
 This document MAY reference Contract, Flow, and Policy rules by stable
 identifier. It MUST NOT restate their normative content in its own words
@@ -112,6 +109,16 @@ Each entry below distinguishes **structural core** (what almost always
 belongs, in the recommended order), **conditional** (present only when
 materially applicable to the Change), and **optional** (domain-specific
 extension, §2.6).
+
+Every entry's structural core additionally includes, as its very first
+element, a `forge:` YAML frontmatter block (`artifact`, `schema`,
+`change`, `status`) before the `# <Type> — <title>` heading — this
+repository's single most consistent real Artifact convention (present in
+every Change from `CHG-0006` onward without exception, `CHG-0003` and
+`CHG-0005` being the only pre-existing gaps). It is not restated per type
+below to avoid repeating it fourteen times; omitting it is a defect, not
+a style choice, unless a Change states explicitly why a given Artifact
+does not carry it.
 
 ### Intent
 
@@ -211,12 +218,15 @@ minimal precedent (`CHG-0015/tasks.md`) closely.
 one of `PASS`, `FAIL`, `SKIPPED`, or `NOT APPLICABLE` — before any
 evidence. `INCONCLUSIVE` is deliberately not offered: it has no
 precedent anywhere in this repository's Protocol or Contract and does
-not exist in the current model. After Result: a Summary (a short table
-mapping `AC-xxx` to its individual result reads well here — §2.4), then
-Test Evidence and Forge Evidence, then Compatibility/Limitations, then a
-short Conclusion. This is the direct, concrete fix for this document's
-own motivating finding (§2.1) — `CHG-0001` already did this; `CHG-0015`
-did not.
+not exist in the current model. Render the value as bold or plain text
+(`**PASS**`), not as a nested heading — every real Artifact in this
+repository uses exactly one `#` heading, its title; a second `#` under
+`## Result` breaks document outline semantics. After Result: a Summary (a
+short table mapping `AC-xxx` to its individual result reads well here —
+§2.4), then Test Evidence and Forge Evidence, then
+Compatibility/Limitations, then a short Conclusion. This is the direct,
+concrete fix for this document's own motivating finding (§2.1) —
+`CHG-0001` already did this; `CHG-0015` did not.
 
 ### Review
 
@@ -227,9 +237,10 @@ iterations, most negative and one final PASS, currently gives a
 top-to-bottom reader every negative verdict before the one that matters
 for Completion — e.g. `CHG-0008`, six iterations). The existing,
 already-working `## Iteration N — <verdict>` convention per iteration is
-preserved unchanged beneath it, not replaced. Findings use `Rxxx` (Strict
-Review's real, stable prefix — distinct from Specification Review's
-`SR-xxx`).
+preserved unchanged beneath it, not replaced. Render the aggregate
+verdict as bold or plain text, not a nested heading, for the same reason
+as Verification above. Findings use `Rxxx` (Strict Review's real, stable
+prefix — distinct from Specification Review's `SR-xxx`).
 
 ### Specification Drift
 
@@ -263,7 +274,6 @@ this document must preserve, not one it gets to relax.
 
 A Harness Adapter includes this document's content by reference in its
 generated representation, the same way it includes Flow and Contract
-content — it does not redefine or paraphrase it (Protocol §34). See
-`ARCHITECTURE.md` §25 for the Codex Adapter's general projection
-mechanism; this document does not restate Adapter mechanics here (§1,
-INV-001).
+content — it does not redefine or paraphrase it (Protocol §34). This
+document does not restate any specific Adapter's mechanics here (§1,
+INV-001, NFR-002 of `CHG-0016`'s own Specification).

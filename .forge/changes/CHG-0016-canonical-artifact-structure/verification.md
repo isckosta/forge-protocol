@@ -1,3 +1,10 @@
+---
+forge:
+  artifact: verification
+  schema: 1
+change: CHG-0016
+status: passed
+---
 # Verification — CHG-0016
 
 <!-- Dogfooding this Change's own recommendation (FR-004,
@@ -5,7 +12,7 @@
 
 ## Result
 
-# PASS
+**PASS.**
 
 ## Summary
 

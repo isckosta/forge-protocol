@@ -1,14 +1,22 @@
 <!-- Illustrative example, not a real Change. See README.md. -->
 
+---
+forge:
+  artifact: verification
+  schema: 1
+change: CHG-EXAMPLE
+status: passed
+---
 # Verification — CHG-EXAMPLE
 
 <!-- protocol/artifact-structure.md §2.1/§2.3/§4 (Verification): the
      outcome comes first, before any evidence. A reader never needs to
-     read past this section to learn PASS or FAIL. -->
+     read past this section to learn PASS or FAIL. Rendered as bold
+     text, not a nested heading, per §4's rendering recommendation. -->
 
 ## Result
 
-# PASS
+**PASS.**
 
 <!-- protocol/artifact-structure.md §2.4 Scanability: a short table
      mapping each Acceptance Criterion to its individual result reads

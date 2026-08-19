@@ -81,6 +81,52 @@ status: complete
   deliberate and complete, not to loosen the assertion to stop it from
   needing maintenance.
 
+- **A specified falsification test that is never actually run is worse than
+  no test at all — it creates a false record of having checked.**
+  `specification-review.md`'s own "Checked and found sound" section named
+  the exact grep (`grep -ni "codex\|claude\|..." protocol/artifact-structure.md`)
+  that would have caught NFR-002's violation before Implementation. It was
+  specified, never run, and `traceability.yml` went on to record
+  `NFR-002: evidence: artifact_structure_md_contains_no_harness_specific_content`
+  — an affirmatively false claim, not merely an unverified one. Found only
+  by an independent Strict Review actually executing the named grep
+  (`R001`). General lesson: a Non-mechanical Validation item written down in
+  Test Strategy or Specification Review is a promise, not documentation of
+  something already done — it must be executed, not merely designed,
+  before its result is recorded as evidence.
+- **A Change whose entire subject is "recognize real convention instead of
+  inventing new structure" is exactly the kind of Change most likely to
+  silently drop a real convention it didn't think to enumerate.** Every
+  Artifact type section in `protocol/artifact-structure.md` documented a
+  structural core — and none mentioned the `forge:` frontmatter block that
+  opens every real Artifact in this repository from `CHG-0006` onward,
+  including this Change's own `plan.md`/`tasks.md`. Its own new
+  `verification.md` and both canonical examples then shipped without it —
+  reproducing, in the guidance's own deliverables, the exact
+  regression-by-omission (`CHG-0001` had `## Result`; `CHG-0015` didn't)
+  that motivated the whole Change (`R002`). The convention was omitted not
+  by disagreement but because enumerating "what every Artifact already has
+  in common" is a different exercise from "what makes each Artifact type
+  distinct," and only the second one got done. General lesson: when a
+  Change's method is "audit real examples for convention," the audit needs
+  an explicit pass for cross-cutting conventions common to *all* examples,
+  not only per-type ones — the common ones are exactly the ones easiest to
+  stop seeing once you're looking for what varies.
+- **A Decision's `resolved_via` classifies its weakest sub-question, not
+  its strongest — and a Decision record's own Confidence paragraph can
+  miscount its own Question without anyone noticing until it's checked
+  against the Question itself.** `DEC-002` posed three sub-questions;
+  two were resolved by genuine citation of existing normative text
+  (`evidence`), the third by design reasoning about which existing file
+  category fit (`autonomous_decision`). The record's Confidence paragraph
+  said "both sub-answers were reached by direct citation," silently
+  dropping the third from its own accounting, and `manifest.yml` recorded
+  the whole Decision as `resolved_via: evidence` — exactly the shape
+  `decision.yml`'s `agent_inference_is_not_evidence: true` exists to
+  prevent, on a Decision this Change's own Specification Review passed
+  without catching (`R008`). `CHG-0015`'s own structurally comparable
+  architectural Decision correctly used `autonomous_decision`; this one
+  should have matched it from the start.
 - F-008 ("Material Architecture Changes require ADR") is again satisfied
   by an ADR alone, following the same established practice `docs/adr/
   0012`/`docs/adr/0013` already recorded for `CHG-0013`/`CHG-0015`: no

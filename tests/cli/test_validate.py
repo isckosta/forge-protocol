@@ -253,6 +253,28 @@ def test_protocol2_accepts_independent_recorded_provenance_for_every_flow(
     assert "Forge project is valid" in result.stdout
 
 
+def test_protocol2_accepts_execution_provenance_v2_ledger_for_bound_review_iteration(
+    tmp_path: Path, monkeypatch
+) -> None:
+    """CHG-0016 R012 (BLOCKER, Strict Review): C-026's bound-Review-Iteration
+    check hard-coded forge/execution-provenance@1 and rejected @2, which
+    CHG-0015 introduced and catalogued -- so no Protocol 2 Change using the
+    @2 ledger (CHG-0015 or CHG-0016 itself) could ever record a bound Review
+    Iteration and remain valid. Widened to accept both, matching
+    _validate_delegated_authority's existing set."""
+    _init_git_repository(tmp_path)
+    _write_project_configuration(tmp_path, protocol=2)
+    manifest = _base_protocol2_manifest()
+    provenance = _base_provenance()
+    provenance["schema"] = "forge/execution-provenance@2"
+    _write_change(tmp_path, manifest, "CHG-9999-v2-ledger-valid", provenance)
+
+    result = _invoke_validate(tmp_path, monkeypatch)
+
+    assert result.exit_code == 0
+    assert "Forge project is valid" in result.stdout
+
+
 def test_protocol2_rereview_must_be_independent_from_resolution_provenance(tmp_path: Path, monkeypatch) -> None:
     _init_git_repository(tmp_path)
     _write_project_configuration(tmp_path, protocol=2)

@@ -117,4 +117,4 @@ decisions:
     authority: agent_with_review
     owning_artifact: architecture
     discovered_in: architecture
-    resolved_via: evidence
+    resolved_via: autonomous_decision

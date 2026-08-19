@@ -317,7 +317,7 @@ def _validate_protocol2_review_provenance(r:Path)->list[ValidationFinding]:
             missing=", ".join(sorted(missing_ids))
             out.append(_finding(r,mpath,f"C-026 immutable Review Iteration identity was removed or replaced: {missing}."));continue
         ppath=mpath.parent/"provenance.yml"; p=_load_mapping(ppath)
-        if p is None or p.get("schema")!="forge/execution-provenance@1":out.append(_finding(r,ppath if ppath.exists()else mpath,"Protocol 2 bound Review Iterations require supported repository-native provenance."));continue
+        if p is None or p.get("schema")not in{"forge/execution-provenance@1","forge/execution-provenance@2"}:out.append(_finding(r,ppath if ppath.exists()else mpath,"Protocol 2 bound Review Iterations require supported repository-native provenance."));continue
         records=p.get("records")
         if not isinstance(records,list):out.append(_finding(r,ppath,"Protocol 2 provenance records are missing."));continue
         idx={};bad=False

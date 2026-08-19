@@ -83,10 +83,22 @@ referenced document changes no required field, stage, or Gate meaning) —
 this is independent of DEC-001, which only concerns whether one specific
 downstream Contract rule becomes `MUST`-and-Gate-checked.
 
-**Confidence:** high. Both sub-answers were reached by direct citation of
-already-existing normative text and already-existing working code, not
-by fresh design judgment — Evidence Resolution, not Analysis, per
-`decision.yml`'s resolution-path ordering.
+**Resolution path:** `autonomous_decision`, not `evidence` — corrected
+from this Decision's own first draft (Strict Review R008). Two of the
+three sub-questions (*where* it lives, *how* a Harness Adapter obtains
+it) were resolved by direct citation of already-existing normative text
+and already-existing working code — genuine Evidence Resolution. The
+third (file identity and shape, immediately above) was not: it is a
+design choice reached by reasoning about which existing category
+(`protocol/*.md` prose vs. `protocol/policies/*.yml` data) fits, not a
+citation of a source that already determined the answer
+(`decision.yml`'s `evidence_resolution.agent_inference_is_not_evidence:
+true`). `resolution_paths` offers `autonomous_decision` for exactly this
+— Authority permits it (`agent_with_review`), Analysis and a
+Recommendation were produced above, and the whole Decision is
+classified by its weakest link, not its strongest.
+
+**Confidence:** high.
 
 ## Content Shape of `protocol/artifact-structure.md` (design, not production text)
 
