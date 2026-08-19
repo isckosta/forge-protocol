@@ -1,0 +1,52 @@
+schema: forge/execution-provenance@1
+change: CHG-0015
+records:
+  - id: implementation-001
+    role: implementation
+    execution: {id: implementation-exec-chg0015-20260819-01, context_id: implementation-context-chg0015-20260819-01}
+    recorded_at: "2026-08-19T02:20:00-03:00"
+    revision:
+      id: chg-0015-implementation-001
+      immutable_ref: {type: git_commit, value: db814b7e946ac1616f634245173ca3bc29d2cda5}
+      commit: db814b7e946ac1616f634245173ca3bc29d2cda5
+      description: >-
+        Frozen CHG-0015 Implementation subject: forge/execution-provenance@2
+        (protocol/schemas/execution-provenance-v2.schema.json), Contract
+        rules C-060-C-066 (protocol/contract/engineering.md and
+        protocol/versions/2/contract/engineering.md), protocol/specification.md
+        SS40, protocol/compatibility.md subsection, ARCHITECTURE.md SS27
+        addition, new validator functions in
+        src/forge_cli/validation/__init__.py
+        (_delegated_execution_effect, _deleg_uncovered,
+        _deleg_close_commit, _valid_baseline_shape,
+        _current_dirty_fingerprint, _content_fingerprint,
+        _deleg_first_committed_scope, _validate_delegated_authority,
+        _validate_all_delegated_authority), wired into validate_project,
+        tests/unit/test_delegated_authority.py (16 TDD cycles),
+        docs/adr/0013, CHANGELOG.md, and this Change's own
+        intent/discovery/specification/specification-review/architecture/
+        test-strategy/plan/tasks/knowledge-capture/traceability/
+        tdd-evidence artifacts. Subsequent commits are restricted to
+        Change-local review-control metadata (this file, manifest.yml,
+        review.md).
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: claude-code
+      statement: >-
+        Self-recorded repository-native provenance for the Implementation
+        execution that produced CHG-0015, continuing the same session that
+        produced this Change's Intent, Discovery, Specification,
+        Architecture, Test Strategy, and Plan/Tasks artifacts across this
+        conversation. No provider-native attestation is claimed; assurance
+        is recorded, not verified or cryptographic/external proof. Every
+        RED/GREEN cycle in tdd-evidence.yml was observed directly by this
+        execution via real pytest subprocess runs (see verification.md and
+        the T-007..T-010 commit for exact commands and counts: 423 passed,
+        0 failed on the full suite, up from 407 on the pre-Implementation
+        baseline recorded in plan.md). The independent Strict Review that
+        follows must run in a distinct Execution and Execution Context per
+        Protocol 2 (protocol/versions/2/specification.md SS2) and will
+        record its own review-role provenance separately; this session does
+        not and cannot produce that record itself without constituting
+        self-review.

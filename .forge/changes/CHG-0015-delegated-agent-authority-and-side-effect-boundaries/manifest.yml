@@ -5,7 +5,7 @@ change:
   title: Delegated Agent Authority and Side-Effect Boundaries
   kind: feature
 flow: {initial: full, current: full, escalations: []}
-state: {current: implementation}
+state: {current: strict_review}
 artifacts:
   intent: complete
   discovery: complete
@@ -16,8 +16,8 @@ artifacts:
   plan: approved
   tasks: complete
   tdd_evidence: complete
-  implementation: pending
-  provenance: pending
+  implementation: complete
+  provenance: complete
   verification: complete
   review: pending
   documentation: complete
