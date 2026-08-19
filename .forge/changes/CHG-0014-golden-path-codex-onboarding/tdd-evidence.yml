@@ -1,7 +1,7 @@
 schema: forge/tdd-evidence@1
 change: CHG-0014
 status: compliant
-cycle_count: 4
+cycle_count: 5
 cycles:
   - id: TDD-001A
     title: Codex gate instructions include the full completion-gate set
@@ -84,7 +84,64 @@ cycles:
         All 7 tests in tests/unit/test_doctor_diagnostics.py, and the 3 tests
         in tests/cli/test_doctor.py, pass after adding _adapter_readiness_checks
         to doctor/__init__.py::diagnose().
+  - id: TDD-004
+    title: forge doctor preserves Adapter warning status instead of relabeling it passed
+    requirements: [FR-001]
+    red:
+      observed: true
+      failure_reason: >-
+        Resolution of independent Strict Review Iteration 1's MAJOR
+        (CHG-0014-R002). test_doctor_preserves_adapter_warning_status_instead_of_relabeling_as_passed
+        (added to tests/unit/test_doctor_diagnostics.py before touching
+        doctor/__init__.py or app.py) failed with `assert 'passed' ==
+        'warning'`: _adapter_readiness_checks's status_map collapsed every
+        warning-status AdapterCheck to "passed", so a genuinely unchecked
+        compatibility check ("Protocol compatibility cannot be checked until
+        project configuration is valid.") rendered as PASS. Reproduced by
+        corrupting .forge/forge.yml after a real forge adapter install codex,
+        exactly as the independent Reviewer's own repro did.
+    green:
+      observed: true
+      evidence: >-
+        status_map now maps warning -> warning (not passed);
+        app.py's doctor() labels dict gained a "warning": "WARN" entry (it had
+        none before, so a warning status reaching the CLI layer would have
+        raised KeyError — untested and unreachable before this fix, since
+        nothing produced a warning-status DoctorCheck until this Change's own
+        TDD-003). test_doctor_preserves_adapter_warning_status_instead_of_relabeling_as_passed
+        passes; the full suite (407 tests, up from 406) passes; manually
+        reproduced end to end against a throwaway repository, matching the
+        Reviewer's exact repro, with WARN (not PASS) now shown for all three
+        previously-mislabeled lines. One pre-existing test
+        (test_doctor_reports_installed_adapter_readiness) asserted `all(check.status
+        == "passed")` for a healthy install, which was itself only true
+        because of this bug (a healthy Codex install legitimately carries a
+        "warning" status limitations check); updated to assert `status !=
+        "failed"` plus explicit checks on both the warning and passed cases,
+        rather than loosened to hide the distinction.
 notes:
+  - >-
+    TDD-004 is a Resolution cycle (role: resolution in provenance.yml),
+    produced by this session acting as Resolver after independent Strict
+    Review Iteration 1 (review-001) found CHG-0014-R002. Reviewer and
+    Resolver remain distinct conceptual Roles (C-026) even though the same
+    session that performed the original Implementation performed this
+    Resolution; the Review itself ran in a separate, independent
+    Execution/Context (review-exec-chg0014-20260818-01) that has no memory of
+    this session, which is what Protocol 2 §2 actually requires independence
+    of.
+  - >-
+    CHG-0014-R001 (BLOCKER) and CHG-0014-R003 (MINOR) were also addressed in
+    this same Resolution but are not TDD cycles: R001 (four unrelated,
+    never-committed untracked files leaving the effective reviewable
+    workspace dirty) was resolved by removing those files from the working
+    tree after explicit user confirmation — a workspace-hygiene action with
+    no associated code diff, verifiable via `git status --porcelain -uall`
+    rather than a test. R003 (a test docstring/comment overstating what the
+    `git merge-base --is-ancestor` ordering assertions in
+    tests/golden_path/test_golden_path_standard.py prove) was resolved by
+    correcting the docstring/comment text; it is a documentation-accuracy fix
+    with no behavioral RED/GREEN of its own.
   - >-
     The Layer B example scenario (username-length validation against
     examples/golden-path-standard/starter/) is a separate, nested Change

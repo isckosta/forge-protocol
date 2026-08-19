@@ -99,7 +99,31 @@ def test_doctor_reports_installed_adapter_readiness(tmp_path: Path, monkeypatch)
         check.id: check for check in result.checks if check.id.startswith("adapter:codex:")
     }
     assert adapter_checks
-    assert all(check.status == "passed" for check in adapter_checks.values())
+    assert all(check.status != "failed" for check in adapter_checks.values())
+    # The Codex Adapter has known, expected capability limitations (represented,
+    # not enforced) -- a healthy install legitimately carries a "warning" status
+    # check for that, which must not be relabeled "passed" (CHG-0014-R002).
+    assert adapter_checks["adapter:codex:limitations"].status == "warning"
+    assert adapter_checks["adapter:codex:configuration"].status == "passed"
+
+
+def test_doctor_preserves_adapter_warning_status_instead_of_relabeling_as_passed(
+    tmp_path: Path, monkeypatch
+) -> None:
+    _init_git_repository(tmp_path)
+    monkeypatch.chdir(tmp_path)
+    runner.invoke(app, ["init"])
+    runner.invoke(app, ["adapter", "install", "codex"])
+    (tmp_path / ".forge" / "forge.yml").write_text("not: [valid yaml", encoding="utf-8")
+
+    result = doctor.diagnose(tmp_path, PROTOCOL_ROOT)
+
+    compatibility = next(
+        check for check in result.checks if check.id == "adapter:codex:compatibility"
+    )
+    assert compatibility.status == "warning"
+    assert compatibility.status != "passed"
+    assert "cannot be checked" in compatibility.message
 
 
 def test_doctor_reports_drifted_adapter_as_failed(tmp_path: Path, monkeypatch) -> None:

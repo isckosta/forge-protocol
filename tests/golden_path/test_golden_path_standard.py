@@ -3,11 +3,19 @@
 Layer A proves the CLI/Adapter readiness sequence (`forge init` -> `forge
 adapter install codex` -> `forge doctor`) added/extended by CHG-0014.
 
-Layer B proves that a real STANDARD Change, built with genuine chronological
-TDD against the `examples/golden-path-standard/starter/` fixture, produces
-repository-native artifacts that validate through `forge validate` and
-directly against the canonical JSON Schema — not merely through a
-hand-rolled parallel checker.
+Layer B proves that a real STANDARD Change, built against the
+`examples/golden-path-standard/starter/` fixture, produces repository-native
+artifacts that validate through `forge validate` and directly against the
+canonical JSON Schema — not merely through a hand-rolled parallel checker.
+Its RED and GREEN evidence is genuine and non-vacuous: a real `pytest`
+subprocess is run before any production-code edit exists and observed to
+fail for the expected reason, then run again after the minimal fix and
+observed to pass (CHG-0014-R003: the accompanying `git merge-base
+--is-ancestor` commit-ordering assertions are, by contrast, regression
+protection against this script's own future edits reordering its `_commit_all`
+calls, not an independent proof against some other, differently-behaving
+actor — the RED/GREEN content assertions are what actually establishes
+chronological TDD here).
 
 Neither test asserts on Codex's own behavior (Layer C); see
 `examples/golden-path-standard/README.md` for that manual procedure.
@@ -278,7 +286,12 @@ def test_golden_path_produces_a_valid_standard_change(
         "record TDD evidence and manifest",
     )
 
-    # Ordering (FR-008): Plan strictly precedes RED strictly precedes Implementation.
+    # Ordering (FR-008): regression protection that this script's own linear
+    # commit sequence stays Plan -> RED -> Implementation if it is ever edited
+    # (self-referential by construction, since this script alone authors that
+    # sequence -- CHG-0014-R003). The genuinely independent evidence that
+    # production code did not precede RED is `production_diff_before_green`
+    # below, which inspects file-level diff content, not commit ancestry.
     assert (
         _git(
             "merge-base", "--is-ancestor", planning_commit, red_commit,

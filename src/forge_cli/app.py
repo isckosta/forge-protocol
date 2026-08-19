@@ -131,6 +131,7 @@ def doctor() -> None:
         "passed": "PASS",
         "failed": "FAIL",
         "skipped": "SKIP",
+        "warning": "WARN",
     }
     for check in result.checks:
         typer.echo(f"{labels[check.status]} {check.id}: {check.message}")

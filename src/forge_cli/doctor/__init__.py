@@ -140,7 +140,7 @@ def _adapter_readiness_checks(repository_root: Path) -> list[DoctorCheck]:
         if load_optional_installation_record(repository_root, adapter_id) is None:
             continue
         result = service.doctor(repository_root, adapter_id)
-        status_map = {"passed": "passed", "failed": "failed", "warning": "passed"}
+        status_map = {"passed": "passed", "failed": "failed", "warning": "warning"}
         for check in result.checks:
             checks.append(
                 _check(

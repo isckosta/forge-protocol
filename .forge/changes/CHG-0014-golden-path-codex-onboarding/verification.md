@@ -185,6 +185,51 @@ Nothing, in the sense of a defect surviving to this point: every RED
 observed in this Change's own Implementation (`tdd-evidence.yml`) resolved
 to a passing GREEN, and no test was left failing.
 
+## Resolution of independent Strict Review Iteration 1
+
+Independent Strict Review Iteration 1 (`review-001`, `review.md`) returned
+**REQUEST CHANGES**: 1 BLOCKER (CHG-0014-R001), 1 MAJOR (CHG-0014-R002), 1
+MINOR (CHG-0014-R003). This session acted as Resolver (a role distinct from
+the independent Reviewer per C-026, even though the same session originally
+performed Implementation — Protocol 2's independence requirement binds
+Review, not Resolution, to a separate Execution/Context) and addressed all
+three:
+
+- **CHG-0014-R001 (BLOCKER)** — the four unrelated, never-committed
+  untracked files the Reviewer found (`.codex/config.toml`,
+  `docs/document-2026-08-13T04-46-37-625Z.md`,
+  `docs/superpowers/specs/2026-08-13-chg-0006-completion-remediation-design.md`,
+  `uv.lock`) were removed from the working tree, after explicitly asking the
+  user how to handle them (they are not part of CHG-0014's subject and this
+  session should not unilaterally decide the fate of unrelated files). The
+  user chose deletion. `git status --porcelain -uall` now shows no untracked
+  paths outside this Change's own review-control metadata, and `forge
+  validate` confirms exit 0.
+- **CHG-0014-R002 (MAJOR)** — fixed via genuine TDD (`tdd-evidence.yml`
+  TDD-004): `_adapter_readiness_checks` (`doctor/__init__.py`) now maps
+  `warning` to `warning`, not `passed`; `app.py`'s `doctor()` command gained
+  a `"warning": "WARN"` label (previously absent — any warning-status check
+  reaching that layer would have raised `KeyError`, unreachable before this
+  Change introduced the first source of one). Manually reproduced the
+  Reviewer's exact end-to-end scenario (corrupt `.forge/forge.yml` after a
+  real `forge adapter install codex`) and confirmed `WARN`, not `PASS`, now
+  appears for all three previously-mislabeled lines.
+- **CHG-0014-R003 (MINOR)** — corrected the module docstring and inline
+  comment in `tests/golden_path/test_golden_path_standard.py` that
+  overstated what the `git merge-base --is-ancestor` ordering assertions
+  prove; they are now described accurately as regression protection against
+  the script's own future reordering, with `production_diff_before_green`
+  identified as the assertion that actually, independently rules out
+  production code preceding RED.
+
+Full suite after Resolution: `python -m pytest tests/ -q` — **407 passed**
+(406 + the new TDD-004 regression test), 0 failed. `forge validate`: exit 0.
+`forge doctor` (this repository): exit 0. This Resolution is frozen at
+commit(s) recorded in `provenance.yml`'s `resolution-001` record; the next
+Review Iteration must be `kind: resolution_verification` per
+`protocol/versions/2/specification.md` §10–§11, scoped to
+`CHG-0014-R001`/`R002`/`R003` and this Resolution's declared `scope`.
+
 ## Layer C — not executed by this session
 
 This session has no Codex tool access. `examples/golden-path-standard/
