@@ -4,10 +4,21 @@ from forge_cli.adapters.codex.projection import (
     generate_codex_skill_bundle,
 )
 
-FLOW = """flow:\n  id: full\nstages:\n  - id: specification_review\n  - id: tdd_implementation\n  - id: verification\n  - id: strict_review\n  - id: completion\ngates:\n  before_behavioral_implementation:\n    checks: [red_executed, red_failed_for_expected_reason]\n  before_completion:\n    require: [verification_passed, review_passed, blocking_review_threads_resolved]\n"""
+FLOW = """flow:\n  id: full\nstages:\n  - id: specification_review\n  - id: tdd_implementation\n  - id: verification\n  - id: strict_review\n  - id: completion\ngates:\n  before_completion:\n    require: [verification_passed, review_passed, blocking_review_threads_resolved]\n  before_behavioral_implementation:\n    checks: [red_executed, red_failed_for_expected_reason]\n"""
 BLOCKING_THREAD_INSTRUCTION = (
     "Completion requires all blocking review threads on any active external "
     "review surface to be resolved"
+)
+DOCUMENTATION_INSTRUCTION = "Completion requires Documentation Impact to be evaluated."
+REQUIRED_DOCS_INSTRUCTION = "Completion requires required documentation to be updated."
+TDD_EXCEPTION_INSTRUCTION = (
+    "Completion requires TDD compliance or an explicit, recorded exception."
+)
+STANDARD_FLOW = (
+    "flow:\n  id: standard\nstages:\n  - id: plan\n  - id: tdd_implementation\n"
+    "gates:\n  before_implementation:\n    require: [intent_present, discovery_complete, "
+    "specification_complete, specification_gate_passed, plan_complete]\n"
+    "  before_completion:\n    require: [verification_passed, review_passed]\n"
 )
 
 
@@ -96,3 +107,46 @@ def test_projection_marks_instructions_as_representation_not_enforcement() -> No
     content = _content()
     assert "represent Forge requirements" in content
     assert "not technical enforcement" in content
+
+
+def test_projection_renders_documentation_and_tdd_completion_gate_instructions() -> None:
+    flow = FLOW.replace(
+        "require: [verification_passed, review_passed, blocking_review_threads_resolved]",
+        "require: [verification_passed, review_passed, blocking_review_threads_resolved, "
+        "documentation_impact_evaluated, required_documentation_updated, "
+        "tdd_compliant_or_explicitly_excepted]",
+    )
+    content = _content(flow)
+    assert DOCUMENTATION_INSTRUCTION in content
+    assert REQUIRED_DOCS_INSTRUCTION in content
+    assert TDD_EXCEPTION_INSTRUCTION in content
+
+
+def test_projection_does_not_invent_documentation_or_tdd_exception_gates() -> None:
+    content = _content()
+    assert DOCUMENTATION_INSTRUCTION not in content
+    assert REQUIRED_DOCS_INSTRUCTION not in content
+    assert TDD_EXCEPTION_INSTRUCTION not in content
+
+
+def test_projection_renders_pre_implementation_boundary_instruction() -> None:
+    bundle = generate_codex_skill_bundle(
+        contract_content="contract",
+        flows=(("standard", STANDARD_FLOW),),
+    )
+    skill = next(resource.content for resource in bundle.resources if resource.name == "SKILL.md")
+    assert "Implementation MUST NOT begin until" in skill
+    for check in (
+        "intent_present",
+        "discovery_complete",
+        "specification_complete",
+        "specification_gate_passed",
+        "plan_complete",
+    ):
+        assert check in skill
+
+
+def test_projection_does_not_invent_pre_implementation_boundary_for_flow_without_one() -> None:
+    """FAST has no Plan stage and legitimately declares no `before_implementation` gate."""
+    content = _content()
+    assert "Implementation MUST NOT begin until" not in content

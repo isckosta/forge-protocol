@@ -151,6 +151,48 @@ def test_adapter_install_is_idempotent_and_reports_unchanged_operations(
     assert (skill.stat().st_mtime_ns, record.stat().st_mtime_ns) == before
 
 
+def test_adapter_install_confirms_success_and_names_the_next_step(
+    tmp_path: Path, monkeypatch
+) -> None:
+    _initialize_project(tmp_path, monkeypatch)
+
+    result = runner.invoke(app, ["adapter", "install", "codex"])
+
+    assert result.exit_code == 0, result.output
+    assert "codex Adapter installed at .agents/skills/forge." in result.stdout
+    assert "Open codex in this repository" in result.stdout
+    lines = result.stdout.splitlines()
+    confirmation_index = next(
+        index for index, line in enumerate(lines) if "Adapter installed at" in line
+    )
+    assert _operation_lines("\n".join(lines[:confirmation_index]))
+    assert "No changes required." not in result.stdout
+
+
+def test_adapter_install_dry_run_prints_no_success_confirmation(
+    tmp_path: Path, monkeypatch
+) -> None:
+    _initialize_project(tmp_path, monkeypatch)
+
+    result = runner.invoke(app, ["adapter", "install", "codex", "--dry-run"])
+
+    assert result.exit_code == 0, result.output
+    assert "Adapter installed at" not in result.stdout
+
+
+def test_adapter_reinstall_prints_no_success_confirmation(
+    tmp_path: Path, monkeypatch
+) -> None:
+    _initialize_project(tmp_path, monkeypatch)
+    runner.invoke(app, ["adapter", "install", "codex"])
+
+    result = runner.invoke(app, ["adapter", "install", "codex"])
+
+    assert result.exit_code == 0, result.output
+    assert "No changes required." in result.stdout
+    assert "Adapter installed at" not in result.stdout
+
+
 def test_adapter_conflict_is_reported_before_installation_and_does_not_mutate(
     tmp_path: Path, monkeypatch
 ) -> None:

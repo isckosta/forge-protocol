@@ -6,6 +6,9 @@ from dataclasses import dataclass
 from pathlib import Path
 import shutil
 
+from forge_cli.adapters.packaged import build_packaged_registry
+from forge_cli.adapters.repository import load_optional_installation_record
+from forge_cli.adapters.service import AdapterService
 from forge_cli.configuration import (
     InvalidProjectConfigurationError,
     UnsupportedProtocolVersionError,
@@ -121,4 +124,29 @@ def diagnose(start: Path, protocol_root: Path) -> DoctorResult:
     else:
         checks.append(_check("canonical_contract", "passed", f"Canonical Protocol {protocol_id} Engineering Contract is available."))
 
+    if initialized:
+        checks.extend(_adapter_readiness_checks(repository_root))
+
     return DoctorResult(checks=tuple(checks))
+
+
+def _adapter_readiness_checks(repository_root: Path) -> list[DoctorCheck]:
+    """Aggregate every installed Adapter's own diagnostics into readiness checks."""
+    registry = build_packaged_registry()
+    service = AdapterService(registry)
+    checks: list[DoctorCheck] = []
+    for driver in registry.list():
+        adapter_id = driver.manifest.adapter_id
+        if load_optional_installation_record(repository_root, adapter_id) is None:
+            continue
+        result = service.doctor(repository_root, adapter_id)
+        status_map = {"passed": "passed", "failed": "failed", "warning": "passed"}
+        for check in result.checks:
+            checks.append(
+                _check(
+                    f"adapter:{adapter_id}:{check.id}",
+                    status_map[check.status],
+                    check.message,
+                )
+            )
+    return checks

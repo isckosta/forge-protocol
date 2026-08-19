@@ -1,8 +1,16 @@
 # Forge Examples
 
-This directory will contain reference Forge Changes.
+This directory contains reference Forge Changes.
 
-Future examples should demonstrate:
+- `golden-path-standard/` — the canonical STANDARD-Flow, Codex-Harness
+  Golden Path: install Forge, initialize a repository, install the Codex
+  Adapter, confirm readiness, and carry one small behavioral Change through
+  TDD, Verification, and (pending independent execution) Strict Review.
+  Includes a disposable starter fixture, deterministic Layer A/B automated
+  tests (`tests/golden_path/`), and a behaviorally-specified manual
+  acceptance procedure for the parts a live Codex session must prove.
+
+Future examples should also demonstrate:
 
 - a FAST bugfix using regression-first TDD;
 - a FAST tiny Feature;

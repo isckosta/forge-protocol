@@ -68,6 +68,8 @@ plans, then safely publishes, the Codex Harness projection described below.
 
 The CLI deliberately does **not** expose development-lifecycle commands such as `specify`, `implement`, `verify`, or `review`. Those activities execute in the chat runtime under the Protocol.
 
+New to Forge? `docs/getting-started.md` is the fastest path from nothing installed to a Codex session ready to receive a Change, and `examples/golden-path-standard/` is a complete worked example with both automated and manual acceptance evidence.
+
 ### Development installation
 
 Forge currently targets Python 3.12+ and is pre-release software. From a clone of this repository:

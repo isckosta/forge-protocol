@@ -26,6 +26,20 @@ def test_doctor_reports_failed_and_skipped_checks_with_exit_code_two(tmp_path: P
     assert "SKIP project_configuration" in result.stdout
 
 
+def test_doctor_exit_code_reflects_drifted_adapter_installation(tmp_path: Path, monkeypatch) -> None:
+    _init_git_repository(tmp_path)
+    monkeypatch.chdir(tmp_path)
+    runner.invoke(app, ["init"])
+    runner.invoke(app, ["adapter", "install", "codex"])
+    skill = tmp_path / ".agents" / "skills" / "forge" / "SKILL.md"
+    skill.write_bytes(skill.read_bytes() + b"\n# deliberate drift\n")
+
+    result = runner.invoke(app, ["doctor"])
+
+    assert result.exit_code == 2
+    assert "FAIL adapter:codex:generated_drift" in result.stdout
+
+
 def test_doctor_reports_non_git_environment_without_modifying_files(tmp_path: Path, monkeypatch) -> None:
     marker = tmp_path / "marker.txt"
     marker.write_text("unchanged", encoding="utf-8")

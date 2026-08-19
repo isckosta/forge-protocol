@@ -1,0 +1,39 @@
+schema: forge/change@2
+protocol: 2
+change:
+  id: CHG-0014
+  title: Golden Path Baseline and Codex Onboarding Validation
+  kind: feature
+flow: {initial: standard, current: standard, escalations: []}
+state: {current: strict_review}
+artifacts:
+  intent: complete
+  discovery: complete
+  specification: complete
+  test_design: complete
+  plan: complete
+  tdd_evidence: complete
+  implementation: complete
+  verification: complete
+  review: pending
+  documentation: complete
+requirements: {total: 9, implemented: 9, verified: 9}
+tdd: {status: compliant, cycles: 4}
+verification: {status: passed}
+review:
+  status: pending
+  iteration: 0
+  blockers: 0
+  majors: 0
+  minors: 0
+  observations: 0
+  iterations: []
+documentation:
+  impact_evaluated: true
+  update_required: true
+  reason: >-
+    New docs/getting-started.md and examples/golden-path-standard/ (with its
+    own README); README.md and examples/README.md updated to point to them;
+    ROADMAP.md's Golden path subsection marked done for its STANDARD/Codex
+    slice; CHANGELOG.md Unreleased entry added. See verification.md for the
+    full list.

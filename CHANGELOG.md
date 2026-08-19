@@ -6,6 +6,52 @@ CLI releases will follow Semantic Versioning when releases begin. Protocol versi
 
 ## Unreleased
 
+### Golden Path Baseline and Codex Onboarding Validation
+
+Added:
+
+- `docs/getting-started.md`, the primary install-to-first-Change onboarding
+  path, and `examples/golden-path-standard/` (a disposable starter fixture,
+  deterministic Layer A/B automated tests under `tests/golden_path/`, and a
+  behaviorally-specified manual Codex acceptance procedure) — the first
+  reproducible, evidence-backed Golden Path for Forge + Codex
+  (`ROADMAP.md`'s "End-to-End Examples & External Project Validation" §Golden
+  path, STANDARD/Codex slice);
+- `forge doctor` now aggregates every installed Harness Adapter's own
+  diagnostics (reusing `AdapterService.doctor`) so one command answers "is
+  this repository ready to begin a Forge Change through this Harness?"
+  instead of requiring a separate `forge adapter doctor <id>` call a
+  first-time user would not know to run;
+- `forge adapter install <adapter>` now prints a success confirmation naming
+  the installed target and the next action when it actually mutates the
+  repository, closing a real gap in the "no manual prompt copying" v1
+  onboarding promise (`ROADMAP.md`'s Adapter CLI & Codex Installation UX
+  exit criteria);
+- the generated Codex `SKILL.md` now represents the complete
+  `before_completion` gate set (Documentation Impact evaluation, required
+  documentation updates, TDD compliance or exception — previously silently
+  absent) and, more materially, the `before_implementation` boundary itself:
+  a Codex session previously received no instruction that Discovery,
+  Specification, and Plan must be complete before Implementation begins at
+  all.
+
+Known limitations (accepted, documented follow-up — see CHG-0014's
+`verification.md` Product findings):
+
+- Adapter conformance checking (`validate_conformance`) verifies gate
+  *names* are represented, not that every individual completion-gate
+  *instruction* is textually present, so a future regression of the class
+  this Change fixes would not be mechanically caught by `forge adapter
+  doctor`'s conformance check;
+- Forge's canonical Protocol still has no mechanically-enforced human
+  approval Gate between Plan and Implementation; the new instructions and
+  `docs/getting-started.md` represent that boundary but do not yet make
+  Core capable of proving it on its own;
+- `forge validate` still performs no JSON Schema validation of
+  `manifest.yml`/`tdd-evidence.yml`/`provenance.yml` against
+  `protocol/schemas/*` for an arbitrary project (pre-existing, independently
+  reconfirmed while building this Change's own Layer B evidence).
+
 ### Unresolved Decision Management
 
 Added:

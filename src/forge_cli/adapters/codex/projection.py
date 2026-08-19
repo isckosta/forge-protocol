@@ -103,7 +103,17 @@ def _gate_instructions(flows: Iterable[tuple[str, str]], protocol_id: int) -> st
         required = completion.get("require") if isinstance(completion, dict) else ()
         required = set(required or ())
 
+        pre_implementation = gates.get("before_implementation") or {}
+        pre_implementation_required = (
+            pre_implementation.get("require") if isinstance(pre_implementation, dict) else ()
+        ) or ()
+
         lines: list[str] = []
+        if pre_implementation_required:
+            lines.append(
+                "- Implementation MUST NOT begin until: "
+                f"{', '.join(pre_implementation_required)}."
+            )
         if "red_executed" in checks:
             lines.append("- RED must be executed.")
         if "red_failed_for_expected_reason" in checks:
@@ -116,6 +126,14 @@ def _gate_instructions(flows: Iterable[tuple[str, str]], protocol_id: int) -> st
             lines.append(
                 "- Completion requires all blocking review threads on any active "
                 "external review surface to be resolved."
+            )
+        if "documentation_impact_evaluated" in required:
+            lines.append("- Completion requires Documentation Impact to be evaluated.")
+        if "required_documentation_updated" in required:
+            lines.append("- Completion requires required documentation to be updated.")
+        if "tdd_compliant_or_explicitly_excepted" in required:
+            lines.append(
+                "- Completion requires TDD compliance or an explicit, recorded exception."
             )
         if protocol_id >= 2 and flow_id in {"fast", "standard", "full"}:
             lines.extend(_REVIEWER_RESOLVER_INDEPENDENCE_LINES)

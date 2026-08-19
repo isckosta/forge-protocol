@@ -207,7 +207,7 @@ def install(
 ) -> None:
     """Install an Adapter projection after showing its plan."""
     root = _initialized_project_root()
-    _, service = _service()
+    registry, service = _service()
     try:
         planned = service.plan(root, adapter_id, explicit_target=target)
         _emit_plan_and_fail_conflicts(planned.plan)
@@ -218,6 +218,13 @@ def install(
         _handle_adapter_error(error)
     if not result.mutated:
         typer.echo("No changes required.")
+        return
+    harness = registry.get(adapter_id).manifest.harness
+    typer.echo(f"{adapter_id} Adapter installed at {result.target}.")
+    typer.echo(
+        f"Open {harness} in this repository to begin a Forge-governed Change; "
+        "no further Forge-side step is required."
+    )
 
 
 @adapter_app.command()

@@ -213,6 +213,11 @@ Validation should cover FAST bugfix, STANDARD feature, FULL feature, Strict Revi
 
 ### Golden path
 
+Status: the STANDARD/Codex slice of this section is done, via `CHG-0014`
+(`docs/getting-started.md`, `examples/golden-path-standard/`,
+`tests/golden_path/`). The External validation matrix and FAST/FULL/
+Strict-Review-remediation/Adapter-drift examples below remain open.
+
 Create `docs/getting-started.md` with a first successful Change as the primary onboarding path:
 
 ```text

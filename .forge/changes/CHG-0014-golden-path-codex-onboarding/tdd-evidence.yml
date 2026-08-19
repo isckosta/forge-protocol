@@ -1,0 +1,103 @@
+schema: forge/tdd-evidence@1
+change: CHG-0014
+status: compliant
+cycle_count: 4
+cycles:
+  - id: TDD-001A
+    title: Codex gate instructions include the full completion-gate set
+    requirements: [FR-003]
+    red:
+      observed: true
+      failure_reason: >-
+        test_projection_renders_documentation_and_tdd_completion_gate_instructions
+        and test_projection_renders_pre_implementation_boundary_instruction
+        (added to tests/unit/test_codex_projection_gates.py before touching
+        projection.py) both failed on AssertionError because
+        _gate_instructions had no branch for documentation_impact_evaluated,
+        required_documentation_updated, or tdd_compliant_or_explicitly_excepted;
+        the two paired negative tests
+        (test_projection_does_not_invent_documentation_or_tdd_exception_gates,
+        test_projection_does_not_invent_pre_implementation_boundary_for_flow_without_one)
+        passed trivially at the same time, as expected for a not-yet-existing
+        behavior. Full pytest transcript observed directly (11 tests, 2
+        failed for exactly this reason, 9 passed), not reconstructed.
+    green:
+      observed: true
+      evidence: >-
+        All 11 tests in tests/unit/test_codex_projection_gates.py pass after
+        adding the three completion-gate branches to _gate_instructions.
+  - id: TDD-001B
+    title: Codex gate instructions state the pre-Implementation boundary
+    requirements: [FR-003]
+    red:
+      observed: true
+      failure_reason: >-
+        Same RED execution as TDD-001A (both new positive assertions were
+        authored and run together before any projection.py change);
+        test_projection_renders_pre_implementation_boundary_instruction
+        failed because _gate_instructions never read
+        gates.before_implementation at all.
+      notes: ["Recorded as its own cycle because it is a distinct requirement (FR-003's pre-Implementation half) even though the RED execution was observed in the same pytest run as TDD-001A."]
+    green:
+      observed: true
+      evidence: >-
+        test_projection_renders_pre_implementation_boundary_instruction and
+        test_projection_does_not_invent_pre_implementation_boundary_for_flow_without_one
+        both pass after adding the before_implementation branch.
+  - id: TDD-002
+    title: forge adapter install prints a success/next-step confirmation
+    requirements: [FR-002]
+    red:
+      observed: true
+      failure_reason: >-
+        test_adapter_install_confirms_success_and_names_the_next_step (added
+        to tests/cli/test_adapter_commands.py before touching adapter_cli.py)
+        failed on AssertionError: the expected confirmation substring was
+        absent from stdout, which contained only the plan operation lines and
+        two capability-limitation WARN lines. The two paired negative tests
+        (dry-run prints no confirmation, reinstall prints no confirmation)
+        passed trivially at the same time, as expected.
+    green:
+      observed: true
+      evidence: >-
+        All 21 tests in tests/cli/test_adapter_commands.py pass after adding
+        the confirmation branch to adapter_cli.py's install() command.
+  - id: TDD-003
+    title: forge doctor aggregates installed-Adapter diagnostics
+    requirements: [FR-001]
+    red:
+      observed: true
+      failure_reason: >-
+        test_doctor_reports_installed_adapter_readiness and
+        test_doctor_reports_drifted_adapter_as_failed (added to
+        tests/unit/test_doctor_diagnostics.py before touching
+        doctor/__init__.py) failed: the first on `assert adapter_checks`
+        (empty dict — no adapter: prefixed checks existed at all), the
+        second on `assert result.passed is False` (True, because nothing
+        aggregated the drifted Adapter's failing check). The paired negative
+        test (no installed Adapter -> no adapter: checks) and the pre-existing
+        exact-check-id-list test both passed unchanged at the same time.
+      notes: ["A companion CLI-level assertion (test_doctor_exit_code_reflects_drifted_adapter_installation, tests/cli/test_doctor.py) was added after doctor/__init__.py's fix already existed and passed immediately (no RED at that layer) -- disclosed rather than misrepresented as its own TDD cycle. It exercises the same behavior through the CLI composition layer, which was not itself separately implemented."]
+    green:
+      observed: true
+      evidence: >-
+        All 7 tests in tests/unit/test_doctor_diagnostics.py, and the 3 tests
+        in tests/cli/test_doctor.py, pass after adding _adapter_readiness_checks
+        to doctor/__init__.py::diagnose().
+notes:
+  - >-
+    The Layer B example scenario (username-length validation against
+    examples/golden-path-standard/starter/) is a separate, nested Change
+    (fixture CHG-0001) constructed live by
+    tests/golden_path/test_golden_path_standard.py on every test run,
+    including a real subprocess pytest RED before the fix and GREEN after.
+    Its own TDD evidence is generated fresh each run (see that test module
+    and test-design.md's "Layer B TDD" section); it is not part of this
+    Change's own cycle count above because it is not this Change's own
+    Implementation, it is what this Change's Implementation causes to be
+    reproducible.
+  - >-
+    All full-suite pytest runs referenced above were executed directly by
+    this session against this repository's working tree, not simulated or
+    summarized from memory; see verification.md for exact commands and
+    counts.

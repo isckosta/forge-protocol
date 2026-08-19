@@ -1,10 +1,14 @@
 from pathlib import Path
 import subprocess
 
+from typer.testing import CliRunner
+
 from forge_cli import doctor
+from forge_cli.app import app
 
 
 PROTOCOL_ROOT = Path(__file__).resolve().parents[2] / "protocol"
+runner = CliRunner()
 
 
 def _init_git_repository(path: Path) -> None:
@@ -80,6 +84,49 @@ def test_doctor_skips_repository_dependent_checks_outside_git(tmp_path: Path) ->
     assert checks["protocol_compatibility"].status == "skipped"
     assert checks["canonical_flows"].status == "skipped"
     assert checks["canonical_contract"].status == "passed"
+
+
+def test_doctor_reports_installed_adapter_readiness(tmp_path: Path, monkeypatch) -> None:
+    _init_git_repository(tmp_path)
+    monkeypatch.chdir(tmp_path)
+    runner.invoke(app, ["init"])
+    runner.invoke(app, ["adapter", "install", "codex"])
+
+    result = doctor.diagnose(tmp_path, PROTOCOL_ROOT)
+
+    assert result.passed is True
+    adapter_checks = {
+        check.id: check for check in result.checks if check.id.startswith("adapter:codex:")
+    }
+    assert adapter_checks
+    assert all(check.status == "passed" for check in adapter_checks.values())
+
+
+def test_doctor_reports_drifted_adapter_as_failed(tmp_path: Path, monkeypatch) -> None:
+    _init_git_repository(tmp_path)
+    monkeypatch.chdir(tmp_path)
+    runner.invoke(app, ["init"])
+    runner.invoke(app, ["adapter", "install", "codex"])
+    skill = tmp_path / ".agents" / "skills" / "forge" / "SKILL.md"
+    skill.write_bytes(skill.read_bytes() + b"\n# deliberate drift\n")
+
+    result = doctor.diagnose(tmp_path, PROTOCOL_ROOT)
+
+    assert result.passed is False
+    assert any(
+        check.id == "adapter:codex:generated_drift" and check.status == "failed"
+        for check in result.checks
+    )
+
+
+def test_doctor_adds_no_adapter_checks_when_none_installed(tmp_path: Path, monkeypatch) -> None:
+    _init_git_repository(tmp_path)
+    monkeypatch.chdir(tmp_path)
+    runner.invoke(app, ["init"])
+
+    result = doctor.diagnose(tmp_path, PROTOCOL_ROOT)
+
+    assert not any(check.id.startswith("adapter:") for check in result.checks)
 
 
 def test_doctor_is_read_only(tmp_path: Path) -> None:
