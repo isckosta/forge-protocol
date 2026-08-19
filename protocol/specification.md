@@ -294,10 +294,12 @@ concern, resolved by a three-level precedence chain:
    C-072).
 2. **Harness-observed chat hint.** When no explicit configuration is set
    (absent, or `auto`), a Harness MAY use the active chat session's
-   observed language. Core cannot resolve this level itself — per §2 and
-   §33, the chat is the runtime and Core has no access to live chat
-   state — so Core's role is limited to projecting an instruction for the
-   Harness to apply this level, not resolving it directly.
+   observed language. Core cannot resolve this level itself — per §28 and
+   §33, essential Forge state does not exist only in transient chat
+   history and canonical operation requires no hosted backend, so Core has
+   no access to live chat state and its role is limited to projecting an
+   instruction for the Harness to apply this level, not resolving it
+   directly.
 3. **English fallback.** When neither of the above yields a language,
    interaction defaults to English.
 

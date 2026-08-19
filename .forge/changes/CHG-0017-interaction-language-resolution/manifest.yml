@@ -20,11 +20,19 @@ artifacts:
   implementation: complete
   provenance: complete
   verification: complete
-  review: pending
+  review: complete
   documentation: complete
-  knowledge_capture: pending
+  knowledge_capture: complete
 requirements: {total: 10, implemented: 10, verified: 10}
-tdd: {status: compliant, cycles: 2}
+tdd:
+  status: exception
+  cycles: 2
+  reason: >-
+    TDD-001's four schema-layer companion tests landed in the same commit
+    as the schema edit they test (no RED observed for that slice); TDD-001's
+    primary cycle and TDD-002 both have genuine RED/GREEN evidence. See
+    tdd-evidence.yml. Corrected from an initial `compliant` label per
+    independent Strict Review R002.
 verification: {status: passed}
 review:
   status: passed

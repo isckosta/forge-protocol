@@ -65,7 +65,7 @@ a different concern (found in Specification Review, SR-001).
 Resolution`, defining the concept, the three-level precedence chain, that
 Core resolves only the deterministic (explicit-configuration) level and
 projects an instruction for the Harness-hint level (Core cannot observe
-live chat state — §2, §33), and an explicit statement that
+live chat state — §28, §33), and an explicit statement that
 repository/context heuristic detection is out of scope for this Change,
 pointing at the ADR.
 

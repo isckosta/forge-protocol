@@ -1,6 +1,20 @@
 schema: forge/tdd-evidence@1
 change: CHG-0017
-status: compliant
+status: exception
+reason: >
+  TDD-001's four schema-layer companion tests in
+  test_project_configuration.py (test_accepts_absent_interaction_language,
+  test_accepts_explicit_interaction_language, test_accepts_auto_interaction_language,
+  test_rejects_malformed_interaction_language) land in the same commit
+  (d1d0feb) as the protocol/schemas/project.schema.json edit they test, so
+  no RED was observed for that slice of otherwise-executable behavior.
+  Mirrors CHG-0007's own tdd-evidence.yml exception for the identical
+  "test and implementation land together" fact pattern. TDD-001's primary
+  cycle (Codex Adapter projection rendering) and TDD-002 both have genuine,
+  independently-reproduced RED/GREEN evidence; only the schema-companion
+  slice is excepted. Found by independent Strict Review (review.md R002),
+  which noted the prior top-level `status: compliant` understated this
+  self-disclosed gap against this repository's own CHG-0007 precedent.
 cycle_count: 2
 cycles:
   - id: TDD-001
