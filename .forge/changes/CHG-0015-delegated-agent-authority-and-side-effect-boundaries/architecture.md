@@ -17,9 +17,11 @@ parallel one:
 - `forge/execution-provenance@1`'s `scope`/`targets` fields — already
   schema-general, narrowed today only by Protocol 2 §11 prose to
   `role: resolution`.
-- `_reviewable_workspace_delta`/`_resolution_delta`/`_uncovered_paths`
+- `_reviewable_workspace_delta`/`_resolution_delta`/`_uncovered_paths`/
+  `_review_control_metadata_paths`/`_first_committed_provenance_record`
   (`src/forge_cli/validation/__init__.py`) — the existing Git-native
-  diff-and-cover primitives.
+  diff-and-cover primitives and the existing "first committed
+  representation is authority" mechanism C-026 already established.
 - Protocol 2 §4's `claimed`/`recorded`/`verified` assurance vocabulary.
 - Unresolved Decision Management (`decisions[]`, C-051–C-059) — used below
   to actually resolve `DEC-002`, now that Architecture (its owning
@@ -108,28 +110,39 @@ implementation detail assumed to be self-evidently correct.
    (or is absent from) `baseline.dirty` — i.e., newly dirty, or dirtied
    further, since baseline was captured.
 
-**No review-control-metadata exclusion here — this is a deliberate,
-corrected departure from `_resolution_delta`, not an oversight.** An
-earlier draft of this section reused `_review_control_metadata_paths`
-verbatim to exclude `manifest.yml`/`provenance.yml`/`review.md`. Designing
-this Change's own Test Strategy immediately afterward surfaced why that
-was wrong: that exclusion exists in Protocol 2 §5 for a narrower, different
-actor and purpose — letting the *primary* Implementation/Resolution/Review
-Execution append legitimate metadata about an already-frozen, unrelated
-subject without invalidating that freeze. A `delegated_task` Execution is
-not that actor and is not recording that kind of metadata; reusing the
-exclusion here would have made `manifest.yml`'s `decisions[]` array,
-`provenance.yml`, and `review.md` **invisible to Out-of-Scope Mutation
-detection for exactly the class of Execution this Change exists to
-constrain** — a real self-authorization blind spot (originating
-instruction §24's "bypass through generated files"), not a defense of one.
-Under this corrected design, the delegating primary Execution remains the
-one that writes the delegate's own `baseline`/close `revision` into
-`provenance.yml` on the delegate's behalf (a separate, primary-Execution
-Observed Effect, unaffected — `_reviewable_workspace_delta`/
-`_resolution_delta` keep their existing exclusion for that unchanged use);
-a `delegated_task` Execution has no legitimate reason of its own to touch
-those three files, so nothing legitimate is lost by not exempting them.
+**The review-control-metadata exclusion applies here too, restored after a
+second, deeper correction** — reusing `_review_control_metadata_paths`
+verbatim to exclude `manifest.yml`/`provenance.yml`/`review.md` from the
+*path-diff* Observed Effect. An intermediate draft of this section removed
+that exclusion entirely, reasoning (correctly, as far as it went) that
+reusing it verbatim would make those files invisible to Out-of-Scope
+Mutation detection. Writing this Change's own fixture-repo Test Strategy
+cases immediately afterward surfaced why *removing* it entirely is also
+wrong, for a structural reason neither the original design nor that first
+correction accounted for: the delegating primary Execution's own act of
+*writing the delegate's provenance record* necessarily mutates
+`provenance.yml` itself, and that write unavoidably happens after the
+delegate's baseline was captured — so a path-diff with no exclusion at all
+flags **every** `delegated_task` record as an Out-of-Scope Mutation of
+`provenance.yml`, universally, including the fully legitimate case,
+because the bookkeeping act of recording a delegation is indistinguishable
+from an attack at the path level. Excluding these three paths from the
+*path-diff* is genuinely necessary and correct for exactly this reason.
+
+This does not reopen the self-authorization blind spot the intermediate
+correction was right to worry about, because C-062 (self-authorization) is
+**not** implemented as part of the path-diff at all — see "Self-
+authorization (C-062)" in Validator changes below, which instead compares
+a `delegated_task` record's own declared fields against its first
+committed representation, reusing `_first_committed_provenance_record`
+verbatim (the same "immutable once committed" authority Protocol 2 §5/
+C-026 already established for exactly this purpose). A delegate rewriting
+its own already-committed `scope` to claim a broader grant is caught there,
+by content comparison against history — not by flagging the mere
+existence of a `provenance.yml` diff, which cannot distinguish legitimate
+bookkeeping from an attack in the first place. `_reviewable_workspace_delta`/
+`_resolution_delta` keep their own existing use of this same exclusion,
+unaffected.
 
 The `dirty` content-identity baseline separately and correctly excludes a
 delegating Execution's *own* pre-existing uncommitted work-in-progress from
@@ -186,20 +199,23 @@ existing `@1` record's `scope`.
 
 ## Validator changes (`src/forge_cli/validation/__init__.py`)
 
-New function `_delegated_execution_effect(root, baseline, close_revision)`
-— deliberately **no** `mpath` parameter: unlike `_reviewable_workspace_delta`/
-`_resolution_delta`, this function applies no review-control-metadata
-exclusion (see "Execution Boundary capture" above for why that exclusion
-does not apply to a `delegated_task` Execution's own Observed Effect):
+New function `_delegated_execution_effect(root, mpath, baseline,
+close_revision)` — **`mpath` restored**, used only to compute the
+review-control-metadata exclusion (see "Execution Boundary capture" above
+for why excluding these three paths from the *path-diff* is necessary
+regardless of who mutated them, and why this no longer reopens the
+self-authorization gap — that is checked separately, below):
 
 1. Computes committed diff `baseline["head"]..close_revision`
    (`_diff_paths`, reused).
 2. Computes current `dirty` set the same way `baseline["dirty"]` was
    captured (composition of `_diff_paths(root)` + `_untracked_paths(root)`
    + per-path hash).
-3. Returns the union described in "Execution Boundary capture" above, in
-   full — `manifest.yml`/`provenance.yml`/`review.md` paths included when
-   actually mutated by this Execution.
+3. Returns the union described in "Execution Boundary capture" above,
+   minus `_review_control_metadata_paths(root, mpath)` (reused, same three
+   exact paths, same reasoning Protocol 2 §5 already established — applied
+   here for a different but equally valid reason: unavoidable primary-
+   Execution bookkeeping noise, not Reviewer self-recording).
 4. Fails closed (returns `None`, propagated by the caller as "cannot
    verify") when `git cat-file -e` on `baseline["head"]` fails (shallow/
    missing history — same fail-closed condition `_git_exists` already
@@ -258,20 +274,25 @@ gated on `protocol == 2`):
    finding (C-065), distinct in message from an actual Out-of-Scope
    Mutation so a human can tell "we don't know" from "we know it violated
    scope."
-6. **Self-authorization (C-062/INV-002):** among the Out-of-Scope paths
-   found in step 5, any path matching the Authority-Defining Artifact
-   definition (`manifest.yml`, `provenance.yml`, any Review/Decision
-   record — the exact repository-root-relative paths
-   `_review_control_metadata_paths` names, reused here only as a **name
-   source**, never as an exclusion — plus any other path meeting
-   Specification's functional definition) is flagged as the more specific
-   C-062 finding instead of the generic C-061 one, since FR-006 narrows
-   this to declaring/expanding — not merely touching — Authority; the
-   validator conservatively treats *any* mutation of such a path by a
-   `delegated_task` Execution as the C-062 finding class (a false-positive-
-   tolerant, fail-closed simplification: distinguishing genuine self-
-   attestation from expansion mechanically, in general, is not solved by
-   this Change — see "What this Change deliberately does not build").
+6. **Self-authorization (C-062/INV-002) — a separate check, not part of
+   the path-diff at all:** for each `delegated_task` record, reuses
+   `_first_committed_provenance_record(root, provenance_path, record["id"])`
+   **verbatim** (the exact function that already establishes C-026's
+   "first committed representation is authority; later rewrites are
+   invalid" rule) to fetch the record's own first committed
+   representation. If one exists and its `scope` is not equal to the
+   current record's `scope` — under path-set equality, not merely
+   coverage, since a delegate narrowing its own already-committed grant is
+   not an attack but *widening* it is — that is a C-062 finding: the
+   record rewrote the declaration of its own Authority after the fact.
+   This is the mechanism that actually catches self-authorization: it
+   compares a record's declared Authority against its own history,
+   independent of whether `manifest.yml`/`provenance.yml` happen to be
+   excluded from the unrelated path-diff computation in step 5 — the two
+   checks are deliberately orthogonal, so excluding those paths from one
+   cannot silently defeat the other. `_first_committed_provenance_record`
+   returning `_HISTORY_ERROR` (shallow/unavailable history) is itself a
+   C-065 fail-closed finding here too, matching its existing C-026 callers.
 
 This mirrors `_validate_resolution_verification`'s shape exactly: small,
 pure functions operating on already-loaded YAML mappings and local Git
@@ -385,12 +406,16 @@ from Specification, now confirmed against the actual schema/field design.
   functional Authority-Defining Artifact rule (FR-006/FR-016) exists;
   ordinary Change Artifacts remain governed by existing Contract rules
   (e.g., C-026), not a new file-ACL system.
-- No reliable mechanical distinction between "self-attestation" and
-  "self-expansion" for step 6 above — noted honestly as a fail-closed,
-  over-inclusive simplification (treats any `delegated_task` mutation of
-  an Authority-Defining Artifact as the C-062 finding class), not a
-  claimed solved problem. A future Change may refine this if the
-  simplification proves too coarse in practice.
+- C-062's self-authorization check (Validator changes, step 6) only
+  detects a `delegated_task` record's own `scope` field being rewritten
+  from its first committed representation. It does not detect every
+  conceivable way an Authority-Defining Artifact's *other* content could
+  be manipulated to the same effect (e.g., a delegate tampering with a
+  *different* record's fields, or with non-schema-tracked prose in
+  `manifest.yml`) — those remain covered, if at all, only incidentally by
+  ordinary Strict Review, not by this mechanism. Scoped deliberately to
+  the concrete escalation vector this Change's own incident and adversarial
+  review actually found, not generalized speculatively.
 - No network/external-service coverage (FR-017, unchanged).
 - No concurrency/TOCTOU solution beyond fail-closed on ambiguity (FR-013);
   parallel delegated Executions mutating overlapping paths remain a known,
