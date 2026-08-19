@@ -1,0 +1,33 @@
+schema: forge/traceability@1
+change: CHG-0018
+requirements:
+  FR-001: {tasks: [T-002], tests: [test_vendor_specific_prefix_is_no_longer_rejected_by_the_generic_core, test_codex_owned_reserved_path_is_rejected], evidence: configuration_py_and_adapter_configuration_schema_json_dot_codex_removed}
+  FR-002: {tasks: [T-001], tests: [test_adapter_assessment], evidence: adapters_assessment_py}
+  FR-003: {tasks: [T-003], tests: [test_claude_code_adapter_descriptor, test_claude_code_descriptor_consistency, test_claude_code_distribution_resources, test_claude_code_packaged_authority], evidence: claude_code_resources_adapter_yml_capabilities_yml}
+  FR-004: {tasks: [T-004, T-005], tests: [test_claude_code_skill_projection, test_claude_code_projection_gates, test_claude_code_workflow_resource_authority], evidence: claude_code_projection_py_skill_bundle}
+  FR-005: {tasks: [T-004, T-005], tests: [test_projection_bundle_includes_claude_md_pointer, test_claude_md_pointer_carries_the_interaction_language_directive], evidence: claude_code_projection_py_claude_md_pointer}
+  FR-006: {tasks: [T-004, T-005], tests: [test_projection_bundle_includes_hook_script_and_frontmatter, test_hook_script_denies_in_place_mutation_of_review_control_paths], evidence: claude_code_projection_py_hook_script_and_frontmatter}
+  FR-007: {tasks: [T-006], tests: [test_both_drivers_register_without_collision], evidence: adapters_packaged_py}
+  FR-008: {tasks: [T-007], tests: [test_adapter_driver_conformance, test_adapter_install_then_doctor_succeeds_for_every_registered_adapter], evidence: shared_conformance_suite}
+  FR-009: {tasks: [T-009], evidence: contract_c074}
+  FR-010: {tasks: [T-011], evidence: adr_0016}
+  FR-011: {tasks: [T-012], evidence: golden_path_claude_code_layer_c}
+  NFR-001: {tasks: [T-001, T-002], evidence: grep_adapters_star_py_for_vendor_names}
+  NFR-002: {tasks: [T-001, T-002], evidence: full_pre_existing_codex_suite_passes_unchanged}
+  NFR-003: {tasks: [T-003], evidence: c073_style_disclaimers_in_specification_and_architecture}
+  CON-001: {tasks: [T-002, T-009], evidence: no_new_protocol_integer}
+  CON-002: {tasks: [T-002], evidence: schema_change_only_widens_acceptance}
+  CON-003: {tasks: [T-010], evidence: tdd_004_baseline_unchanged}
+  CON-004: {tasks: [T-002, T-003], evidence: no_flow_gate_finding_severity_or_review_convergence_semantic_touched}
+  INV-001: {tasks: [T-004, T-005], evidence: claude_md_pointer_does_not_restate_contract_text}
+acceptance:
+  AC-001: [test_vendor_specific_prefix_is_no_longer_rejected_by_the_generic_core]
+  AC-002: [test_adapter_assessment]
+  AC-003: []
+  AC-004: [test_claude_code_adapter_descriptor]
+  AC-005: [test_adapter_install_then_doctor_succeeds_for_every_registered_adapter]
+  AC-006: [test_adapter_driver_conformance]
+  AC-007: []
+  AC-008: []
+  AC-009: [test_readiness_sequence_surfaces_adapter_install_and_health, test_golden_path_produces_a_valid_standard_change]
+  AC-010: []

@@ -1,0 +1,73 @@
+schema: forge/change@2
+protocol: 2
+change:
+  id: CHG-0018
+  title: Second Harness Adapter (Claude Code)
+  kind: feature
+flow: {initial: full, current: full, escalations: []}
+state: {current: in_progress}
+artifacts:
+  intent: complete
+  discovery: complete
+  specification: complete
+  specification_review: complete
+  architecture: complete
+  test_strategy: approved
+  plan: approved
+  tasks: complete
+  traceability: complete
+  tdd_evidence: complete
+  implementation: complete
+  provenance: in_progress
+  verification: complete
+  review: pending
+  documentation: complete
+  knowledge_capture: complete
+requirements: {total: 10, implemented: 10, verified: 10}
+tdd: {status: compliant, cycles: 4}
+verification: {status: passed}
+review:
+  status: pending
+  iteration: 0
+  blockers: 0
+  majors: 0
+  minors: 0
+  observations: 0
+  iterations: []
+documentation:
+  impact_evaluated: true
+  update_required: true
+  reason: >-
+    Updated: CHANGELOG.md, ROADMAP.md (status flip for this section, plus
+    a maturity-table update), docs/adr/0016-second-harness-adapter-
+    claude-code.md, examples/golden-path-claude-code/README.md. No RFC
+    (F-008's RFC threshold is "Material Protocol Changes"; this Change
+    adds a second concrete Adapter implementation and two generic-Core
+    fixes, not a Protocol redefinition -- the generic Core's own
+    Contract/Specification sections (SS34-38) already spoke generically
+    before this Change, confirmed in Discovery, not just asserted).
+decisions:
+  - id: DEC-001
+    class: architectural
+    materiality: material
+    status: resolved
+    authority: agent_with_review
+    owning_artifact: architecture
+    discovered_in: architecture
+    resolved_via: autonomous_decision
+  - id: DEC-002
+    class: architectural
+    materiality: material
+    status: resolved
+    authority: agent_with_review
+    owning_artifact: architecture
+    discovered_in: architecture
+    resolved_via: autonomous_decision
+  - id: DEC-003
+    class: architectural
+    materiality: material
+    status: resolved
+    authority: agent_with_review
+    owning_artifact: architecture
+    discovered_in: architecture
+    resolved_via: autonomous_decision

@@ -6,6 +6,59 @@ CLI releases will follow Semantic Versioning when releases begin. Protocol versi
 
 ## Unreleased
 
+### Second Harness Adapter (Claude Code)
+
+Added:
+
+- `src/forge_cli/adapters/claude_code/`, Forge's second concrete Harness
+  Adapter, registered alongside the existing Codex Adapter in
+  `adapters/packaged.py`. `adapter.yml`/`capabilities.yml` declare a
+  materially richer, dated (2026-08-19, `code.claude.com`) capability
+  profile than Codex's — all six of `persistent_instructions`, `commands`,
+  `skills`, `hooks`, `agent_roles`, and `generated_files` are `supported`,
+  versus Codex's `skills`/`generated_files` only;
+- three real projection mechanisms, all `forge_owned` under one shared
+  publication root (`.claude`): a Skill (`.claude/skills/forge/SKILL.md` +
+  `references/*`, content-parallel to Codex's own projection, including
+  the Protocol 2 Reviewer/Resolver-independence guidance), a CLAUDE.md
+  pointer (`.claude/CLAUDE.md`, short, references the Skill rather than
+  restating it), and an illustrative `PreToolUse` enforcement hook
+  (declared in the Skill's own frontmatter — no separate
+  `.claude/settings.json` merge needed) that denies in-place shell
+  mutation of `.forge/changes/*/{manifest.yml,provenance.yml,review.md}`
+  without blocking ordinary `git add`/`git commit`/`cat`/`ls`/`grep` of
+  the same paths — the one mechanism Codex (`hooks: false`) structurally
+  cannot offer;
+- Contract rule `C-074`: a Change introducing a new Harness Adapter MUST
+  pass the shared conformance test suite before Completion;
+- a new shared, Harness-agnostic conformance test suite
+  (`tests/unit/test_adapter_driver_conformance.py`, parametrized over
+  both concrete Drivers) — the literal ROADMAP exit criterion "both
+  Adapters pass shared conformance tests", not previously built for even
+  one Adapter;
+- `examples/golden-path-claude-code/` and
+  `tests/golden_path/test_golden_path_claude_code.py` (Layer A/B, mirrors
+  `golden-path-standard`'s proven shape) plus genuine, executed Layer C
+  evidence — a real, independent `claude -p` session, running cold
+  against a scratch repository with this Adapter installed, autonomously
+  recognized the repository as Forge-governed, classified a FAST Flow,
+  performed a real RED→GREEN TDD cycle, produced repository-native Change
+  artifacts, and correctly identified that Strict Review requires a
+  separate Execution/Context — see this Change's own `verification.md`.
+
+Fixed (generic Adapter Core, both pre-dating this Change):
+
+- a `.codex` reserved-path rule hardcoded in the generic
+  `adapters/configuration.py` and
+  `protocol/schemas/adapter-configuration.schema.json` (whose regex also
+  had a latent unescaped-`.` bug, matching `Xcodex` too) — not scoped to
+  Codex at all. Removed from the generic Core; Codex's own
+  `codex/targets.py` keeps its own, now-sole, correctly-scoped copy;
+- `assess_invariant`/`to_generic_limitation` (100% generic invariant-
+  assessment logic, zero Codex references) relocated from
+  `codex/assessment.py` to a new `adapters/assessment.py`, so a second
+  Adapter does not need to import across Adapter packages.
+
 ### Interaction Language Resolution
 
 Added:

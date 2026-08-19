@@ -20,8 +20,9 @@ Directional maturity:
 | --- | ---: |
 | Protocol / Foundation | 90% |
 | Bootstrap CLI | 70% |
-| Harness Adapter Core | 90% |
+| Harness Adapter Core | 95% |
 | Codex Adapter | 80% |
+| Claude Code Adapter | 70% |
 | Developer experience | 30% |
 | Productization | 30% |
 | Release readiness | 20% |
@@ -244,6 +245,12 @@ Create `docs/getting-started.md` with a first successful Change as the primary o
 - a developer unfamiliar with Forge can complete the golden path without studying internal architecture first.
 
 ## Second Harness Adapter
+
+Status: Completed by `CHG-0018`. Claude Code is the second concrete
+Harness Adapter, registered alongside Codex; the generic Adapter Core
+required no vendor-specific addition to support it (two pre-existing
+Codex-specific leaks were found and fixed as part of proving that). Gate
+D is satisfied — see `docs/adr/0016-second-harness-adapter-claude-code.md`.
 
 ### Objective
 
