@@ -5,7 +5,7 @@ change:
   title: Canonical Artifact Structure for Human-Readable Change Documentation
   kind: feature
 flow: {initial: full, current: full, escalations: []}
-state: {current: completion}
+state: {current: complete}
 artifacts:
   intent: complete
   discovery: complete
@@ -15,6 +15,7 @@ artifacts:
   test_strategy: approved
   plan: approved
   tasks: complete
+  traceability: complete
   tdd_evidence: complete
   implementation: complete
   provenance: complete

@@ -44,24 +44,22 @@ status: ready
       assumed); `CHANGELOG.md` entry; `knowledge-capture.md`;
       `traceability.yml`; `tdd-evidence.yml` (all produced from real
       Implementation evidence, not drafted ahead of it — `plan.md` step 7).
-- [x] T-013 Freeze Implementation subject; record provenance.
-- [ ] T-014 Independent Strict Review (`kind: initial_review`, separate
-      Execution/Context from Implementation).
-- [ ] T-015 Resolve any blocking Findings; independent Resolution
-      Verification if needed (separate Execution/Context again).
-- [ ] T-016 Completion: verify every FULL Gate satisfied (Verification
-      passed, Review passed, Documentation Impact evaluated and updated,
-      Knowledge Capture complete, no unresolved BLOCKER Findings).
+- [x] T-013 Froze Implementation subject (`implementation-001`, `e50d3c5`).
+- [x] T-014 Independent Strict Review Iteration 1 (`kind: initial_review`,
+      separate Execution/Context) — REQUEST CHANGES: 1 BLOCKER (R012,
+      latent defect inherited from `CHG-0015`), 2 MAJOR (R001, R002),
+      6 MINOR (R003–R008), 3 OBSERVATION (R009–R011).
+- [x] T-015 Resolution (`resolution-001`, `848adc9`, same session as
+      Implementation — only Reviewer independence is required by C-026)
+      addressed R001–R008, R010–R012 with declared `scope`/`targets`;
+      R009 needed no fix. Independent Resolution Verification (Iteration 2,
+      separate Execution/Context again) — PASS, `full_review_required:
+      false`, `new_material_findings: 0`, two new non-blocking OBSERVATION
+      (R013, R014, deferred). See `review.md`.
+- [x] T-016 Completion: all FULL Gates satisfied (Verification passed,
+      Review passed, Documentation Impact evaluated and updated, Knowledge
+      Capture complete, no unresolved BLOCKER Findings).
 
 ## Status
 
-T-001 through T-013 complete, including `verification.md` (PASS) and
-`provenance.yml` (Implementation subject frozen at commit `e50d3c5`).
-T-014 onward requires a distinct Execution and Execution Context per
-Protocol 2 (Reviewer/Resolver independence,
-`protocol/versions/2/specification.md` §2) — this session cannot perform
-Strict Review on its own Implementation without constituting self-review,
-and does not attempt to. Subsequent commits are restricted to
-Change-local review-control metadata (this file, `manifest.yml`,
-`provenance.yml`, `review.md`), per the same freeze discipline
-`CHG-0015` established.
+All tasks complete. `manifest.yml` `state.current: complete`.
