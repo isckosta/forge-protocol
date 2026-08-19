@@ -1,0 +1,51 @@
+schema: forge/change@2
+protocol: 2
+change:
+  id: CHG-0015
+  title: Delegated Agent Authority and Side-Effect Boundaries
+  kind: feature
+flow: {initial: full, current: full, escalations: []}
+state: {current: specification_review}
+artifacts:
+  intent: complete
+  discovery: complete
+  specification: complete
+  specification_review: complete
+  architecture: pending
+  test_strategy: pending
+  plan: pending
+  tasks: pending
+  tdd_evidence: pending
+  implementation: pending
+  provenance: pending
+  verification: pending
+  review: pending
+  documentation: pending
+  knowledge_capture: pending
+tdd: {status: pending}
+verification: {status: pending}
+review:
+  status: pending
+  iteration: 0
+  blockers: 0
+  majors: 0
+  minors: 0
+  observations: 0
+  iterations: []
+documentation:
+  impact_evaluated: false
+decisions:
+  - id: DEC-001
+    class: contract
+    materiality: material
+    status: awaiting_decision
+    authority: human
+    owning_artifact: specification
+    discovered_in: specification
+  - id: DEC-002
+    class: architectural
+    materiality: material
+    status: open
+    authority: agent_with_review
+    owning_artifact: architecture
+    discovered_in: specification
