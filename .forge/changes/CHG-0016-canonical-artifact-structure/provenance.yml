@@ -78,3 +78,51 @@ records:
         limitation explicitly rather than asserting a conclusion this
         execution cannot support. Per Contract C-025 this Reviewer resolved
         nothing: only review.md, manifest.yml, and this record were written.
+  - id: resolution-001
+    role: resolution
+    execution: {id: implementation-exec-chg0016-20260819-01, context_id: implementation-context-chg0016-20260819-01}
+    recorded_at: "2026-08-19T13:15:00-03:00"
+    scope:
+      - .forge/changes/CHG-0016-canonical-artifact-structure/architecture.md
+      - .forge/changes/CHG-0016-canonical-artifact-structure/knowledge-capture.md
+      - .forge/changes/CHG-0016-canonical-artifact-structure/tasks.md
+      - .forge/changes/CHG-0016-canonical-artifact-structure/tdd-evidence.yml
+      - .forge/changes/CHG-0016-canonical-artifact-structure/traceability.yml
+      - .forge/changes/CHG-0016-canonical-artifact-structure/verification.md
+      - examples/canonical-artifacts/review.md
+      - examples/canonical-artifacts/verification.md
+      - protocol/artifact-structure.md
+      - protocol/specification.md
+      - src/forge_cli/validation/__init__.py
+      - tests/cli/test_validate.py
+    targets: [R001, R002, R003, R004, R005, R006, R007, R008, R010, R011, R012]
+    revision:
+      id: chg-0016-resolution-001
+      immutable_ref: {type: git_commit, value: 848adc992d63bc510f3fae2917d47557095c9049}
+      description: >-
+        Resolution of review.md Iteration 1 (REQUEST CHANGES). Same
+        Execution/Execution Context as implementation-001 -- Contract C-026
+        requires Reviewer independence from Implementation, not Resolver
+        independence from Implementation, and Protocol §25 requires only that
+        Reviewer and Resolver are separate Roles, which review-001 (a
+        distinct Execution/Context) already establishes. R009 required no
+        change (already an honest, correctly-scoped limitation, not a
+        defect) and is excluded from targets.
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: claude-code
+      statement: >-
+        Self-recorded repository-native provenance for the Resolution
+        execution that addressed review.md Iteration 1's Findings. scope
+        lists the exact repository-relative paths this Resolution touched,
+        excluding this Change's own manifest.yml/provenance.yml/review.md
+        per protocol/versions/2/specification.md SS11's Resolution Delta
+        computation, which already subtracts those paths before comparison.
+        targets lists every Finding this Resolution addressed by id; R009
+        is deliberately absent (no fix was required or made). The Resolution
+        Scope declared here is what the next Iteration's Resolution Delta
+        computation (Core, against the immutable revisions on either side of
+        this record's own immutable_ref) must be checked against for
+        Out-of-Scope Mutation -- this statement does not itself compute or
+        assert that check.
