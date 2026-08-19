@@ -1,0 +1,46 @@
+schema: forge/execution-provenance@2
+change: CHG-0018
+records:
+  - id: implementation-001
+    role: implementation
+    execution: {id: implementation-exec-chg0018-20260819-01, context_id: implementation-context-chg0018-20260819-01}
+    recorded_at: "2026-08-19T17:17:30-03:00"
+    revision:
+      id: chg-0018-implementation-001
+      immutable_ref: {type: git_commit, value: 6214390dc0f36ee982b0ce83185b1eaa08f21d7d}
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: claude-code
+      statement: >-
+        Self-recorded repository-native provenance for the Implementation
+        execution that produced CHG-0018, continuing the same session that
+        produced this Change's Intent, Discovery, Specification,
+        Specification Review, Architecture, Test Strategy, and Plan/Tasks
+        artifacts across this conversation, and that received explicit
+        human approval of the full Discovery-through-Completion
+        implementation plan (a dogfooded Forge Change) before Discovery
+        began. No provider-native attestation is claimed; assurance is
+        recorded, not verified or cryptographic/external proof. Every
+        RED/GREEN cycle in tdd-evidence.yml was observed directly by this
+        execution via real pytest subprocess runs (504 passed, 0 failed on
+        the full suite, up from 437 on the pre-Implementation baseline).
+        Layer C of the dogfooded Golden Path (verification.md,
+        examples/golden-path-claude-code/README.md) was produced by a
+        genuinely separate mechanism from this Implementation execution
+        itself: a real, independent, non-interactive `claude -p` process
+        spawned via Bash (not the Task/Agent subagent tool, whose first,
+        corrected attempt is recorded honestly in knowledge-capture.md as
+        a methodology defect, not concealed), confirmed via `which claude`
+        to be the actual installed Claude Code CLI binary (version
+        2.1.235), running cold against a scratch repository with no access
+        to this conversation. That process in turn spawned its own further
+        independent subagents for its Change's Strict Review and
+        Resolution Verification -- all of that is that separate process's
+        own self-governance, not asserted or fabricated by this
+        Implementation record. The independent Strict Review of CHG-0018
+        itself that follows must run in a distinct Execution and Execution
+        Context per Protocol 2 (protocol/versions/2/specification.md SS2)
+        and will record its own review-role provenance separately; this
+        session does not and cannot produce that record itself without
+        constituting self-review.
