@@ -269,3 +269,31 @@ An approved Plan SHOULD NOT be edited to silently absorb an
 Implementation-time discovery. Such a discovery SHOULD be recorded in
 Verification, a Decision record, or a documented re-Plan, per
 `protocol/artifact-structure.md`.
+
+## C-070 — Interaction language governs prose only
+Canonical identifiers — schema keys, Change and requirement identifiers,
+Gate names, and Contract rule identifiers — MUST remain invariant
+regardless of the configured interaction language. Interaction language
+MAY vary generated and human-authored prose; it MUST NOT vary any
+machine-readable identifier.
+
+## C-071 — Gate semantics MUST NOT vary by interaction language
+A Gate condition's satisfaction MUST be identical regardless of the
+prose language it is expressed or evaluated in. Interaction language is a
+presentation concern, not a semantic one.
+
+## C-072 — Deterministic configuration overrides heuristic signals
+When a project's `interaction.language` is explicitly set to a value
+other than `auto`, that value MUST take precedence over any
+Harness-observed or chat-inferred language signal.
+
+## C-073 — Harness honesty for interaction-language projection
+An Adapter projecting interaction-language guidance MUST NOT represent
+that projection as a guarantee of the Harness's actual output language.
+Core can project an instruction; it cannot verify Harness compliance with
+it.
+
+Neither C-072 nor C-073 is validated by `forge validate`; both are
+honesty and precedence obligations on the Harness/Adapter, not
+mechanically checked Gate conditions, matching C-067's own disclaimer for
+a different concern.

@@ -6,6 +6,48 @@ CLI releases will follow Semantic Versioning when releases begin. Protocol versi
 
 ## Unreleased
 
+### Interaction Language Resolution
+
+Added:
+
+- an optional, additive `interaction.language` field on `forge/project@1`
+  (`protocol/schemas/project.schema.json`), accepting the sentinel `auto`
+  or a BCP-47-shaped lowercase-language[-REGION] code — absent behaves
+  identically to `auto`;
+- Contract rules C-070 (canonical identifiers stay invariant regardless
+  of interaction language), C-071 (Gate semantics MUST NOT vary by
+  interaction language), C-072 (deterministic project configuration
+  takes precedence over any Harness-observed language signal), and C-073
+  (Harness honesty: an Adapter projecting this guidance MUST NOT claim to
+  guarantee the Harness's actual output language) — all added to both
+  `protocol/contract/engineering.md` and
+  `protocol/versions/2/contract/engineering.md`; neither C-072 nor C-073
+  is validated by `forge validate`, matching C-067's own disclaimer for a
+  different concern;
+- `protocol/specification.md` §42, defining a three-level precedence
+  chain (explicit project configuration → Harness-observed chat hint →
+  English fallback) — a deliberate reduction from `ROADMAP.md`'s original
+  four-level sketch; the repository/context-language heuristic level is
+  explicitly deferred (`docs/adr/0015-interaction-language-resolution.md`,
+  DEC-001, human decision) rather than built as a non-deterministic
+  mechanism inside Core;
+- the Codex Adapter now projects the effective interaction-language
+  instruction as one interpolated `SKILL.md` line, reusing the same
+  generic `AdapterProjectionContext` → `CodexProjectionInput` pipeline
+  `CHG-0016` established (`interaction_language: str = ""`, an additive
+  default field at every layer) — unlike `CHG-0016`'s
+  `artifact_structure_content`, this is a small per-project scalar, not a
+  static document, so it is rendered inline rather than as a new
+  `references/*.md` resource file (DEC-002, `architecture.md`).
+
+Known limitation (accepted, documented deferral — see DEC-001,
+`docs/adr/0015-interaction-language-resolution.md`):
+
+- Forge Core implements no repository/context-content language-detection
+  heuristic; a project without an explicit `interaction.language` relies
+  entirely on the Harness's own chat-observed language, falling back to
+  English if the Harness has none.
+
 ### Canonical Artifact Structure
 
 Added:

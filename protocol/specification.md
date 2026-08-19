@@ -279,3 +279,40 @@ The full non-binding guidance is defined by `protocol/artifact-structure.md`;
 its normative binding strength is defined by `protocol/contract/engineering.md`
 C-067–C-069. This section applies independently of declared Protocol
 version.
+
+## 42. Interaction Language Resolution
+
+Forge's canonical implementation language — Protocol, source, schemas,
+identifiers, and canonical Forge repository documentation — is English
+and this section does not change that. The language used to *interact*
+with a developer through a Harness chat is a separate, configurable
+concern, resolved by a three-level precedence chain:
+
+1. **Explicit project configuration.** `interaction.language` on
+   `forge/project@1`, when set to a value other than `auto`, is
+   deterministic and MUST take precedence over any other signal (Contract
+   C-072).
+2. **Harness-observed chat hint.** When no explicit configuration is set
+   (absent, or `auto`), a Harness MAY use the active chat session's
+   observed language. Core cannot resolve this level itself — per §2 and
+   §33, the chat is the runtime and Core has no access to live chat
+   state — so Core's role is limited to projecting an instruction for the
+   Harness to apply this level, not resolving it directly.
+3. **English fallback.** When neither of the above yields a language,
+   interaction defaults to English.
+
+Interaction language governs prose only. Canonical identifiers — schema
+keys, Change and requirement identifiers, Gate names, and Contract rule
+identifiers — remain invariant regardless of configured interaction
+language (C-070), and Gate semantics do not vary by interaction language
+(C-071). An Adapter projecting interaction-language guidance MUST NOT
+represent that projection as a guarantee of the Harness's actual output
+language (C-073).
+
+A repository/context-language heuristic level (inferring a language from
+repository content rather than from explicit configuration or a Harness's
+own chat-session observation) is deliberately not defined by this
+section. No deterministic, offline mechanism for it exists; introducing
+one is deferred pending demonstrated need (`CHG-0017`'s Discovery and
+`docs/adr/0015-interaction-language-resolution.md`). This section applies
+independently of declared Protocol version.

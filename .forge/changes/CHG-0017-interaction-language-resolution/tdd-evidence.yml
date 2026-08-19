@@ -1,0 +1,18 @@
+schema: forge/tdd-evidence@1
+change: CHG-0017
+status: compliant
+cycle_count: 2
+cycles:
+  - id: TDD-001
+    title: Codex Adapter projects the effective interaction-language instruction (FR-004/AC-005/AC-006/AC-007)
+    requirements: [FR-004, AC-005, AC-006, AC-007]
+    red: {observed: true, failure_reason: "AssertionError: assert 'Interaction language: auto' in <SKILL.md content without the line> -- pytest -q tests/unit/test_codex_projection_bundle.py::test_projection_bundle_renders_auto_interaction_language_by_default, first run against the unmodified projection.py, 2026-08-19; TypeError: generate_codex_skill_bundle() got an unexpected keyword argument 'interaction_language' -- same run, test_projection_bundle_renders_explicit_interaction_language_when_provided; AssertionError: assert 'Interaction language: pt-BR' in <SKILL.md content without the line> -- pytest -q tests/unit/test_codex_skill_projection.py::test_codex_projection_renders_effective_interaction_language, same run"}
+    green: {observed: true, evidence: "test_projection_bundle_renders_auto_interaction_language_by_default, test_projection_bundle_renders_explicit_interaction_language_when_provided, test_codex_projection_renders_effective_interaction_language -- all pass. Full suite: 437 passed (up from the 430 pre-Implementation baseline). forge validate/forge doctor manually confirmed against two real scratch projects (auto and explicit interaction.language: pt-BR) through the actual forge init / forge adapter install / forge adapter update CLI path, not only unit tests: rendered SKILL.md line 25 reads 'Interaction language: auto -- ... (C-070-C-073).' and 'Interaction language: pt-BR (project configuration takes precedence -- C-072).' respectively, forge doctor reports adapter:codex:generated_drift PASS in both cases."}
+  - id: TDD-002
+    title: Repository-wide forge validate / forge doctor / pytest baseline is unchanged (AC-008, CON-004)
+    requirements: [AC-008, CON-004]
+    red: {observed: false, failure_reason: "Compatibility regression guard, not a new-behavior assertion -- see test-strategy.md TDD-002 for the full baseline methodology, matching CHG-0016's own TDD-003 precedent for the same kind of check."}
+    green: {observed: true, evidence: "Pre-Implementation baseline (HEAD 85c8ce0): forge validate -> 'Forge project is valid' (exit 0), forge doctor -> 7/7 PASS, pytest -q -> 430 passed. Post-Implementation: forge validate -> 'Forge project is valid' (exit 0), forge doctor -> 7/7 PASS, pytest -q (full suite) -> 437 passed, 0 failed. No historical Change (CHG-0001-CHG-0016) reports a new finding."}
+notes:
+  - "The prose deliverables (project.schema.json's interaction property, Contract C-070-C-073, Specification SS42, the ADR, CHANGELOG) are not TDD cycles: Protocol SS19 marks TDD not_applicable for non-executable normative/documentation content, matching CHG-0016's own tdd-evidence.yml note. They are covered by Strict Review (test-strategy.md Non-mechanical Validation), not by a RED/GREEN cycle here."
+  - "tests/unit/test_project_configuration.py's four new interaction.language cases (absent/explicit/auto/malformed) were written after protocol/schemas/project.schema.json's edit had already landed in the same commit batch as the Contract/Specification/ADR text (T-001-T-004), not before it -- no RED was observed for them, unlike TDD-001's genuine RED. Recorded honestly as a process ordering gap, not represented as a deliberate baseline-capture non-applicability the way TDD-002 is. The schema change itself is declarative JSON Schema, not executable behavior with a meaningful failure mode to reproduce after the fact."

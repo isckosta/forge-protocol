@@ -71,3 +71,43 @@ def test_validation_is_deterministic_for_identical_repository_state(tmp_path: Pa
     second = configuration.load_project_configuration(path)
 
     assert first == second
+
+
+def test_accepts_absent_interaction_language(tmp_path: Path) -> None:
+    """CHG-0017 AC-001: no `interaction` key is valid (behaves as `auto`)."""
+    path = write_config(tmp_path, VALID_CONFIG)
+
+    result = configuration.load_project_configuration(path)
+
+    assert "interaction" not in result
+
+
+def test_accepts_explicit_interaction_language(tmp_path: Path) -> None:
+    """CHG-0017 AC-001."""
+    config = VALID_CONFIG + "interaction:\n  language: pt-BR\n"
+    path = write_config(tmp_path, config)
+
+    result = configuration.load_project_configuration(path)
+
+    assert result["interaction"]["language"] == "pt-BR"
+
+
+def test_accepts_auto_interaction_language(tmp_path: Path) -> None:
+    """CHG-0017 AC-001."""
+    config = VALID_CONFIG + "interaction:\n  language: auto\n"
+    path = write_config(tmp_path, config)
+
+    result = configuration.load_project_configuration(path)
+
+    assert result["interaction"]["language"] == "auto"
+
+
+def test_rejects_malformed_interaction_language(tmp_path: Path) -> None:
+    """CHG-0017 AC-002."""
+    config = VALID_CONFIG + "interaction:\n  language: Portuguese\n"
+    path = write_config(tmp_path, config)
+
+    with pytest.raises(configuration.InvalidProjectConfigurationError) as error:
+        configuration.load_project_configuration(path)
+
+    assert error.value.code == "E_FORGE_INVALID_PROJECT_CONFIGURATION"

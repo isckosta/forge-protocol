@@ -445,6 +445,9 @@ class AdapterService:
                         artifact_structure_content=resolve_effective_artifact_structure(
                             resolve_protocol_root(), protocol_id
                         ),
+                        interaction_language=(
+                            project_configuration.get("interaction", {}).get("language", "auto")
+                        ),
                         target=target,
                     )
                 )
@@ -609,6 +612,7 @@ class AdapterService:
                 artifact_structure_content=resolve_effective_artifact_structure(
                     resolve_protocol_root(), protocol_id
                 ),
+                interaction_language=configuration.get("interaction", {}).get("language", "auto"),
                 target=target,
             )
         )

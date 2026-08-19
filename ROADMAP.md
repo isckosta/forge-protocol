@@ -142,6 +142,11 @@ Lifecycle commands such as `forge specify`, `forge implement`, `forge verify`, a
 
 ## Interaction Language Resolution
 
+Status: Completed by `CHG-0017`, for the three-level precedence chain
+(explicit configuration → Harness-observed chat hint → English fallback).
+The repository/context-language heuristic level below is deliberately
+deferred — see `docs/adr/0015-interaction-language-resolution.md`.
+
 ### Objective
 
 Separate Forge's canonical implementation language from the language used to interact with the developer.

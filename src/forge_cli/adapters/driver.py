@@ -18,6 +18,7 @@ class AdapterProjectionContext:
     contract_content: str
     target: str
     artifact_structure_content: str = ""
+    interaction_language: str = ""
 
 
 @dataclass(frozen=True)

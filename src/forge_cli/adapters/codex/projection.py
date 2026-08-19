@@ -19,6 +19,7 @@ class CodexProjectionInput:
     contract_content: str
     protocol_id: int = 1
     artifact_structure_content: str = ""
+    interaction_language: str = ""
 
 
 @dataclass(frozen=True)
@@ -154,11 +155,25 @@ def _reference_links(flows: Iterable[tuple[str, str]], *, has_artifact_structure
     ))
 
 
+def _interaction_language_line(interaction_language: str) -> str:
+    effective = interaction_language or "auto"
+    if effective == "auto":
+        return (
+            "Interaction language: auto -- use the active chat's observed "
+            "language if there is one, otherwise English (C-070-C-073)."
+        )
+    return (
+        f"Interaction language: {effective} (project configuration takes "
+        "precedence -- C-072)."
+    )
+
+
 def _skill_content(
     flows: Iterable[tuple[str, str]],
     protocol_id: int,
     *,
     has_artifact_structure: bool,
+    interaction_language: str = "",
 ) -> str:
     effective_flows = tuple(flows)
     gate_instructions = _gate_instructions(effective_flows, protocol_id)
@@ -172,6 +187,8 @@ def _skill_content(
         "",
         _reference_links(effective_flows, has_artifact_structure=has_artifact_structure),
         "",
+        _interaction_language_line(interaction_language),
+        "",
         gate_instructions,
     ))
 
@@ -182,6 +199,7 @@ def generate_codex_skill_bundle(
     flows: Iterable[tuple[str, str]],
     protocol_id: int = 1,
     artifact_structure_content: str = "",
+    interaction_language: str = "",
 ) -> CodexProjectionBundle:
     """Render only the already-resolved effective Forge inputs for Codex."""
     effective_flows = tuple(flows)
@@ -197,7 +215,12 @@ def generate_codex_skill_bundle(
     resources = (
         _resource(
             "SKILL.md",
-            _skill_content(effective_flows, protocol_id, has_artifact_structure=has_artifact_structure),
+            _skill_content(
+                effective_flows,
+                protocol_id,
+                has_artifact_structure=has_artifact_structure,
+                interaction_language=interaction_language,
+            ),
         ),
         _resource("references/engineering-contract.md", contract_content),
         *((_resource("references/artifact-structure.md", artifact_structure_content),) if has_artifact_structure else ()),
@@ -217,4 +240,5 @@ def generate_codex_projection_bundle(canonical: CodexProjectionInput) -> CodexPr
         flows=((canonical.flow_id, canonical.flow_content),),
         protocol_id=canonical.protocol_id,
         artifact_structure_content=canonical.artifact_structure_content,
+        interaction_language=canonical.interaction_language,
     )

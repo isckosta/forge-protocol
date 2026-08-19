@@ -126,6 +126,31 @@ def test_codex_projection_includes_artifact_structure_reference_when_present() -
     assert "references/artifact-structure.md" in skill
 
 
+def test_codex_projection_renders_effective_interaction_language() -> None:
+    """CHG-0017 FR-004: explicit configuration renders deterministically;
+    an absent value renders the auto/fallback instruction instead."""
+    explicit = CodexDriver().project(
+        AdapterProjectionContext(
+            project_protocol=1,
+            flows=(("standard", FLOW.format(flow_id="standard")),),
+            contract_content="# Engineering Contract\nCanonical contract text.\n",
+            target=".agents/skills/forge",
+            interaction_language="pt-BR",
+        )
+    )
+    explicit_skill = next(
+        item.content for item in explicit.artifacts if item.path.endswith("SKILL.md")
+    )
+    assert "Interaction language: pt-BR" in explicit_skill
+    assert "C-072" in explicit_skill
+
+    default = CodexDriver().project(_context())
+    default_skill = next(
+        item.content for item in default.artifacts if item.path.endswith("SKILL.md")
+    )
+    assert "Interaction language: auto" in default_skill
+
+
 def test_codex_projection_reports_skill_only_gates_as_generic_limitations() -> None:
     """Claiming technical TDD or Strict Review enforcement must fail this contract."""
     projection = CodexDriver().project(_context())

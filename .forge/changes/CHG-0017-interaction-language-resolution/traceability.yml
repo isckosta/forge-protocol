@@ -1,0 +1,29 @@
+schema: forge/traceability@1
+change: CHG-0017
+requirements:
+  FR-001: {tasks: [T-001], tests: [test_accepts_absent_interaction_language, test_accepts_explicit_interaction_language, test_accepts_auto_interaction_language, test_rejects_malformed_interaction_language], evidence: project_schema_json_interaction_language_property}
+  FR-002: {tasks: [T-002], evidence: contract_c070_c071_c072_c073}
+  FR-003: {tasks: [T-003], evidence: specification_md_section_42}
+  FR-004: {tasks: [T-006], tests: [test_projection_bundle_renders_auto_interaction_language_by_default, test_projection_bundle_renders_explicit_interaction_language_when_provided, test_codex_projection_renders_effective_interaction_language], evidence: projection_py_skill_content_interaction_language_line}
+  FR-005: {tasks: [T-004, T-009], evidence: adr_0015_changelog_roadmap}
+  NFR-001: {tasks: [T-006], tests: [test_projection_bundle_omits_artifact_structure_resource_when_not_provided], evidence: full_suite_437_passed_zero_regressions}
+  NFR-002: {tasks: [T-006], evidence: interaction_language_field_on_generic_adapterprojectioncontext_not_codex_only}
+  NFR-003: {tasks: [T-006], evidence: str_equals_empty_string_additive_default_matches_artifact_structure_content_pattern}
+  CON-001: {tasks: [T-002, T-003], evidence: no_gate_finding_severity_convergence_or_decision_semantic_touched}
+  CON-002: {tasks: [T-001], evidence: only_project_schema_json_changed}
+  CON-003: {tasks: [T-002, T-004], evidence: dec_001_recorded_once_in_specification_and_adr}
+  CON-004: {tasks: [T-008], evidence: tdd_002_baseline_unchanged}
+  INV-001: {tasks: [T-002, T-003], evidence: c073_and_specification_md_section_42_state_no_verification_claim}
+  DEC-001: {tasks: [T-003, T-004], evidence: human_decision_alternative_a_specification_md_and_adr_0015}
+  DEC-002: {tasks: [T-006], evidence: architecture_md_dec_002_autonomous_decision}
+acceptance:
+  AC-001: [test_accepts_absent_interaction_language, test_accepts_explicit_interaction_language, test_accepts_auto_interaction_language]
+  AC-002: [test_rejects_malformed_interaction_language]
+  AC-003: []
+  AC-004: []
+  AC-005: [test_projection_bundle_renders_explicit_interaction_language_when_provided, test_codex_projection_renders_effective_interaction_language]
+  AC-006: [test_projection_bundle_renders_auto_interaction_language_by_default, test_codex_projection_renders_effective_interaction_language]
+  AC-007: [test_projection_bundle_omits_artifact_structure_resource_when_not_provided]
+  AC-008: []
+  AC-009: []
+  AC-010: []

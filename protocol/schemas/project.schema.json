@@ -27,6 +27,13 @@
       }
     },
     "documentation": {"type": "object", "additionalProperties": false, "required": ["impact_evaluation"], "properties": {"impact_evaluation": {"const": "required"}}},
-    "harnesses": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}}
+    "harnesses": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "interaction": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "language": {"type": "string", "pattern": "^(auto|[a-z]{2,3}(-[A-Z]{2})?)$"}
+      }
+    }
   }
 }
