@@ -139,10 +139,12 @@ Every delegation covered by this mechanism MUST have a determinable
 Authorized Scope, recorded as data, not only as a natural-language
 instruction. A natural-language-only boundary (exactly what the motivating
 incident had) does not satisfy this requirement. "Covered by this
-mechanism" has two independent boundaries, neither settled by this clause
-alone: a subject-matter boundary (FR-017 — repository/Git-observable
-mutation only, in v1) and a rollout-timing boundary (which delegations must
-comply, starting when — governed by DEC-001, currently open).
+mechanism" has two independent boundaries: a subject-matter boundary
+(FR-017 — repository/Git-observable mutation only, in v1) and a
+rollout-timing boundary, resolved by DEC-001 (human decision,
+Alternative 4): mandatory immediately for delegations a primary Execution
+creates to a distinct sub-Execution, not for a primary Execution's own
+direct, undelegated work.
 
 ### FR-002 — Capability MUST NOT be treated as Authority
 
@@ -238,9 +240,9 @@ Delegation terminology above): the ceiling bounds Agent-to-Agent delegation,
 not Human-to-primary-Execution authorization.
 
 This invariant is only checkable when the delegator's own Authorized Scope
-has a value to compare against. A primary Execution's own Scope is not
-required to be declared by FR-001 unless DEC-001 resolves to require it
-(today, no historical Change declares one). An undeclared delegator Scope
+has a value to compare against. Per DEC-001's resolution, a primary
+Execution's own Scope is *not* required to be declared by FR-001 (only
+its grants to sub-Executions are); an undeclared delegator Scope
 MUST NOT be treated as unbounded for the purpose of checking a grant to a
 delegate — doing so would silently defeat this invariant exactly where it
 matters most (a primary Execution delegating to a subagent, the incident's
@@ -416,8 +418,11 @@ default at any Gate this mechanism participates in.
 Two genuine multi-alternative material questions were found while writing
 this Specification. Per `protocol/specification.md` (Unresolved Decision
 Management, C-051–C-059) and this Change's own Non-goal against choosing
-silently, both are recorded as Decision records rather than resolved by
-authorial preference alone.
+silently, both were recorded as Decision records rather than resolved by
+authorial preference alone. `DEC-001` was subsequently resolved by an
+explicit human act during this same session, after Adversarial
+Specification Review; `DEC-002` remains open, owned by the not-yet-existing
+Architecture artifact (see `specification-review.md` R006).
 
 ### DEC-001 — Rollout posture: mandatory-by-default vs. phased adoption
 
@@ -478,14 +483,30 @@ Specification cannot verify actual authoring-ceremony cost without a
 working prototype, which is Architecture/Implementation-stage work, not
 available yet.
 
-**Status.** `awaiting_decision`. Owning Artifact: this Specification —
-`decision.yml`'s `owning_artifact_by_class` assigns `contract`-class
-questions to Specification. Blocks: the Architecture
-Gate's `before_architecture` requirement is unaffected (Architecture may
-proceed once this Decision reaches any resolution, including "deferred
-with an explicit interim default"), but Implementation of the mandatory-
-obligation Contract text specifically MUST NOT proceed while this remains
-open, per C-051.
+**Status.** `resolved`, `resolved_via: human_decision`. Owning Artifact:
+this Specification — `decision.yml`'s `owning_artifact_by_class` assigns
+`contract`-class questions to Specification.
+
+**Decision.** Alternative 4, accepted as presented (`decision ==
+recommendation`, permitted under FR-009's non-laundering rule because
+`resolved_via: human_decision` records an actual human act, not an
+autonomous one): declaring an Authorized Scope becomes a mandatory new
+Contract obligation immediately, but only for delegations a primary
+Execution creates to a distinct sub-Execution (subagent or equivalent) —
+not for a primary Execution's own direct, undelegated work. Recorded via
+the human's explicit selection among the four Alternatives above (not an
+open-ended "proceed"), matching FR-010's structured-alternatives
+presentation format and C-055's requirement that a human-authority Decision
+reach `resolved` only through an explicit human act.
+
+**Consequence.** With DEC-001 resolved, `forge validate`'s C-051 finding
+against this Change's own manifest (`specification_review_passed` withheld
+while DEC-001 was `awaiting_decision`) is expected to clear — re-verified
+directly below, not merely asserted. Architecture, when it begins, MUST
+treat "mandatory for sub-delegations, not for direct Execution work" as the
+settled rollout boundary for whatever concrete mechanism it designs;
+revisiting DEC-001 itself would require a new Decision, not a silent
+Architecture-stage override.
 
 ### DEC-002 — Lifecycle coverage boundary: does v1 reach pre-freeze stages?
 
@@ -558,8 +579,9 @@ before the Architecture Gate itself may pass (C-051).
   (`forge/execution-provenance@2`), not a new integer Protocol version,
   provided (a) it does not retroactively require the field on historical
   `@1` records (`@1` remains valid, exactly as `forge/change@1` remains
-  valid alongside `@2`), and (b) DEC-001's eventual resolution, whatever it
-  is, binds only prospectively (FR-015). Both conditions are satisfiable by
+  valid alongside `@2`), and (b) DEC-001's resolution (mandatory for
+  sub-delegations only) binds only prospectively (FR-015). Both conditions
+  are satisfiable by
   construction, following the exact precedent `CHG-0008`/`CHG-0011` already
   set for `forge/change@1` → `@2` and C-047–C-059's additive-invariant
   pattern.

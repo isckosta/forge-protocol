@@ -176,3 +176,17 @@ from a human is a resolution (or explicit deferral-with-interim-default)
 for `DEC-001` — without it, `forge validate` will continue to correctly
 withhold `specification_review_passed`, and Architecture's own later Gate
 additionally needs `DEC-002` resolved once that stage exists.
+
+## Addendum — DEC-001 resolved
+
+After this Review's Findings were corrected and this Verdict recorded, a
+human was presented DEC-001's four Alternatives (via a structured choice,
+per FR-010's presentation format, not an open-ended prompt) and explicitly
+selected **Alternative 4** — the Recommendation this Specification already
+carried at `medium` Confidence. Recorded in `specification.md`'s DEC-001
+section and `manifest.yml` (`status: resolved`, `resolved_via:
+human_decision`). Re-running `forge validate` after this update confirms
+the C-051 finding above clears; see the corresponding commit for the exact
+output. `DEC-002` remains open (owned by Architecture, unaffected by
+DEC-001's resolution) and still blocks the Architecture Gate, not
+Specification Review.

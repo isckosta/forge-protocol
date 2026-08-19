@@ -38,10 +38,11 @@ decisions:
   - id: DEC-001
     class: contract
     materiality: material
-    status: awaiting_decision
+    status: resolved
     authority: human
     owning_artifact: specification
     discovered_in: specification
+    resolved_via: human_decision
   - id: DEC-002
     class: architectural
     materiality: material
