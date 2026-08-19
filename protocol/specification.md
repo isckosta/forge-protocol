@@ -231,3 +231,37 @@ checkable from repository-native Change state, by Core validation. This
 section applies independently of declared Protocol version; a Change that
 records no Decision makes no claim this section speaks to and is
 unaffected by it.
+
+## 40. Delegated Execution Authority
+
+An Execution's technical Capability MUST NOT be treated as its Authority
+to exercise it. When an Execution delegates bounded work to a distinct
+sub-Execution, the delegate's Authorized Scope MUST be representable as
+declared data (repository-relative paths it may mutate, possibly empty for
+read-only delegation), reusing `forge/execution-provenance@2`'s `scope`
+field with `role: delegated_task`. A delegating Execution MUST NOT grant a
+delegate an Authorized Scope exceeding its own (the Delegation Ceiling),
+checked transitively across any depth of nested delegation. A delegated
+Execution MUST NOT use write access to an Authority-Defining Artifact
+(a Change Artifact whose content declares, evidences, or grants Authority
+— at minimum `manifest.yml`, `provenance.yml`, and any Review or Decision
+record) to declare or expand the Authority governing its own delegation;
+self-attestation of already-granted Authority or already-performed action
+is not itself a violation.
+
+Core MUST be able to compute a delegated Execution's Observed Effect —
+the actual Git-observable repository mutation it produced, relative to a
+baseline captured at delegation-open — independent of Change lifecycle
+stage, and MUST treat any Out-of-Scope Mutation as blocking silent
+validity. This Detection capability is the mandatory floor; harness-
+enforced Prevention MAY additionally exist but MUST NOT be required, and
+Detection MUST NOT be represented as Prevention. When Core cannot reliably
+determine whether an Observed Effect was authorized, it MUST NOT default
+to treating it as authorized.
+
+Full normative detail — the Execution Boundary/baseline capture mechanism,
+`forge/execution-provenance@2`'s concrete shape, and Core validation
+mechanics — is defined by `CHG-0015`'s own Architecture record and
+enforced by Core validation. C-060 through C-066 bind a Change only once
+it records a `role: delegated_task` provenance entry; a Change that never
+delegates makes no claim this section speaks to and is unaffected by it.

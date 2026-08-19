@@ -190,7 +190,7 @@ network dependency.
 
 ## 27. Security boundary
 
-Forge defines engineering expectations. Actual process isolation and filesystem, network, and shell enforcement depend on the underlying Harness. Adapter publication still owns repository path confinement and must reject unsafe repository escapes.
+Forge defines engineering expectations. Actual process isolation and filesystem, network, and shell enforcement depend on the underlying Harness. Adapter publication still owns repository path confinement and must reject unsafe repository escapes. Core's floor for delegated-Execution authority (CHG-0015) is Detection, not Prevention: it verifies a delegate's Observed Effect against its declared Authorized Scope using local Git-native repository state, which is local and Harness-independent by construction; a Harness MAY additionally enforce that Scope technically, but Core never claims to have prevented what it can only detect.
 
 ## 28. Non-goals
 

@@ -99,6 +99,32 @@ into the one place Protocol 2's own resolver requires it; it changes no rule's
 meaning and adds no new obligation beyond what `protocol/contract/engineering.md`
 already stated.
 
+## Delegated Execution Authority (CHG-0015)
+
+CHG-0015 adds `forge/execution-provenance@2`, a new schema suffix additive
+over `@1`: `role` gains `delegated_task`; `execution` gains optional
+`delegated_by`; a new optional `baseline` object; and `scope`'s `minItems`
+is relaxed from `1` to unset (`0`) so a `delegated_task` record can declare
+zero write Authority (`scope: []`) — a legitimate declaration `@1` could
+not represent, since Resolution (`@1`'s only current `scope` consumer)
+always fixes something and never needed an empty grant. `@1` itself is
+unchanged and remains valid; a `@1` record's `scope`, if present, still
+requires at least one entry exactly as before. This Change also adds
+Contract rules C-060–C-066 to both `protocol/contract/engineering.md` and
+`protocol/versions/2/contract/engineering.md`, following the same dual-file
+pattern CHG-0011/CHG-0013 already established, and a new `protocol/
+specification.md` §40.
+
+Every rule in C-060–C-066 binds a Change only once it records a
+`role: delegated_task` provenance entry — the same "optional artifacts
+whose absence preserves existing meaning" pattern `protocol/compatibility.md`
+already recognizes for CHG-0011's C-047–C-050 and CHG-0013's C-051–C-059.
+Verified directly against this repository's own historical provenance:
+`CHG-0001`–`CHG-0015` declare no `delegated_task` record and are
+unaffected. No integer Protocol identifier changes; `forge/execution-
+provenance@1` is not deprecated and continues to mean exactly what it
+meant before.
+
 ## Schema catalog
 
 `schemas/catalog.yml` is the portable list of schemas shipped by the distribution. Catalog presence does not imply that every schema is normative for every Protocol version. Applicability is defined by the selected Protocol contract and the artifact's own identifier. Cross-field semantic constraints that JSON Schema cannot express remain deterministic Core validation responsibilities.

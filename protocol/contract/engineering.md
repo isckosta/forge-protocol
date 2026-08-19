@@ -213,3 +213,41 @@ interruption for a Non-material question.
 ## C-059 — Reviewer discovering a missing material decision requests changes
 A Reviewer that discovers a Material Unresolved Decision MUST record a
 Finding and MUST NOT resolve it within the same Review.
+
+## C-060 — Capability is not Authority
+No Core validation, Gate, or documentation MAY treat evidence of technical
+capability as evidence of Authority for a delegated Execution.
+
+## C-061 — Delegated-Execution Out-of-Scope Mutation blocks silent validity
+A delegated Execution's product MUST NOT be treated as validly produced
+while an unresolved Out-of-Scope Mutation attributable to it exists.
+
+## C-062 — No self-authorization
+A delegated Execution MUST NOT use write access to an Authority-Defining
+Artifact to declare or expand the Authority governing its own current
+delegation beyond what was actually granted by its delegator.
+
+## C-063 — Delegation Ceiling
+A delegating Execution MUST NOT grant a delegate an Authorized Scope
+exceeding its own current Authorized Scope, checked transitively at every
+depth of a delegation chain.
+
+## C-064 — Detection is the mandatory floor; Prevention is optional
+Core MUST be able to verify a delegated Execution's Observed Effect against
+its declared Authorized Scope using only local Git-native repository
+state. Harness-enforced Prevention MAY additionally exist but MUST NOT be
+required.
+
+## C-065 — Fail-closed on indeterminate delegated-Execution authorization
+When Core cannot reliably determine whether a delegated Execution's
+Observed Effect was authorized, it MUST NOT default to treating that
+Execution's product as authorized.
+
+## C-066 — Harness honesty for delegated-Execution authority claims
+No statement of delegated-Execution authority enforcement MAY represent
+Detection as if it were Prevention.
+
+C-060 through C-066 bind a Change only once it records a
+`role: delegated_task` provenance entry. C-063 additionally binds only
+where the delegate is itself a `role: delegated_task` record; a primary
+Execution's own direct, undelegated work never triggers it.
