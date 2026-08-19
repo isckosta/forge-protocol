@@ -1,0 +1,42 @@
+schema: forge/execution-provenance@1
+change: CHG-0014
+records:
+  - id: implementation-001
+    role: implementation
+    execution: {id: implementation-exec-chg0014-20260818-01, context_id: implementation-context-chg0014-20260818-01}
+    recorded_at: "2026-08-18T20:00:00-03:00"
+    revision:
+      id: chg-0014-implementation-001
+      immutable_ref: {type: git_commit, value: 4b4405c3cc72957e3ed7be9246e912fc76bd8289}
+      commit: 4b4405c3cc72957e3ed7be9246e912fc76bd8289
+      description: >-
+        Frozen CHG-0014 Implementation subject: forge doctor Adapter-readiness
+        aggregation (src/forge_cli/doctor/__init__.py), forge adapter install
+        success confirmation (src/forge_cli/adapter_cli.py), Codex
+        pre-Implementation and completion gate-instruction completeness
+        (src/forge_cli/adapters/codex/projection.py), the
+        examples/golden-path-standard/ fixture and README,
+        docs/getting-started.md, tests/golden_path/test_golden_path_standard.py,
+        the corresponding unit/CLI test extensions, and this Change's own
+        intent/discovery/specification/test-design/plan/tdd-evidence/verification
+        artifacts and Documentation Impact updates (README.md, ROADMAP.md,
+        examples/README.md, CHANGELOG.md). Subsequent commits are restricted
+        to Change-local review-control metadata (this file, manifest.yml,
+        review.md).
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: claude-code
+      statement: >-
+        Self-recorded repository-native provenance for the Implementation
+        execution that produced CHG-0014. No provider-native attestation is
+        claimed; assurance is recorded, not verified or cryptographic/
+        external proof. Every RED/GREEN cycle in tdd-evidence.yml was
+        observed directly by this execution via real pytest subprocess runs
+        (see verification.md for exact commands and counts: 406 passed,
+        0 failed, 0 skipped on the full suite). The independent Strict
+        Review Iteration that follows must run in a distinct Execution and
+        Execution Context per Protocol 2 (protocol/versions/2/specification.md
+        §2) and will record its own review-role provenance separately; this
+        session does not and cannot produce that record itself without
+        constituting self-review.
