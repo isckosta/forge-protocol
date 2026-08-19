@@ -1,0 +1,38 @@
+schema: forge/traceability@1
+change: CHG-0016
+requirements:
+  FR-001: {tasks: [T-001], evidence: protocol_artifact_structure_md_section_2_principles}
+  FR-002: {tasks: [T-001], evidence: protocol_artifact_structure_md_section_4_per_type_guidance}
+  FR-003: {tasks: [T-002], evidence: contract_c067_conformance_not_a_gate_condition}
+  FR-004: {tasks: [T-001, T-011], evidence: artifact_structure_md_verification_and_review_sections_plus_canonical_examples}
+  FR-005: {tasks: [T-001], evidence: artifact_structure_md_plan_section_implementation_boundary}
+  FR-006: {tasks: [T-002], evidence: contract_c067_c068_c069}
+  FR-007: {tasks: [T-003], evidence: specification_md_section_41}
+  FR-008: {tasks: [T-004], evidence: compatibility_md_addendum}
+  FR-009: {tasks: [T-006, T-007], tests: [test_projection_bundle_includes_artifact_structure_when_provided, test_codex_projection_includes_artifact_structure_reference_when_present], evidence: projection_py_resolve_effective_artifact_structure}
+  FR-010: {tasks: [T-011], evidence: examples_canonical_artifacts_verification_and_review_md}
+  FR-011: {tasks: [T-005, T-012], evidence: architecture_md_ss5_docs_adr_0014_changelog}
+  NFR-001: {tasks: [T-001], evidence: artifact_structure_md_inspection_section_no_new_expectation}
+  NFR-002: {tasks: [T-001], evidence: artifact_structure_md_contains_no_harness_specific_content}
+  NFR-003: {tasks: [T-006, T-007], tests: [test_projection_bundle_omits_artifact_structure_resource_when_not_provided], evidence: additive_default_valued_field_reuses_resource_helper}
+  CON-001: {tasks: [T-002, T-003, T-004], evidence: no_gate_finding_severity_convergence_or_decision_semantic_touched}
+  CON-002: {tasks: [T-001, T-002, T-003, T-004, T-005, T-006, T-007], evidence: no_file_under_protocol_schemas_changed}
+  CON-003: {tasks: [T-001], evidence: artifact_structure_md_architecture_section_dec_xxx_not_adr_xxx}
+  CON-004: {tasks: [T-010], tests: [], evidence: tdd_003_baseline_unchanged}
+  INV-001: {tasks: [T-001, T-002], evidence: artifact_structure_md_section_1_reference_not_restate}
+  DEC-001: {tasks: [T-002, T-004], evidence: human_decision_alternative_a_specification_md}
+  DEC-002: {tasks: [T-001], evidence: architecture_stage_evidence_resolution_specification_md_dec_002}
+acceptance:
+  AC-001: []
+  AC-002: []
+  AC-003: []
+  AC-004: [test_projection_bundle_includes_artifact_structure_when_provided, test_codex_projection_includes_artifact_structure_reference_when_present]
+  AC-005: []
+  AC-006: []
+  AC-007: []
+  AC-008: []
+  AC-009: [test_projection_bundle_includes_artifact_structure_when_provided, test_codex_projection_includes_artifact_structure_reference_when_present, test_resolves_effective_artifact_structure_from_canonical_root]
+  AC-010: []
+  AC-011: []
+  AC-012: []
+  AC-013: []

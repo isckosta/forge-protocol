@@ -1,0 +1,62 @@
+schema: forge/change@2
+protocol: 2
+change:
+  id: CHG-0016
+  title: Canonical Artifact Structure for Human-Readable Change Documentation
+  kind: feature
+flow: {initial: full, current: full, escalations: []}
+state: {current: verification}
+artifacts:
+  intent: complete
+  discovery: complete
+  specification: complete
+  specification_review: complete
+  architecture: complete
+  test_strategy: approved
+  plan: approved
+  tasks: complete
+  tdd_evidence: complete
+  implementation: complete
+  provenance: pending
+  verification: complete
+  review: pending
+  documentation: complete
+  knowledge_capture: complete
+requirements: {total: 14, implemented: 14, verified: 14}
+tdd: {status: compliant, cycles: 3}
+verification: {status: passed}
+review:
+  status: pending
+  iteration: 0
+  blockers: 0
+  majors: 0
+  minors: 0
+  observations: 0
+  iterations: []
+documentation:
+  impact_evaluated: true
+  update_required: true
+  reason: >-
+    Updated: ARCHITECTURE.md SS5 (one added sentence), docs/adr/0014-
+    canonical-artifact-structure.md (F-008, material Architecture
+    change), and CHANGELOG.md. No RFC (F-008's RFC threshold is
+    "Material Protocol Changes" -- this Change is additive guidance of
+    the same weight as CHG-0013's ADR-only precedent, per
+    docs/adr/0014's own Decision section).
+decisions:
+  - id: DEC-001
+    class: contract
+    materiality: material
+    status: resolved
+    authority: human
+    owning_artifact: specification
+    discovered_in: specification
+    resolved_via: human_decision
+  - id: DEC-002
+    class: architectural
+    materiality: material
+    status: resolved
+    authority: agent_with_review
+    owning_artifact: architecture
+    discovered_in: architecture
+    resolved_via: evidence

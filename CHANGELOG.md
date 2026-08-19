@@ -6,6 +6,35 @@ CLI releases will follow Semantic Versioning when releases begin. Protocol versi
 
 ## Unreleased
 
+### Canonical Artifact Structure
+
+Added:
+
+- `protocol/artifact-structure.md`: canonical, non-binding guidance for
+  the information architecture of human Forge Artifacts (Progressive
+  Disclosure, Artifact Responsibility, Result-Before-Evidence,
+  Scanability, Proportionality, Extensibility), plus recommended
+  structure per Artifact type — motivated by a measured regression in
+  this repository's own history: `CHG-0001/verification.md` opened with
+  a `## Result` heading; `CHG-0015/verification.md` did not
+  (`docs/adr/0014`);
+- Contract rules C-067 (conformance MUST NOT be a Gate condition or a
+  `forge validate` check), C-068 (Verification/Review SHOULD present
+  outcome before evidence), and C-069 (an approved Plan SHOULD NOT
+  silently absorb Implementation-time discoveries) — all `SHOULD`-level,
+  none Gate-checked; every historical Change remains unaffected;
+  `protocol/specification.md` §41 points to the new guidance;
+- the Codex Adapter now projects the guidance by reference (a new,
+  optional `references/artifact-structure.md` resource, included only
+  when the canonical file resolves) using the same mechanism already
+  used for Flow and Contract content — `AdapterProjectionContext` and
+  `CodexProjectionInput` both gained the new field as an additive
+  default, so every existing caller keeps generating exactly the
+  resource set it always did;
+- `examples/canonical-artifacts/`: two annotated, illustrative examples
+  (`verification.md`, `review.md`) demonstrating outcome-first structure
+  — not a reformatting of any historical Change.
+
 ### Delegated Agent Authority and Side-Effect Boundaries
 
 Added:
