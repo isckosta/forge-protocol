@@ -90,29 +90,56 @@ Execution that can observe the true pre-delegation state, and the same
 everything else in that file.
 
 **Close** (captured at delegation-end, same primitives, same shape,
-recorded as this delegation's own `revision`).
+recorded as this delegation's own `revision`) — captured **before** the
+delegating primary Execution appends this delegate's own provenance
+record to `provenance.yml`, so that append itself (a primary-Execution
+act, not the delegate's) falls outside the `[baseline, close]` window and
+never appears in the delegate's own Observed Effect. This ordering
+requirement is a precondition Test Strategy must exercise directly (a
+misordered capture would either produce a false Out-of-Scope Mutation
+against the delegate for the primary's own bookkeeping, or — the more
+dangerous failure — hide a genuine violation inside noise), not an
+implementation detail assumed to be self-evidently correct.
 
 **Observed Effect** = the union of:
 1. the committed diff `baseline.head..close.head` (reusing `_diff_paths`
    exactly as `_resolution_delta` already does), and
 2. every path present in `close.dirty` whose content-identity differs from
    (or is absent from) `baseline.dirty` — i.e., newly dirty, or dirtied
-   further, since baseline was captured,
+   further, since baseline was captured.
 
-minus the same Change-local `manifest.yml`/`provenance.yml`/`review.md`
-review-control-metadata exception Protocol 2 §5 already carves out
-(reused verbatim via the existing `_review_control_metadata_paths`
-helper — no new exception logic).
+**No review-control-metadata exclusion here — this is a deliberate,
+corrected departure from `_resolution_delta`, not an oversight.** An
+earlier draft of this section reused `_review_control_metadata_paths`
+verbatim to exclude `manifest.yml`/`provenance.yml`/`review.md`. Designing
+this Change's own Test Strategy immediately afterward surfaced why that
+was wrong: that exclusion exists in Protocol 2 §5 for a narrower, different
+actor and purpose — letting the *primary* Implementation/Resolution/Review
+Execution append legitimate metadata about an already-frozen, unrelated
+subject without invalidating that freeze. A `delegated_task` Execution is
+not that actor and is not recording that kind of metadata; reusing the
+exclusion here would have made `manifest.yml`'s `decisions[]` array,
+`provenance.yml`, and `review.md` **invisible to Out-of-Scope Mutation
+detection for exactly the class of Execution this Change exists to
+constrain** — a real self-authorization blind spot (originating
+instruction §24's "bypass through generated files"), not a defense of one.
+Under this corrected design, the delegating primary Execution remains the
+one that writes the delegate's own `baseline`/close `revision` into
+`provenance.yml` on the delegate's behalf (a separate, primary-Execution
+Observed Effect, unaffected — `_reviewable_workspace_delta`/
+`_resolution_delta` keep their existing exclusion for that unchanged use);
+a `delegated_task` Execution has no legitimate reason of its own to touch
+those three files, so nothing legitimate is lost by not exempting them.
 
-This correctly excludes a delegating Execution's *own* pre-existing
-uncommitted work-in-progress from being misattributed to its delegate
-(the realistic shape of the actual incident: the primary Execution was
-mid-Discovery, with its own draft edits already present, when it
-delegated) — a bare "diff HEAD vs. now" baseline would have wrongly
-attributed the primary Execution's own concurrent edits to the subagent,
-or symmetrically hidden the subagent's overwrite inside them. The `dirty`
-content-identity map is the mechanism that makes attribution correct in
-exactly the scenario that motivated this Change.
+The `dirty` content-identity baseline separately and correctly excludes a
+delegating Execution's *own* pre-existing uncommitted work-in-progress from
+being misattributed to its delegate (the realistic shape of the actual
+incident: the primary Execution was mid-Discovery, with its own draft edits
+already present, when it delegated) — a bare "diff HEAD vs. now" baseline
+would have wrongly attributed the primary Execution's own concurrent edits
+to the subagent, or symmetrically hidden the subagent's overwrite inside
+them. This is a distinct concern from the review-control-metadata question
+above and remains exactly as designed.
 
 ## Schema: `forge/execution-provenance@2`
 
@@ -159,16 +186,20 @@ existing `@1` record's `scope`.
 
 ## Validator changes (`src/forge_cli/validation/__init__.py`)
 
-New function `_delegated_execution_effect(root, baseline, close_revision,
-mpath)`:
+New function `_delegated_execution_effect(root, baseline, close_revision)`
+— deliberately **no** `mpath` parameter: unlike `_reviewable_workspace_delta`/
+`_resolution_delta`, this function applies no review-control-metadata
+exclusion (see "Execution Boundary capture" above for why that exclusion
+does not apply to a `delegated_task` Execution's own Observed Effect):
 
 1. Computes committed diff `baseline["head"]..close_revision`
    (`_diff_paths`, reused).
 2. Computes current `dirty` set the same way `baseline["dirty"]` was
    captured (composition of `_diff_paths(root)` + `_untracked_paths(root)`
    + per-path hash).
-3. Returns the union described in "Execution Boundary capture" above,
-   minus `_review_control_metadata_paths(root, mpath)` (reused).
+3. Returns the union described in "Execution Boundary capture" above, in
+   full — `manifest.yml`/`provenance.yml`/`review.md` paths included when
+   actually mutated by this Execution.
 4. Fails closed (returns `None`, propagated by the caller as "cannot
    verify") when `git cat-file -e` on `baseline["head"]` fails (shallow/
    missing history — same fail-closed condition `_git_exists` already
@@ -230,9 +261,10 @@ gated on `protocol == 2`):
 6. **Self-authorization (C-062/INV-002):** among the Out-of-Scope paths
    found in step 5, any path matching the Authority-Defining Artifact
    definition (`manifest.yml`, `provenance.yml`, any Review/Decision
-   record — reusing the same path set `_review_control_metadata_paths`
-   already partially enumerates, extended per Specification's functional
-   definition rather than a fixed list) is flagged as the more specific
+   record — the exact repository-root-relative paths
+   `_review_control_metadata_paths` names, reused here only as a **name
+   source**, never as an exclusion — plus any other path meeting
+   Specification's functional definition) is flagged as the more specific
    C-062 finding instead of the generic C-061 one, since FR-006 narrows
    this to declaring/expanding — not merely touching — Authority; the
    validator conservatively treats *any* mutation of such a path by a
