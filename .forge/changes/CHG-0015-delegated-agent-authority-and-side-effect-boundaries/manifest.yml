@@ -5,13 +5,13 @@ change:
   title: Delegated Agent Authority and Side-Effect Boundaries
   kind: feature
 flow: {initial: full, current: full, escalations: []}
-state: {current: specification_review}
+state: {current: architecture}
 artifacts:
   intent: complete
   discovery: complete
   specification: complete
   specification_review: complete
-  architecture: pending
+  architecture: complete
   test_strategy: pending
   plan: pending
   tasks: pending
@@ -46,7 +46,8 @@ decisions:
   - id: DEC-002
     class: architectural
     materiality: material
-    status: open
+    status: resolved
     authority: agent_with_review
     owning_artifact: architecture
     discovered_in: specification
+    resolved_via: autonomous_decision
