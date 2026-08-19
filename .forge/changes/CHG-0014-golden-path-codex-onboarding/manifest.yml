@@ -15,19 +15,56 @@ artifacts:
   tdd_evidence: complete
   implementation: complete
   verification: complete
-  review: pending
+  review: active
   documentation: complete
 requirements: {total: 9, implemented: 9, verified: 9}
-tdd: {status: compliant, cycles: 4}
+tdd: {status: compliant, cycles: 5}
 verification: {status: passed}
 review:
-  status: pending
-  iteration: 0
-  blockers: 0
-  majors: 0
-  minors: 0
+  status: failed
+  iteration: 1
+  blockers: 1
+  majors: 1
+  minors: 1
   observations: 0
-  iterations: []
+  iterations:
+    - id: review-001
+      revision: chg-0014-implementation-001
+      subject_provenance: implementation-001
+      reviewer_provenance: review-001
+      kind: initial_review
+      status: failed
+      evidence_gap: >-
+        CHG-0014-R001 (BLOCKER, domain_invariants/C-026): the effective
+        reviewable workspace is not clean -- four Git-visible, non-ignored,
+        untracked files (.codex/config.toml,
+        docs/document-2026-08-13T04-46-37-625Z.md,
+        docs/superpowers/specs/2026-08-13-chg-0006-completion-remediation-design.md,
+        uv.lock) exist that are no part of the frozen implementation-001
+        subject and no part of this Change's review-control-metadata
+        exception. Reproduced directly against
+        src/forge_cli/validation/__init__.py::_changed/
+        _reviewable_workspace_delta: _changed(...) returns True with exactly
+        those four paths as the delta, which would make any bound
+        pending/passed Review Iteration referencing implementation-001 fail
+        forge validate with a C-026 finding. This blocks review_passed for
+        this Change today regardless of Implementation quality; it is a
+        workspace-hygiene precondition, not a defect in the reviewed diff.
+        CHG-0014-R002 (MAJOR, correctness/test_quality/documentation):
+        forge doctor's new _adapter_readiness_checks aggregation
+        (src/forge_cli/doctor/__init__.py) maps AdapterCheck status
+        "warning" to "passed", so a genuine warning (e.g. compatibility
+        cannot be checked until project configuration is valid) renders as
+        a self-contradictory "PASS ... cannot be checked" line -- reproduced
+        directly end to end against a throwaway repository. Untested: no
+        shipped test exercises a warning-status aggregated adapter check.
+        CHG-0014-R003 (MINOR, test_quality): Layer B's git merge-base
+        --is-ancestor ordering assertions in
+        tests/golden_path/test_golden_path_standard.py are self-referential
+        given the linear, single-script commit sequence that produces them;
+        the genuinely non-vacuous RED/GREEN content assertions are
+        independently confirmed sound. See review.md Iteration 1 for full
+        findings, evidence, and positive observations.
 documentation:
   impact_evaluated: true
   update_required: true

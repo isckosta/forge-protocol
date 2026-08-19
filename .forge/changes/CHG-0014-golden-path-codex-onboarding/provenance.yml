@@ -40,3 +40,41 @@ records:
         §2) and will record its own review-role provenance separately; this
         session does not and cannot produce that record itself without
         constituting self-review.
+  - id: review-001
+    role: review
+    execution: {id: review-exec-chg0014-20260818-01, context_id: review-context-chg0014-20260818-01}
+    recorded_at: "2026-08-18T23:55:00-03:00"
+    revision:
+      id: chg-0014-implementation-001
+      immutable_ref: {type: git_commit, value: 4b4405c3cc72957e3ed7be9246e912fc76bd8289}
+      commit: 4b4405c3cc72957e3ed7be9246e912fc76bd8289
+      description: >-
+        Strict Review Iteration 1 (kind: initial_review) of CHG-0014's frozen
+        implementation-001 subject. Independent Execution and Execution
+        Context from the Implementation session that produced
+        implementation-001 (implementation-exec-chg0014-20260818-01 /
+        implementation-context-chg0014-20260818-01); this session has no
+        memory of that session and independently re-derived every claim in
+        review.md rather than trusting its narrative. Verdict: REQUEST
+        CHANGES (1 BLOCKER, 1 MAJOR, 1 MINOR) — see review.md for full
+        findings.
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: claude-code
+      statement: >-
+        Self-recorded repository-native provenance for the independent
+        Strict Review execution that evaluated CHG-0014's frozen
+        implementation-001 subject. No provider-native or cryptographic
+        attestation is claimed; assurance is recorded. Verification
+        performed directly by this execution: full pytest suite (406
+        passed), the four dimension-specific test modules named in the
+        Review brief, forge validate/forge doctor against this repository,
+        direct JSON Schema validation (jsonschema.Draft202012Validator) of
+        this Change's own manifest.yml/provenance.yml/tdd-evidence.yml, a
+        hand-built reproduction of the effective-reviewable-workspace freeze
+        check (src/forge_cli/validation/__init__.py::_changed) against the
+        real repository state, and a hand-built reproduction of the
+        forge doctor Adapter-readiness warning-to-PASS relabeling against a
+        throwaway repository — none of these reused a shipped test as-is.
+        See review.md for full findings.
