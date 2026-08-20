@@ -46,3 +46,7 @@ Forge uses adversarial Review. Passing tests do not eliminate the need for engin
 ## AI-assisted contributions
 
 AI-assisted contributions are allowed. The contributor remains responsible for the submitted Change. Generated code receives no reduced review standard.
+
+## Releasing
+
+See `RELEASING.md` for the version scheme and release checklist. Not a contributor-facing process; documented here only as a pointer.

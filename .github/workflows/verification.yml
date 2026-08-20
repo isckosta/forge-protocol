@@ -4,8 +4,6 @@ on:
   push:
     branches:
       - main
-      - chore/chg-0001-verification
-      - feat/chg-0002-harness-adapter-foundation
   pull_request:
 
 jobs:
@@ -22,8 +20,19 @@ jobs:
           python-version: "3.12"
       - name: Install build tooling
         run: python -m pip install --upgrade pip build
-      - name: Build wheel
-        run: python -m build --wheel
+      - name: Build wheel and sdist
+        run: python -m build
+      - name: Create isolated environment (sdist)
+        run: python -m venv /tmp/forge-sdist-venv
+      - name: Install sdist only
+        run: /tmp/forge-sdist-venv/bin/pip install dist/*.tar.gz
+      - name: Verify installed sdist CLI version without network
+        env:
+          HTTP_PROXY: http://127.0.0.1:9
+          HTTPS_PROXY: http://127.0.0.1:9
+          ALL_PROXY: http://127.0.0.1:9
+          NO_PROXY: ""
+        run: /tmp/forge-sdist-venv/bin/forge version
       - name: Create isolated environment
         run: python -m venv /tmp/forge-wheel-venv
       - name: Install wheel only

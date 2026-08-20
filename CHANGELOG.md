@@ -2,7 +2,11 @@
 
 All notable Forge changes will be documented here.
 
-CLI releases will follow Semantic Versioning when releases begin. Protocol versions are tracked independently.
+CLI releases follow [PEP 440](https://peps.python.org/pep-0440/) (see
+`RELEASING.md`). Protocol versions are tracked independently
+(`protocol/compatibility.md`). A released version's heading looks like
+`## [0.1.0a1] - YYYY-MM-DD`; entries accumulate under `## Unreleased`
+until then.
 
 ## Unreleased
 

@@ -241,3 +241,6 @@ Neither C-072 nor C-073 is validated by `forge validate`; both are honesty and p
 
 ## C-074 — A new Harness Adapter MUST pass the shared conformance suite
 A Change introducing a new Harness Adapter MUST pass the shared, Harness-agnostic Adapter conformance test suite before Completion. This formalizes conformance testing as a durable obligation for every future Harness Adapter, not a one-time exercise performed only for the first two.
+
+## C-075 — Migration MUST be truth-preserving
+A migration MUST NOT fabricate, infer, or reconstruct data that does not already exist in the instance being migrated. A transformation that cannot be performed without inventing information MUST be refused, not approximated.

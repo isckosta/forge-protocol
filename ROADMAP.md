@@ -326,14 +326,17 @@ Migration architecture must account for future transitions such as project schem
 ### Release progression
 
 ```text
-0.1.0-alpha.1
+0.1.0a1
     -> external real-world validation
-0.1.0-beta.1
+0.1.0b1
     -> stabilization and fixes
-1.0.0-rc.1
+1.0.0rc1
     -> contract freeze; blocker/major fixes only
 1.0.0
 ```
+
+(PEP 440 spellings, not hyphenated — corrected by `CHG-0019`; see
+`RELEASING.md`.)
 
 Additional prereleases are evidence-driven, not deadline-driven.
 
