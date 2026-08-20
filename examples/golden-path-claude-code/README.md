@@ -9,6 +9,11 @@ separate tool), a live Claude Code session can run `claude -p` itself,
 non-interactively, against a scratch repository — so this scenario's
 Layer C evidence is a real, dated transcript, not a described expectation.
 
+**ROADMAP.md category**: this scenario's live session classified its own
+work **FAST** — unprompted, not asserted by this repository's own
+authors — so this directory also satisfies `ROADMAP.md`'s
+`fast-bugfix` example category (`examples/README.md`).
+
 `starter/` is the disposable baseline fixture used by the automated Layer
 A/B tests (`tests/golden_path/test_golden_path_claude_code.py`). It has no
 `.forge/` of its own — a fresh, un-Forge-governed repository, matching the

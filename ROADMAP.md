@@ -188,6 +188,14 @@ The Specification must determine which signals are deterministic configuration a
 
 ## End-to-End Examples & External Project Validation
 
+Status: The five named `examples/` categories are satisfied via
+`CHG-0020`, curating real evidence already in this repository's own
+history (`CHG-0016` for `strict-review-remediation`, `CHG-0018` for
+`full-feature`) rather than fabricating new scenarios — see
+`examples/README.md`. The External validation matrix below remains
+entirely open: no real target repository exists in any ecosystem other
+than this one.
+
 ### Objective
 
 Prove Forge outside its own repository and create a practical onboarding path.

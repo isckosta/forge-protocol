@@ -7,6 +7,12 @@ Change through Forge's real STANDARD lifecycle, ending at (but not
 past) the point this repository's own Protocol 2 requires independent
 Strict Review.
 
+**ROADMAP.md categories**: this scenario covers the full `forge init` →
+`forge adapter install codex` → STANDARD Change lifecycle against the
+Codex Adapter specifically, so this directory satisfies both
+`ROADMAP.md`'s `standard-feature` and `codex-adapter-project` example
+categories (`examples/README.md`).
+
 `starter/` is the disposable baseline fixture used by both the automated
 Layer A/B tests (`tests/golden_path/test_golden_path_standard.py`) and this
 manual procedure. It has no `.forge/` of its own — it is deliberately a

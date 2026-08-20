@@ -7,12 +7,12 @@ status: ready
 ---
 # Tasks — CHG-0020
 
-- [ ] T-001 `examples/strict-review-remediation/README.md`.
-- [ ] T-002 `examples/full-feature/README.md`.
-- [ ] T-003 Addenda on both existing golden-path READMEs.
-- [ ] T-004 `examples/README.md` rewrite.
-- [ ] T-005 `ROADMAP.md` status line.
-- [ ] T-006 Verify every cited commit hash/excerpt against real `git
+- [x] T-001 `examples/strict-review-remediation/README.md`.
+- [x] T-002 `examples/full-feature/README.md`.
+- [x] T-003 Addenda on both existing golden-path READMEs.
+- [x] T-004 `examples/README.md` rewrite.
+- [x] T-005 `ROADMAP.md` status line.
+- [x] T-006 Verify every cited commit hash/excerpt against real `git
       show`/file content; `pytest -q`/`forge validate`/`forge doctor`
       unchanged.
 - [ ] T-007 `knowledge-capture.md`, `traceability.yml`.
@@ -26,4 +26,8 @@ status: ready
 
 ## Status
 
-Ready. Implementation not started.
+T-001..T-006 done: five READMEs written/edited, every cited commit hash
+and quoted excerpt verified against real `git show`/file content,
+`pytest -q` (524 passed), `forge validate`, and `forge doctor` all
+confirmed unchanged from the pre-Implementation baseline. Proceeding to
+T-007 (knowledge-capture.md, traceability.yml).
