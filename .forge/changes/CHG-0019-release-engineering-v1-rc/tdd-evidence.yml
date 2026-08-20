@@ -1,0 +1,28 @@
+schema: forge/tdd-evidence@1
+change: CHG-0019
+status: compliant
+cycle_count: 4
+cycles:
+  - id: TDD-001
+    title: Dynamic CLI version sourcing (FR-001, AC-001)
+    requirements: [FR-001, AC-001]
+    red: {observed: true, failure_reason: "Built a wheel after changing CLI_VERSION to 0.1.0.dev1 against the unmodified pyproject.toml: the built wheel filename/METADATA stayed at 0.1.0.dev0 -- the two version strings were genuinely independent, not merely assumed to be. `python -m build --wheel`, 2026-08-20."}
+    green: {observed: true, evidence: "After adding [tool.hatch.version] dynamic sourcing, rebuilding with the same changed CLI_VERSION (0.1.0.dev1) produced forge_protocol-0.1.0.dev1-py3-none-any.whl and a matching sdist, with METADATA's Version field, Author, Project-URLs, Keywords, and Classifiers all correctly present. Reverted CLI_VERSION to 0.1.0.dev0 afterward; pytest -q: 504 passed, unchanged."}
+  - id: TDD-002
+    title: Migration engine -- the one real, safe case (FR-002/FR-003, AC-002-AC-004, CON-004)
+    requirements: [FR-002, FR-003, NFR-001, AC-002, AC-003, AC-004]
+    red: {observed: true, failure_reason: "ModuleNotFoundError: No module named 'forge_cli.migration' -- pytest -q tests/unit/test_migration.py, first run against the not-yet-existing module, 2026-08-20; 8 of 8 tests failed for this reason."}
+    green: {observed: true, evidence: "8 new tests pass, including test_real_historical_provenance_fixtures_yield_exactly_six_candidates, which copies this repository's own six real CHG-0008/CHG-0011..0015 provenance.yml files into a tmp_path fixture, confirms exactly those six are detected, applies the migration, and asserts every line except the schema: line is byte-identical to the original -- then asserts the real files under .forge/changes/ were never written (git status confirms this independently). test_refuses_provenance_containing_a_delegated_task_record and test_never_scans_change_or_adapter_installation_files cover the three exclusions. 6 new CLI tests (tests/cli/test_migrate.py) cover forge migrate/--check end to end."}
+  - id: TDD-003
+    title: forge doctor migration advisory (FR-004, AC-005)
+    requirements: [FR-004, AC-005]
+    red: {observed: true, failure_reason: "AssertionError: 'WARN migration_available' not in doctor output -- tests/cli/test_doctor.py::test_doctor_reports_migration_advisory_without_failing, first run before the check existed, 2026-08-20."}
+    green: {observed: true, evidence: "test_doctor_reports_migration_advisory_without_failing and test_doctor_reports_no_migration_advisory_when_nothing_pending both pass. Verified against this repository itself: forge doctor shows 'WARN migration_available: 6 migration candidate(s) found...' with exit 0, unchanged from the pre-Implementation baseline's exit code."}
+  - id: TDD-004
+    title: Repository-wide forge validate / forge doctor / pytest baseline is unchanged (CON-003, AC-010)
+    requirements: [CON-003, AC-010]
+    red: {observed: false, failure_reason: "Compatibility regression guard, not a new-behavior assertion -- see test-strategy.md TDD-004 for the full baseline methodology."}
+    green: {observed: true, evidence: "Pre-Implementation baseline (HEAD d489f1b): forge validate -> 'Forge project is valid' (exit 0), forge doctor -> 7/7 PASS, pytest -q -> 504 passed. Post-Implementation: forge validate -> 'Forge project is valid' (exit 0), forge doctor -> 7/7 PASS plus 1 new non-blocking WARN (migration_available, expected per FR-004), pytest -q (full suite) -> 520 passed, 0 failed. forge migrate --check against this repository reports exactly the same six real candidates found in Discovery; forge migrate was deliberately never run for real against this repository's own files (a human decision, per plan.md's Implementation Boundary). No historical Change (CHG-0001-CHG-0018) reports a new finding."}
+notes:
+  - "The ADR, Contract C-075, and workflow YAML are not TDD cycles: Protocol SS19 marks TDD not_applicable for non-executable normative/documentation/CI-configuration content. publish.yml's correctness was verified by direct reading and local reproduction of its constituent steps (see verification.md), not by a RED/GREEN cycle -- no test can safely simulate a real PyPI publish."
+  - "This Change's own git history briefly, deliberately produced a stale-versioned wheel (TDD-001's RED) and a wheel with a temporarily-wrong CLI_VERSION value (0.1.0.dev1) as genuine, reproduced evidence -- both were built into a local dist/ directory (never committed, never published) and CLI_VERSION was restored to 0.1.0.dev0 before any commit landed. Confirmed via git diff that no commit in this Change's history ever contains the temporary 0.1.0.dev1 value."

@@ -1,0 +1,33 @@
+schema: forge/traceability@1
+change: CHG-0019
+requirements:
+  FR-001: {tasks: [T-001], tests: [], evidence: pyproject_toml_hatch_version_dynamic_sourcing}
+  FR-002: {tasks: [T-002, T-003], tests: [test_finds_execution_provenance_v1_candidate_without_delegated_task, test_migrate_check_reports_a_real_candidate_without_applying_it], evidence: migration_py_find_candidates}
+  FR-003: {tasks: [T-003], tests: [test_apply_migrations_rewrites_only_the_schema_line, test_apply_migrations_is_idempotent, test_migrate_applies_the_real_candidate, test_migrate_is_idempotent, test_migrate_never_touches_a_delegated_task_record], evidence: migration_py_apply_migrations}
+  FR-004: {tasks: [T-003], tests: [test_doctor_reports_migration_advisory_without_failing, test_doctor_reports_no_migration_advisory_when_nothing_pending], evidence: doctor_py_migration_advisory_check}
+  FR-005: {tasks: [T-004], evidence: contract_c075}
+  FR-006: {tasks: [T-005], evidence: publish_yml}
+  FR-007: {tasks: [T-005], evidence: verification_yml_cleanup}
+  FR-008: {tasks: [T-006], evidence: releasing_md}
+  FR-009: {tasks: [T-001], evidence: pyproject_toml_metadata_fields}
+  FR-010: {tasks: [T-006], evidence: changelog_md_convention_note}
+  FR-011: {tasks: [T-006], evidence: roadmap_md_pep440_correction}
+  NFR-001: {tasks: [T-002, T-003], tests: [test_refuses_provenance_containing_a_delegated_task_record, test_never_scans_change_or_adapter_installation_files], evidence: migration_py_never_defaults_missing_fields}
+  NFR-002: {tasks: [T-005], evidence: publish_yml_triggers_only_on_release_published}
+  NFR-003: {tasks: [T-008], evidence: tdd_004_baseline_unchanged}
+  CON-001: {tasks: [T-004], evidence: no_new_protocol_integer}
+  CON-002: {tasks: [T-002, T-003], evidence: no_schema_file_changed}
+  CON-003: {tasks: [T-008], evidence: tdd_004_baseline_unchanged}
+  CON-004: {tasks: [T-002], tests: [test_real_historical_provenance_fixtures_yield_exactly_six_candidates], evidence: real_files_confirmed_untouched_via_git_status}
+  INV-001: {tasks: [T-006], evidence: releasing_md_references_compatibility_md}
+acceptance:
+  AC-001: []
+  AC-002: [test_migrate_check_reports_a_real_candidate_without_applying_it]
+  AC-003: [test_real_historical_provenance_fixtures_yield_exactly_six_candidates, test_migrate_applies_the_real_candidate]
+  AC-004: [test_refuses_provenance_containing_a_delegated_task_record, test_migrate_never_touches_a_delegated_task_record]
+  AC-005: [test_doctor_reports_migration_advisory_without_failing, test_doctor_reports_no_migration_advisory_when_nothing_pending]
+  AC-006: []
+  AC-007: []
+  AC-008: []
+  AC-009: []
+  AC-010: []

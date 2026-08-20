@@ -1,0 +1,56 @@
+schema: forge/change@2
+protocol: 2
+change:
+  id: CHG-0019
+  title: Release Engineering & v1 Release Candidate (Infrastructure)
+  kind: feature
+flow: {initial: full, current: full, escalations: []}
+state: {current: in_progress}
+artifacts:
+  intent: complete
+  discovery: complete
+  specification: complete
+  specification_review: complete
+  architecture: complete
+  test_strategy: approved
+  plan: approved
+  tasks: complete
+  traceability: complete
+  tdd_evidence: complete
+  implementation: complete
+  provenance: in_progress
+  verification: complete
+  review: pending
+  documentation: complete
+  knowledge_capture: complete
+requirements: {total: 10, implemented: 10, verified: 10}
+tdd: {status: compliant, cycles: 4}
+verification: {status: passed}
+review:
+  status: pending
+  iteration: 0
+  blockers: 0
+  majors: 0
+  minors: 0
+  observations: 0
+  iterations: []
+documentation:
+  impact_evaluated: true
+  update_required: true
+  reason: >-
+    Updated: CHANGELOG.md (PEP 440 correction, released-heading
+    convention note), ROADMAP.md (version-string correction to PEP 440),
+    docs/adr/0017-release-engineering-infrastructure.md,
+    RELEASING.md (new), CONTRIBUTING.md (one-line pointer). No RFC
+    (F-008's RFC threshold is "Material Protocol Changes"; this Change
+    is CLI/tooling/CI infrastructure and one additive Contract rule, not
+    a Protocol redefinition).
+decisions:
+  - id: DEC-001
+    class: architectural
+    materiality: material
+    status: resolved
+    authority: agent_with_review
+    owning_artifact: architecture
+    discovered_in: architecture
+    resolved_via: autonomous_decision
