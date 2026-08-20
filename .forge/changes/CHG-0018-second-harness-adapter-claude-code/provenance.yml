@@ -147,3 +147,54 @@ records:
         which fired correctly. I did not have to fall back on "cannot
         access claude" or "impractical to reproduce": the binary was
         available and the reproduction succeeded.
+  - id: resolution-001
+    role: resolution
+    execution: {id: implementation-exec-chg0018-20260819-01, context_id: implementation-context-chg0018-20260819-01}
+    recorded_at: "2026-08-20T00:03:22-03:00"
+    scope:
+      - src/forge_cli/adapters/claude_code/projection.py
+      - tests/unit/test_claude_code_projection_bundle.py
+    targets: [R001]
+    revision:
+      id: chg-0018-resolution-001
+      immutable_ref: {type: git_commit, value: 7385799030be6562633a87e1e9f468544a14ac3c}
+      description: >-
+        Resolution of review.md Iteration 1's one MINOR Finding (R001).
+        Same Execution/Execution Context as implementation-001 -- Contract
+        C-026 requires Reviewer independence from Implementation, not
+        Resolver independence from Implementation, and review-001 (a
+        distinct Execution/Context) already establishes that independence,
+        matching CHG-0016/CHG-0017's own resolution-001 precedent. Unlike
+        CHG-0017's resolution (documentation-only fixes), this Resolution
+        changes real executable behavior (the hook script's matching
+        logic) for a Change of this scale, so an independent Resolution
+        Verification follows, even though R001 was non-blocking and
+        review_passed was already achieved on Iteration 1.
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: claude-code
+      statement: >-
+        Self-recorded repository-native provenance for the Resolution
+        execution that addressed review.md Iteration 1's R001. scope lists
+        the exact repository-relative paths this Resolution touched,
+        excluding this Change's own manifest.yml/provenance.yml/review.md
+        per protocol/versions/2/specification.md SS11's Resolution Delta
+        computation, which already subtracts those paths before
+        comparison. R001's root cause was the hook script's two
+        independent whole-string case-glob patterns (the mutation token
+        and the protected path each matched anywhere in the string,
+        independently of each other) -- fixed by a single grep -E check
+        requiring bounded proximity (no shell separator &&/||/;/| between
+        the two) instead. Verified directly, not merely by reading the
+        diff: generated the actual script via
+        `_hook_script_content()` and piped 14 real JSON tool-call payloads
+        to it via `sh -c`, confirming both of review-001's demonstrated
+        R001 false-positive cases now correctly allow, all four original
+        denied cases (sed -i/perl -i/truncate/redirection) still correctly
+        deny, all eight original allowed cases (git add/commit/status/
+        diff, cat, ls, grep) still correctly allow, and two new
+        regression-guard cases (a genuine sed -i attack with an unrelated
+        command chained before or after it) still correctly deny --
+        confirming the fix narrows the false-positive surface without
+        widening a false-negative one. pytest -q: 504 passed, unchanged.
