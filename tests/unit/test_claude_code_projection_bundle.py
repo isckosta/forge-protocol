@@ -232,6 +232,10 @@ def test_hook_script_denies_in_place_mutation_of_review_control_paths() -> None:
         "echo x > .forge/changes/CHG-0018-x/manifest.yml",
         "perl -i -pe 's/a/b/' .forge/changes/CHG-0018-x/provenance.yml",
         "truncate -s 0 .forge/changes/CHG-0018-x/review.md",
+        # R001 regression guard: a genuine mutation must still be caught
+        # even with an unrelated command chained before or after it.
+        "sed -i 's/a/b/' .forge/changes/CHG-0018-x/manifest.yml && echo done",
+        "echo start; sed -i 's/a/b/' .forge/changes/CHG-0018-x/manifest.yml",
     ]
     for command in denied:
         code, stdout = run(command)
@@ -247,6 +251,12 @@ def test_hook_script_denies_in_place_mutation_of_review_control_paths() -> None:
         "ls .forge/changes/",
         "grep review .forge/changes/CHG-0018-x/manifest.yml",
         "ls -la",
+        # Strict Review R001 (CHG-0018 Iteration 1): a naive whole-string
+        # match previously denied these two, even though both are, in
+        # substance, an ordinary git add/commit of a protected path with
+        # an unrelated '>' elsewhere in the same command line.
+        "git status > /tmp/status.txt && git add .forge/changes/CHG-0018-x/manifest.yml",
+        'git commit -m "docs(chg-0018): note -- see .forge/changes/CHG-0018-x/manifest.yml > also check review.md"',
     ]
     for command in allowed:
         code, stdout = run(command)
