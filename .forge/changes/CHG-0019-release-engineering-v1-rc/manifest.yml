@@ -20,20 +20,41 @@ artifacts:
   implementation: complete
   provenance: complete
   verification: complete
-  review: pending
+  review: complete
   documentation: complete
   knowledge_capture: complete
 requirements: {total: 10, implemented: 10, verified: 10}
 tdd: {status: compliant, cycles: 4}
 verification: {status: passed}
 review:
-  status: pending
-  iteration: 0
+  status: passed
+  iteration: 1
   blockers: 0
   majors: 0
-  minors: 0
-  observations: 0
-  iterations: []
+  minors: 2
+  observations: 1
+  iterations:
+    - id: review-001
+      revision: chg-0019-implementation-001
+      subject_provenance: implementation-001
+      reviewer_provenance: review-001
+      kind: initial_review
+      status: passed
+      evidence_gap: >-
+        R001 (MINOR): CHANGELOG.md has no dedicated entry for this
+        Change's own substantive additions (forge migrate, publish.yml,
+        C-075, RELEASING.md), unlike every prior historical Change.
+        R002 (MINOR): no automated regression test guards
+        pyproject.toml's dynamic version sourcing (TDD-001 was verified
+        only by a one-time manual build reproduction). O001
+        (OBSERVATION): apply_migrations's exact string replacement
+        targets the first textual occurrence of the schema string in the
+        whole file rather than being structurally scoped to the schema:
+        key -- safe today (verified: exactly one occurrence in each of
+        the six real candidate files) but a latent fragility for a
+        hypothetical future file. None blocking per
+        protocol/policies/review.yml (blocking: [blocker, major]). Full
+        detail in review.md.
 documentation:
   impact_evaluated: true
   update_required: true

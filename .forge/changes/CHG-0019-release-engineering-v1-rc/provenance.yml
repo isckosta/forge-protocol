@@ -44,3 +44,77 @@ records:
         record its own review-role provenance separately; this session
         does not and cannot produce that record itself without
         constituting self-review.
+  - id: review-001
+    role: review
+    execution: {id: review-exec-chg0019-20260820-7ef99eba, context_id: review-context-chg0019-20260820-f8b709bb}
+    recorded_at: "2026-08-20T01:12:21-03:00"
+    revision:
+      id: chg-0019-implementation-001
+      immutable_ref: {type: git_commit, value: 443678bc0ec7dbd9423d1e306416ebecdc65bdf3}
+      description: >-
+        Independent Strict Review Iteration 1: PASS. 0 BLOCKER, 0 MAJOR,
+        2 MINOR, 1 OBSERVATION -- none blocking per
+        protocol/policies/review.yml. Both of this Change's highest-stakes
+        claims (the migration engine's safety against this repository's
+        own real historical data, and the CLI-version dynamic-sourcing
+        fix) were independently reproduced, not accepted from prose.
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: claude-code
+      statement: >-
+        Independent Reviewer Execution, run cold with no access to the
+        Implementation session's conversation, deriving everything from
+        committed repository state and the actual diff (git log
+        d489f1b..443678b, git show on each of the four commits, git diff
+        --stat). Independently reproduced: pytest -q (520 passed, matching
+        the claimed figure exactly); forge validate ("Forge project is
+        valid"); forge doctor (7/7 PASS plus the expected non-blocking
+        WARN migration_available: 6 migration candidate(s) found...); git
+        status --porcelain clean both before and after running forge
+        migrate --check against this actual repository (never ran the
+        applying form of forge migrate against this repository's real
+        .forge/changes/ directory). Built my own independent fixtures
+        (copies of the real CHG-0008 and CHG-0011 provenance.yml files,
+        distinct from tests/unit/test_migration.py's own fixture list) in
+        a disposable scratch directory and called find_candidates/
+        apply_migrations directly: both candidates detected, both
+        rewritten, and a line-by-line diff against the untouched originals
+        confirmed only the schema: line differs, nothing else. Constructed
+        a delegated_task fixture myself and confirmed it is never listed
+        as a candidate and never touched. Verified by direct grep that
+        forge/change@1 lives only in manifest.yml (never scanned by
+        find_candidates, which only reads files literally named
+        provenance.yml), that compatibility.md's own text forbids
+        migrating forge/change@1, and that no file under src/forge_cli/
+        reads or validates a project's .forge/policies/review.yml against
+        either schema version. Reproduced TDD-001 end to end myself:
+        changed CLI_VERSION to a throwaway 0.1.0.dev999, ran python -m
+        build --wheel, confirmed the wheel filename and METADATA (Version,
+        Author, all four Project-URLs, Keywords, every Classifier)
+        reflected it, then reverted version.py to 0.1.0.dev0 and confirmed
+        git diff was clean afterward -- no stray change left behind.
+        Confirmed via git log --all -p | grep that no commit in this
+        Change's history ever recorded the Implementation's own temporary
+        RED-capture test value (0.1.0.dev1). Parsed all three GitHub
+        Actions workflow files (publish.yml, verification.yml, tests.yml)
+        with yaml.safe_load successfully; confirmed publish.yml triggers
+        only on release: {types: [published]}, contains no secrets.*
+        reference, and that verification.yml's stale branch triggers are
+        gone with neither branch existing locally or on the remote
+        (git branch -a, git ls-remote --heads origin). Confirmed C-075 is
+        byte-identical (modulo wrapping) between both Contract files, that
+        protocol/schemas/catalog.yml lists exactly four schema families
+        with more than one version (matching Discovery's claim), and that
+        no file under protocol/schemas/ or protocol/specification.md
+        changed. Recorded two non-blocking MINOR findings (CHANGELOG.md
+        has no dedicated entry for this Change's own substantive additions
+        despite every prior historical Change having one, and no automated
+        regression test guards pyproject.toml's dynamic version sourcing)
+        and one OBSERVATION (apply_migrations's exact string replacement
+        targets the first textual occurrence of the schema string in the
+        whole file rather than being structurally scoped to the schema:
+        key -- safe today, verified by direct grep that each of the six
+        real candidate files contains exactly one occurrence, but a latent
+        fragility for a hypothetical future file). Full findings and
+        evidence recorded in review.md.
