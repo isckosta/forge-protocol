@@ -1,0 +1,18 @@
+schema: forge/traceability@1
+change: CHG-0020
+requirements:
+  FR-001: {tasks: [T-001], evidence: examples_strict_review_remediation_readme_cites_chg0016_review_md_verbatim}
+  FR-002: {tasks: [T-002], evidence: examples_full_feature_readme_cites_chg0018_verification_and_review_md_verbatim}
+  FR-003: {tasks: [T-003], evidence: golden_path_standard_and_claude_code_readmes_addenda}
+  FR-004: {tasks: [T-004], evidence: examples_readme_category_mapping_table}
+  FR-005: {tasks: [T-005], evidence: roadmap_md_status_line_end_to_end_examples_section}
+  CON-001: {tasks: [T-006], evidence: every_commit_hash_and_excerpt_checked_via_git_log_and_grep_before_commit_d23678d}
+  CON-002: {tasks: [T-001, T-002], evidence: both_new_readmes_point_at_forge_changes_directories_rather_than_reproduce_them}
+  CON-003: {tasks: [T-006], evidence: no_historical_change_artifact_modified_pytest_validate_doctor_unchanged}
+acceptance:
+  AC-001: [t006_r012_r001_r002_verified_against_review_md]
+  AC-002: [t006_greet_none_bug_and_hook_minor_verified_against_verification_and_review_md]
+  AC-003: [t006_addenda_diff_reviewed_no_other_content_changed]
+  AC-004: [t006_all_five_categories_present_in_mapping_table]
+  AC-005: [t006_external_validation_matrix_named_open_not_dropped]
+  AC-006: [t006_pytest_524_passed_forge_validate_clean_forge_doctor_clean]

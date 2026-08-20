@@ -15,8 +15,8 @@ status: ready
 - [x] T-006 Verify every cited commit hash/excerpt against real `git
       show`/file content; `pytest -q`/`forge validate`/`forge doctor`
       unchanged.
-- [ ] T-007 `knowledge-capture.md`, `traceability.yml`.
-- [ ] T-008 Freeze Implementation subject, record provenance.
+- [x] T-007 `knowledge-capture.md`, `traceability.yml`.
+- [x] T-008 Freeze Implementation subject, record provenance.
 - [ ] T-009 Independent Strict Review Iteration 1 (separate Execution/
       Context).
 - [ ] T-010 Resolution (if any Findings require one) + Resolution
