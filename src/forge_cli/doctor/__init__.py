@@ -15,6 +15,7 @@ from forge_cli.configuration import (
     load_project_configuration,
 )
 from forge_cli.git import NotGitRepositoryError, resolve_project_root
+from forge_cli.migration import find_candidates
 from forge_cli.protocol_resolution import (
     CanonicalContractUnavailableError,
     resolve_effective_contract,
@@ -126,8 +127,25 @@ def diagnose(start: Path, protocol_root: Path) -> DoctorResult:
 
     if initialized:
         checks.extend(_adapter_readiness_checks(repository_root))
+        checks.extend(_migration_advisory_checks(repository_root))
 
     return DoctorResult(checks=tuple(checks))
+
+
+def _migration_advisory_checks(repository_root: Path) -> list[DoctorCheck]:
+    """Non-blocking advisory: surface `forge migrate --check` when a
+    recognized, safe migration candidate exists (CHG-0019 FR-004)."""
+    candidates = find_candidates(repository_root)
+    if not candidates:
+        return []
+    return [
+        _check(
+            "migration_available",
+            "warning",
+            f"{len(candidates)} migration candidate(s) found; "
+            "run `forge migrate --check` for details.",
+        )
+    ]
 
 
 def _adapter_readiness_checks(repository_root: Path) -> list[DoctorCheck]:

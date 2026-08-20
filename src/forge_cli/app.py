@@ -6,6 +6,7 @@ import yaml
 from forge_cli.adapter_cli import adapter_app
 from forge_cli.doctor import diagnose
 from forge_cli.git import GitUnavailableError, NotGitRepositoryError, resolve_project_root
+from forge_cli.migration import apply_migrations, find_candidates
 from forge_cli.protocol_resources import resolve_protocol_root
 from forge_cli.validation import validate_project
 from forge_cli.version import CLI_VERSION, PROTOCOL_DISPLAY_VERSION, PROTOCOL_ID
@@ -117,6 +118,53 @@ def validate() -> None:
         typer.echo(f"{finding.code} [{finding.artifact}] {finding.message}")
 
     raise typer.Exit(code=2)
+
+
+@app.command()
+def migrate(
+    check: bool = typer.Option(
+        False, "--check", help="Report migration candidates without applying them."
+    ),
+) -> None:
+    """Migrate repository-native artifacts to their current schema shape.
+
+    Recognizes exactly one schema family today:
+    forge/execution-provenance@1 -> @2 (Contract C-075: never fabricates
+    data; forge/change@1 and forge/adapter-installation@1 are out of
+    scope for two different reasons -- see CHG-0019 discovery.md).
+    """
+    try:
+        project_root = resolve_project_root(Path.cwd())
+    except GitUnavailableError:
+        _environment_git_unavailable()
+    except NotGitRepositoryError:
+        typer.echo("E_FORGE_NOT_GIT_REPOSITORY: current directory is not inside a Git repository.")
+        raise typer.Exit(code=3)
+
+    try:
+        candidates = find_candidates(project_root)
+        if check:
+            if not candidates:
+                typer.echo("No migration available.")
+                return
+            for candidate in candidates:
+                typer.echo(
+                    f"AVAILABLE {candidate.change_id}: {candidate.path} "
+                    "-> forge/execution-provenance@2"
+                )
+            return
+
+        results = apply_migrations(project_root, candidates)
+    except Exception as error:
+        _internal_error(error)
+
+    if not results:
+        typer.echo("Nothing to migrate.")
+        return
+    for result in results:
+        typer.echo(
+            f"MIGRATED {result.change_id}: {result.path} -> forge/execution-provenance@2"
+        )
 
 
 @app.command()

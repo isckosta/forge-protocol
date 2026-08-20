@@ -40,6 +40,40 @@ def test_doctor_exit_code_reflects_drifted_adapter_installation(tmp_path: Path, 
     assert "FAIL adapter:codex:generated_drift" in result.stdout
 
 
+def test_doctor_reports_migration_advisory_without_failing(tmp_path: Path, monkeypatch) -> None:
+    """CHG-0019 FR-004: non-blocking WARN when a migration candidate exists."""
+    _init_git_repository(tmp_path)
+    monkeypatch.chdir(tmp_path)
+    runner.invoke(app, ["init"])
+    change_dir = tmp_path / ".forge" / "changes" / "CHG-0001-example"
+    change_dir.mkdir(parents=True)
+    (change_dir / "provenance.yml").write_text(
+        "schema: forge/execution-provenance@1\n"
+        "change: CHG-0001\n"
+        "records:\n"
+        "  - id: implementation-001\n"
+        "    role: implementation\n"
+        "    execution: {id: e1, context_id: c1}\n",
+        encoding="utf-8",
+    )
+
+    result = runner.invoke(app, ["doctor"])
+
+    assert result.exit_code == 0
+    assert "WARN migration_available: 1 migration candidate(s) found" in result.stdout
+
+
+def test_doctor_reports_no_migration_advisory_when_nothing_pending(tmp_path: Path, monkeypatch) -> None:
+    _init_git_repository(tmp_path)
+    monkeypatch.chdir(tmp_path)
+    runner.invoke(app, ["init"])
+
+    result = runner.invoke(app, ["doctor"])
+
+    assert result.exit_code == 0
+    assert "migration_available" not in result.stdout
+
+
 def test_doctor_reports_non_git_environment_without_modifying_files(tmp_path: Path, monkeypatch) -> None:
     marker = tmp_path / "marker.txt"
     marker.write_text("unchanged", encoding="utf-8")

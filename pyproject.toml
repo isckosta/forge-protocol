@@ -4,16 +4,37 @@ build-backend = "hatchling.build"
 
 [project]
 name = "forge-protocol"
-version = "0.1.0.dev0"
+dynamic = ["version"]
 description = "The official CLI for the Forge engineering protocol."
 readme = "README.md"
 requires-python = ">=3.12"
 license = { text = "Apache-2.0" }
+authors = [
+  { name = "Israel Costa" },
+]
+keywords = ["forge", "engineering-protocol", "tdd", "cli", "harness-adapter"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Environment :: Console",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: Apache Software License",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3 :: Only",
+  "Topic :: Software Development :: Build Tools",
+  "Topic :: Software Development :: Quality Assurance",
+]
 dependencies = [
   "jsonschema>=4.23,<5",
   "PyYAML>=6.0,<7",
   "typer>=0.16,<1",
 ]
+
+[project.urls]
+Homepage = "https://github.com/isckosta/forge-protocol"
+Repository = "https://github.com/isckosta/forge-protocol"
+Issues = "https://github.com/isckosta/forge-protocol/issues"
+Changelog = "https://github.com/isckosta/forge-protocol/blob/main/CHANGELOG.md"
 
 [project.optional-dependencies]
 test = [
@@ -22,6 +43,10 @@ test = [
 
 [project.scripts]
 forge = "forge_cli.app:app"
+
+[tool.hatch.version]
+path = "src/forge_cli/version.py"
+pattern = "CLI_VERSION = [\"'](?P<version>[^\"']+)[\"']"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/forge_cli"]
