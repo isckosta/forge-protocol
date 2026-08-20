@@ -175,3 +175,83 @@ records:
         Resolution -- that was already independently verified in
         review-001 and is unaffected by these three fixes (none touches
         find_candidates or the schema-family exclusion logic).
+  - id: review-002
+    role: review
+    execution: {id: review-exec-chg0019-resverify-20260820-a681be41, context_id: review-context-chg0019-resverify-20260820-2fc8f2ce}
+    recorded_at: "2026-08-20T01:27:03-03:00"
+    revision:
+      id: chg-0019-resolution-001
+      immutable_ref: {type: git_commit, value: b6b570613e379d6919474240bf5a4bd36320fb1a}
+      description: >-
+        Resolution Verification (kind: resolution_verification) of
+        resolution-001: PASS (final). R001, R002, and O001 all
+        independently re-verified genuinely resolved against actual
+        repository state, not accepted from resolution-001's own claim.
+        Resolution Delta computed independently (git diff
+        443678b..b6b5706, minus this Change's own
+        manifest.yml/provenance.yml/review.md) matches resolution-001's
+        declared scope exactly, both directions -- no Out-of-Scope
+        Mutation. new_material_findings: 0. One new, unrelated,
+        non-blocking OBSERVATION (O002) recorded per C-050 -- the same
+        pre-existing Core C-026 freeze-check gap CHG-0018's own
+        Iteration 2 already documented, not a defect in this Resolution.
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: claude-code
+      statement: >-
+        Independent Reviewer Execution, run cold with no access to any
+        prior conversation, deriving everything from committed
+        repository state: review.md Iteration 1, provenance.yml (all
+        records), manifest.yml, protocol/versions/2/specification.md
+        SS10-SS11, git show b6b5706, and git diff 443678b..b6b5706
+        --stat. Distinct Execution/Context from implementation-001/
+        resolution-001 (implementation-exec-chg0019-20260820-01/
+        implementation-context-chg0019-20260820-01) and from review-001
+        (review-exec-chg0019-20260820-7ef99eba/
+        review-context-chg0019-20260820-f8b709bb). Computed the
+        Resolution Delta myself (git diff --name-only 443678b..b6b5706,
+        minus the three Change-local paths) and confirmed it matches
+        resolution-001's declared scope exactly in both directions: no
+        Out-of-Scope Mutation. Re-checked each targeted Finding against
+        actual current repository state rather than trusting
+        resolution-001's own claim: read CHANGELOG.md directly and
+        confirmed a substantive dedicated entry matching every prior
+        Change's own convention (R001); read
+        tests/unit/test_packaging_version.py in full, ran it, and
+        reasoned through/simulated two plausible regressions (an added
+        type annotation, dropped quotes) in a standalone Python REPL to
+        confirm the pattern-match assertion would genuinely fail under
+        them, not just pass cosmetically today (R002); read
+        migration.py's current apply_migrations and confirmed the
+        rewrite is now anchored via re.compile(r"^schema: ...$",
+        re.MULTILINE) to the whole schema: key line, then built my own
+        adversarial fixture -- independent of the existing new test --
+        in a disposable scratch directory outside this repository,
+        placing a prose mention of the literal schema string both before
+        and after the real schema: key line, and confirmed via direct
+        diff that apply_migrations rewrote only the real key line,
+        leaving both prose mentions untouched (O001). Ran forge migrate
+        --check against this actual repository myself and confirmed it
+        still reports exactly the same six real candidates review-001
+        found (CHG-0008, CHG-0011 through CHG-0015), with git status
+        --porcelain empty immediately before and after; never ran the
+        applying form of forge migrate against this repository's real
+        .forge/changes/ directory. Ran python -m pytest -q myself: 524
+        passed, matching resolution-001's claimed count exactly (520
+        baseline + 4 new). Incidentally discovered, while checking
+        forge validate for an unrelated sanity check, that this
+        repository's real forge validate currently exits 2 with a C-026
+        finding against this Change's own manifest.yml -- isolated the
+        cause with git checkout <ref> -- <path> (restored cleanly,
+        confirmed via git status --porcelain) and confirmed it is the
+        exact same pre-existing Core per-Iteration freeze-check gap
+        CHG-0018's own review.md Iteration 2 (R002 there) already
+        documented -- review-001's earlier subject freeze trips once
+        resolution-001's real code changes post-date it, independent of
+        anything this Iteration added. Recorded as O002 per C-050;
+        explicitly not counted toward new_material_findings, since it is
+        unrelated to R001/R002/O001 and is not newly discovered by this
+        Resolution -- it is the same already-known Core defect
+        re-demonstrated for this Change. Full findings and evidence
+        recorded in review.md's "Iteration 2" section.

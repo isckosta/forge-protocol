@@ -28,10 +28,10 @@ tdd: {status: compliant, cycles: 4}
 verification: {status: passed}
 review:
   status: passed
-  iteration: 1
+  iteration: 2
   blockers: 0
   majors: 0
-  minors: 2
+  minors: 0
   observations: 1
   iterations:
     - id: review-001
@@ -55,6 +55,38 @@ review:
         hypothetical future file. None blocking per
         protocol/policies/review.yml (blocking: [blocker, major]). Full
         detail in review.md.
+    - id: review-002
+      revision: chg-0019-resolution-001
+      subject_provenance: resolution-001
+      reviewer_provenance: review-002
+      kind: resolution_verification
+      status: passed
+      full_review_required: false
+      new_material_findings: 0
+      evidence_gap: >-
+        R001, R002, and O001 all independently re-verified resolved
+        against actual repository state, not accepted from
+        resolution-001's own claim: CHANGELOG.md now carries a
+        substantive dedicated entry matching every prior Change's
+        convention; tests/unit/test_packaging_version.py genuinely
+        exercises the real hatch.version regex against the real
+        version.py and would fail under a reasoned/simulated
+        regression; apply_migrations now anchors its rewrite to the
+        whole schema: key line via a MULTILINE regex, confirmed against
+        an independently-built adversarial fixture placing a prose
+        mention of the schema string both before and after the real key
+        line -- only the key line was rewritten. Resolution Delta
+        (git diff 443678b..b6b5706, minus this Change's own
+        manifest.yml/provenance.yml/review.md) computed independently
+        and matches resolution-001's declared scope exactly in both
+        directions -- no Out-of-Scope Mutation. pytest -q reproduced
+        independently: 524 passed. One new, unrelated, non-blocking
+        OBSERVATION recorded per C-050 (O002: forge validate's C-026
+        freeze check trips on review-001's earlier subject binding once
+        resolution-001's real code changes post-date it -- the same
+        pre-existing Core gap CHG-0018's own Iteration 2 R002 already
+        documented, not a defect introduced by this Resolution). Full
+        detail in review.md's "Iteration 2" section.
 documentation:
   impact_evaluated: true
   update_required: true
