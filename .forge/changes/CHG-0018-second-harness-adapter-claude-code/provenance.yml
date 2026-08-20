@@ -198,3 +198,78 @@ records:
         command chained before or after it) still correctly deny --
         confirming the fix narrows the false-positive surface without
         widening a false-negative one. pytest -q: 504 passed, unchanged.
+  - id: review-002
+    role: review
+    execution: {id: review-exec-chg0018-resverify-20260820-c0ce49aa, context_id: review-context-chg0018-resverify-20260820-6d582353}
+    recorded_at: "2026-08-20T00:06:50-03:00"
+    revision:
+      id: chg-0018-resolution-001
+      immutable_ref: {type: git_commit, value: 7385799030be6562633a87e1e9f468544a14ac3c}
+      description: >-
+        Independent Resolution Verification, Iteration 2: PASS,
+        full_review_required: false, new_material_findings: 0. R001 is
+        genuinely resolved in repository state, re-verified directly
+        against the actual current generated hook script rather than
+        accepted from resolution-001's own claim. The Resolution Delta
+        (git diff 6214390..7385799 minus this Change's own manifest.yml/
+        provenance.yml/review.md) is exactly {src/forge_cli/adapters/
+        claude_code/projection.py, tests/unit/
+        test_claude_code_projection_bundle.py}, matching resolution-001's
+        declared scope exactly in both directions -- no Out-of-Scope
+        Mutation. Both of review-001's originally-demonstrated R001
+        false-positive commands now correctly allow; all four originally-
+        denied mutation cases (sed -i, perl -i, truncate, plain redirect)
+        still correctly deny; two regression-guard cases (a genuine sed -i
+        attack chained with an unrelated command via && or ;) still
+        correctly deny; and two additional adversarial probes designed
+        independently of resolution-001's own claimed cases (a legitimate
+        read-then-redirect-elsewhere, and a reordered sed -i invocation)
+        found no new false negative. Full pytest suite unchanged at 504
+        passed. One unrelated latent finding (R002) was recorded per C-050:
+        forge validate currently exits 2 with a C-026 finding because
+        Core's per-iteration freeze check does not exempt review-001's
+        (passed) subject binding when a later, validly-bound
+        resolution_verification Iteration (this one) already accounts for
+        the post-freeze delta; reproduced as already present before this
+        Iteration's own record existed, not caused by resolution-001's diff
+        or by this Iteration, and not counted toward new_material_findings
+        per C-047's scoping.
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: claude-code
+      statement: >-
+        Self-recorded repository-native provenance for the independent
+        Resolution Verification Execution of CHG-0018 Iteration 2, run in
+        an Execution and Execution Context distinct from
+        implementation-001/resolution-001
+        (implementation-exec-chg0018-20260819-01) and from review-001
+        (review-exec-chg0018-20260819-f27d37ea), with no access to either
+        prior conversation and no prior memory of this Change beyond
+        committed repository state. No provider-native attestation is
+        claimed; assurance is recorded, not verified or cryptographic/
+        external proof. Scope, per protocol/versions/2/specification.md
+        SS10-SS11, was bounded to exactly three things and no more: (1) the
+        Resolution Delta, computed independently via `git diff --name-only
+        6214390..7385799` and confirmed to equal resolution-001's declared
+        scope exactly in both directions, with no Out-of-Scope Mutation;
+        (2) R001 itself, re-checked against actual repository state by
+        generating the real hook script via
+        `python3 -c "from forge_cli.adapters.claude_code.projection import
+        _hook_script_content; print(_hook_script_content())"` from the
+        activated .venv and piping real JSON tool_input.command payloads to
+        it via `sh -c`, independently reproducing (not trusting)
+        resolution-001's claimed 14-case run plus two adversarial probes of
+        my own; (3) whether the Resolution's own diff introduced any new
+        material defect -- read the full diff of both in-scope files line
+        by line; the production change is a single grep -E replacing two
+        case-glob patterns, and the test change is four new cases appended
+        to existing denied/allowed lists with no pre-existing case altered.
+        I did not re-review any content outside the Resolution Delta (the
+        shared conformance suite, the Claude Code Driver, the ADR, Layer C,
+        C-074 parity) -- Iteration 1 already examined those and C-047
+        forbids re-opening them in a Resolution Verification. Also
+        independently reproduced: `python -m pytest -q` (504 passed,
+        38.57s, matching review-001's figure), `git status --porcelain`
+        clean at 75e3678 before this Iteration's own writes. Verdict: PASS,
+        full_review_required: false, new_material_findings: 0.

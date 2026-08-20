@@ -28,11 +28,11 @@ tdd: {status: compliant, cycles: 4}
 verification: {status: passed}
 review:
   status: passed
-  iteration: 1
+  iteration: 2
   blockers: 0
   majors: 0
-  minors: 1
-  observations: 0
+  minors: 0
+  observations: 1
   iterations:
     - id: review-001
       revision: chg-0018-implementation-001
@@ -69,6 +69,37 @@ review:
         independent claude -p reproduction that exhibited the same
         mechanism. See review.md for full findings and the "Checked and
         found sound" record.
+    - id: review-002
+      revision: chg-0018-resolution-001
+      subject_provenance: resolution-001
+      reviewer_provenance: review-002
+      kind: resolution_verification
+      status: passed
+      full_review_required: false
+      new_material_findings: 0
+      finding_classes: [resolution_regression]
+      evidence_gap: >-
+        R001 re-verified resolved against actual repository state: both of
+        Iteration 1's demonstrated false-positive commands now correctly
+        allow, all four originally-denied mutation cases and two chained-
+        attack regression guards still correctly deny, and two additional
+        adversarial probes designed independently found no new false
+        negative. Resolution Delta (git diff 6214390..7385799 minus this
+        Change's own manifest.yml/provenance.yml/review.md) is exactly
+        {src/forge_cli/adapters/claude_code/projection.py, tests/unit/
+        test_claude_code_projection_bundle.py}, matching resolution-001's
+        declared scope exactly in both directions -- no Out-of-Scope
+        Mutation. pytest -q: 504 passed, unchanged. R002 (unrelated latent
+        finding, recorded per C-050, not counted in new_material_findings
+        per C-047's scoping): forge validate currently exits 2 with a C-026
+        finding because Core's per-iteration freeze check
+        (_validate_protocol2_review_provenance) does not exempt an earlier
+        bound Iteration (review-001, passed, frozen at implementation-001)
+        whose subject is properly superseded by this later
+        resolution_verification Iteration -- reproduced as already present
+        before review-002 existed, not introduced by this Iteration or by
+        resolution-001's own diff. See review.md R002 for full evidence and
+        reproduction.
 documentation:
   impact_evaluated: true
   update_required: true
