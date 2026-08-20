@@ -123,6 +123,38 @@ def test_apply_migrations_rewrites_only_the_schema_line(tmp_path: Path) -> None:
     assert differing == [0]
 
 
+def test_apply_migrations_only_touches_the_schema_key_not_a_prose_mention(tmp_path: Path) -> None:
+    """Strict Review O001: a bare substring replace would target the
+    first textual occurrence of the schema string anywhere in the file --
+    the replacement must be anchored to the actual `schema:` key line,
+    not any prose mention of the same string elsewhere."""
+    from forge_cli.migration import apply_migrations, find_candidates
+
+    project = _make_project(tmp_path)
+    change_dir = project / ".forge" / "changes" / "CHG-0007-example"
+    change_dir.mkdir()
+    path = change_dir / "provenance.yml"
+    original = (
+        "schema: forge/execution-provenance@1\n"
+        "change: CHG-0007\n"
+        "records:\n"
+        "  - id: implementation-001\n"
+        "    role: implementation\n"
+        "    execution: {id: e1, context_id: c1}\n"
+        "    statement: >-\n"
+        "      Recorded per forge/execution-provenance@1, the schema in\n"
+        "      effect when this Change began.\n"
+    )
+    path.write_text(original, encoding="utf-8")
+
+    apply_migrations(project, find_candidates(project))
+
+    rewritten = path.read_text(encoding="utf-8")
+    assert rewritten.splitlines()[0] == "schema: forge/execution-provenance@2"
+    # The prose mention is untouched -- only the schema: key line changed.
+    assert "Recorded per forge/execution-provenance@1, the schema in" in rewritten
+
+
 def test_apply_migrations_is_idempotent(tmp_path: Path) -> None:
     from forge_cli.migration import apply_migrations, find_candidates
 

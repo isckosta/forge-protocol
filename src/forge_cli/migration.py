@@ -11,6 +11,7 @@ and `forge/policy/review@1` are out of scope for two different reasons
 
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -18,6 +19,9 @@ import yaml
 
 _SOURCE_SCHEMA = "forge/execution-provenance@1"
 _TARGET_SCHEMA = "forge/execution-provenance@2"
+_SCHEMA_LINE_PATTERN = re.compile(
+    r"^schema: " + re.escape(_SOURCE_SCHEMA) + r"$", re.MULTILINE
+)
 
 
 @dataclass(frozen=True)
@@ -74,8 +78,14 @@ def apply_migrations(
     Exact string replacement, not YAML re-serialization: re-emitting via
     `yaml.safe_dump` could reorder keys or change quoting/formatting,
     which would violate "no other byte in the file changes" (Contract
-    C-075, this Change's FR-003). Re-checks each candidate is still a
-    safe v1 provenance file immediately before rewriting it, so a stale
+    C-075, this Change's FR-003). The replacement is anchored to a whole
+    line matching exactly `schema: forge/execution-provenance@1`
+    (Strict Review O001: a bare substring match would target the first
+    textual occurrence anywhere in the file, not necessarily the schema
+    key itself, if the same string ever appeared elsewhere, e.g. in a
+    prose `statement:` field) -- not merely the first occurrence of the
+    bare version string. Re-checks each candidate is still a safe v1
+    provenance file immediately before rewriting it, so a stale
     `candidates` tuple can never cause a double-migration or an
     out-of-date file to be silently overwritten.
     """
@@ -84,7 +94,11 @@ def apply_migrations(
         if not _is_safe_v1_provenance(candidate.path):
             continue
         original = candidate.path.read_text(encoding="utf-8")
-        rewritten = original.replace(_SOURCE_SCHEMA, _TARGET_SCHEMA, 1)
+        rewritten, count = _SCHEMA_LINE_PATTERN.subn(
+            f"schema: {_TARGET_SCHEMA}", original, count=1
+        )
+        if count != 1:
+            continue
         candidate.path.write_text(rewritten, encoding="utf-8")
         results.append(MigrationResult(change_id=candidate.change_id, path=candidate.path))
     return tuple(results)

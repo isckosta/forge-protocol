@@ -10,6 +10,54 @@ until then.
 
 ## Unreleased
 
+### Release Engineering & v1 Release Candidate (Infrastructure)
+
+Added:
+
+- `[tool.hatch.version]` dynamic version sourcing: `pyproject.toml` no
+  longer declares its own static `version`; it reads `CLI_VERSION` out
+  of `src/forge_cli/version.py` via a regex pattern, so the CLI/package
+  version has one source of truth instead of two independently
+  hardcoded strings;
+- `pyproject.toml` gains `authors`, `[project.urls]`
+  (Homepage/Repository/Issues/Changelog), `classifiers`, and `keywords`
+  — conventional PyPI-listing metadata that was previously entirely
+  absent;
+- `forge migrate` / `forge migrate --check`: a new repository-native
+  migration mechanism recognizing exactly one schema family today,
+  `forge/execution-provenance@1` → `@2` (a byte-identical superset for
+  any record whose `role` isn't `delegated_task`), plus a new
+  non-blocking `forge doctor` advisory (`migration_available`) when a
+  candidate exists;
+- Contract rule `C-075`: a migration MUST NOT fabricate, infer, or
+  reconstruct data absent from the instance being migrated, generalizing
+  `CHG-0007`'s own one-off truth-preserving migration discipline into a
+  durable rule now that `forge migrate` is a reusable mechanism;
+- `.github/workflows/publish.yml`: builds wheel and sdist, smoke-tests
+  both offline, and publishes to PyPI via OIDC trusted publishing (no
+  stored token) — triggers only on a published GitHub Release, which
+  does not exist yet and which this Change does not create;
+- `RELEASING.md`: the PEP 440 version scheme and the manual release
+  checklist a human will follow later.
+
+Fixed:
+
+- `.github/workflows/verification.yml` no longer triggers on two stale,
+  deleted branch names; it now also builds and smoke-tests an sdist
+  install alongside the pre-existing wheel-only check;
+- `ROADMAP.md`'s release-progression sketch corrected from hyphenated
+  pre-release strings (`0.1.0-alpha.1`) to valid PEP 440
+  (`0.1.0a1`/`0.1.0b1`/`1.0.0rc1`).
+
+Known limitation (accepted, documented deferral — see
+`docs/adr/0017-release-engineering-infrastructure.md`):
+
+- `forge migrate` does not (and, per `compatibility.md`, must not)
+  migrate `forge/change@1`; `forge/adapter-installation@1` is deferred
+  pending a real installed-Adapter case to drive a design for its
+  non-derivable `publication_root` field. No release has actually been
+  cut — this Change is infrastructure only.
+
 ### Second Harness Adapter (Claude Code)
 
 Added:
