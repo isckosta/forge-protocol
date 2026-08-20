@@ -1,0 +1,39 @@
+schema: forge/execution-provenance@2
+change: CHG-0020
+records:
+  - id: implementation-001
+    role: implementation
+    execution: {id: implementation-exec-chg0020-20260820-01, context_id: implementation-context-chg0020-20260820-01}
+    recorded_at: "2026-08-20T20:59:17-03:00"
+    revision:
+      id: chg-0020-implementation-001
+      immutable_ref: {type: git_commit, value: 9f643c313368558afd07e1dd17d3a47eadc4d0c7}
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: claude-code
+      statement: >-
+        Self-recorded repository-native provenance for the Implementation
+        execution that produced CHG-0020, continuing the same session that
+        produced this Change's Intent, Discovery, Specification, and
+        Plan/Tasks artifacts, and that received explicit human approval of
+        the Discovery-through-Completion plan (a dogfooded Forge Change,
+        STANDARD flow) before Implementation began. No provider-native
+        attestation is claimed; assurance is recorded, not verified or
+        cryptographic/external proof. This Change touches no executable
+        code, Contract, or schema -- its Implementation is five Markdown
+        files (two new curated examples/ READMEs, two golden-path README
+        addenda, examples/README.md rewrite, ROADMAP.md status line) --
+        so there is no RED/GREEN TDD cycle to report (tdd: {status:
+        not_applicable}, manifest.yml). Verification consisted of
+        directly re-checking every cited commit hash and quoted Finding
+        excerpt against real `git log`/`git show`/file content (see
+        verification.md's "Citation Verification" section for the full
+        list of checks performed), plus confirming `pytest -q` (524
+        passed), `forge validate`, and `forge doctor` are unchanged from
+        the pre-Implementation baseline. The independent Strict Review
+        that follows must run in a distinct Execution and Execution
+        Context per Protocol 2 (protocol/versions/2/specification.md §2)
+        and will record its own review-role provenance separately; this
+        session does not and cannot produce that record itself without
+        constituting self-review.

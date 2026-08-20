@@ -14,7 +14,7 @@ artifacts:
   tasks: complete
   traceability: complete
   implementation: complete
-  provenance: in_progress
+  provenance: complete
   verification: complete
   review: pending
   documentation: complete
