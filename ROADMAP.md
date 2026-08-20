@@ -283,6 +283,13 @@ The key question is not merely whether the second Adapter works. It is whether i
 
 ## Release Engineering & v1 Release Candidate
 
+Status: Infrastructure complete via `CHG-0019` (versioning single source
+of truth, `forge migrate`/`--check`, Contract `C-075`, the PyPI publish
+workflow, `RELEASING.md`). No real release has been cut — that remains a
+distinct, later, explicitly-authorized human action (PyPI trusted-
+publisher registration, tagging, and publishing are all still open). See
+`docs/adr/0017-release-engineering-infrastructure.md`.
+
 ### Objective
 
 Turn the mature repository into a reproducible, upgradeable, externally consumable release.

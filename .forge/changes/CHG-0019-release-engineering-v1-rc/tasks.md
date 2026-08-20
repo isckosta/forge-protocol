@@ -3,7 +3,7 @@ forge:
   artifact: tasks
   schema: 1
 change: CHG-0019
-status: ready
+status: complete
 ---
 # Tasks — CHG-0019
 
@@ -27,15 +27,18 @@ status: ready
 - [x] T-009 `docs/adr/0017-*.md` (number re-verified immediately before
       writing).
 - [x] T-010 `knowledge-capture.md`, `traceability.yml`, `tdd-evidence.yml`.
-- [ ] T-011 Freeze Implementation subject, record provenance.
-- [ ] T-012 Independent Strict Review Iteration 1 (separate Execution/
-      Context).
-- [ ] T-013 Resolution (if any Findings require one) + Resolution
-      provenance.
-- [ ] T-014 Independent Resolution Verification (if T-013 ran) —
-      separate Execution/Context again.
-- [ ] T-015 Completion: all FULL Gates satisfied.
+- [x] T-011 Freeze Implementation subject, record provenance.
+- [x] T-012 Independent Strict Review Iteration 1 (separate Execution/
+      Context) — PASS, 2 non-blocking MINOR (R001, R002), 1 OBSERVATION
+      (O001).
+- [x] T-013 Resolution of R001/R002/O001 + Resolution provenance.
+- [x] T-014 Independent Resolution Verification (separate Execution/
+      Context again) — PASS, 0 new material findings, 1 new non-blocking
+      OBSERVATION (O002, the same pre-existing C-026 freeze-check
+      mechanism `CHG-0017`/`CHG-0018` already encountered, confirmed at
+      Completion to resolve the same way).
+- [x] T-015 Completion: all FULL Gates satisfied.
 
 ## Status
 
-Ready. Implementation not started.
+All tasks complete. `manifest.yml` `state.current: complete`.

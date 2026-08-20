@@ -56,3 +56,19 @@ status: complete
   one intended line" — the second is what this Change's own Contract
   rule (C-075) and Specification (FR-003) actually require, and only the
   second was actually tested for.
+
+- **The C-026 per-Iteration freeze-drift signal on `state.current !=
+  complete` has now been independently rediscovered a third time**
+  (`CHG-0017`'s own knowledge-capture; `CHG-0018`'s Resolution
+  Verification R002; this Change's Resolution Verification O002) — each
+  time by a genuinely independent Reviewer with no access to the prior
+  occurrences, each time correctly diagnosed as the same known,
+  intended, self-resolving-at-Completion mechanism rather than a new
+  Core defect. Confirmed again here: `state.current: complete` clears it.
+  General lesson, now with three independent data points: a `forge
+  validate`/`forge doctor` message that named the exemption condition
+  explicitly (e.g. "...; this clears once state.current reaches
+  complete") would likely stop costing every future Reviewer the same
+  investigation — worth a small, low-risk future Change on its own
+  (message wording only, no semantic change), not undertaken here since
+  it is unrelated to this Change's own declared scope.
