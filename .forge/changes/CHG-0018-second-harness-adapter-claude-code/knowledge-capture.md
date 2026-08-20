@@ -122,3 +122,26 @@ status: complete
   Change's own scope to fix (a future Change's FR, if ever prioritized:
   should Adapter projection include the schema catalog itself?).
 
+- **Resolution Verification's own R002 (an earlier bound Review Iteration's
+  C-026 freeze check does not recognize being superseded by a later
+  `resolution_verification` Iteration) is the identical mechanism
+  `CHG-0017`'s own knowledge-capture already documented, not a new,
+  previously-undiscovered Core defect — confirmed by proceeding exactly as
+  `CHG-0017` did.** The independent Resolution Verification subagent
+  correctly reproduced the finding, correctly hypothesized that
+  `state.current: complete` would exempt it (matching the pattern in every
+  already-complete Change it sampled), and correctly declined to confirm
+  or fix it, since Completion was outside that Iteration's own bounded
+  role (C-025/C-047). Confirmed at this Change's own Completion step: yes,
+  it resolves the same way `CHG-0017`'s did. General lesson, now observed
+  twice: fixing any Finding in already-reviewed content — blocking or not
+  — will trip this per-Iteration freeze check for as long as the Change
+  remains `in_progress`, and this is `CHG-0012`'s own exemption design
+  working as intended, not evidence of a defect each time it's
+  rediscovered. Worth a repository-wide note (not fixed in this Change):
+  a `forge validate`/`forge doctor` message that explicitly named the
+  `in_progress`-exemption reason, instead of only "create new subject
+  provenance," would likely stop this same investigation from being
+  independently re-run by a future Reviewer who also lacks access to
+  either prior Change's own knowledge-capture.
+

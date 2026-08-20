@@ -3,7 +3,7 @@ forge:
   artifact: tasks
   schema: 1
 change: CHG-0018
-status: ready
+status: complete
 ---
 # Tasks — CHG-0018
 
@@ -38,15 +38,17 @@ status: ready
       `examples/golden-path-claude-code/`.
 - [x] T-013 `CHANGELOG.md`, `ROADMAP.md` status flip, `knowledge-capture.md`,
       `traceability.yml`, `tdd-evidence.yml`.
-- [ ] T-014 Freeze Implementation subject, record provenance.
-- [ ] T-015 Independent Strict Review Iteration 1 (separate Execution/
-      Context).
-- [ ] T-016 Resolution (if any Findings require one) + Resolution
-      provenance.
-- [ ] T-017 Independent Resolution Verification (if T-016 ran) — separate
-      Execution/Context again.
-- [ ] T-018 Completion: all FULL Gates satisfied.
+- [x] T-014 Freeze Implementation subject, record provenance.
+- [x] T-015 Independent Strict Review Iteration 1 (separate Execution/
+      Context) — PASS, 1 non-blocking MINOR (R001).
+- [x] T-016 Resolution of R001 + Resolution provenance.
+- [x] T-017 Independent Resolution Verification (separate Execution/
+      Context again) — PASS, 0 new material findings, 1 new non-blocking
+      OBSERVATION (R002, an unrelated pre-existing Core freeze-check
+      finding, confirmed at Completion to resolve the same way `CHG-0017`'s
+      own instance of it did).
+- [x] T-018 Completion: all FULL Gates satisfied.
 
 ## Status
 
-T-001 through T-013 complete. Freezing next.
+All tasks complete. `manifest.yml` `state.current: complete`.
