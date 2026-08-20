@@ -18,7 +18,7 @@ artifacts:
   traceability: complete
   tdd_evidence: complete
   implementation: complete
-  provenance: in_progress
+  provenance: complete
   verification: complete
   review: pending
   documentation: complete
