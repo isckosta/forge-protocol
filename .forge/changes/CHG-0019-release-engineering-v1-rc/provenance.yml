@@ -118,3 +118,60 @@ records:
         real candidate files contains exactly one occurrence, but a latent
         fragility for a hypothetical future file). Full findings and
         evidence recorded in review.md.
+  - id: resolution-001
+    role: resolution
+    execution: {id: implementation-exec-chg0019-20260820-01, context_id: implementation-context-chg0019-20260820-01}
+    recorded_at: "2026-08-20T01:20:49-03:00"
+    scope:
+      - CHANGELOG.md
+      - src/forge_cli/migration.py
+      - tests/unit/test_migration.py
+      - tests/unit/test_packaging_version.py
+    targets: [R001, R002, O001]
+    revision:
+      id: chg-0019-resolution-001
+      immutable_ref: {type: git_commit, value: b6b570613e379d6919474240bf5a4bd36320fb1a}
+      description: >-
+        Resolution of review.md Iteration 1's two non-blocking MINOR
+        Findings and one OBSERVATION. Same Execution/Execution Context as
+        implementation-001 -- Contract C-026 requires Reviewer
+        independence from Implementation, not Resolver independence, and
+        review-001 (a distinct Execution/Context) already establishes
+        that, matching CHG-0016/0017/0018's own resolution-001 precedent.
+        R002 and O001 touch real executable behavior (a new test file,
+        migration.py's replacement logic), so an independent Resolution
+        Verification follows, matching CHG-0018's own judgment call for
+        the same reason.
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: claude-code
+      statement: >-
+        Self-recorded repository-native provenance for the Resolution
+        execution that addressed review.md Iteration 1's R001, R002, and
+        O001. scope lists the exact repository-relative paths touched,
+        excluding this Change's own manifest.yml/provenance.yml/review.md
+        per protocol/versions/2/specification.md SS11's Resolution Delta
+        computation. R001: added a substantive CHANGELOG.md entry
+        describing this Change's own additions, matching every prior
+        historical Change's own convention (verified by reading the
+        CHANGELOG.md structure directly before writing it). R002: added
+        tests/unit/test_packaging_version.py, which reads pyproject.toml's
+        actual [tool.hatch.version] pattern, applies it via `re.search`
+        against the actual packaged src/forge_cli/version.py content, and
+        asserts the extracted group equals CLI_VERSION -- plus a second
+        test confirming the pattern is a live regex (tracks a changed
+        value), not one that only happens to match today's literal
+        string. O001: replaced apply_migrations's bare `str.replace` with
+        a `re.compile(r"^schema: ...$", re.MULTILINE)` pattern anchored to
+        the whole schema: key line, and added a new test
+        (test_apply_migrations_only_touches_the_schema_key_not_a_prose_mention)
+        with a fixture containing the same schema string both as the
+        actual key and inside a prose `statement:` field, confirming only
+        the key line is rewritten. Verified directly: pytest -q, 524
+        passed (520 baseline + 4 new: 1 in test_migration.py, 3 in
+        test_packaging_version.py). Did not re-verify the six real
+        historical provenance files' migration behavior again in this
+        Resolution -- that was already independently verified in
+        review-001 and is unaffected by these three fixes (none touches
+        find_candidates or the schema-family exclusion logic).
