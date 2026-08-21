@@ -27,7 +27,19 @@ status: passed
 ## Test Evidence
 
 `pytest -q` (full suite): **535 passed, 0 failed** — the pre-Implementation
-Baseline (524) plus 11 deliberate, additive new tests:
+Baseline (524) plus 11 deliberate, additive new tests.
+
+**Correction (post-Review):** at the `implementation-001` commit this
+figure was not yet true. Strict Review Iteration 1 (`review.md` R001,
+BLOCKER) independently reproduced **534 passed, 1 failed** against that
+exact frozen commit — `traceability.yml`'s `CON-001`/`CON-002` entries
+declared `tasks: []`, which `protocol/schemas/traceability.schema.json`'s
+`minItems: 1` rejects, failing
+`tests/contract/test_protocol_contract.py::test_canonical_yaml_instances_satisfy_their_declared_schemas`.
+Resolved by naming the real tasks in both entries (`traceability.yml`);
+re-verified independently, `pytest -q` now genuinely reports 535 passed,
+0 failed. See `tdd-evidence.yml` `TDD-008` for the Resolution's own
+RED/GREEN evidence.
 
 - `tests/unit/test_decision_rules_reference.py` — 6 new tests (AC-001,
   AC-006).

@@ -8,8 +8,8 @@ requirements:
   FR-005: {tasks: [T-006, T-007, T-009], tests: [test_projection_bundle_omits_decision_rules_resource_when_not_provided, test_projection_bundle_omits_artifact_structure_resource_when_not_provided], evidence: additive_default_valued_field_reuses_resource_helper}
   NFR-001: {tasks: [T-001, T-008], tests: [test_render_decision_rules_reference_contains_every_enum_value], evidence: renderer_reads_constants_directly_no_literal_duplication}
   NFR-002: {tasks: [T-001], evidence: validation_imports_protocol_resolution_not_reverse_no_cycle_introduced}
-  CON-001: {tasks: [], evidence: no_file_under_protocol_schemas_changed}
-  CON-002: {tasks: [], evidence: no_gate_finding_severity_decision_semantic_or_flow_stage_touched}
+  CON-001: {tasks: [T-001, T-002, T-003, T-004, T-005, T-006, T-007], evidence: no_file_under_protocol_schemas_changed}
+  CON-002: {tasks: [T-001, T-002, T-003, T-004, T-005, T-006, T-007], evidence: no_gate_finding_severity_decision_semantic_or_flow_stage_touched}
   INV-001: {tasks: [T-001], evidence: renderer_preamble_documents_mechanism_only_not_contract_prose}
   DEC-001: {tasks: [T-001], evidence: architecture_md_dec_001_autonomous_decision_import_cycle_avoidance}
 acceptance:

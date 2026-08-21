@@ -1,7 +1,7 @@
 schema: forge/tdd-evidence@1
 change: CHG-0021
 status: compliant
-cycle_count: 7
+cycle_count: 8
 cycles:
   - id: TDD-001
     title: Renderer output matches the live validation constants (FR-001, AC-001)
@@ -38,5 +38,11 @@ cycles:
     requirements: [AC-007]
     red: {observed: false, failure_reason: "Regression guard, matching CHG-0016's own TDD-003 methodology exactly."}
     green: {observed: true, evidence: "Pre-Implementation baseline (HEAD d102d664b452e17b4cf6b747bf012731655aa737): pytest -q -> 524 passed; forge validate -> 'Forge project is valid' (exit 0); forge doctor -> 7/7 PASS, 1 non-blocking migration_available WARN. Post-Implementation: pytest -q -> 535 passed, 0 failed (524 + 11 deliberate new tests); forge validate -> 'Forge project is valid' (exit 0); forge doctor -> identical 7/7 PASS, same 1 WARN. No historical Change (CHG-0001-CHG-0020) reports a new finding."}
+  - id: TDD-008
+    title: "Resolution of Strict Review R001 (BLOCKER): traceability.yml CON-001/CON-002 satisfy traceability.schema.json's minItems: 1"
+    requirements: [R001]
+    red: {observed: true, failure_reason: "AssertionError: .forge/changes/CHG-0021-adapter-reference-schema-projection/traceability.yml:requirements.CON-001.tasks: [] should be non-empty (and CON-002, identically) -- pytest -q tests/contract/test_protocol_contract.py::test_canonical_yaml_instances_satisfy_their_declared_schemas, reproduced independently against both current HEAD and the frozen implementation-001 subject commit 34b534a in an isolated git worktree by Strict Review Iteration 1 (review.md R001), then re-confirmed by this Resolution before fixing, 2026-08-21"}
+    green: {observed: true, evidence: "traceability.yml CON-001/CON-002 tasks arrays changed from [] to [T-001..T-007] (the implementation tasks whose scope could have touched protocol/schemas/ or Gate/Finding-severity/Decision-semantic/Flow-stage files but did not -- matching CHG-0019's CON-002 precedent for a no-file-changed Constraint); pytest -q tests/contract/test_protocol_contract.py::test_canonical_yaml_instances_satisfy_their_declared_schemas passes; full suite pytest -q -> 535 passed, 0 failed, genuinely this time; forge validate -> 'Forge project is valid'; forge doctor -> 7/7 PASS unchanged"}
+    notes: ["This is Resolution work addressing a Strict Review Finding (R001), not a Specification Requirement from this Change's own FR-xxx list -- the defect was in this Change's own T-012 evidence-assembly step, authored into the implementation-001 commit itself, not a pre-existing repository defect."]
 notes:
   - "An unplanned RED was found and fixed mid-Implementation, not anticipated by name in plan.md: tests/integration/test_adapter_distribution.py::test_installed_wheel_runs_the_codex_adapter_golden_path_offline failed after TDD-002/TDD-003's GREEN work (AssertionError in tests/integration/adapter_cli_wheel_probe.py's _effective_reference_links, whose `expected` reference-link list was hardcoded against the pre-Change link set). This is the exact same class of finding CHG-0016's own tdd-evidence.yml TDD-002 recorded (\"two hardcoded expectations in adapter_cli_wheel_probe.py's _effective_reference_links, which were updated\") -- fixed by adding 'references/decision-rules.md' to the expected list and adding a content-marker assertion (no byte-exact protocol/ source file exists for this generated, not mirrored, resource, unlike artifact-structure.md). Recorded here for the same reason CHG-0016 recorded it: this is real Implementation-time discovery, not silently absorbed."
