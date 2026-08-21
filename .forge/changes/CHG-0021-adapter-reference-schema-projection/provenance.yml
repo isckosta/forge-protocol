@@ -1,0 +1,34 @@
+schema: forge/execution-provenance@2
+change: CHG-0021
+records:
+  - id: implementation-001
+    role: implementation
+    execution: {id: implementation-exec-chg0021-20260821-01, context_id: implementation-context-chg0021-20260821-01}
+    recorded_at: "2026-08-21T03:40:00-03:00"
+    revision:
+      id: chg-0021-implementation-001
+      immutable_ref: {type: git_commit, value: 34b534a0ae98015fb32faef75ba87f097219b7a4}
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: claude-code
+      statement: >-
+        Self-recorded repository-native provenance for the Implementation
+        execution that produced CHG-0021, continuing the same session that
+        produced this Change's Intent, Discovery, Specification,
+        Specification Review, Architecture, Test Strategy, and Plan/Tasks
+        artifacts across this conversation, and that received explicit
+        human approval ("Sim") to proceed from the Plan/Implementation
+        boundary. No provider-native attestation is claimed; assurance is
+        recorded, not verified or cryptographic/external proof. Every
+        RED/GREEN cycle in tdd-evidence.yml was observed directly by this
+        execution via real pytest subprocess runs (see verification.md for
+        exact commands and counts: 535 passed, 0 failed on the full suite,
+        up from 524 on the pre-Implementation baseline recorded in
+        discovery.md), plus real `forge validate`/`forge doctor` runs
+        before and after. The independent Strict Review that follows must
+        run in a distinct Execution and Execution Context per Protocol 2
+        (protocol/versions/2/specification.md SS2) and will record its own
+        review-role provenance separately; this session does not and
+        cannot produce that record itself without constituting
+        self-review.
