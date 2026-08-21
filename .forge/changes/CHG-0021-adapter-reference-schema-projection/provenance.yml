@@ -99,3 +99,54 @@ records:
         R009 precedent for the same limitation. Per Contract C-025 this
         Reviewer resolved nothing: only review.md, manifest.yml, and this
         record were written.
+  - id: resolution-001
+    role: resolution
+    execution: {id: implementation-exec-chg0021-20260821-01, context_id: implementation-context-chg0021-20260821-01}
+    recorded_at: "2026-08-21T09:45:00-03:00"
+    scope:
+      - .forge/changes/CHG-0021-adapter-reference-schema-projection/tdd-evidence.yml
+      - .forge/changes/CHG-0021-adapter-reference-schema-projection/traceability.yml
+      - .forge/changes/CHG-0021-adapter-reference-schema-projection/verification.md
+    targets: [R001]
+    revision:
+      id: chg-0021-resolution-001
+      immutable_ref: {type: git_commit, value: 48df268f94bcf664c90924f6ca806dcada8edc61}
+      description: >-
+        Resolution of review.md Iteration 1's sole BLOCKER (R001). Same
+        Execution/Execution Context as implementation-001 -- Contract
+        C-026 requires Reviewer independence from Implementation, not
+        Resolver independence from Implementation. R002 required no
+        Resolver action (already cured by review-001's own manifest.yml
+        write) and R003 required no fix (an honestly-disclosed
+        limitation, not a defect) -- both excluded from targets.
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: claude-code
+      statement: >-
+        Self-recorded repository-native provenance for the Resolution
+        execution that addressed review.md Iteration 1's R001. scope
+        lists the exact repository-relative paths this Resolution
+        touched, excluding this Change's own manifest.yml/provenance.yml/
+        review.md per protocol/versions/2/specification.md SS11's
+        Resolution Delta computation, which already subtracts those
+        paths before comparison. targets lists only R001 by id; R002 and
+        R003 are deliberately absent (no fix was required or made for
+        either). traceability.yml's CON-001/CON-002 tasks arrays were
+        changed from [] to [T-001, T-002, T-003, T-004, T-005, T-006,
+        T-007] -- the implementation tasks whose scope could have
+        touched protocol/schemas/ or Gate/Finding-severity/Decision-
+        semantic/Flow-stage files but did not, matching CHG-0019's
+        CON-002 precedent for a no-file-changed Constraint with no single
+        directly-implementing task. Independently re-run after the fix:
+        pytest -q tests/contract/test_protocol_contract.py::test_canonical_yaml_instances_satisfy_their_declared_schemas
+        passes; full suite pytest -q -> 535 passed, 0 failed, genuinely
+        this time (the pre-Resolution figure review-001 found, 534/1, is
+        no longer reproducible); forge validate -> "Forge project is
+        valid"; forge doctor -> 7/7 PASS, unchanged. verification.md and
+        tdd-evidence.yml (new TDD-008 cycle) were updated to record this
+        correction honestly rather than silently overwriting the false
+        claim review-001 found. The Resolution Verification that follows
+        must run in an Execution and Execution Context distinct from
+        this Resolution and from review-001, per
+        protocol/policies/review.yml re_review.required_after_blocking_resolution.
