@@ -5,7 +5,7 @@ change:
   title: Adapter Reference Schema Projection
   kind: feature
 flow: {initial: full, current: full, escalations: []}
-state: {current: strict_review}
+state: {current: complete}
 artifacts:
   intent: complete
   discovery: complete
@@ -20,16 +20,16 @@ artifacts:
   implementation: complete
   provenance: complete
   verification: complete
-  review: pending
-  documentation: pending
-  knowledge_capture: pending
+  review: complete
+  documentation: complete
+  knowledge_capture: complete
 requirements: {total: 5, implemented: 5, verified: 5}
-tdd: {status: compliant, cycles: 7}
+tdd: {status: compliant, cycles: 8}
 verification: {status: passed}
 review:
-  status: failed
-  iteration: 1
-  blockers: 1
+  status: passed
+  iteration: 2
+  blockers: 0
   majors: 0
   minors: 0
   observations: 2
@@ -57,8 +57,49 @@ review:
         repair traceability.yml's CON-001/CON-002 tasks arrays to name the
         task(s) where each Constraint was actually checked, then
         independently re-confirm pytest -q reports 0 failures.
+    - id: review-002
+      revision: chg-0021-resolution-001
+      subject_provenance: resolution-001
+      reviewer_provenance: review-002
+      kind: resolution_verification
+      status: passed
+      full_review_required: false
+      new_material_findings: 0
+      finding_classes: []
+      evidence_gap: >-
+        R001 independently re-verified genuinely resolved against actual
+        repository state, not accepted from resolution-001's own claim:
+        traceability.yml's CON-001/CON-002 tasks arrays now name
+        T-001..T-007; pytest -q tests/contract/test_protocol_contract.py::test_canonical_yaml_instances_satisfy_their_declared_schemas
+        passes; full suite pytest -q -> 535 passed, 0 failed, reproduced
+        independently both against current HEAD and against the frozen
+        resolution-001 subject commit itself in an isolated git worktree;
+        forge validate -> "Forge project is valid"; forge doctor -> 7/7
+        PASS, unchanged. Resolution Delta computed independently (git diff
+        34b534a..48df268, minus this Change's own
+        manifest.yml/provenance.yml/review.md) matches resolution-001's
+        declared scope exactly, both directions -- no Out-of-Scope
+        Mutation. R002 confirmed already cured by review-001's own
+        manifest.yml write (Resolution Delta does not touch manifest.yml);
+        R003 confirmed to remain an honest disclosed limitation, not a
+        defect -- neither required or received Resolver action, and
+        neither was silently dropped. No new defect found within the
+        Resolution Delta.
 documentation:
-  impact_evaluated: false
+  impact_evaluated: true
+  update_required: true
+  reason: >-
+    Updated: CHANGELOG.md (new "Unreleased" entry). No ADR: this is an
+    additive Adapter-Core mechanism reusing an already-adopted pattern
+    (CHG-0016), not a new long-lived Architecture Decision. No RFC:
+    F-008's RFC threshold is "Material Protocol Changes"; this Change
+    adds a projected reference and sharpens an error message, touching
+    no file under protocol/schemas/, protocol/flows/, or
+    protocol/policies/ (confirmed independently by both Strict Review
+    iterations). ROADMAP.md not updated: this work originates from the
+    post-CHG-0001 external-validation remediation plan, outside the
+    roadmap's existing stage list -- no existing section needs a status
+    flip (discovery.md "Documentation Impact Signal").
 decisions:
   - id: DEC-001
     class: architectural

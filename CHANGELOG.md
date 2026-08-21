@@ -10,6 +10,30 @@ until then.
 
 ## Unreleased
 
+### Adapter Reference Schema Projection
+
+Added:
+
+- Both Harness Adapters (Codex, Claude Code) now project a new
+  `references/decision-rules.md` (`skills/forge/references/decision-rules.md`
+  for Claude Code), documenting the `decisions[]` structural rules
+  `forge validate` actually enforces (`class`/`materiality`/`status`/
+  `authority`/`resolved_via` enums, `class` -> valid `owning_artifact`,
+  `class` -> authority floor) -- rendered directly from
+  `forge_cli.validation`'s own constants, never a hand-duplicated copy,
+  so it cannot drift from what `forge validate` really checks.
+
+Changed:
+
+- `forge validate`'s invalid-`resolved_via` error message now states the
+  expected values, matching the existing `owning_artifact` message's
+  convention.
+
+`CHG-0021`, prompted by the first real external validation of Forge
+outside this repository (a Laravel/PHP project's `CHG-0001`), whose
+after-action report found these exact two rules undiscoverable from an
+Adapter installation alone.
+
 ## [0.1.0a2] - 2026-08-20
 
 ### README accuracy
