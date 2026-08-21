@@ -1,0 +1,48 @@
+schema: forge/tdd-evidence@1
+change: CHG-0021
+status: compliant
+cycle_count: 8
+cycles:
+  - id: TDD-001
+    title: Renderer output matches the live validation constants (FR-001, AC-001)
+    requirements: [FR-001, AC-001]
+    red: {observed: true, failure_reason: "ImportError: cannot import name 'render_decision_rules_reference' from 'forge_cli.validation' -- pytest -q tests/unit/test_decision_rules_reference.py, first run against the unmodified validation/__init__.py, 2026-08-21 (collection error, all 6 tests in the module blocked)"}
+    green: {observed: true, evidence: "test_render_decision_rules_reference_contains_every_enum_value, test_render_decision_rules_reference_pairs_class_with_its_valid_owning_artifacts, test_render_decision_rules_reference_states_authority_floor_per_class, test_render_decision_rules_reference_discloses_its_own_generation, test_render_decision_rules_reference_is_deterministic -- all pass"}
+  - id: TDD-002
+    title: Claude Code Adapter includes the resource and link when provided (FR-002, AC-002)
+    requirements: [FR-002, AC-002]
+    red: {observed: true, failure_reason: "TypeError: generate_claude_code_skill_bundle() got an unexpected keyword argument 'decision_rules_content' -- pytest -q tests/unit/test_claude_code_projection_bundle.py, first run against the unmodified projection.py, 2026-08-21"}
+    green: {observed: true, evidence: "test_projection_bundle_includes_decision_rules_when_provided passes"}
+  - id: TDD-003
+    title: Codex Adapter includes the resource and link when provided (FR-003, AC-003)
+    requirements: [FR-003, AC-003]
+    red: {observed: true, failure_reason: "TypeError: generate_codex_skill_bundle() got an unexpected keyword argument 'decision_rules_content' -- pytest -q tests/unit/test_codex_projection_bundle.py, first run against the unmodified projection.py, 2026-08-21"}
+    green: {observed: true, evidence: "test_projection_bundle_includes_decision_rules_when_provided passes"}
+  - id: TDD-004
+    title: "resolved_via error message states expected values (FR-004, AC-004)"
+    requirements: [FR-004, AC-004]
+    red: {observed: true, failure_reason: "AssertionError on the 'expected one of'/enum-values assertion -- pytest -q tests/unit/test_unresolved_decisions.py::test_invalid_resolved_via_lists_expected_values, first run against the unmodified validation/__init__.py:418, 2026-08-21; actual message was \"Decision 'DEC-001' has an invalid resolved_via 'explicit_human_act'.\" with no expected-values clause"}
+    green: {observed: true, evidence: "test_invalid_resolved_via_lists_expected_values passes; all pre-existing resolved_via-adjacent cases in the same file (test_human_authority_cannot_be_resolved_autonomously, test_resolved_without_resolved_via_is_a_finding, test_resolved_via_without_resolved_status_is_a_finding) pass unchanged -- the new clause is appended, not a replacement"}
+  - id: TDD-005
+    title: Additive-only -- resource omitted when content not provided, both Adapters (FR-005, AC-005)
+    requirements: [FR-005, AC-005]
+    red: {observed: false, failure_reason: "Compatibility guard, matching CHG-0016's own TDD-002 pattern: the omitted-resource set is true by construction both before and after this Change for a caller that never opts in, so no meaningful RED exists to observe."}
+    green: {observed: true, evidence: "test_projection_bundle_omits_decision_rules_resource_when_not_provided passes for both Adapters; full pre-existing suite (524 baseline tests) passes unchanged"}
+  - id: TDD-006
+    title: Cross-Adapter content parity at the AdapterProjectionContext wiring level (AC-006)
+    requirements: [AC-006]
+    red: {observed: false, failure_reason: "Parity/compatibility guard, not new behavior -- like TDD-005, nothing today produces divergent content because the wiring did not exist yet for either Adapter to diverge on."}
+    green: {observed: true, evidence: "test_decision_rules_reference_is_byte_identical_across_both_adapters passes: one render_decision_rules_reference() value threaded through both generate_claude_code_skill_bundle and generate_codex_skill_bundle yields identical decision-rules.md resource content in both bundles"}
+  - id: TDD-007
+    title: Regression baseline unchanged (AC-007)
+    requirements: [AC-007]
+    red: {observed: false, failure_reason: "Regression guard, matching CHG-0016's own TDD-003 methodology exactly."}
+    green: {observed: true, evidence: "Pre-Implementation baseline (HEAD d102d664b452e17b4cf6b747bf012731655aa737): pytest -q -> 524 passed; forge validate -> 'Forge project is valid' (exit 0); forge doctor -> 7/7 PASS, 1 non-blocking migration_available WARN. Post-Implementation: pytest -q -> 535 passed, 0 failed (524 + 11 deliberate new tests); forge validate -> 'Forge project is valid' (exit 0); forge doctor -> identical 7/7 PASS, same 1 WARN. No historical Change (CHG-0001-CHG-0020) reports a new finding."}
+  - id: TDD-008
+    title: "Resolution of Strict Review R001 (BLOCKER): traceability.yml CON-001/CON-002 satisfy traceability.schema.json's minItems: 1"
+    requirements: [R001]
+    red: {observed: true, failure_reason: "AssertionError: .forge/changes/CHG-0021-adapter-reference-schema-projection/traceability.yml:requirements.CON-001.tasks: [] should be non-empty (and CON-002, identically) -- pytest -q tests/contract/test_protocol_contract.py::test_canonical_yaml_instances_satisfy_their_declared_schemas, reproduced independently against both current HEAD and the frozen implementation-001 subject commit 34b534a in an isolated git worktree by Strict Review Iteration 1 (review.md R001), then re-confirmed by this Resolution before fixing, 2026-08-21"}
+    green: {observed: true, evidence: "traceability.yml CON-001/CON-002 tasks arrays changed from [] to [T-001..T-007] (the implementation tasks whose scope could have touched protocol/schemas/ or Gate/Finding-severity/Decision-semantic/Flow-stage files but did not -- matching CHG-0019's CON-002 precedent for a no-file-changed Constraint); pytest -q tests/contract/test_protocol_contract.py::test_canonical_yaml_instances_satisfy_their_declared_schemas passes; full suite pytest -q -> 535 passed, 0 failed, genuinely this time; forge validate -> 'Forge project is valid'; forge doctor -> 7/7 PASS unchanged"}
+    notes: ["This is Resolution work addressing a Strict Review Finding (R001), not a Specification Requirement from this Change's own FR-xxx list -- the defect was in this Change's own T-012 evidence-assembly step, authored into the implementation-001 commit itself, not a pre-existing repository defect."]
+notes:
+  - "An unplanned RED was found and fixed mid-Implementation, not anticipated by name in plan.md: tests/integration/test_adapter_distribution.py::test_installed_wheel_runs_the_codex_adapter_golden_path_offline failed after TDD-002/TDD-003's GREEN work (AssertionError in tests/integration/adapter_cli_wheel_probe.py's _effective_reference_links, whose `expected` reference-link list was hardcoded against the pre-Change link set). This is the exact same class of finding CHG-0016's own tdd-evidence.yml TDD-002 recorded (\"two hardcoded expectations in adapter_cli_wheel_probe.py's _effective_reference_links, which were updated\") -- fixed by adding 'references/decision-rules.md' to the expected list and adding a content-marker assertion (no byte-exact protocol/ source file exists for this generated, not mirrored, resource, unlike artifact-structure.md). Recorded here for the same reason CHG-0016 recorded it: this is real Implementation-time discovery, not silently absorbed."

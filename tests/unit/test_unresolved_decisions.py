@@ -383,6 +383,27 @@ def test_contract_class_below_human_authority_floor_is_a_finding(tmp_path: Path)
     assert any("authority floor" in m for m in _messages(result))
 
 
+# ---------------------------------------------------------------------------
+# CHG-0021 TDD-004 — an invalid resolved_via message states the expected
+# values, matching the owning_artifact message's existing convention
+# (this exact branch had no prior test coverage).
+# ---------------------------------------------------------------------------
+
+def test_invalid_resolved_via_lists_expected_values(tmp_path: Path) -> None:
+    decision = {
+        "id": "DEC-001", "class": "technical", "materiality": "material",
+        "status": "resolved", "authority": "agent", "owning_artifact": "tasks",
+        "discovered_in": "tasks", "resolved_via": "explicit_human_act",
+    }
+    _init(tmp_path)
+    _write_manifest(tmp_path, "CHG-9119-bad-resolved-via", _base_manifest([decision]))
+    result = validate_project(tmp_path, PROTOCOL_ROOT)
+    assert not result.passed
+    messages = _messages(result)
+    assert any("has an invalid resolved_via" in m for m in messages)
+    assert any("expected one of" in m and "autonomous_decision" in m and "evidence" in m and "human_decision" in m for m in messages), messages
+
+
 def test_architectural_and_technical_classes_are_not_floor_restricted(tmp_path: Path) -> None:
     decisions = [
         {

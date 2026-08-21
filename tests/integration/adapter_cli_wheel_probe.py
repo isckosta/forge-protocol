@@ -163,6 +163,7 @@ def _effective_reference_links(skill: str, skill_root: Path) -> dict[str, Path]:
     expected = [
         "references/engineering-contract.md",
         "references/artifact-structure.md",
+        "references/decision-rules.md",
         "references/flows/fast.yml",
         "references/flows/full.yml",
         "references/flows/standard.yml",
@@ -264,6 +265,16 @@ def main(
 
     artifact_structure = resolved_references["references/artifact-structure.md"]
     assert artifact_structure.read_bytes() == (expected_protocol / "artifact-structure.md").read_bytes()
+
+    # CHG-0021: decision-rules.md has no static protocol/ source file to
+    # compare byte-exact against -- unlike artifact-structure.md above, it
+    # is generated at projection time from the installed wheel's own
+    # forge_cli.validation constants, not mirrored from the checkout.
+    decision_rules = resolved_references["references/decision-rules.md"]
+    decision_rules_text = decision_rules.read_text(encoding="utf-8")
+    assert "forge validate" in decision_rules_text
+    assert "resolved_via" in decision_rules_text
+    assert "owning_artifact" in decision_rules_text
 
     generated_flow_paths = {
         path.relative_to(skill_root / "references" / "flows").with_suffix("").as_posix()
