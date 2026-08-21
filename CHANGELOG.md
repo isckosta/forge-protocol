@@ -10,6 +10,28 @@ until then.
 
 ## Unreleased
 
+## [0.1.0a2] - 2026-08-20
+
+### README accuracy
+
+Changed:
+
+- `README.md` updated to reflect the real `v0.1.0a1` release: `pip
+  install forge-protocol` as the primary installation path (source
+  install kept as a secondary "Development installation" section);
+  `## Status` corrected from Protocol `1`/vague pre-release wording to
+  Protocol `2` and the actual published version; a new "Claude Code
+  Adapter" section added alongside the existing "Codex Adapter" one,
+  since only one of the two real Harness Adapters was previously
+  documented; the examples pointer now names `examples/README.md`'s
+  five-category mapping instead of a single directory; Dogfooding's
+  closing line now credits `CHG-0018` for the second Harness Adapter.
+
+No code change. This release exists because PyPI project metadata
+(including the README, embedded via `pyproject.toml`'s `readme =
+"README.md"`) is immutable per version -- `v0.1.0a1` could not be
+edited in place.
+
 ## [0.1.0a1] - 2026-08-20
 
 ### End-to-End Examples (Curated Real Evidence)
