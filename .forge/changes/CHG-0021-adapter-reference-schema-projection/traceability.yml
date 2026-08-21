@@ -1,0 +1,22 @@
+schema: forge/traceability@1
+change: CHG-0021
+requirements:
+  FR-001: {tasks: [T-001, T-008], tests: [test_render_decision_rules_reference_contains_every_enum_value, test_render_decision_rules_reference_pairs_class_with_its_valid_owning_artifacts, test_render_decision_rules_reference_states_authority_floor_per_class], evidence: validation___init___py_render_decision_rules_reference}
+  FR-002: {tasks: [T-006, T-009], tests: [test_projection_bundle_includes_decision_rules_when_provided, test_projection_bundle_omits_decision_rules_resource_when_not_provided], evidence: claude_code_projection_py_has_decision_rules}
+  FR-003: {tasks: [T-007, T-009], tests: [test_projection_bundle_includes_decision_rules_when_provided, test_projection_bundle_omits_decision_rules_resource_when_not_provided], evidence: codex_projection_py_has_decision_rules}
+  FR-004: {tasks: [T-002, T-010], tests: [test_invalid_resolved_via_lists_expected_values], evidence: validation___init___py_line_418_expected_one_of}
+  FR-005: {tasks: [T-006, T-007, T-009], tests: [test_projection_bundle_omits_decision_rules_resource_when_not_provided, test_projection_bundle_omits_artifact_structure_resource_when_not_provided], evidence: additive_default_valued_field_reuses_resource_helper}
+  NFR-001: {tasks: [T-001, T-008], tests: [test_render_decision_rules_reference_contains_every_enum_value], evidence: renderer_reads_constants_directly_no_literal_duplication}
+  NFR-002: {tasks: [T-001], evidence: validation_imports_protocol_resolution_not_reverse_no_cycle_introduced}
+  CON-001: {tasks: [], evidence: no_file_under_protocol_schemas_changed}
+  CON-002: {tasks: [], evidence: no_gate_finding_severity_decision_semantic_or_flow_stage_touched}
+  INV-001: {tasks: [T-001], evidence: renderer_preamble_documents_mechanism_only_not_contract_prose}
+  DEC-001: {tasks: [T-001], evidence: architecture_md_dec_001_autonomous_decision_import_cycle_avoidance}
+acceptance:
+  AC-001: [test_render_decision_rules_reference_contains_every_enum_value, test_render_decision_rules_reference_pairs_class_with_its_valid_owning_artifacts]
+  AC-002: [test_projection_bundle_includes_decision_rules_when_provided]
+  AC-003: [test_projection_bundle_includes_decision_rules_when_provided]
+  AC-004: [test_invalid_resolved_via_lists_expected_values]
+  AC-005: [test_projection_bundle_omits_decision_rules_resource_when_not_provided]
+  AC-006: [test_decision_rules_reference_is_byte_identical_across_both_adapters]
+  AC-007: []

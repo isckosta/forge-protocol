@@ -370,6 +370,44 @@ _DEC_RESOLVED_VIA={"evidence","autonomous_decision","human_decision"}
 _DEC_OWNING_BY_CLASS={"product":{"specification"},"contract":{"specification","compatibility"},"architectural":{"architecture"},"technical":{"plan","tasks"}}
 _DEC_AUTHORITY_FLOOR={"product":"human","contract":"human"}
 _DEC_ID_RE=re.compile(r"^DEC-[0-9]{3,}$")
+def render_decision_rules_reference()->str:
+    """CHG-0021: render the Decision structural rules `forge validate`
+    actually enforces, directly from the constants above -- never a
+    hand-duplicated second copy (NFR-001). If this ever disagrees with a
+    real `forge validate` rejection, this function is stale; the
+    constants above are authoritative."""
+    lines=[
+        "# Forge Decision Structural Rules",
+        "",
+        "Generated directly from the constants `forge validate` enforces "
+        "(`src/forge_cli/validation/__init__.py`), not hand-maintained "
+        "prose. If this disagrees with an actual `forge validate` "
+        "rejection, the code is authoritative and this file is stale.",
+        "",
+        "## Enums",
+        "",
+        f"- `class`: {', '.join(sorted(_DEC_CLASSES))}",
+        f"- `materiality`: {', '.join(sorted(_DEC_MATERIALITY))}",
+        f"- `status`: {', '.join(sorted(_DEC_STATUSES))}",
+        f"- `authority`: {', '.join(sorted(_DEC_AUTHORITIES))}",
+        f"- `resolved_via`: {', '.join(sorted(_DEC_RESOLVED_VIA))} "
+        "(or omit while unresolved)",
+        "",
+        "## `owning_artifact` valid per `class`",
+        "",
+        *(
+            f"- `{cls}` -> {', '.join(sorted(owning))}"
+            for cls,owning in sorted(_DEC_OWNING_BY_CLASS.items())
+        ),
+        "",
+        "## Non-negotiable `authority` floor per `class`",
+        "",
+        *(
+            f"- `{cls}` -> `{floor}`"
+            for cls,floor in sorted(_DEC_AUTHORITY_FLOOR.items())
+        ),
+    ]
+    return "\n".join(lines)+"\n"
 def _dec_finding(r:Path,p:Path,m:str)->ValidationFinding:return ValidationFinding("C-051",str(p.relative_to(r)),m,p)
 def _decision_gates(m:dict)->list[tuple[str,set[str]|None]]:
     """CHG-0013: which already-passed Gates a manifest currently asserts.
@@ -415,7 +453,7 @@ def _validate_unresolved_decisions(r:Path,mpath:Path,m:dict)->list[ValidationFin
         if authority not in _DEC_AUTHORITIES:out.append(_dec_finding(r,mpath,f"Decision {did!r} has an invalid authority {authority!r}."));bad=True
         if not(isinstance(owning,str)and owning):out.append(_dec_finding(r,mpath,f"Decision {did!r} is missing owning_artifact."));bad=True
         if not(isinstance(discovered,str)and discovered):out.append(_dec_finding(r,mpath,f"Decision {did!r} is missing discovered_in."));bad=True
-        if resolved_via is not None and resolved_via not in _DEC_RESOLVED_VIA:out.append(_dec_finding(r,mpath,f"Decision {did!r} has an invalid resolved_via {resolved_via!r}."));bad=True
+        if resolved_via is not None and resolved_via not in _DEC_RESOLVED_VIA:out.append(_dec_finding(r,mpath,f"Decision {did!r} has an invalid resolved_via {resolved_via!r} (expected one of {sorted(_DEC_RESOLVED_VIA)}, or omit while unresolved)."));bad=True
         if invalidates is not None and not(isinstance(invalidates,list)and all(isinstance(x,str)for x in invalidates)):out.append(_dec_finding(r,mpath,f"Decision {did!r} invalidates must be a list of artifact keys."));bad=True
         if bad:continue
         # FR-009/C-054/C-055: resolved_via <-> status consistency. A `superseded`

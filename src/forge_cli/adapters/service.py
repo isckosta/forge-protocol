@@ -55,6 +55,7 @@ from forge_cli.protocol_resolution import (
     resolve_effective_flow,
 )
 from forge_cli.adapters.validation import ConformanceRequirements, validate_conformance
+from forge_cli.validation import render_decision_rules_reference
 
 
 class AdapterServiceError(RuntimeError):
@@ -445,6 +446,7 @@ class AdapterService:
                         artifact_structure_content=resolve_effective_artifact_structure(
                             resolve_protocol_root(), protocol_id
                         ),
+                        decision_rules_content=render_decision_rules_reference(),
                         interaction_language=(
                             project_configuration.get("interaction", {}).get("language", "auto")
                         ),
@@ -612,6 +614,7 @@ class AdapterService:
                 artifact_structure_content=resolve_effective_artifact_structure(
                     resolve_protocol_root(), protocol_id
                 ),
+                decision_rules_content=render_decision_rules_reference(),
                 interaction_language=configuration.get("interaction", {}).get("language", "auto"),
                 target=target,
             )

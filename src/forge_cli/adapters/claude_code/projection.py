@@ -20,6 +20,7 @@ class ClaudeCodeProjectionInput:
     contract_content: str
     protocol_id: int = 1
     artifact_structure_content: str = ""
+    decision_rules_content: str = ""
     interaction_language: str = ""
 
 
@@ -161,13 +162,19 @@ def _gate_instructions(flows: Iterable[tuple[str, str]], protocol_id: int) -> st
     return "\n\n".join(sections)
 
 
-def _reference_links(flows: Iterable[tuple[str, str]], *, has_artifact_structure: bool) -> str:
+def _reference_links(
+    flows: Iterable[tuple[str, str]],
+    *,
+    has_artifact_structure: bool,
+    has_decision_rules: bool,
+) -> str:
     flow_ids = tuple(sorted(flow_id for flow_id, _ in flows))
     return "\n".join((
         "## Effective Forge references",
         "",
         "- [Engineering Contract](references/engineering-contract.md)",
         *(("- [Artifact Structure](references/artifact-structure.md)",) if has_artifact_structure else ()),
+        *(("- [Decision Rules](references/decision-rules.md)",) if has_decision_rules else ()),
         *(f"- [Flow `{flow_id}`](references/flows/{flow_id}.yml)" for flow_id in flow_ids),
     ))
 
@@ -188,6 +195,7 @@ def _skill_content(
     protocol_id: int,
     *,
     has_artifact_structure: bool,
+    has_decision_rules: bool = False,
     interaction_language: str = "",
 ) -> str:
     effective_flows = tuple(flows)
@@ -201,7 +209,11 @@ def _skill_content(
         "",
         load_workflow_skill_template(),
         "",
-        _reference_links(effective_flows, has_artifact_structure=has_artifact_structure),
+        _reference_links(
+            effective_flows,
+            has_artifact_structure=has_artifact_structure,
+            has_decision_rules=has_decision_rules,
+        ),
         "",
         _interaction_language_line(interaction_language),
         "",
@@ -276,6 +288,7 @@ def generate_claude_code_skill_bundle(
     flows: Iterable[tuple[str, str]],
     protocol_id: int = 1,
     artifact_structure_content: str = "",
+    decision_rules_content: str = "",
     interaction_language: str = "",
 ) -> ClaudeCodeProjectionBundle:
     """Render the already-resolved effective Forge inputs for Claude Code."""
@@ -291,6 +304,7 @@ def generate_claude_code_skill_bundle(
         )
 
     has_artifact_structure = bool(artifact_structure_content)
+    has_decision_rules = bool(decision_rules_content)
     resources = (
         _resource(
             "skills/forge/SKILL.md",
@@ -298,6 +312,7 @@ def generate_claude_code_skill_bundle(
                 effective_flows,
                 protocol_id,
                 has_artifact_structure=has_artifact_structure,
+                has_decision_rules=has_decision_rules,
                 interaction_language=interaction_language,
             ),
         ),
@@ -305,6 +320,11 @@ def generate_claude_code_skill_bundle(
         *(
             (_resource("skills/forge/references/artifact-structure.md", artifact_structure_content),)
             if has_artifact_structure
+            else ()
+        ),
+        *(
+            (_resource("skills/forge/references/decision-rules.md", decision_rules_content),)
+            if has_decision_rules
             else ()
         ),
         _resource(_HOOK_RELATIVE_PATH, _hook_script_content()),
@@ -327,5 +347,6 @@ def generate_claude_code_projection_bundle(
         flows=((canonical.flow_id, canonical.flow_content),),
         protocol_id=canonical.protocol_id,
         artifact_structure_content=canonical.artifact_structure_content,
+        decision_rules_content=canonical.decision_rules_content,
         interaction_language=canonical.interaction_language,
     )

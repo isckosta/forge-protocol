@@ -108,6 +108,37 @@ def test_projection_bundle_includes_artifact_structure_when_provided() -> None:
     assert "references/artifact-structure.md" in skill
 
 
+def test_projection_bundle_omits_decision_rules_resource_when_not_provided() -> None:
+    """CHG-0021 FR-005/AC-005: backward compatibility, mirroring
+    artifact_structure_content's own CHG-0016 guard above."""
+    projection = _projection_module()
+
+    bundle = projection.generate_codex_projection_bundle(_canonical_input())
+
+    assert "references/decision-rules.md" not in {resource.name for resource in bundle.resources}
+
+
+def test_projection_bundle_includes_decision_rules_when_provided() -> None:
+    """CHG-0021 FR-003/AC-003."""
+    projection = _projection_module()
+
+    bundle = projection.generate_codex_skill_bundle(
+        contract_content="# Engineering Contract\nRepository-native Forge state is authoritative.\n",
+        flows=(("full", "stages:\n  - id: specification\n  - id: verification\n"),),
+        decision_rules_content="# Forge Decision Structural Rules\nclass: product, contract.\n",
+    )
+
+    by_name = {resource.name: resource for resource in bundle.resources}
+    assert "references/decision-rules.md" in by_name
+    resource = by_name["references/decision-rules.md"]
+    assert "class: product, contract." in resource.content
+    assert resource.digest
+
+    skill = by_name["SKILL.md"].content
+    assert "class: product, contract." not in skill
+    assert "references/decision-rules.md" in skill
+
+
 def test_projection_bundle_renders_auto_interaction_language_by_default() -> None:
     """CHG-0017 FR-004/AC-006: no `interaction_language` passed -> the
     auto/fallback instruction line, citing C-070-C-073."""
