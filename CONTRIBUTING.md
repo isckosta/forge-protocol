@@ -37,6 +37,15 @@ Use ADRs for long-lived internal Architecture Decisions.
 
 ## Pull Requests
 
+`main` is branch-protected: direct pushes are rejected (including for administrators), and a Pull Request must merge with the `test` and `distribution` status checks passing before it can land.
+
+Mechanically:
+
+1. create a branch (`git checkout -b <descriptive-name>`);
+2. push it and open a PR against `main`;
+3. wait for `test` (`.github/workflows/tests.yml`) and `distribution` (`.github/workflows/verification.yml`) to pass — both are required checks;
+4. merge once green. No second approval is required (there is no fixed reviewer roster today), but the PR itself is mandatory — it is the Change's own repository-native record of what merged and why, not a formality to skip.
+
 PRs should explain what changed, why, the related Forge Change or RFC, TDD evidence when applicable, Verification performed, and Documentation Impact.
 
 ## Review
