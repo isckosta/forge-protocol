@@ -12,9 +12,12 @@ Forge governs that process through Spec-Driven Development, Test-Driven Developm
 
 ## Status
 
-Forge Protocol `1` is a stable engineering contract. The bootstrap CLI, Harness
-Adapter Foundation, and first concrete Codex Adapter remain pre-release
-software with their own independent versions.
+Forge Protocol `2` is the stable engineering contract in effect (Protocol `1`
+remains supported for existing Changes). The CLI is published pre-release
+software on PyPI as `forge-protocol`, currently `0.1.0a1`
+([PEP 440](https://peps.python.org/pep-0440/); see `RELEASING.md`). Two
+concrete Harness Adapters exist — Codex and Claude Code — each with their
+own independent Adapter version.
 
 ## Core engineering loop
 
@@ -68,11 +71,22 @@ plans, then safely publishes, the Codex Harness projection described below.
 
 The CLI deliberately does **not** expose development-lifecycle commands such as `specify`, `implement`, `verify`, or `review`. Those activities execute in the chat runtime under the Protocol.
 
-New to Forge? `docs/getting-started.md` is the fastest path from nothing installed to a Codex session ready to receive a Change, and `examples/golden-path-standard/` is a complete worked example with both automated and manual acceptance evidence.
+New to Forge? `docs/getting-started.md` is the fastest path from nothing installed to a Codex session ready to receive a Change, and `examples/README.md` maps five worked scenarios (a FAST bugfix, a STANDARD feature, a FULL feature, a Strict Review remediation cycle, and a Codex Adapter project) to real, repository-native evidence.
+
+### Installation
+
+Forge targets Python 3.12+ and is published pre-release software:
+
+```bash
+pip install forge-protocol
+forge version
+```
+
+The published wheel bundles the canonical Protocol resources required by the CLI, including Harness Adapter Schemas, so normal runtime operation does not depend on a network connection.
 
 ### Development installation
 
-Forge currently targets Python 3.12+ and is pre-release software. From a clone of this repository:
+To work on Forge itself, install from a clone of this repository instead:
 
 ```bash
 python3.12 -m venv .venv
@@ -80,8 +94,6 @@ source .venv/bin/activate
 pip install -e .
 forge version
 ```
-
-The built wheel bundles the canonical Protocol resources required by the CLI, including Harness Adapter Schemas, so normal runtime operation does not depend on the source tree or a network connection.
 
 ## Harness Adapters
 
@@ -116,6 +128,20 @@ The first concrete Harness integration targets Codex while preserving the generi
 
 Codex workflow instructions represent Forge requirements but do not claim technical enforcement. Canonical repository-native Forge state remains authoritative, and no separate Adapter activation lifecycle is introduced.
 
+### Claude Code Adapter
+
+The second concrete Harness integration, proving the generic Adapter Core needed no vendor-specific concept to support it (two pre-existing Codex-only leaks in the generic Core were found and fixed as part of that proof).
+
+- three real projection mechanisms, all `forge_owned` under one shared publication root (`.claude`): a Skill (`.claude/skills/forge/`), a `CLAUDE.md` pointer, and an illustrative `PreToolUse` enforcement hook that denies in-place mutation of frozen Change review-control files without blocking ordinary Git commands over the same paths;
+- a materially richer, dated capability profile than Codex's: `persistent_instructions`, `commands`, `skills`, `hooks`, `agent_roles`, and `generated_files` are all `supported`, versus Codex's `skills`/`generated_files` only;
+- both Adapters share one conformance test suite and the same generic planning, ownership, drift-detection, and publication mechanics — no Adapter-specific fork of Core behavior.
+
+```bash
+forge adapter install claude-code
+```
+
+installs it the same way `forge adapter install codex` does. See `examples/golden-path-claude-code/` for a fully executed (not merely described) end-to-end run.
+
 ## Change as the fundamental unit
 
 Forge organizes engineering around a `Change`, not only around features. A Change may represent a feature, bugfix, refactor, security correction, performance improvement, migration, documentation, infrastructure, or maintenance.
@@ -145,7 +171,7 @@ Flows may escalate `FAST -> STANDARD -> FULL`. Automatic downgrade is forbidden.
 
 Forge develops Forge using Forge. The `.forge/` directory is active engineering state, not an example.
 
-The first Forge Change is `CHG-0001 — Bootstrap Forge CLI`. The Harness Adapter Foundation is governed as `CHG-0002`, and the first concrete Codex integration as `CHG-0004`.
+The first Forge Change is `CHG-0001 — Bootstrap Forge CLI`. The Harness Adapter Foundation is governed as `CHG-0002`, the first concrete Codex integration as `CHG-0004`, and the second concrete Harness Adapter — Claude Code — as `CHG-0018`.
 
 ## License
 
