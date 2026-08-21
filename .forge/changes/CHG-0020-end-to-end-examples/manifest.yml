@@ -5,7 +5,7 @@ change:
   title: End-to-End Examples (Curated Real Evidence)
   kind: documentation
 flow: {initial: standard, current: standard, escalations: []}
-state: {current: in_progress}
+state: {current: complete}
 artifacts:
   intent: complete
   discovery: complete

@@ -17,17 +17,21 @@ status: ready
       unchanged.
 - [x] T-007 `knowledge-capture.md`, `traceability.yml`.
 - [x] T-008 Freeze Implementation subject, record provenance.
-- [ ] T-009 Independent Strict Review Iteration 1 (separate Execution/
+- [x] T-009 Independent Strict Review Iteration 1 (separate Execution/
       Context).
-- [ ] T-010 Resolution (if any Findings require one) + Resolution
-      provenance.
-- [ ] T-011 Independent Resolution Verification (if T-010 ran).
-- [ ] T-012 Completion: all STANDARD Gates satisfied.
+- [ ] ~~T-010~~ **Not performed, by design.** Iteration 1 (`36cabf2`)
+      returned PASS with zero BLOCKER/MAJOR/MINOR/OBSERVATION Findings —
+      there is nothing to resolve. Left unchecked with the reason
+      recorded, matching `CHG-0017/tasks.md` T-013's own convention for a
+      task not performed by design.
+- [ ] ~~T-011~~ **Not performed, by design.** Resolution Verification is
+      only meaningful once a Resolution exists; T-010 did not run.
+- [x] T-012 Completion: all STANDARD Gates satisfied (Verification
+      passed, Review passed with 0 Findings of any severity,
+      Documentation Impact evaluated and updated, Knowledge Capture
+      complete).
 
 ## Status
 
-T-001..T-006 done: five READMEs written/edited, every cited commit hash
-and quoted excerpt verified against real `git show`/file content,
-`pytest -q` (524 passed), `forge validate`, and `forge doctor` all
-confirmed unchanged from the pre-Implementation baseline. Proceeding to
-T-007 (knowledge-capture.md, traceability.yml).
+All tasks complete or explicitly not performed by design (T-010, T-011).
+`manifest.yml` `state.current: complete`.
