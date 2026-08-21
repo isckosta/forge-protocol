@@ -38,24 +38,30 @@ Additional prereleases are evidence-driven, not deadline-driven
 
 ## Checklist
 
+`main` is branch-protected (see `CONTRIBUTING.md`): direct pushes are
+rejected, including for administrators, so the version bump itself goes
+through a PR like any other change.
+
 1. Confirm `forge validate`, `forge doctor`, and `pytest -q` are clean on
    `main`.
-2. Bump `CLI_VERSION` in `src/forge_cli/version.py`.
-3. Rename `CHANGELOG.md`'s current `## Unreleased` heading to
-   `## [<version>] - <YYYY-MM-DD>` and add a fresh empty `## Unreleased`
-   above it.
-4. Commit both changes.
-5. Tag the commit: `git tag v<version>` (e.g. `git tag v0.1.0a1`), then
+2. On a branch: bump `CLI_VERSION` in `src/forge_cli/version.py`, and
+   rename `CHANGELOG.md`'s current `## Unreleased` heading to
+   `## [<version>] - <YYYY-MM-DD>` with a fresh empty `## Unreleased`
+   added above it. Commit.
+3. Open a PR, wait for the `test` and `distribution` required status
+   checks to pass, then merge into `main`.
+4. Tag the merged commit on `main`: `git checkout main && git pull`,
+   then `git tag v<version>` (e.g. `git tag v0.1.0a1`), then
    `git push origin v<version>`.
-6. Create a GitHub Release from that tag, with release notes drawn from
+5. Create a GitHub Release from that tag, with release notes drawn from
    the `CHANGELOG.md` section just cut.
-7. Publishing the Release triggers `.github/workflows/publish.yml`,
+6. Publishing the Release triggers `.github/workflows/publish.yml`,
    which builds the wheel and sdist, smoke-tests both offline, and
    publishes to PyPI via OIDC trusted publishing.
 
 ## Prerequisite (one-time, PyPI-side, not performed by this repository)
 
-Before step 7 can ever succeed, this project must be registered as a
+Before step 6 can ever succeed, this project must be registered as a
 **trusted publisher** on PyPI (project settings → Publishing → GitHub
 Actions), naming this repository and the `publish.yml` workflow. This is
 a manual action on PyPI's own site — nothing in this repository can do
