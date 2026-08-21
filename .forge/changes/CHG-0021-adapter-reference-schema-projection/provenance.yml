@@ -150,3 +150,63 @@ records:
         must run in an Execution and Execution Context distinct from
         this Resolution and from review-001, per
         protocol/policies/review.yml re_review.required_after_blocking_resolution.
+  - id: review-002
+    role: review
+    execution: {id: review-exec-chg0021-resverify-20260821-c94a1e6f, context_id: review-context-chg0021-resverify-20260821-8b1de0f3}
+    recorded_at: "2026-08-21T10:15:00-03:00"
+    revision:
+      id: chg-0021-resolution-001
+      immutable_ref: {type: git_commit, value: 48df268f94bcf664c90924f6ca806dcada8edc61}
+      description: >-
+        Resolution Verification (kind: resolution_verification) of
+        resolution-001: PASS (final). R001 independently re-verified
+        genuinely resolved against actual repository state, not accepted
+        from resolution-001's own claim. Resolution Delta computed
+        independently (git diff 34b534a..48df268, minus this Change's own
+        manifest.yml/provenance.yml/review.md) matches resolution-001's
+        declared scope exactly, both directions -- no Out-of-Scope
+        Mutation. R002 and R003 independently confirmed to have genuinely
+        required no Resolver action, not silently ignored.
+        new_material_findings: 0.
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: claude-code
+      statement: >-
+        Independent Reviewer Execution, run cold with no access to any
+        prior conversation and no hint about where to look, deriving
+        everything from committed repository state: review.md Iteration
+        1, provenance.yml (all three prior records), manifest.yml,
+        protocol/versions/2/specification.md SS10-SS11, and
+        protocol/contract/engineering.md C-047/C-048. Distinct
+        Execution/Context from implementation-001/resolution-001
+        (implementation-exec-chg0021-20260821-01/
+        implementation-context-chg0021-20260821-01) and from review-001
+        (review-exec-chg0021-20260821-71fbe20a/
+        review-context-chg0021-20260821-3d68f01c). Computed the Resolution
+        Delta myself (git diff --name-only 34b534a..48df268, minus this
+        Change's own manifest.yml/provenance.yml/review.md) and confirmed
+        it matches resolution-001's declared scope exactly in both
+        directions: tdd-evidence.yml, traceability.yml, verification.md,
+        no more and no fewer -- no Out-of-Scope Mutation. Re-checked R001
+        against actual current repository state rather than trusting
+        resolution-001's own claim: pytest -q -> 535 passed, 0 failed
+        against current HEAD (c0163d2); pytest -q
+        tests/contract/test_protocol_contract.py::test_canonical_yaml_instances_satisfy_their_declared_schemas
+        -> 1 passed; re-run a second time, independently, against the
+        exact frozen resolution-001 subject commit 48df268 itself checked
+        out in an isolated git worktree (git worktree add, then removed
+        after use, confirmed via git worktree list) -> 535 passed, 0
+        failed, unmodified; forge validate -> "Forge project is valid";
+        forge doctor -> 7/7 PASS, the same single non-blocking
+        migration_available WARN, unchanged. Confirmed R002 was already
+        cured by review-001's own manifest.yml write (present before
+        resolution-001 ran; the Resolution Delta does not touch
+        manifest.yml) and R003 remains an honestly-disclosed limitation
+        rather than a defect, per protocol/contract/engineering.md C-047
+        (Resolution Verification is scoped) -- neither was re-litigated as
+        an open finding. Read every line of the Resolution Delta's three
+        files directly (git diff 34b534a..48df268 per file) and found no
+        new defect. Per Contract C-025 this Reviewer resolved nothing:
+        only review.md, manifest.yml's review:/artifacts.review fields,
+        and this record were written.

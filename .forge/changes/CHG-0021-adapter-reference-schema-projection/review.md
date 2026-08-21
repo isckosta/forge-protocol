@@ -3,13 +3,35 @@ forge:
   artifact: review
   schema: 1
 change: CHG-0021
-status: failed
+status: passed
 ---
 # Strict Review — CHG-0021
 
 ## Verdict
 
-**REQUEST CHANGES (Iteration 1, `kind: initial_review`).** 1 BLOCKER, 0
+**PASS (final, Iteration 2 — `kind: resolution_verification`).** No
+blocking Findings remain outstanding.
+
+- **Iteration 1** (`kind: initial_review`) — **REQUEST CHANGES**: 1
+  BLOCKER (R001), 0 MAJOR, 0 MINOR, 2 OBSERVATION (R002, R003).
+- **Iteration 2** (`kind: resolution_verification`) — **PASS**: R001
+  independently re-verified genuinely resolved against actual repository
+  state, not accepted from `resolution-001`'s own claim; R002 and R003
+  independently confirmed to have genuinely required no Resolver action;
+  Resolution Delta computed independently matches `resolution-001`'s
+  declared `scope` exactly, both directions — no Out-of-Scope Mutation; 0
+  new material findings.
+
+Everything below this Summary down to the end of the original `##
+Conclusion` is Iteration 1's verbatim historical record. Iteration 2 is
+appended at the end of this file.
+
+`protocol/policies/review.yml` sets `blocking: [blocker, major]`; R001 was
+the only ever-blocking Finding, and it is now resolved. Both Iterations'
+outcomes stand, and this Change may proceed toward Completion.
+
+**REQUEST CHANGES (Iteration 1, `kind: initial_review`), as originally
+recorded.** 1 BLOCKER, 0
 MAJOR, 0 MINOR, 2 OBSERVATION. `protocol/policies/review.yml` sets
 `blocking: [blocker, major]`, so the single BLOCKER is blocking.
 
@@ -31,6 +53,29 @@ real, mechanical schema-conformance defect this Change's own `T-012`
 authored into `traceability.yml`, present since the Implementation commit
 itself — not something introduced by this Review, and not curable by this
 Review's own writes alone.
+
+## Summary
+
+Counting semantics, stated explicitly since the Protocol does not fix them:
+**Raised** is cumulative — every Finding ever recorded in this Review, in
+the Iteration that recorded it. **Outstanding** is the state *after* the
+final Iteration, and is what `manifest.yml`'s
+`review.blockers`/`majors`/`minors`/`observations` carry.
+
+| Severity | Raised (It. 1) | Raised (It. 2) | Raised total | Outstanding | Blocking |
+| --- | --- | --- | --- | --- | --- |
+| BLOCKER | 1 | 0 | 1 | 0 | yes |
+| MAJOR | 0 | 0 | 0 | 0 | yes |
+| MINOR | 0 | 0 | 0 | 0 | no |
+| OBSERVATION | 2 | 0 | 2 | 2 | no |
+
+R001 (BLOCKER, Iteration 1) is resolved by `resolution-001` and verified
+in Iteration 2 — no longer outstanding. R002 and R003 (OBSERVATION,
+Iteration 1) remain recorded for completeness — both were independently
+confirmed in Iteration 2 to have genuinely required no fix (R002 already
+cured by `review-001`'s own `manifest.yml` write; R003 an honestly-
+disclosed limitation, not a defect) — and are still counted Outstanding
+since neither was ever a defect requiring resolution.
 
 ## Review Subject
 
@@ -344,3 +389,219 @@ true`) and MUST run in an Execution and Execution Context distinct from
 the Resolution that addresses R001.
 
 **REQUEST CHANGES.**
+
+## Iteration 2 — PASS (`kind: resolution_verification`)
+
+### Iteration 2 scope and authority
+
+This Iteration is a **Resolution Verification**, not a second Initial
+Review. Per `protocol/contract/engineering.md` C-047 and
+`protocol/versions/2/specification.md` §10-§11, its authority is bounded
+to exactly three things:
+
+1. R001 — the sole Finding `resolution-001` targets;
+2. defects within `resolution-001`'s own Resolution Delta;
+3. Out-of-Scope Mutation.
+
+It is deliberately **not** a re-audit of `implementation-001`. Nothing in
+Iteration 1's "Checked and found sound" section — `render_decision_rules_reference()`'s
+derivation from live constants, both Adapters' wiring symmetry, the
+cross-Adapter byte-identical parity test, the `resolved_via` message
+change, DEC-001's resolution, or the Specification Review MINOR
+corrections — was re-litigated here. Re-opening any of that is precisely
+what C-047 forbids.
+
+### Iteration 2 execution independence
+
+Executed cold, from committed repository state, in an Execution and
+Execution Context distinct from `implementation-001`/`resolution-001`
+(both `implementation-exec-chg0021-20260821-01` /
+`implementation-context-chg0021-20260821-01`) and from `review-001`
+(`review-exec-chg0021-20260821-71fbe20a` /
+`review-context-chg0021-20260821-3d68f01c`): `review-exec-chg0021-resverify-20260821-c94a1e6f`
+/ `review-context-chg0021-resverify-20260821-8b1de0f3`. This session has no
+memory of either prior execution and read `provenance.yml` (all three
+existing records), `manifest.yml`, Iteration 1 of this file, and
+`protocol/versions/2/specification.md` §10-§11 directly, with no hint about
+where to look. No claim in `resolution-001`'s own `provenance.yml`
+statement, `verification.md`, or `tdd-evidence.yml` was accepted without
+independent reproduction against the actual diff, the actual current
+source, and the actual test suite. See `provenance.yml` record `review-002`
+for this execution's own self-recorded provenance.
+
+Subject: `resolution-001`, frozen at
+`48df268f94bcf664c90924f6ca806dcada8edc61` (revision
+`chg-0021-resolution-001`). `HEAD` at the start of this Iteration is
+`c0163d2`, whose only difference from the subject is `provenance.yml` (the
+`resolution-001` record itself, added one commit later) — Change-local
+review-control metadata, which the §5 effective-workspace freeze permits.
+`git status --porcelain` was clean throughout this Iteration.
+
+### Resolution Delta, computed independently — no Out-of-Scope Mutation
+
+Computed per §11 as the committed diff between the immutable revision of
+the Iteration immediately preceding this one (`review-001`'s subject,
+`34b534a0ae98015fb32faef75ba87f097219b7a4`) and this Iteration's own
+subject (`48df268f94bcf664c90924f6ca806dcada8edc61`) — both already-frozen
+historical commits, not the current workspace — minus this Change's exact
+`manifest.yml`, `provenance.yml`, and `review.md` paths:
+
+```
+$ git diff --name-only 34b534a..48df268
+.forge/changes/CHG-0021-adapter-reference-schema-projection/manifest.yml
+.forge/changes/CHG-0021-adapter-reference-schema-projection/provenance.yml
+.forge/changes/CHG-0021-adapter-reference-schema-projection/review.md
+.forge/changes/CHG-0021-adapter-reference-schema-projection/tdd-evidence.yml
+.forge/changes/CHG-0021-adapter-reference-schema-projection/traceability.yml
+.forge/changes/CHG-0021-adapter-reference-schema-projection/verification.md
+```
+
+Subtracting the three Change-local paths leaves exactly three:
+
+| # | Resolution Delta path | Covered by declared `scope` |
+| --- | --- | --- |
+| 1 | `tdd-evidence.yml` | yes |
+| 2 | `traceability.yml` | yes |
+| 3 | `verification.md` | yes |
+
+`resolution-001` declares exactly these same three paths as `scope`. The
+two sets are **exactly equal** in both directions — no Resolution Delta
+path is uncovered, and no declared `scope` entry is broader than the Delta
+actually taken. No file under `src/`, `tests/`, or `protocol/` changed
+between `34b534a` and `48df268` (confirmed by the same `git diff
+--name-only` output above — none of the six paths lies outside
+`.forge/changes/CHG-0021-adapter-reference-schema-projection/`).
+**Out-of-Scope Mutation: none.** Consequently `full_review_required` is
+`false` and this Iteration is eligible to be `status: passed`.
+
+### R001, re-checked against actual repository state — resolved
+
+Not accepted from `resolution-001`'s own claim or from `verification.md`'s
+own "Correction" note. Read `traceability.yml` directly (`git diff
+34b534a..48df268 -- .../traceability.yml`): `CON-001.tasks` and
+`CON-002.tasks` changed from `[]` to `[T-001, T-002, T-003, T-004, T-005,
+T-006, T-007]`, satisfying `protocol/schemas/traceability.schema.json`'s
+`minItems: 1`.
+
+Ran the exact previously-failing test myself against current `HEAD`
+(`c0163d2`):
+
+```
+$ .venv/bin/python -m pytest -q tests/contract/test_protocol_contract.py::test_canonical_yaml_instances_satisfy_their_declared_schemas
+1 passed in 0.49s
+```
+
+Ran the full suite against current `HEAD`:
+
+```
+$ .venv/bin/python -m pytest -q
+535 passed in 41.64s
+```
+
+To rule out that this is an artifact of anything added after the
+Resolution commit itself (this Change's own `provenance.yml` write at
+`c0163d2`, or anything in this Iteration's own in-progress state), the
+exact frozen `resolution-001` subject commit `48df268` was checked out in
+an isolated `git worktree` (`git worktree add <tmp>
+48df268f94bcf664c90924f6ca806dcada8edc61`) and the full suite re-run there,
+unmodified:
+
+```
+$ .venv/bin/python -m pytest -q   # at 48df268 itself, isolated worktree
+535 passed in 42.60s
+```
+
+**535 passed, 0 failed — genuinely, independently, twice.** `forge
+validate` → `Forge project is valid` (exit 0). `forge doctor` → 7/7 PASS,
+the same single non-blocking `migration_available` WARN, unchanged. The
+worktree was removed after use (`git worktree remove --force`); `git
+worktree list` confirms only this repository's own working tree remains.
+R001 is resolved.
+
+### R002, re-checked — genuinely required no Resolver action
+
+`resolution-001`'s `targets` correctly excludes R002. Read the current
+`manifest.yml` `review:` block directly: `iteration: 1` and `iterations:
+[{id: review-001, ...}]` are both present — the exact placeholder/bound
+shape R002 said was missing at freeze time. This was written by
+`review-001` itself (Iteration 1's own `manifest.yml` update, per its
+Conclusion: "This Review's own `manifest.yml` update ... independently
+supplies the missing `review.iteration`/`review.iterations` keys"), not by
+`resolution-001` — confirmed the Resolution Delta (above) does not touch
+`manifest.yml` at all. R002 was genuinely already cured before the
+Resolution ran, not silently dropped.
+
+### R003, re-checked — genuinely an honest disclosed limitation, not a defect
+
+`resolution-001`'s `targets` correctly excludes R003. R003 states that
+RED-before-GREEN chronology cannot be verified from this Change's squashed
+Implementation commit history — a limitation on what any Reviewer can
+observe, not a defect in the Change. `resolution-001` itself lands in a
+single commit (`48df268`), so the same limitation applies to `TDD-008`
+(the Resolution's own new TDD cycle) by the same reasoning: no commit
+exists in which `traceability.yml` still holds `tasks: []` while a test
+asserts against it. However, TDD-008's claimed RED state (534 passed, 1
+failed) is not merely asserted — it is independently, reproducibly
+verified by two separate Reviews now (`review-001`'s own worktree
+reproduction against `34b534a`, and this Iteration's own reproduction
+against the same commit and, further, against `48df268` itself before the
+fix would have applied). `tdd-evidence.yml`'s `TDD-008` entry does not
+overclaim a git-verified RED-before-GREEN chronology it cannot support; it
+cites the actual independent verification available. Nothing about R003
+was fixed, and nothing needed to be — it remains exactly what Iteration 1
+recorded it as.
+
+### New defects within the Resolution Delta: none
+
+Read every line of the Resolution Delta's three files directly (`git diff
+34b534a..48df268` above, reproduced in full). `traceability.yml`'s
+`CON-001`/`CON-002` task lists correctly name only implementation tasks
+(`T-001`..`T-007`) that existed before this Resolution — no invented task
+ID. `tdd-evidence.yml`'s new `TDD-008` cycle's `red`/`green` evidence
+matches the actual, independently-reproduced test output exactly (534/1
+before, 535/0 after — not a different pair of numbers). `verification.md`'s
+new "Correction (post-Review)" paragraph honestly states the
+`implementation-001`-commit figure was false and explains the fix, rather
+than silently overwriting the original "535 passed, 0 failed" claim to
+hide that it was ever wrong. `cycle_count: 8` matches the actual count of
+entries under `cycles:` (8, confirmed by direct count). No new material
+finding was found. `new_material_findings: 0`.
+
+### Full suite, `forge validate`, `forge doctor` — reproduced independently, all as claimed
+
+```
+$ .venv/bin/python -m pytest -q
+535 passed in 41.64s
+$ forge validate
+Forge project is valid
+$ forge doctor
+PASS git_available / PASS git_repository / PASS forge_initialized /
+PASS project_configuration / PASS protocol_compatibility /
+PASS canonical_flows / PASS canonical_contract /
+WARN migration_available (6 migration candidate(s) found; pre-existing, unchanged)
+```
+
+`forge validate` does not raise a C-026 "review subject changed after
+freeze" finding here (unlike `CHG-0019`'s own Iteration 2 O002): the
+relevant check
+(`src/forge_cli/validation/__init__.py:349`) only fires when a bound
+Iteration's `status` is `pending` or `passed`; `review-001`'s bound
+Iteration is `status: failed`, so the check does not apply to it, and this
+Iteration's own `review-002` write (below) is what first introduces a
+`passed` bound Iteration for `resolution-001`'s revision — confirmed
+consistent, not a discrepancy.
+
+## Iteration 2 Conclusion
+
+Zero BLOCKER/MAJOR/MINOR/OBSERVATION Findings raised by this Iteration.
+R001 is verified genuinely resolved against actual repository state — not
+accepted from `resolution-001`'s own narrative — confirmed by independent
+reproduction of the full suite and the specific previously-failing test,
+twice (current `HEAD` and an isolated worktree of the frozen
+`resolution-001` subject commit itself). R002 and R003 are independently
+confirmed to have genuinely required no Resolver action, not silently
+ignored. The Resolution Delta, computed independently, exactly matches
+`resolution-001`'s declared `scope` in both directions: **no Out-of-Scope
+Mutation**. No new defect was found within the Resolution Delta.
+`new_material_findings: 0`. This Change is **PASS (final)** and is
+released to proceed toward Completion.
