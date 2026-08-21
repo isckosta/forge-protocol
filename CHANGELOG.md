@@ -10,6 +10,31 @@ until then.
 
 ## Unreleased
 
+## [0.1.0a1] - 2026-08-20
+
+### End-to-End Examples (Curated Real Evidence)
+
+Added:
+
+- `examples/strict-review-remediation/README.md`: a guided tour of
+  `CHG-0016`'s real Strict Review `REQUEST CHANGES` (1 BLOCKER, 2 MAJOR,
+  6 MINOR, 3 OBSERVATION) → Resolution → PASS cycle;
+- `examples/full-feature/README.md`: a guided tour of `CHG-0018`'s real
+  FULL-flow evidence (two Core-leak fixes, a new Harness Adapter, a
+  genuinely independent dogfooded bug-catch);
+- addenda on `examples/golden-path-standard/README.md` and
+  `examples/golden-path-claude-code/README.md` naming which additional
+  ROADMAP-named example categories each already satisfies;
+- `examples/README.md` rewritten with a mapping table from all five
+  ROADMAP-named example categories to their real evidence.
+
+No fabricated scenario was introduced — every commit hash, Finding ID,
+and quoted excerpt in the two new READMEs cites this repository's own
+real history, independently checked against `git show`/file content
+both by Implementation and by a fresh, independent Strict Review
+subagent. The External validation matrix remains open (see
+`ROADMAP.md`).
+
 ### Release Engineering & v1 Release Candidate (Infrastructure)
 
 Added:
