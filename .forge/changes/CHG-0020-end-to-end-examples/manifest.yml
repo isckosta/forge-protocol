@@ -16,20 +16,43 @@ artifacts:
   implementation: complete
   provenance: complete
   verification: complete
-  review: pending
+  review: complete
   documentation: complete
   knowledge_capture: complete
 requirements: {total: 5, implemented: 5, verified: 5}
 tdd: {status: not_applicable, reason: "No executable behavior touched -- five Markdown files curating and citing existing repository history."}
 verification: {status: passed}
 review:
-  status: pending
-  iteration: 0
+  status: passed
+  iteration: 1
   blockers: 0
   majors: 0
   minors: 0
   observations: 0
-  iterations: []
+  iterations:
+    - id: review-001
+      revision: chg-0020-implementation-001
+      subject_provenance: implementation-001
+      reviewer_provenance: review-001
+      kind: initial_review
+      status: passed
+      evidence_gap: >-
+        None found. All nine commit hashes cited in
+        examples/strict-review-remediation/README.md and all thirteen
+        cited in examples/full-feature/README.md were independently
+        confirmed against real `git log`. CHG-0016's real review.md and
+        CHG-0018's real verification.md/review.md were read in full and
+        checked line by line against both new READMEs' paraphrases and
+        claims -- every citation matches its cited source exactly. The
+        two distinct "R001" labels (CHG-0018's own hook finding vs. the
+        scratch session's own inner greet() regression finding) are
+        confirmed not conflated in the new README text. Both golden-path
+        addenda add exactly one paragraph each, nothing else changed.
+        examples/README.md's mapping table and ROADMAP.md's status line
+        are both accurate and complete. No historical CHG-0016/CHG-0018
+        artifact was touched. pytest -q: 524 passed. forge validate:
+        valid. forge doctor: clean except the pre-existing, unrelated
+        CHG-0019 migration_available WARN.
 documentation:
   impact_evaluated: true
   update_required: true

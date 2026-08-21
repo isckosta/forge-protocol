@@ -37,3 +37,72 @@ records:
         and will record its own review-role provenance separately; this
         session does not and cannot produce that record itself without
         constituting self-review.
+  - id: review-001
+    role: review
+    execution: {id: review-exec-chg0020-20260820-01, context_id: review-context-chg0020-20260820-01}
+    recorded_at: "2026-08-20T21:40:00-03:00"
+    revision:
+      id: chg-0020-implementation-001
+      immutable_ref: {type: git_commit, value: 9f643c313368558afd07e1dd17d3a47eadc4d0c7}
+      description: >-
+        Independent Strict Review, Iteration 1: PASS, 0 BLOCKER/MAJOR/MINOR/
+        OBSERVATION. All nine commit hashes cited in
+        examples/strict-review-remediation/README.md and all thirteen cited
+        in examples/full-feature/README.md were independently confirmed via
+        `git log -1 --format="%h %s" <sha>` to exist with exactly the quoted
+        subject line. CHG-0016's real review.md was read in full and its
+        Summary table (1 BLOCKER/2 MAJOR/6 MINOR/3 OBSERVATION) and the
+        R012/R001/R002 descriptions match the README's paraphrase on every
+        substantive point (file, line, defect, severity). CHG-0018's real
+        verification.md and review.md were read in full and confirm the two
+        Core-leak fixes, the new Adapter, the schema change
+        (adapter-configuration.schema.json, independently diffed), the
+        greet(None) AttributeError regression (Layer C), and the hook-
+        pattern MINOR R001 (resolved in 7385799, confirmed by 511f901) --
+        and confirmed the two distinct "R001" labels (CHG-0018's own hook
+        finding vs. the scratch session's own inner review.md's greet()
+        regression finding, in a different Change's own numbering) are not
+        conflated anywhere in the new README text. examples/README.md's
+        mapping table names all five ROADMAP categories, each pointing at a
+        real, existing directory. Both golden-path README addenda, diffed
+        against d35ecab, add exactly one paragraph each with no other
+        content changed. ROADMAP.md's new status line names what is
+        satisfied and explicitly keeps the External validation matrix open.
+        No historical CHG-0016/CHG-0018 artifact was touched by this
+        Change. pytest -q: 524 passed. forge validate: valid. forge doctor:
+        clean except the pre-existing, unrelated migration_available WARN
+        from CHG-0019.
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: claude-code
+      statement: >-
+        Self-recorded repository-native provenance for the independent
+        Strict Review Execution of CHG-0020, run in an Execution and
+        Execution Context distinct from the Implementation session (per
+        Contract C-026 and Protocol 2 §2), with no access to the
+        Implementation conversation and no prior memory of this Change
+        beyond committed repository state. No provider-native attestation
+        is claimed; assurance is recorded, not verified or cryptographic/
+        external proof. What was independently verified, not accepted from
+        verification.md's own account of having checked it: every cited
+        commit hash in both new READMEs (22 total, nine + thirteen) against
+        real `git log`; CHG-0016's real review.md, read directly and
+        compared line by line against the README's Summary table and R012/
+        R001/R002 paraphrases; CHG-0018's real verification.md and
+        review.md, read directly and compared against the README's Core-fix,
+        Adapter, schema-change, greet(None)-regression, and hook-finding
+        claims, including independently diffing
+        protocol/schemas/adapter-configuration.schema.json across CHG-0018's
+        commit range to confirm the schema claim; the two golden-path
+        README addenda, diffed against the pre-Implementation baseline
+        (d35ecab) to confirm only an addendum paragraph was added in each;
+        examples/README.md's five-category mapping table against the actual
+        directory listing; ROADMAP.md's new status line against its stated
+        content; git log on both CHG-0016's and CHG-0018's own
+        .forge/changes/ directories to confirm no new commit from this
+        Change's timeframe touches them; and pytest -q (524 passed), forge
+        validate (valid), and forge doctor (clean except the pre-existing
+        CHG-0019 migration_available WARN), all run fresh in this
+        execution. No Finding was found; PASS is the honest outcome, not a
+        default.
