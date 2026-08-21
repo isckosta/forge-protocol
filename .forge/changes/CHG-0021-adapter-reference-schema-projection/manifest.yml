@@ -26,7 +26,37 @@ artifacts:
 requirements: {total: 5, implemented: 5, verified: 5}
 tdd: {status: compliant, cycles: 7}
 verification: {status: passed}
-review: {status: pending, blockers: 0, majors: 0, minors: 0, observations: 0}
+review:
+  status: failed
+  iteration: 1
+  blockers: 1
+  majors: 0
+  minors: 0
+  observations: 2
+  iterations:
+    - id: review-001
+      revision: chg-0021-implementation-001
+      subject_provenance: implementation-001
+      reviewer_provenance: review-001
+      kind: initial_review
+      status: failed
+      evidence_gap: >-
+        R001 (BLOCKER): verification.md and tdd-evidence.yml both claim a
+        full-suite regression baseline of "535 passed, 0 failed", which is
+        not reproducible -- independently re-running pytest -q, both
+        against current HEAD and against the frozen implementation-001
+        subject commit itself, produces 534 passed, 1 failed in both
+        cases. The failing test is
+        tests/contract/test_protocol_contract.py::test_canonical_yaml_instances_satisfy_their_declared_schemas,
+        caused by traceability.yml's CON-001/CON-002 entries both
+        declaring an empty tasks: [] array, which
+        protocol/schemas/traceability.schema.json's minItems: 1 rejects --
+        a defect this Change's own T-012 authored into the Implementation
+        subject commit, and the only traceability.yml in this repository's
+        history with an empty tasks array anywhere. Required Resolution:
+        repair traceability.yml's CON-001/CON-002 tasks arrays to name the
+        task(s) where each Constraint was actually checked, then
+        independently re-confirm pytest -q reports 0 failures.
 documentation:
   impact_evaluated: false
 decisions:

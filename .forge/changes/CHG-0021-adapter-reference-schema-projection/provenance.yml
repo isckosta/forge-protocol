@@ -32,3 +32,70 @@ records:
         review-role provenance separately; this session does not and
         cannot produce that record itself without constituting
         self-review.
+  - id: review-001
+    role: review
+    execution: {id: review-exec-chg0021-20260821-71fbe20a, context_id: review-context-chg0021-20260821-3d68f01c}
+    recorded_at: "2026-08-21T09:20:00-03:00"
+    revision:
+      id: chg-0021-implementation-001
+      immutable_ref: {type: git_commit, value: 34b534a0ae98015fb32faef75ba87f097219b7a4}
+      description: >-
+        Strict Review Iteration 1 (kind: initial_review) of CHG-0021's frozen
+        implementation-001 subject. Independent Execution and Execution
+        Context from the Implementation session that produced
+        implementation-001. Verdict: REQUEST CHANGES (1 BLOCKER, 0 MAJOR,
+        0 MINOR, 2 OBSERVATION; BLOCKER is blocking per
+        protocol/policies/review.yml) -- see review.md for full findings.
+        The BLOCKER (R001) is that verification.md and tdd-evidence.yml both
+        claim a full-suite regression baseline of "535 passed, 0 failed"
+        that this Review found not reproducible: independently re-running
+        pytest -q, both against current HEAD and against the frozen
+        implementation-001 subject commit itself (checked out in an isolated
+        git worktree), produces 534 passed, 1 failed in both cases. The
+        failing test is tests/contract/test_protocol_contract.py::test_canonical_yaml_instances_satisfy_their_declared_schemas,
+        caused by traceability.yml's CON-001/CON-002 entries both declaring
+        an empty tasks: [] array, which protocol/schemas/traceability.schema.json's
+        minItems: 1 constraint rejects -- a defect this Change's own T-012
+        authored into the Implementation subject commit itself, and the
+        only traceability.yml in this repository's history with an empty
+        tasks array anywhere (confirmed by grep across every historical
+        Change). manifest.yml's own review: block additionally omitted the
+        schema-required iteration/iterations keys at freeze time, unlike
+        CHG-0015's own pending-review precedent, which already carries the
+        correct placeholder shape -- this half is cured by this Review's own
+        manifest.yml write below, so only the traceability.yml half remains
+        outstanding for the Resolver.
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: claude-code
+      statement: >-
+        Self-recorded repository-native provenance for the independent
+        Strict Review execution that evaluated CHG-0021's frozen
+        implementation-001 subject. This Review ran as a distinct subagent
+        Execution and Execution Context from the Implementation session,
+        started cold with no access to that session's conversation and no
+        hint about where to look, reading only committed repository state.
+        No provider-native, cryptographic, or external attestation is
+        claimed and none is available; assurance is recorded, not verified
+        -- the independence asserted here rests on this statement and on
+        the distinct execution identifiers above, not on proof a third
+        party could check. pytest, forge validate, and forge doctor were
+        run directly by this Review execution against the working tree
+        (534 passed, 1 failed -- see review.md R001 for the full failure
+        detail and its independent reproduction against the frozen subject
+        commit in an isolated git worktree; forge validate -> "Forge
+        project is valid", exit 0; forge doctor -> 7/7 PASS, one
+        pre-existing non-blocking migration_available WARN), and the
+        Change's own new/touched tests were re-run in isolation (14 passed)
+        to confirm the substantive engineering is sound independent of the
+        BLOCKER. Every diff in the implementation-001 commit was read
+        directly via git show 34b534a, not trusted from tdd-evidence.yml,
+        verification.md, or the commit message. RED-before-GREEN chronology
+        could NOT be verified from git history -- all seven TDD cycles land
+        in the single commit 34b534a -- and review.md R003 states that
+        limitation explicitly rather than asserting a conclusion this
+        execution cannot support, matching this repository's own CHG-0016
+        R009 precedent for the same limitation. Per Contract C-025 this
+        Reviewer resolved nothing: only review.md, manifest.yml, and this
+        record were written.
