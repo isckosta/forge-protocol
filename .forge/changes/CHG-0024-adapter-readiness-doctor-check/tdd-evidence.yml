@@ -1,0 +1,26 @@
+schema: forge/tdd-evidence@1
+change: CHG-0024
+status: compliant
+cycle_count: 1
+cycles:
+  - id: TDD-001
+    title: Initialized workspace with zero installed Adapters emits readiness warning
+    requirements: [FR-001, AC-001]
+    red:
+      observed: true
+      failure_reason: >-
+        AssertionError: expected one adapter check but received zero when
+        running pytest -q
+        tests/unit/test_doctor_diagnostics.py::test_doctor_warns_when_no_adapter_is_installed
+        against the unmodified _adapter_readiness_checks implementation.
+    green:
+      observed: true
+      evidence: >-
+        The focused zero-Adapter regression and the installed-Adapter,
+        warning-preservation, drift, and read-only doctor cases pass: 5
+        passed. The full unit suite passes with 351 passed.
+    notes:
+      - >-
+        The existing zero-Adapter test was changed before production code;
+        the RED failure was the expected zero-check behavior, not a fixture
+        or environment failure.

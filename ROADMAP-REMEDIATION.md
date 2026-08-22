@@ -31,7 +31,7 @@
 | P0 | Project Schemas/enums into adapter references | `adapter-reference-schema-projection` | **Done** | `CHG-0021` (merged, PR #13) |
 | P0 | `forge change new <slug>` scaffolding | `change-scaffolding-cli` | **Done** | [`CHG-0022`](.forge/changes/CHG-0022-change-scaffolding-cli/) |
 | P0 | Document first Change with no prior Git history | `first-change-baseline-guidance` | **Done** | [`CHG-0023`](.forge/changes/CHG-0023-first-change-baseline-guidance/) |
-| P1 | `forge doctor` detect zero adapters installed | `adapter-readiness-doctor-check` | Open | — |
+| P1 | `forge doctor` detect zero adapters installed | `adapter-readiness-doctor-check` | **Done** | [`CHG-0024`](.forge/changes/CHG-0024-adapter-readiness-doctor-check/) |
 | P1 | Real semantics for `plan.md status: approved` | `plan-approval-semantics` | Open | — |
 | P1 | Document skill-propagation latency after adapter install | `skill-propagation-diagnostics` | Open | — |
 | P1 | Review cost proportional to diff size (RFC-level) | `review-cost-proportionality` | Open | — |

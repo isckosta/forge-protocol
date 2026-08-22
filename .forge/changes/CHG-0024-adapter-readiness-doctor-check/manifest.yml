@@ -1,0 +1,37 @@
+schema: forge/change@2
+protocol: 2
+change:
+  id: CHG-0024
+  title: Adapter Readiness Doctor Check
+  kind: bugfix
+flow: {initial: fast, current: fast, escalations: []}
+state: {current: strict_review}
+artifacts:
+  intent: complete
+  inspection: complete
+  test_design: complete
+  tdd_evidence: complete
+  implementation: complete
+  provenance: complete
+  verification: complete
+  review: pending
+  documentation: complete
+  knowledge_capture: not_required
+requirements: {total: 2, implemented: 2, verified: 2}
+tdd: {status: compliant, cycles: 1}
+verification: {status: passed}
+review:
+  status: pending
+  iteration: 0
+  blockers: 0
+  majors: 0
+  minors: 0
+  observations: 0
+  iterations: []
+documentation:
+  impact_evaluated: true
+  update_required: true
+  reason: >-
+    Updated ROADMAP-REMEDIATION.md item #4 to Done with the CHG-0024 link.
+    No Contract, Schema, RFC, ADR, README, or forge init documentation
+    change is required for this localized diagnostic correction.
