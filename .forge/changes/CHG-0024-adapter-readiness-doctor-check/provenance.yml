@@ -1,0 +1,22 @@
+schema: forge/execution-provenance@2
+change: CHG-0024
+records:
+  - id: implementation-001
+    role: implementation
+    execution: {id: implementation-exec-chg0024-20260822-01, context_id: implementation-context-chg0024-20260822-01}
+    recorded_at: "2026-08-22T00:00:00-03:00"
+    revision:
+      id: chg-0024-implementation-001
+      immutable_ref: {type: git_commit, value: c16b013}
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: codex
+      statement: >-
+        Repository-native provenance for the CHG-0024 implementation and
+        verification artifact assembly. The implementation subject is the
+        frozen commit c16b013; later review-control metadata may append
+        independent review records without changing the subject. TDD RED
+        was observed before the production edit, and Verification records
+        the focused/unit evidence plus the environment-only distribution
+        limitation.
