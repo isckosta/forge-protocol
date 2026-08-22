@@ -35,3 +35,18 @@ records:
         artifacts and actual diff, reran the focused and full verification,
         made no repository edits, and reported PASS with no findings. No
         provider-native or cryptographic attestation is claimed.
+  - id: resolution-001
+    role: resolution
+    execution: {id: resolution-exec-chg0025-20260822-01, context_id: resolution-context-chg0025-20260822-01}
+    recorded_at: "2026-08-22T18:00:00-03:00"
+    revision:
+      id: chg-0025-resolution-001
+      immutable_ref: {type: git_commit, value: 9b71fdd815eaba8f91959d3e9521201c5e91ee5e}
+    source:
+      assurance: recorded
+      observed_by: operator
+      harness: codex
+      statement: >-
+        The resolution implements and tests the four blocking review findings:
+        canonical provenance compatibility, prospective Gate scoping, and
+        non-raising Change identifier comparison.

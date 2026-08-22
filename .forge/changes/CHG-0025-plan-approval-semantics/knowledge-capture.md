@@ -19,6 +19,13 @@ can cryptographically prove who typed the confirmation. `forge validate`
 checks the Decision shape and the required durable record structure. Adapter
 guidance may remind the agent of the checkpoint, but it is not authority.
 
+The C-077 implementation must reuse canonical provenance normalization. Both
+Protocol 1 and Protocol 2 schemas allow `revision.commit` as a legacy form and
+`source.assurance: verified` as stronger evidence than `recorded`; a local
+validator check must not narrow those representations. The prospective
+CHG-0025 boundary also applies to Gate dependency creation, not only to the
+authorization validator, or historical active Changes can be invalidated.
+
 `specification_gate_passed` remains technical. Extending human-authority
 semantics to another Gate requires a separate Change with evidence that the
 Gate represents a human act.

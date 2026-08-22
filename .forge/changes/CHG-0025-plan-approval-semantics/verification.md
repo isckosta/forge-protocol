@@ -24,19 +24,26 @@ status: passed
 
 ## Test Evidence
 
-- `.venv/bin/python -m pytest -q tests/unit/test_unresolved_decisions.py` — **33 passed**.
+- `.venv/bin/python -m pytest -q tests/unit/test_unresolved_decisions.py` — **37 passed**.
 - `.venv/bin/python -m pytest -q tests/contract/test_protocol_contract.py` — **34 passed**.
-- Combined focused run — **67 passed**.
-- `.venv/bin/python -m pytest -q` — **579 passed, 2 failed** in the pre-existing
-  wheel-building tests because the sandbox could not resolve/download the
-  `hatchling` build dependency from PyPI. The focused Change and contract
-  tests were unaffected.
+- Combined focused run — **71 passed** (the original 67 plus 4 resolution tests).
+- `.venv/bin/python -m pytest -q` in the resolution clone — **582 passed, 3
+  failed**: two pre-existing wheel-building tests because the sandbox could not
+  resolve/download the `hatchling` build dependency from PyPI. The focused
+  Change and contract tests were unaffected; the third failure is the
+  pre-existing `test_legacy_manifests_are_unaffected` history-dependent check
+  because the temporary review clone does not contain the full local Git
+  history.
 - `.venv/bin/forge validate` — **Forge project is valid**.
 - `git diff --check` — clean.
 
-The RED/GREEN chronology is recorded in `tdd-evidence.yml`. The final
-implementation validates the required structured fields of the recorded
-provenance entry and the explicit approval markers in `plan.md`; it does not
+The RED/GREEN chronology is recorded in `tdd-evidence.yml`. The resolution
+reuses the canonical provenance parser, accepting both schema-supported
+revision representations and `recorded`/`verified` assurance while retaining
+the operator-observer requirement. It also gates the Plan dependency only for
+CHG-0025 onward and compares the numeric suffix without integer conversion.
+The final implementation validates the required structured fields of the
+recorded provenance entry and the explicit approval markers in `plan.md`; it does not
 claim cryptographic or provider-native proof of the human act.
 
 ## Scope and compatibility
