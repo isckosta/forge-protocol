@@ -42,8 +42,8 @@ review:
       status: passed
       new_material_findings: 0
     - id: review-002
-      revision: chg-0025-resolution-001
-      subject_provenance: resolution-001
+      revision: chg-0025-resolution-002
+      subject_provenance: resolution-002
       reviewer_provenance: review-002
       kind: resolution_verification
       status: pending

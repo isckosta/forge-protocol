@@ -54,3 +54,28 @@ records:
         The resolution implements and tests the four blocking review findings:
         canonical provenance compatibility, prospective Gate scoping, and
         non-raising Change identifier comparison.
+  - id: resolution-002
+    role: resolution
+    scope:
+      - .forge/changes/CHG-0025-plan-approval-semantics/knowledge-capture.md
+      - .forge/changes/CHG-0025-plan-approval-semantics/manifest.yml
+      - .forge/changes/CHG-0025-plan-approval-semantics/provenance.yml
+      - .forge/changes/CHG-0025-plan-approval-semantics/review.md
+      - .forge/changes/CHG-0025-plan-approval-semantics/tdd-evidence.yml
+      - .forge/changes/CHG-0025-plan-approval-semantics/traceability.yml
+      - .forge/changes/CHG-0025-plan-approval-semantics/verification.md
+      - src/forge_cli/validation/__init__.py
+      - tests/unit/test_unresolved_decisions.py
+    targets: [PR17-verified-assurance, PR17-large-change-id, PR18-historical-compatibility, PR18-legacy-provenance]
+    execution: {id: resolution-exec-chg0025-20260822-02, context_id: resolution-context-chg0025-20260822-02}
+    recorded_at: "2026-08-22T18:15:00-03:00"
+    revision:
+      id: chg-0025-resolution-002
+      immutable_ref: {type: git_commit, value: d499fec32fd87d6622f94c0d16434345bf62ee1b}
+    source:
+      assurance: recorded
+      observed_by: operator
+      harness: codex
+      statement: >-
+        Resolution-002 preserves the first resolution record and provides the
+        complete scoped subject for independent Resolution Verification.
