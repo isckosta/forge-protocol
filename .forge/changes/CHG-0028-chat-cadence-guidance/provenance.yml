@@ -108,6 +108,7 @@ records:
       - .forge/changes/CHG-0028-chat-cadence-guidance/manifest.yml
       - .forge/changes/CHG-0028-chat-cadence-guidance/provenance.yml
       - .forge/changes/CHG-0028-chat-cadence-guidance/review.md
+      - .forge/changes/CHG-0028-chat-cadence-guidance/verification.md
     targets: [BLOCKER, MAJOR]
     revision:
       id: chg-0028-finalization-001
