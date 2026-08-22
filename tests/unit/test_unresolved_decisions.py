@@ -196,7 +196,7 @@ def _approved_plan_manifest(decisions: list[dict] | None = None, *, state: str =
     )
 
 
-def _write_plan_confirmation(root: Path, change_dir: str) -> None:
+def _write_plan_confirmation(root: Path, change_dir: str, *, schema: str = "forge/execution-provenance@2") -> None:
     change = root / ".forge/changes" / change_dir
     change.mkdir(parents=True, exist_ok=True)
     change_id = "-".join(change_dir.split("-")[:2])
@@ -210,7 +210,7 @@ def _write_plan_confirmation(root: Path, change_dir: str) -> None:
     (change / "provenance.yml").write_text(
         yaml.safe_dump(
             {
-                "schema": "forge/execution-provenance@2",
+                "schema": schema,
                 "change": change_id,
                 "records": [{
                     "id": "implementation-001",
@@ -362,6 +362,26 @@ def test_active_approved_plan_with_malformed_plan_is_a_finding(tmp_path: Path) -
 
     assert not result.passed
     assert any("authorization" in message for message in _messages(result))
+
+
+def test_protocol1_provenance_remains_compatible_with_plan_authorization(tmp_path: Path) -> None:
+    _init(tmp_path)
+    decision = {
+        "id": "DEC-001", "class": "technical", "materiality": "material",
+        "status": "resolved", "authority": "human", "owning_artifact": "plan",
+        "discovered_in": "plan", "resolved_via": "human_decision",
+    }
+    change_dir = "CHG-9119-protocol1-provenance"
+    _write_manifest(
+        tmp_path,
+        change_dir,
+        _approved_plan_manifest([decision], change={"id": "CHG-9119", "title": "T", "kind": "feature"}),
+    )
+    _write_plan_confirmation(tmp_path, change_dir, schema="forge/execution-provenance@1")
+
+    result = validate_project(tmp_path, PROTOCOL_ROOT)
+
+    assert result.passed, _messages(result)
 
 
 def test_active_approved_plan_with_multiple_approvals_is_ambiguous(tmp_path: Path) -> None:
