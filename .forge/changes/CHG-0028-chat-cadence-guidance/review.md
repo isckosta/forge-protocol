@@ -3,7 +3,7 @@ forge:
   artifact: review
   schema: 1
 change: CHG-0028
-status: passed
+status: failed
 ---
 # Strict Review — CHG-0028
 
