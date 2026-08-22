@@ -47,7 +47,6 @@ review:
       reviewer_provenance: review-002
       kind: initial_review
       status: failed
-      full_review_required: true
       new_material_findings: 1
     - id: review-003
       revision: chg-0025-resolution-002
