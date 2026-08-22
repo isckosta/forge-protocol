@@ -5,7 +5,7 @@ change:
   title: Change Scaffolding CLI
   kind: feature
 flow: {initial: standard, current: standard, escalations: []}
-state: {current: verification}
+state: {current: complete}
 artifacts:
   intent: complete
   discovery: complete
@@ -18,19 +18,35 @@ artifacts:
   traceability: complete
   provenance: complete
   verification: complete
-  review: pending
+  review: complete
   documentation: complete
 requirements: {total: 10, implemented: 10, verified: 10}
 tdd: {status: compliant, cycles: 7}
 verification: {status: passed}
 review:
-  status: pending
-  iteration: 0
+  status: passed
+  iteration: 3
   blockers: 0
   majors: 0
   minors: 0
   observations: 0
-  iterations: []
+  iterations:
+    - id: review-001
+      revision: e32ad69
+      subject_provenance: implementation-002
+      kind: initial_review
+      status: failed
+    - id: review-002
+      revision: e32ad69
+      subject_provenance: resolution-001
+      kind: resolution_verification
+      status: failed
+    - id: review-003
+      revision: e32ad69
+      subject_provenance: resolution-001
+      reviewer_provenance: review-003
+      kind: resolution_verification
+      status: passed
 documentation:
   impact_evaluated: true
   update_required: true

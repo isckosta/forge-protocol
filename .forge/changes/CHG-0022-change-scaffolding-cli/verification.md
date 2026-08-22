@@ -20,9 +20,12 @@ publishes without overwriting existing content.
 
 ## Test Evidence
 
-- Focused Change tests: **30 passed, 0 failed**.
-- Installed-wheel offline golden path: **1 passed**.
-- Full suite: **559 passed, 0 failed**.
+- Change-focused and CLI contract tests: **66 passed, 0 failed** in the
+  independent resolution verification; the directly scoped modules contain
+  32 tests.
+- Installed-wheel offline golden path: **1 passed** after installing the
+  build-only `hatchling` dependency; the probe itself used no network.
+- Full suite: **561 passed, 0 failed**.
 
 ## Forge Evidence
 
@@ -36,4 +39,5 @@ README.md and CHANGELOG.md document the command. Item #2 in
 ## Conclusion
 
 All specified runtime, artifact, publication, offline-wheel, and documentation
-checks pass. Strict Review remains the independent gate recorded separately.
+checks pass. Strict Review initial findings and their independent resolution
+verification are recorded separately.

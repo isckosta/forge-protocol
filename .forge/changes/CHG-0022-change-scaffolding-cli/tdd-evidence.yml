@@ -32,9 +32,9 @@ cycles:
     title: Full regression baseline
     requirements: [FR-010]
     red: {observed: false, failure_reason: "Regression guard; no new behavior is expected to fail before implementation."}
-    green: {observed: true, evidence: "pytest -q: 559 passed, 0 failed; forge validate passes."}
+    green: {observed: true, evidence: "pytest -q: 561 passed, 0 failed; forge validate passes."}
   - id: TDD-007
     title: Strict Review resolution evidence
     requirements: [FR-010]
     red: {observed: false, failure_reason: "Review evidence is produced after implementation and is not a pre-implementation behavior test."}
-    green: {observed: true, evidence: "Independent cold Strict Review recorded in review.md after final verification."}
+    green: {observed: true, evidence: "Independent cold Strict Review and resolution checks recorded in review.md after final verification."}
