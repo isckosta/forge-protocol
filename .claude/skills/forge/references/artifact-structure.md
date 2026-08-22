@@ -271,6 +271,16 @@ introduces no new expected section for Inspection (§2.5, NFR-001 of
 `CHG-0016`'s own Specification) — FAST's proportionality is a property
 this document must preserve, not one it gets to relax.
 
+## Plan approval boundary
+
+When a Plan is declared `approved`, the Plan SHOULD preserve the explicit
+human confirmation at the Plan/Implementation boundary using the canonical
+Forge markers `forge:plan-approval-confirmation` and
+`forge:plan-approval-record`. The confirmation record SHOULD identify the
+operator in provenance. These markers are language-invariant; surrounding
+prose MAY use the configured interaction language. C-077 remains the normative
+Contract rule and `forge validate` is the enforcement point.
+
 ## 5. How This Document Is Projected
 
 A Harness Adapter includes this document's content by reference in its

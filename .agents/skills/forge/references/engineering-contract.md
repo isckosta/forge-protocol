@@ -228,6 +228,11 @@ An approved Plan SHOULD NOT be edited to silently absorb an Implementation-time 
 ## C-077 — Plan Implementation requires recorded human authorization
 A Change MUST NOT cross its Plan/Implementation boundary while its Plan is declared `approved` unless its manifest records a material technical Decision owned by `plan` with `authority: human`, `status: resolved`, and `resolved_via: human_decision`, and the Plan and provenance record the explicit human confirmation observed by the operator. An agent MUST NOT silently infer or claim that confirmation. This is recorded repository evidence, not cryptographic or external attestation. This rule applies from CHG-0025 onward; `specification_gate_passed` remains a technical Gate.
 
+For C-077, `forge validate` MUST fail closed when the Plan or provenance is
+malformed, foreign to the Change, self-observed, or missing the canonical
+language-invariant approval markers. Historical Changes allocated before
+CHG-0025 remain valid.
+
 ## C-070 — Interaction language governs prose only
 Canonical identifiers — schema keys, Change and requirement identifiers, Gate names, and Contract rule identifiers — MUST remain invariant regardless of the configured interaction language. Interaction language MAY vary generated and human-authored prose; it MUST NOT vary any machine-readable identifier.
 
