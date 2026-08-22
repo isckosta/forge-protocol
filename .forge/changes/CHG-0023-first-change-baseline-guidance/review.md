@@ -3,21 +3,22 @@ forge:
   artifact: review
   schema: 1
 change: CHG-0023
-status: pending
+status: passed
 ---
 
 # Strict Review — CHG-0023
 
 ## Verdict
 
-**PENDING (Iteration 8).** Iterations 4–7 requested changes because evidence
+**PASS (final, Iteration 8).** Iterations 4–7 requested changes because evidence
 anchors still referenced the pre-rewrite lineage. The final subject is
 `bb40bdb`; its
 repository-native provenance and independent Reviewer binding are recorded
 append-only in `provenance.yml`.
 
-The final independent clean-worktree review is pending after the provenance
-anchors were aligned with the rewritten branch lineage.
+The final independent clean-worktree review passed after the provenance
+anchors were aligned with the rewritten branch lineage. The final Reviewer
+found zero BLOCKER, MAJOR, or MINOR findings.
 
 ## Evidence
 

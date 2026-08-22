@@ -3,7 +3,7 @@ forge:
   artifact: tasks
   schema: 1
 change: CHG-0023
-status: active
+status: complete
 ---
 
 # Tasks — First-Change Baseline Guidance
@@ -19,5 +19,6 @@ status: active
 
 ## Status
 
-Implementation, Verification, and Documentation are complete. The final
-independent Strict Review is pending for the aligned evidence subject.
+Implementation, Verification, Documentation, and the independent Strict
+Review are complete. The approved subject is bb40bdb; remaining historical
+review observations are documented in review.md.

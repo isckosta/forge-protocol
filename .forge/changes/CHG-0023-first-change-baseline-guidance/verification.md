@@ -67,9 +67,9 @@ possible external repository state.
 
 ## Conclusion
 
-All Acceptance Criteria pass. The final independent Strict Review remains
-pending after the evidence-anchor correction; its result will be recorded in
-review.md.
+All Acceptance Criteria pass. The final independent Strict Review passed with
+zero BLOCKER, MAJOR, or MINOR findings; historical observations are recorded
+in review.md.
 
 ## Review Resolution Note
 

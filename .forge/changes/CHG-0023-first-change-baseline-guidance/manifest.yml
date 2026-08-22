@@ -2,7 +2,7 @@ schema: forge/change@2
 protocol: 2
 change: {id: CHG-0023, title: First-Change Baseline Guidance, kind: documentation}
 flow: {initial: full, current: full, escalations: []}
-state: {current: strict_review}
+state: {current: complete}
 artifacts:
   intent: complete
   discovery: complete
@@ -16,14 +16,14 @@ artifacts:
   traceability: complete
   provenance: complete
   verification: complete
-  review: pending
+  review: complete
   documentation: complete
   knowledge_capture: complete
 requirements: {total: 4, implemented: 4, verified: 4}
 tdd: {status: compliant, cycles: 4}
 verification: {status: passed}
 review:
-  status: pending
+  status: passed
   iteration: 8
   blockers: 0
   majors: 0
@@ -67,7 +67,7 @@ review:
       subject_provenance: resolution-007
       reviewer_provenance: review-008
       kind: initial_review
-      status: pending
+      status: passed
       new_material_findings: 0
 documentation:
   impact_evaluated: true
