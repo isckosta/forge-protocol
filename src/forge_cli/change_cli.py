@@ -1,7 +1,5 @@
 """Public CLI for creating repository-native Forge Change scaffolds."""
 
-from __future__ import annotations
-
 from pathlib import Path
 from typing import Annotated
 
@@ -86,12 +84,22 @@ def _active_flow(root: Path) -> tuple[str, dict]:
     return effective["canonical"]["flow"]["id"], effective["canonical"]
 
 
-@change_app.command("new")
+@change_app.command(
+    "new",
+    help="Plan and create a repository-native Change scaffold. Use --non-behavioral for prose-only Changes.",
+)
 def new_change(
     slug: Annotated[str, typer.Argument(metavar="SLUG")],
-    non_behavioral: Annotated[bool, typer.Option("--non-behavioral")] = False,
+    non_behavioral: bool = typer.Option(
+        False,
+        "--non-behavioral",
+        help="Create a non-behavioral Change scaffold without executable TDD evidence.",
+    ),
 ) -> None:
-    """Plan and create a new repository-native Change scaffold."""
+    """Plan and create a new repository-native Change scaffold.
+
+    Use ``--non-behavioral`` when the Change has no executable behavior.
+    """
     root = _root()
     try:
         validate_slug(slug)
