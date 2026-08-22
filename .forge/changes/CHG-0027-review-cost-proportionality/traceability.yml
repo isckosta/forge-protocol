@@ -5,7 +5,7 @@ requirements:
   FR-002: {tasks: [T-003, T-004, T-005], evidence: specification.md and RFC safeguards}
   FR-003: {tasks: [T-004, T-005], evidence: architecture.md and RFC calibration proposal}
   FR-004: {tasks: [T-005], evidence: docs/rfcs/0005-review-cost-proportionality.md}
-  FR-005: {tasks: [T-007], evidence: ROADMAP-REMEDIATION.md item #7}
+  FR-005: {tasks: [T-007], evidence: "ROADMAP-REMEDIATION.md item #7"}
 acceptance:
   AC-001: [discovery.md, verification.md]
   AC-002: [discovery.md, docs/rfcs/0005-review-cost-proportionality.md]

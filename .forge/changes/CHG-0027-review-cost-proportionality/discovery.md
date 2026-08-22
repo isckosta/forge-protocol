@@ -44,11 +44,11 @@ attention time were not recorded and cannot be reconstructed.
 | Change | Flow | footprint | requirements | TDD cycles | Review iterations | recorded span |
 | --- | --- | ---: | ---: | ---: | ---: | ---: |
 | CHG-0021 | FULL | 28 files, +2,683/-5 | 5 | 8 | 2 | 03:40–10:15 (6h35) |
+| CHG-0020 | STANDARD | 17 files, +1,069/-19 | 5 | not applicable | 1 | 20:59–21:40 (41m) |
 | CHG-0024 | FAST | 11 files, +377/-4 | 2 | 1 | 1 | 00:00–00:30 (30m) |
-| CHG-0026 | FAST | 11 files, +390/-2 | 2 | 2 | 1 | 18:30–19:00 (30m) |
 
 The ranges were measured with `git diff --shortstat` over respectively
-`7d035cd^..27e4fc0`, `2d0f1ef^..c63107b`, and `1cbc47d^..41cb9dd`.
+`27e4fc0^1..27e4fc0`, `d35ecabe^..0eec94a`, and `2d0f1ef^..c63107b`.
 The requirements, cycles, iterations, and timestamps are taken directly
 from the committed manifests and provenance records. CHG-0021 is also
 direct evidence that review cost is not only a function of initial diff
@@ -58,11 +58,11 @@ Strict Review found a real BLOCKER (the claimed 535/0 baseline was actually
 Resolution Verification had to reproduce the fix. This is three independent
 Review executions with materially different findings and outcomes.
 
-The sample is small and selection-biased. CHG-0024 and CHG-0026 are both
-small FAST Changes; CHG-0021 is a large FULL Change with generated Adapter
-and validation work. The data demonstrates useful observability, not a
-validated pricing model. It also does not establish that line count causes
-review time.
+The sample is small and selection-biased. CHG-0024 is a small FAST Change;
+CHG-0020 is a documentation-only STANDARD Change; and CHG-0021 is a large
+FULL Change with generated Adapter and validation work. The data
+demonstrates useful observability, not a validated pricing model. It also
+does not establish that line count causes review time.
 
 ## Alternatives considered
 
@@ -109,5 +109,8 @@ implemented by a future Change; this Change proposes it only.
 `CONTRIBUTING.md` requires an RFC before material changes to Review
 semantics. This Change therefore proposes
 `docs/rfcs/0005-review-cost-proportionality.md`, using the repository's
-real Proposed/Accepted lifecycle. The RFC must not be marked Accepted by
-this Change.
+real Proposed/Accepted lifecycle. The concrete precedent is
+`docs/rfcs/0002-harness-adapter-foundation.md`: its proposal commit is
+`f8c8449` and its later acceptance commit is `bb332ff`. RFC-0003 also
+records the same separation in its Change history. The RFC must not be
+marked Accepted by this Change.

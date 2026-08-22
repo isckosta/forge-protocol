@@ -20,8 +20,8 @@ evidence emphasis can be chosen ad hoc.
 Repository evidence is suggestive, not a calibrated model. CHG-0021's
 28-file, +2,683/-5 Change footprint required 8 TDD cycles and 2 Review
 iterations, including a real BLOCKER and a distinct Resolution Verification.
-CHG-0024's 11-file, +377/-4 footprint required 1 TDD cycle and 1 Review
-iteration; CHG-0026's 11-file, +390/-2 footprint required 2 TDD cycles and
+CHG-0020's 17-file, +1,069/-19 footprint required no TDD cycle and 1 Review
+iteration; CHG-0024's 11-file, +377/-4 footprint required 1 TDD cycle and
 1 Review iteration. These are Change-footprint measurements that include
 artifacts. Token usage and human attention time were not recorded.
 
@@ -100,6 +100,7 @@ for proportional review calibration.
 ## Acceptance boundary
 
 This RFC remains **Proposed**. A human maintainer must make a later,
-separate acceptance commit, following the repository precedent in which an
-RFC proposal and its acceptance are distinct Git commits. This Change must
-not mark it Accepted or implement the mechanism it describes.
+separate acceptance commit, following `docs/rfcs/0002-harness-adapter-
+foundation.md` (proposal `f8c8449`, acceptance `bb332ff`) and the same
+pattern documented by RFC-0003. This Change must not mark it Accepted or
+implement the mechanism it describes.
