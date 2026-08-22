@@ -10,7 +10,9 @@ status: pending
 
 ## Verdict
 
-**PENDING (Iteration 5).** The final subject is `0979e3b`; its
+**PENDING (Iteration 5).** Iteration 4 requested changes because evidence
+anchors still referenced the pre-rewrite lineage. The final subject is
+`0979e3b`; its
 repository-native provenance and independent Reviewer binding are recorded
 append-only in `provenance.yml`.
 
