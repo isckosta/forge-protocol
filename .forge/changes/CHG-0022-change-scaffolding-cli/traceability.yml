@@ -1,0 +1,19 @@
+schema: forge/traceability@1
+change: CHG-0022
+requirements:
+  FR-001: {tasks: [T-003], test_strategy: test_change_new_prints_plan_before_creating_the_scaffold}
+  FR-002: {tasks: [T-001], test_strategy: tests/unit/test_change_scaffolding.py}
+  FR-003: {tasks: [T-003], test_strategy: test_change_new_supports_full_flow_and_non_behavioral_mode}
+  FR-004: {tasks: [T-001, T-003], test_strategy: Flow truth-table unit and CLI tests}
+  FR-005: {tasks: [T-001], test_strategy: frontmatter and placeholder assertions}
+  FR-006: {tasks: [T-001], test_strategy: manifest schema/content assertions}
+  FR-007: {tasks: [T-002, T-003], test_strategy: publication and plan-order tests}
+  FR-008: {tasks: [T-004], test_strategy: installed wheel golden path}
+  FR-009: {tasks: [T-005], test_strategy: documentation review}
+  FR-010: {tasks: [T-006, T-007], test_strategy: regression and independent review}
+acceptance:
+  AC-001: [test_cli_exposes_change_scaffolding_command]
+  AC-002: [test_change_new_prints_plan_before_creating_the_scaffold]
+  AC-003: [test_change_new_supports_full_flow_and_non_behavioral_mode]
+  AC-004: [test_publish_scaffold_rolls_back_on_write_failure]
+  AC-005: [test_publish_scaffold_preserves_concurrent_content]

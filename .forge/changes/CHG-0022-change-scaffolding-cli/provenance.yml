@@ -1,0 +1,10 @@
+schema: forge/provenance@1
+change: CHG-0022
+implementation:
+  revision: 48d465f
+  branch: chg-0022-change-scaffolding-cli
+  recorded_by: codex
+  status: complete
+evidence:
+  verification_revision: 5b61f25
+  source: repository-local-tests-and-forge-commands
