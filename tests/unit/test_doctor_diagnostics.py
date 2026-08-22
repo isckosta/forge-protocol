@@ -53,8 +53,14 @@ def test_doctor_passes_all_required_checks_for_valid_project(tmp_path: Path) -> 
         "protocol_compatibility",
         "canonical_flows",
         "canonical_contract",
+        "adapter:installation_missing",
     ]
-    assert all(check.status == "passed" for check in result.checks)
+    assert all(
+        check.status == "passed"
+        for check in result.checks
+        if check.id != "adapter:installation_missing"
+    )
+    assert result.checks[-1].status == "warning"
 
 
 def test_doctor_aggregates_failure_and_skipped_checks(tmp_path: Path) -> None:
