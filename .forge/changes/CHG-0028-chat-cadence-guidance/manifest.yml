@@ -5,7 +5,7 @@ change:
   title: Chat Cadence Guidance
   kind: documentation
 flow: {initial: fast, current: fast, escalations: []}
-state: {current: complete}
+state: {current: review}
 artifacts:
   intent: complete
   inspection: complete
