@@ -5,7 +5,7 @@ change:
   title: Chat Cadence Guidance
   kind: documentation
 flow: {initial: fast, current: fast, escalations: []}
-state: {current: review}
+state: {current: complete}
 artifacts:
   intent: complete
   inspection: complete
@@ -24,8 +24,8 @@ tdd:
     executable behavior or enforceable Protocol rule.
 verification: {status: passed}
 review:
-  status: pending
-  iteration: 5
+  status: passed
+  iteration: 6
   blockers: 1
   majors: 1
   minors: 0
@@ -83,11 +83,21 @@ review:
       kind: initial_review
       status: pending
       evidence_gap: >-
-        Full Strict Review pending against the finalization-004 subject.
+        Superseded pending review subject; final review continues as review-006
+        against finalization-005.
+    - id: review-006
+      revision: chg-0028-finalization-005
+      subject_provenance: finalization-005
+      reviewer_provenance: review-006
+      kind: initial_review
+      status: passed
+      evidence_gap: >-
+        Independent Full Strict Review passed against finalization-005 after
+        the subject-binding correction; no material functional finding remains.
 documentation:
   impact_evaluated: true
   update_required: true
   reason: >-
     Added identical non-binding chat-cadence guidance to both Adapter
-    workflow templates. Roadmap item #8 remains Open until the pending Full
-    Strict Review passes; no runtime or enforced Protocol behavior changed.
+    workflow templates and marked roadmap item #8 Done with the CHG-0028
+    link. No runtime or enforced Protocol behavior changed.

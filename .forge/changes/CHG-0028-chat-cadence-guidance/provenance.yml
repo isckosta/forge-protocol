@@ -233,3 +233,37 @@ records:
       statement: >-
         No functional template content changed; this subject records only the
         pending final-review state and complete declared control scope.
+  - id: review-005
+    role: review
+    execution: {id: review-exec-chg0028-final-full-cold-01, context_id: review-context-chg0028-final-full-cold-01}
+    recorded_at: "2026-08-23T03:30:00-03:00"
+    revision:
+      id: chg-0028-finalization-005
+      immutable_ref: {type: git_commit, value: 3ab5313e62faa276c90862f7dd34f9ec821ce095}
+      description: >-
+        Independent cold Full Strict Review found only the missing manifest
+        subject binding; functional and scope checks passed.
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: codex
+      statement: >-
+        Independent cold Full Strict Review with no conversation memory or
+        hints; no repository edits were made.
+  - id: review-006
+    role: review
+    execution: {id: review-exec-chg0028-final-full-cold-02, context_id: review-context-chg0028-final-full-cold-02}
+    recorded_at: "2026-08-23T03:45:00-03:00"
+    revision:
+      id: chg-0028-finalization-005
+      immutable_ref: {type: git_commit, value: 3ab5313e62faa276c90862f7dd34f9ec821ce095}
+      description: >-
+        Independent cold Full Strict Review passed after the final
+        subject-binding correction.
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: codex
+      statement: >-
+        Independent cold review execution with no conversation memory or
+        hints; no repository edits were made.
