@@ -27,8 +27,8 @@ requirements: {total: 6, implemented: 6, verified: 6}
 tdd: {status: compliant, cycles: 5}
 verification: {status: passed}
 review:
-  status: pending
-  iteration: 2
+  status: passed
+  iteration: 3
   blockers: 0
   majors: 0
   minors: 0
@@ -46,14 +46,16 @@ review:
       subject_provenance: resolution-001
       reviewer_provenance: review-002
       kind: initial_review
-      status: pending
-      new_material_findings: 0
+      status: failed
+      full_review_required: true
+      new_material_findings: 1
     - id: review-003
       revision: chg-0025-resolution-002
       subject_provenance: resolution-002
       reviewer_provenance: review-003
       kind: resolution_verification
-      status: pending
+      status: passed
+      full_review_required: false
       new_material_findings: 0
 documentation:
   impact_evaluated: true
