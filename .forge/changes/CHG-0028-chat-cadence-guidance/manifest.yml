@@ -5,24 +5,24 @@ change:
   title: Chat Cadence Guidance
   kind: documentation
 flow: {initial: fast, current: fast, escalations: []}
-state: {current: implementation}
+state: {current: complete}
 artifacts:
   intent: complete
   inspection: complete
   tdd_evidence: complete
   implementation: complete
   provenance: pending
-  verification: pending
+  verification: complete
   review: pending
   documentation: pending
   knowledge_capture: not_required
-requirements: {total: 2, implemented: 2, verified: 0}
+requirements: {total: 2, implemented: 2, verified: 2}
 tdd:
   status: not_applicable
   reason: >-
     This Change adds non-binding Markdown guidance only; it introduces no
     executable behavior or enforceable Protocol rule.
-verification: {status: pending}
+verification: {status: passed}
 review:
   status: pending
   iteration: 0
@@ -31,4 +31,10 @@ review:
   minors: 0
   observations: 0
   iterations: []
-documentation: {impact_evaluated: false}
+documentation:
+  impact_evaluated: true
+  update_required: true
+  reason: >-
+    Added identical non-binding chat-cadence guidance to both Adapter
+    workflow templates and marked roadmap item #8 Done with the CHG-0028
+    link. No runtime or enforced Protocol behavior changed.
