@@ -32,13 +32,13 @@ status: passed
   missing-guidance reasons.
 - Focused GREEN: the same module plus both workflow authority tests produced
   **6 passed**.
-- Resolution TDD-004 RED/GREEN: a test-only commit `1f638c8` produced
+- Resolution TDD-004 RED/GREEN: a test-only commit `9af790d` produced
   **1 failed, 5 passed**, followed by **6 passed** after the matching
   before-state sentence was added to both templates.
 - Resolution TDD-003 RED: the new prospective-compatibility assertion
   produced **1 failed, 4 passed** before the Contract wording correction.
 - Resolution TDD-003 GREEN: the focused module produced **5 passed** after
-  the correction in `98a45f3`.
+  the correction in `ee5e900`.
 - Full suite: `.venv/bin/python -m pytest -q` → **567 passed, 0 failed**
   after the separately committed before-state guidance test.
 
@@ -52,7 +52,7 @@ executable behavior; no post-hoc test is represented as TDD for them.
   non-blocking Adapter capability-limitations WARNs and
   `migration_available` WARN (6 candidates). No new failure was introduced.
 - RFC-0003 commit `84d15f8` and its final-boundary amendment precede the
-  corrected Contract commit `98a45f3`.
+  corrected Contract commit `ee5e900`.
 - `git diff --name-only 27e4fc0..25161ce` contains no
   `protocol/schemas/*.json`, `src/forge_cli/app.py`, or
   `src/forge_cli/adapter_cli.py` path; the later Resolution diffs touch only
@@ -73,10 +73,10 @@ observations are recorded in review.md.
 
 ## Review Resolution Note
 
-The first frozen Implementation subject `f898cdb` received an independent
+The first frozen Implementation subject `8ffd642` received an independent
 REQUEST CHANGES with a BLOCKER for provenance binding and a MAJOR for
 compatibility/TDD evidence. The compatibility defect is corrected in
-`98a45f3`; the original single-commit TDD chronology remains an explicitly
+`ee5e900`; the original single-commit TDD chronology remains an explicitly
 disclosed limitation, while the correction has its own real RED/GREEN cycle.
 
 The clean Review worktree does not contain the ignored local `.venv`; the

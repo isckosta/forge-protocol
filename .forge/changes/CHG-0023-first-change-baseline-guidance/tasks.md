@@ -20,5 +20,5 @@ status: active
 ## Status
 
 Implementation, Verification, Documentation, and the independent Strict
-Review cycle are complete. The final subject is c48c8fe; remaining review
+Review cycle are complete. The final subject is 64fa8d4; remaining review
 observations are non-blocking and documented in review.md.

@@ -9,7 +9,7 @@ requirements:
   NFR-002: {tasks: [T-003, T-004], tests: [test_workflow_templates_project_identical_baseline_guidance], evidence: normalized_template_block_parity}
   CON-001: {tasks: [T-002, T-003, T-004, T-005], evidence: no_file_under_protocol_schemas_changed}
   CON-002: {tasks: [T-002, T-003, T-004, T-005], evidence: prohibited_cli_paths_unchanged}
-  CON-003: {tasks: [T-002, T-006], evidence: RFC_addendum_b7a275c_precedes_contract_clarification_a875f6b}
+  CON-003: {tasks: [T-002, T-006], evidence: RFC_addendum_5be3afa_precedes_contract_clarification_8f64829}
 acceptance:
   AC-001: [test_both_effective_contracts_define_the_same_first_commit_rule]
   AC-002: [test_codex_workflow_explicitly_guides_first_commit_baseline, test_claude_code_workflow_explicitly_guides_first_commit_baseline, test_workflow_identifies_baseline_as_before_state_not_implementation]
