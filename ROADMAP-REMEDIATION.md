@@ -33,7 +33,7 @@
 | P0 | Document first Change with no prior Git history | `first-change-baseline-guidance` | **Done** | [`CHG-0023`](.forge/changes/CHG-0023-first-change-baseline-guidance/) |
 | P1 | `forge doctor` detect zero adapters installed | `adapter-readiness-doctor-check` | **Done** | [`CHG-0024`](.forge/changes/CHG-0024-adapter-readiness-doctor-check/) |
 | P1 | Real semantics for `plan.md status: approved` | `plan-approval-semantics` | **Done** | [`CHG-0025`](.forge/changes/CHG-0025-plan-approval-semantics/) |
-| P1 | Document skill-propagation latency after adapter install | `skill-propagation-diagnostics` | Open | — |
+| P1 | Document skill-propagation latency after adapter install | `skill-propagation-diagnostics` | **Done** | [`CHG-0026`](.forge/changes/CHG-0026-skill-propagation-diagnostics/) |
 | P1 | Review cost proportional to diff size (RFC-level) | `review-cost-proportionality` | Open | — |
 | P2 | Chat communication cadence guidance | `chat-cadence-guidance` | Open | — |
 | P2 | Suggest publishing key artifacts as Artifact | `artifact-publication-suggestion` | Open | — |
