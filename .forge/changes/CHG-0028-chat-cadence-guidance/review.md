@@ -3,7 +3,7 @@ forge:
   artifact: review
   schema: 1
 change: CHG-0028
-status: pending
+status: passed
 ---
 # Strict Review — CHG-0028
 
@@ -21,3 +21,23 @@ The cold independent Strict Review of subject
 The Reviewer found the template content, parity, non-binding wording, TDD
 exception, and scope otherwise sound. The Resolution Delta removes the
 unused scaffold files and moves the manifest to the Review state.
+
+## Iteration 2 — PASS (`kind: resolution_verification`)
+
+The cold Resolution Verification bound to the exact subject
+`588c02d788ee7416d02f64495e72171562f59315` and independently confirmed:
+
+- the manifest is in Review state at the frozen subject and no longer marks
+  the Change complete before Review;
+- no Git-visible untracked reviewable files remain;
+- the Resolution Delta is limited to the declared control paths;
+- both workflow templates remain byte-identical and the guidance remains
+  explicitly non-binding; and
+- targeted schemas, scope, roadmap, and diff checks pass with no new
+  material finding.
+
+The isolated clone still cannot perform a fully clean `forge validate`
+because unrelated CHG-0021 provenance anchors are absent from its local
+history. No CHG-0028 finding results from that limitation.
+
+**PASS (final).**

@@ -40,3 +40,22 @@ records:
       statement: >-
         Resolution was limited to the Review Delta declared by R001/R002;
         no Adapter template or substantive guidance content was changed.
+  - id: review-002
+    role: review
+    execution: {id: review-exec-chg0028-resverify-cold-01, context_id: review-context-chg0028-resverify-cold-01}
+    recorded_at: "2026-08-23T00:30:00-03:00"
+    revision:
+      id: chg-0028-resolution-001
+      immutable_ref: {type: git_commit, value: 588c02d788ee7416d02f64495e72171562f59315}
+      description: >-
+        Cold Resolution Verification passed. R001/R002 were independently
+        re-verified against the exact frozen resolution subject and no new
+        material finding was found.
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: codex
+      statement: >-
+        Independent cold Resolution Verification distinct from the initial
+        Strict Review and Resolution executions. It made no repository edits
+        and reproduced schema, scope, parity, and untracked-file checks.
