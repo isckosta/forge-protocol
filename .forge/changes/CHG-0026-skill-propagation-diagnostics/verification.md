@@ -19,8 +19,8 @@ status: passed
 | Install output regression | PASS |
 | Codex workflow disclosure | PASS |
 | Claude Code projected skill disclosure | PASS |
-| Adapter command/projection matrix | PASS — 41 passed |
-| Full suite | PASS with 579 passed and 2 environment-only failures |
+| Adapter command/projection matrix | PASS — 42 passed |
+| Full suite | PASS with 580 passed and 2 environment-only failures |
 | `forge validate` | PASS |
 | Documentation Impact | PASS — roadmap item #6 updated |
 
@@ -28,9 +28,10 @@ status: passed
 
 - RED: the three new expectations failed against the unmodified code with 3
   assertion failures for the missing diagnostic/disclosures.
-- Focused RED/GREEN selection: **3 passed** after implementation.
-- Adapter command and projection matrix: **41 passed**.
-- Full suite: **579 passed, 2 failed**. Both failures are the pre-existing
+- Focused RED/GREEN selection: **3 passed** for the initial cycle and **2 passed**
+  for the Claude path resolution cycle.
+- Adapter command and projection matrix: **42 passed**.
+- Full suite: **580 passed, 2 failed**. Both failures are the pre-existing
   distribution tests that build a wheel and cannot download isolated
   `hatchling` build dependencies because this environment cannot resolve
   PyPI; no tested behavior in this Change is involved.

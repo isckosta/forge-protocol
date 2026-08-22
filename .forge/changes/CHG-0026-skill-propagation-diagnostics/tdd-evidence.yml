@@ -1,7 +1,7 @@
 schema: forge/tdd-evidence@1
 change: CHG-0026
 status: compliant
-cycle_count: 1
+cycle_count: 2
 cycles:
   - id: TDD-001
     title: Install and projected skills disclose session-scoped discovery delay
@@ -25,3 +25,18 @@ cycles:
         Codex's live catalog timing was not directly reproducible in this
         repository session; the implementation deliberately uses a generic,
         non-guaranteeing Harness-runtime disclosure.
+  - id: TDD-002
+    title: Claude Code fallback names the nested published SKILL.md path
+    requirements: [FR-001, AC-001]
+    red:
+      observed: true
+      failure_reason: >-
+        The Claude Code install regression failed against the first
+        implementation because it printed `.claude/SKILL.md` while the
+        published resource is `.claude/skills/forge/SKILL.md`.
+    green:
+      observed: true
+      evidence: >-
+        After deriving the fallback from the planned SKILL.md operation, the
+        Codex and Claude Code install-path regressions passed 2/2; the complete
+        Adapter command/projection matrix passed 42 tests.
