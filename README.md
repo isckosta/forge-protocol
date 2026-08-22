@@ -38,16 +38,23 @@ Specification defines what should exist. TDD drives how behavior is implemented.
 
 ## Bootstrap CLI
 
-Forge currently exposes only infrastructure commands:
+Forge exposes infrastructure commands and Change scaffolding:
 
 ```text
 forge version
 forge init
 forge validate
 forge doctor
+forge change new <slug>
+forge change new <slug> --non-behavioral
 ```
 
 `forge init` requires Git and initializes `.forge/` at the Git repository root, even when invoked from a nested directory. `forge validate` validates project state against the bundled canonical Protocol. `forge doctor` performs read-only diagnostics.
+
+`forge change new <slug>` scans the repository's existing Changes for the next
+`CHG-NNNN`, resolves the enabled active Flow, prints its complete publication
+plan, and then creates the required artifact placeholders. It is offline-safe
+and works from an installed wheel; `--non-behavioral` omits TDD-only artifacts.
 
 The CLI also exposes an Adapter command group for installing and managing Harness Adapters:
 

@@ -223,6 +223,15 @@ def main(
     canonical_paths = [repository / ".forge" / "forge.yml", *project_flow_paths]
     canonical_before = _snapshot(canonical_paths)
 
+    change_before = _tree_snapshot(repository)
+    change = _run(forge, repository, environment, "change", "new", "wheel-change")
+    assert "CREATE forge_owned .forge/changes/CHG-0001-wheel-change/intent.md" in change.stdout
+    assert change.stdout.index("CREATE forge_owned") < change.stdout.index("Created CHG-0001")
+    change_root = repository / ".forge" / "changes" / "CHG-0001-wheel-change"
+    assert (change_root / "manifest.yml").is_file()
+    assert _tree_snapshot(repository) != change_before
+    _run(forge, repository, environment, "validate")
+
     listed = _run(forge, repository, environment, "adapter", "list")
     assert "codex version=0.1.0 harness=codex" in listed.stdout
     assert "compatibility=compatible installation=not_installed" in listed.stdout
