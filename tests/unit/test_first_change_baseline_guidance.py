@@ -13,6 +13,7 @@ BASELINE_GUIDANCE = "When this is the repository's first commit"
 BASELINE_REQUIREMENT = "complete pre-existing state in the intended repository scope, with no file excluded"
 NON_ENFORCEMENT = "This Adapter projects the requirement but cannot technically enforce Git behavior"
 C076_MARKER = "C-076 — Complete baseline for a first-commit Change"
+C076_COMPATIBILITY = "This rule applies only to Changes begun after C-076 adoption"
 
 
 def test_codex_workflow_explicitly_guides_first_commit_baseline() -> None:
@@ -51,3 +52,11 @@ def test_both_effective_contracts_define_the_same_first_commit_rule() -> None:
     shared_rule = shared[shared.index(C076_MARKER) :]
     protocol_2_rule = protocol_2[protocol_2.index(C076_MARKER) :]
     assert shared_rule == protocol_2_rule
+
+
+def test_c076_does_not_retroactively_invalidate_existing_changes() -> None:
+    shared = SHARED_CONTRACT.read_text(encoding="utf-8")
+    protocol_2 = PROTOCOL_2_CONTRACT.read_text(encoding="utf-8")
+
+    assert C076_COMPATIBILITY in shared
+    assert C076_COMPATIBILITY in protocol_2
