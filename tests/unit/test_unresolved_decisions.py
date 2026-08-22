@@ -262,6 +262,25 @@ def test_active_approved_plan_with_human_decision_passes_plan_check(tmp_path: Pa
     assert result.passed, _messages(result)
 
 
+def test_superseded_plan_decision_cannot_authorize_implementation(tmp_path: Path) -> None:
+    _init(tmp_path)
+    decision = {
+        "id": "DEC-001", "class": "technical", "materiality": "material",
+        "status": "superseded", "authority": "human", "owning_artifact": "plan",
+        "discovered_in": "plan", "resolved_via": "human_decision",
+    }
+    _write_manifest(
+        tmp_path,
+        "CHG-9112-plan-superseded",
+        _approved_plan_manifest([decision], change={"id": "CHG-9112", "title": "T", "kind": "feature"}),
+    )
+
+    result = validate_project(tmp_path, PROTOCOL_ROOT)
+
+    assert not result.passed
+    assert any("superseded" in message and "C-077" in message for message in _messages(result))
+
+
 def test_protocol2_active_approved_plan_uses_same_authorization_rule(tmp_path: Path) -> None:
     _init_protocol2(tmp_path)
     decision = {
