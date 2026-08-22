@@ -37,6 +37,10 @@ records:
         provider-native or cryptographic attestation is claimed.
   - id: resolution-001
     role: resolution
+    scope:
+      - src/forge_cli/validation/__init__.py
+      - tests/unit/test_unresolved_decisions.py
+    targets: [PR17-verified-assurance, PR17-large-change-id, PR18-historical-compatibility, PR18-legacy-provenance]
     execution: {id: resolution-exec-chg0025-20260822-01, context_id: resolution-context-chg0025-20260822-01}
     recorded_at: "2026-08-22T18:00:00-03:00"
     revision:
