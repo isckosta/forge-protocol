@@ -1,0 +1,38 @@
+schema: forge/change@2
+protocol: 2
+change:
+  id: CHG-0026
+  title: Skill Propagation Diagnostics
+  kind: chore
+flow: {initial: fast, current: fast, escalations: []}
+state: {current: strict_review}
+artifacts:
+  intent: complete
+  inspection: complete
+  test_design: complete
+  tdd_evidence: complete
+  implementation: complete
+  provenance: complete
+  verification: complete
+  review: pending
+  documentation: complete
+  knowledge_capture: not_required
+requirements: {total: 2, implemented: 2, verified: 2}
+tdd: {status: compliant, cycles: 2}
+verification: {status: passed}
+review:
+  status: pending
+  iteration: 0
+  blockers: 0
+  majors: 0
+  minors: 0
+  observations: 0
+  iterations: []
+documentation:
+  impact_evaluated: true
+  update_required: true
+  reason: >-
+    Updated ROADMAP-REMEDIATION.md item #6 to Done with the CHG-0026 link.
+    No Contract, Schema, RFC, ADR, Doctor, scaffolding, or example file
+    changed; the runtime limitation is disclosed in CLI output and both
+    projected skill templates.
