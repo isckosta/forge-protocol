@@ -54,3 +54,17 @@ findings:
 
 This Resolution Delta updates the verification evidence to the corrected
 template hash and records the new subject before the next cold verification.
+
+## Iteration 4 — PASS (`kind: resolution_verification`)
+
+The independent cold verification bound to the finalization subject
+`4a0b13c...` confirmed that the current review subject is authoritative, the
+previous passed iteration is explicitly superseded, and the final control
+metadata is limited to the declared review paths. It also confirmed:
+
+- both templates are byte-identical with the recorded SHA-256;
+- the cadence guidance remains non-binding and preserves the disclaimer;
+- focused projection tests and targeted schema checks pass; and
+- no untracked reviewable files or out-of-scope source changes exist.
+
+**PASS (final).**

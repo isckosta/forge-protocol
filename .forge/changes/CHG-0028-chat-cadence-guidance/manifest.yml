@@ -5,7 +5,7 @@ change:
   title: Chat Cadence Guidance
   kind: documentation
 flow: {initial: fast, current: fast, escalations: []}
-state: {current: review}
+state: {current: complete}
 artifacts:
   intent: complete
   inspection: complete
@@ -24,10 +24,10 @@ tdd:
     executable behavior or enforceable Protocol rule.
 verification: {status: passed}
 review:
-  status: failed
-  iteration: 3
-  blockers: 1
-  majors: 1
+  status: passed
+  iteration: 4
+  blockers: 0
+  majors: 0
   minors: 0
   observations: 0
   iterations:
@@ -45,7 +45,7 @@ review:
       subject_provenance: resolution-001
       reviewer_provenance: review-002
       kind: resolution_verification
-      status: passed
+      status: failed
       full_review_required: false
       new_material_findings: 0
       finding_classes: []
@@ -53,7 +53,8 @@ review:
         R001/R002 independently verified resolved against the exact frozen
         resolution subject 588c02d788ee7416d02f64495e72171562f59315. No new
         material finding was found; targeted schema, scope, parity, and
-        untracked-file checks passed.
+        untracked-file checks passed at that historical subject, which was
+        superseded by the later editorial correction.
     - id: review-003
       revision: chg-0028-correction-001
       subject_provenance: correction-001
@@ -63,6 +64,18 @@ review:
       evidence_gap: >-
         The editorial correction changed the templates after review-002 and
         left the recorded verification hash stale. See review.md.
+    - id: review-004
+      revision: chg-0028-finalization-001
+      subject_provenance: finalization-001
+      reviewer_provenance: review-004
+      kind: resolution_verification
+      status: passed
+      full_review_required: false
+      new_material_findings: 0
+      finding_classes: []
+      evidence_gap: >-
+        Finalization metadata was independently verified against exact
+        subject 4a0b13c; templates, evidence, scope, and lifecycle all pass.
 documentation:
   impact_evaluated: true
   update_required: true
