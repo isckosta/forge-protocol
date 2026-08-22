@@ -52,7 +52,8 @@ executable behavior; no post-hoc test is represented as TDD for them.
   corrected Contract commit `98a45f3`.
 - `git diff --name-only 27e4fc0..25161ce` contains no
   `protocol/schemas/*.json`, `src/forge_cli/app.py`, or
-  `src/forge_cli/adapter_cli.py` path.
+  `src/forge_cli/adapter_cli.py` path; the later Resolution diffs touch only
+  the RFC/Contract and Change evidence paths named by the Plan.
 
 ## Compatibility / Limitations
 
@@ -80,3 +81,8 @@ reproducible independent-worktree command is therefore
 `/home/isckosta/forge-protocol/.venv/bin/python -m pytest -q` with that
 worktree as the current directory. The shared interpreter is outside Git,
 but is the same interpreter used for the recorded full-suite run.
+
+The final review subject includes the complete evidence assembly after the
+RFC addendum and Contract clarification. Only the exact Change-local
+`manifest.yml`, `provenance.yml`, and `review.md` files may differ afterward
+as review-control metadata.
