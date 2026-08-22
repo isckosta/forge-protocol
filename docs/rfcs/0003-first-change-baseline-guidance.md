@@ -49,6 +49,11 @@ no schema field, Flow stage, CLI command, Adapter lifecycle state, or
 provider-specific dependency. Existing valid Protocol 1 instances are not
 invalidated; the rule applies when the first-commit condition is present.
 
+This rule applies only to Changes begun after C-076 adoption; it does not
+retroactively invalidate a previously valid Change or require a historical
+Change to acquire a baseline it did not have. This preserves the meaning of
+existing Protocol 1 and Protocol 2 instances under C-045/C-046.
+
 Because this repository's active project resolves Protocol 2's effective
 Contract from `protocol/versions/2/contract/engineering.md`, C-076 is
 recorded with identical meaning in both that versioned Contract and the
@@ -90,3 +95,12 @@ Future Changes may define a deterministic diagnostic or opt-in baseline
 helper if real repositories demonstrate that the scope distinction cannot be
 made reliably by the agent. Such work must preserve this Contract rule and
 must not claim prevention unless the underlying Harness actually enforces it.
+
+## RFC Addendum — final timing and compatibility boundary
+
+The Contract wording is intentionally precise: the intended scope is declared
+before the baseline, the baseline is one commit containing the complete state
+that existed before the Change began, and Change artifacts created afterward
+are not part of that pre-existing state. The rule applies prospectively to
+new Changes after adoption. This addendum records those boundaries before
+the corresponding Contract correction is accepted.
