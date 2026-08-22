@@ -1,7 +1,5 @@
 """Public CLI for creating repository-native Forge Change scaffolds."""
 
-from __future__ import annotations
-
 from pathlib import Path
 from typing import Annotated
 
