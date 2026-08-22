@@ -3,7 +3,7 @@ forge:
   artifact: review
   schema: 1
 change: CHG-0027
-status: pending
+status: passed
 ---
 # Strict Review — CHG-0027
 
@@ -32,3 +32,25 @@ provenance in the Resolution subject and using the schema-valid
 `observed_by: self` value while transparently describing the independent
 subagent execution in its statement. A distinct cold Resolution Verification
 must re-run schema/path/scope checks before PASS.
+
+## Iteration 2 — PASS (`kind: resolution_verification`)
+
+The Resolution Verification ran cold in a distinct execution and bound to
+the exact resolution subject `085c9edfaf1f448629a3fe9c97915871b04a1d46`.
+It independently confirmed:
+
+- the manifest is FULL and complete;
+- `tdd-evidence.yml` is schema-valid with zero cycles and an honest
+  `not_applicable` reason;
+- provenance is tracked, schema-valid, and binds `resolution-001` to the
+  exact subject;
+- the Resolution Delta is limited to the declared Change-local paths;
+- RFC-0005 remains Proposed and no prohibited path or Review weakening was
+  introduced; and
+- no new material finding exists.
+
+`forge validate` retains only unrelated CHG-0021 C-026 history findings in
+this isolated clone, and pytest is unavailable in the environment. Neither
+limitation produces a CHG-0027 finding.
+
+**PASS (final).**

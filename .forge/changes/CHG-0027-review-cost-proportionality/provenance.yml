@@ -36,3 +36,47 @@ records:
         without conversation memory or hints. This self-recorded source uses
         the schema-valid observed_by vocabulary; it does not claim provider
         native or cryptographic attestation.
+  - id: resolution-001
+    role: resolution
+    execution: {id: resolution-exec-chg0027-20260822-01, context_id: resolution-context-chg0027-20260822-01}
+    recorded_at: "2026-08-22T22:15:00-03:00"
+    scope:
+      - .forge/changes/CHG-0027-review-cost-proportionality/manifest.yml
+      - .forge/changes/CHG-0027-review-cost-proportionality/tdd-evidence.yml
+      - .forge/changes/CHG-0027-review-cost-proportionality/provenance.yml
+    targets: [R001, R002, R003]
+    revision:
+      id: chg-0027-resolution-001
+      immutable_ref: {type: git_commit, value: 085c9edfaf1f448629a3fe9c97915871b04a1d46}
+      description: >-
+        Resolution of the initial Strict Review findings. The following
+        cold Resolution Verification is bound to this exact subject.
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: codex
+      statement: >-
+        Resolution repaired only the declared Review Delta paths. No source,
+        protocol, RFC, roadmap, or substantive Change artifact was altered.
+  - id: review-002
+    role: review
+    execution: {id: review-exec-chg0027-resverify-cold-01, context_id: review-context-chg0027-resverify-cold-01}
+    recorded_at: "2026-08-22T22:45:00-03:00"
+    revision:
+      id: chg-0027-resolution-001
+      immutable_ref: {type: git_commit, value: 085c9edfaf1f448629a3fe9c97915871b04a1d46}
+      description: >-
+        Cold Resolution Verification passed. R001/R002/R003 were
+        independently re-verified against the exact frozen resolution
+        subject; the Resolution Delta matched declared scope and no new
+        material finding was found.
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: codex
+      statement: >-
+        Independent cold Resolution Verification execution distinct from
+        the initial Strict Review and Resolution executions. It made no
+        repository edits and reproduced the schema, scope, provenance,
+        RFC-status, and Review-safeguard checks. No provider-native or
+        cryptographic attestation is claimed.
