@@ -1,0 +1,38 @@
+schema: forge/execution-provenance@2
+change: CHG-0026
+records:
+  - id: implementation-001
+    role: implementation
+    execution: {id: implementation-exec-chg0026-20260822-01, context_id: implementation-context-chg0026-20260822-01}
+    recorded_at: "2026-08-22T18:30:00-03:00"
+    revision:
+      id: chg-0026-implementation-001
+      immutable_ref: {type: git_commit, value: f679ace481b1be993b389558555464a5248dd1b4}
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: codex
+      statement: >-
+        Self-recorded repository-native provenance for the CHG-0026
+        implementation and evidence assembly, including the resolution cycle
+        for the Claude Code nested skill path. RED was observed before each
+        production edit through real pytest subprocess runs; the full
+        verification records the two environment-only wheel failures. No
+        provider-native or cryptographic attestation is claimed.
+  - id: review-001
+    role: review
+    execution: {id: review-exec-chg0026-20260822-independent, context_id: review-context-chg0026-20260822-independent}
+    recorded_at: "2026-08-22T19:00:00-03:00"
+    revision:
+      id: chg-0026-implementation-001
+      immutable_ref: {type: git_commit, value: f679ace481b1be993b389558555464a5248dd1b4}
+    source:
+      assurance: recorded
+      observed_by: independent_subagent
+      harness: codex
+      statement: >-
+        Cold, hint-free Strict Review execution distinct from the
+        implementation execution. The Reviewer inspected the committed
+        Change, reran the focused and full verification, made no repository
+        edits, and reported PASS with no findings. No provider-native or
+        cryptographic attestation is claimed.

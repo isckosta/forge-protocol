@@ -23,3 +23,5 @@ def test_projection_uses_packaged_workflow_template() -> None:
 
     assert template
     assert template in skill.content
+    assert "may not refresh its skill catalog in the current session" in skill.content
+    assert "Harness runtime behavior, not technically controlled by Forge" in skill.content

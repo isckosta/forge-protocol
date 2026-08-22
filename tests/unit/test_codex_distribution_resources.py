@@ -34,6 +34,8 @@ def test_codex_workflow_skill_template_is_packaged() -> None:
     content = skill.read_text(encoding="utf-8")
     assert "Forge Workflow Instructions" in content
     assert "not technical enforcement" in content
+    assert "may not refresh its skill catalog in the current session" in content
+    assert "Harness runtime behavior, not technically controlled by Forge" in content
 
 
 def test_capability_evidence_has_stable_staleness_metadata() -> None:

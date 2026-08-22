@@ -161,12 +161,26 @@ def test_adapter_install_confirms_success_and_names_the_next_step(
     assert result.exit_code == 0, result.output
     assert "codex Adapter installed at .agents/skills/forge." in result.stdout
     assert "Open codex in this repository" in result.stdout
+    assert "may not refresh its skill catalog until a later turn or session" in result.stdout
+    assert "read `.agents/skills/forge/SKILL.md` directly" in result.stdout
     lines = result.stdout.splitlines()
     confirmation_index = next(
         index for index, line in enumerate(lines) if "Adapter installed at" in line
     )
     assert _operation_lines("\n".join(lines[:confirmation_index]))
     assert "No changes required." not in result.stdout
+
+
+def test_claude_code_install_names_the_nested_skill_path(
+    tmp_path: Path, monkeypatch
+) -> None:
+    _initialize_project(tmp_path, monkeypatch)
+
+    result = runner.invoke(app, ["adapter", "install", "claude-code"])
+
+    assert result.exit_code == 0, result.output
+    assert "claude-code Adapter installed at .claude." in result.stdout
+    assert "read `.claude/skills/forge/SKILL.md` directly" in result.stdout
 
 
 def test_adapter_install_dry_run_prints_no_success_confirmation(
