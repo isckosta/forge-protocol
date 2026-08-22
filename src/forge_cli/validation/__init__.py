@@ -547,7 +547,10 @@ def _validate_plan_authorization(r:Path,mpath:Path,m:dict)->list[ValidationFindi
                            and "<!-- forge:plan-approval-record -->" in plan_text
                            and provenance_confirmation)
     matching=[]
+    superseded_plan=False
     for entry in decisions:
+        if isinstance(entry,dict) and entry.get("owning_artifact")=="plan" and entry.get("status")=="superseded":
+            superseded_plan=True
         if not(
             isinstance(entry,dict)
             and entry.get("class")=="technical"
@@ -562,6 +565,8 @@ def _validate_plan_authorization(r:Path,mpath:Path,m:dict)->list[ValidationFindi
         return[_deleg_finding(r,mpath,"C-077","Plan authorization is ambiguous: more than one active resolved human Plan Decision exists; supersede all but one before crossing the Plan/Implementation boundary (C-077).")]
     authorized=bool(matching) and recorded_confirmation
     if authorized:return[]
+    if superseded_plan:
+        return[_deleg_finding(r,mpath,"C-077","Plan authorization is missing: the recorded Plan Decision is superseded and cannot authorize crossing the Plan/Implementation boundary (C-077).")]
     return[_deleg_finding(r,mpath,"C-077",("Plan authorization is missing: an active Change with artifacts.plan: approved MUST record a material "
         "technical Decision owned by plan with authority: human, status: resolved, resolved_via: human_decision, and explicit confirmation in plan.md and provenance.yml before crossing the Plan/Implementation boundary "
         "(C-077)."))]
