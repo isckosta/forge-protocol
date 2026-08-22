@@ -84,7 +84,10 @@ def _active_flow(root: Path) -> tuple[str, dict]:
     return effective["canonical"]["flow"]["id"], effective["canonical"]
 
 
-@change_app.command("new")
+@change_app.command(
+    "new",
+    help="Plan and create a repository-native Change scaffold. Use --non-behavioral for prose-only Changes.",
+)
 def new_change(
     slug: Annotated[str, typer.Argument(metavar="SLUG")],
     non_behavioral: bool = typer.Option(
