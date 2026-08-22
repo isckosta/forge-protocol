@@ -163,3 +163,26 @@ records:
       statement: >-
         This subject includes the complete declared control/evidence scope;
         no Adapter template content changed after correction-001.
+  - id: finalization-003
+    role: resolution
+    execution: {id: finalization3-exec-chg0028-20260823-01, context_id: finalization3-context-chg0028-20260823-01}
+    recorded_at: "2026-08-23T02:15:00-03:00"
+    scope:
+      - .forge/changes/CHG-0028-chat-cadence-guidance/manifest.yml
+      - .forge/changes/CHG-0028-chat-cadence-guidance/provenance.yml
+      - .forge/changes/CHG-0028-chat-cadence-guidance/review.md
+      - .forge/changes/CHG-0028-chat-cadence-guidance/verification.md
+    targets: [BLOCKER, MAJOR]
+    revision:
+      id: chg-0028-finalization-003
+      immutable_ref: {type: git_commit, value: 1e5cf090ea82869b04fbc3e4977e7950ef70c1b8}
+      description: >-
+        Exact subject for the reopened full review, including the complete
+        control/evidence scope and the recorded prior scope finding.
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: codex
+      statement: >-
+        No Adapter template content changed after correction-001; this commit
+        only records the new full-review subject and its complete scope.
