@@ -5,18 +5,18 @@ change:
   title: Chat Cadence Guidance
   kind: documentation
 flow: {initial: fast, current: fast, escalations: []}
-state: {current: inspection}
+state: {current: implementation}
 artifacts:
   intent: complete
   inspection: complete
   tdd_evidence: complete
-  implementation: pending
+  implementation: complete
   provenance: pending
   verification: pending
   review: pending
   documentation: pending
   knowledge_capture: not_required
-requirements: {total: 2, implemented: 0, verified: 0}
+requirements: {total: 2, implemented: 2, verified: 0}
 tdd:
   status: not_applicable
   reason: >-

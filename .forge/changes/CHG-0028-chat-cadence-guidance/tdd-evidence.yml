@@ -1,0 +1,8 @@
+schema: forge/tdd-evidence@1
+change: CHG-0028
+status: not_applicable
+cycle_count: 0
+cycles: []
+reason: >-
+  This Change adds non-binding Markdown guidance only; it introduces no
+  executable behavior or enforceable Protocol rule.
