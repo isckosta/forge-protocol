@@ -1,0 +1,20 @@
+schema: forge/execution-provenance@2
+change: CHG-0025
+records:
+  - id: implementation-001
+    role: implementation
+    execution: {id: implementation-exec-chg0025-20260822-01, context_id: implementation-context-chg0025-20260822-01}
+    recorded_at: "2026-08-22T12:00:00-03:00"
+    revision:
+      id: chg-0025-implementation-001
+      immutable_ref: {type: git_commit, value: 145b9743be6f29b10a332107bb421d855fa7382a}
+    source:
+      assurance: recorded
+      observed_by: operator
+      harness: codex
+      reference: plan.md#approval-record
+      statement: >-
+        Explicit human approval was received from the user as “Pode criar” in
+        the active session on 2026-08-22, authorizing continuation past the
+        Plan/Implementation boundary. This is durable repository evidence,
+        not cryptographic or provider-native attestation.

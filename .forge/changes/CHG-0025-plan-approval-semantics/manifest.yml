@@ -1,0 +1,53 @@
+schema: forge/change@2
+protocol: 2
+change:
+  id: CHG-0025
+  title: Plan Approval Semantics
+  kind: feature
+flow: {initial: full, current: full, escalations: []}
+state: {current: strict_review}
+artifacts:
+  intent: complete
+  discovery: complete
+  specification: complete
+  specification_review: complete
+  architecture: complete
+  test_strategy: complete
+  plan: approved
+  tasks: complete
+  traceability: complete
+  tdd_evidence: complete
+  implementation: complete
+  provenance: complete
+  verification: complete
+  review: pending
+  documentation: complete
+  knowledge_capture: complete
+requirements: {total: 6, implemented: 6, verified: 6}
+tdd: {status: compliant, cycles: 4}
+verification: {status: passed}
+review:
+  status: pending
+  iteration: 0
+  blockers: 0
+  majors: 0
+  minors: 0
+  observations: 0
+  iterations: []
+documentation:
+  impact_evaluated: true
+  update_required: true
+  reason: >-
+    Updated Contract, versioned Contract, canonical artifact guidance, both
+    Adapter workflow projections, and added RFC-0004. ROADMAP-REMEDIATION.md
+    item #5 is Done with the linked CHG-0025 record; no examples or prohibited
+    CLI/Doctor files were changed.
+decisions:
+  - id: DEC-001
+    class: technical
+    materiality: material
+    status: resolved
+    authority: human
+    owning_artifact: plan
+    discovered_in: plan
+    resolved_via: human_decision
