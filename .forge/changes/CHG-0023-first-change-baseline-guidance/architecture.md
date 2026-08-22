@@ -33,7 +33,8 @@ Both `protocol/contract/engineering.md` and
 `protocol/versions/2/contract/engineering.md` receive identical C-076 text
 after the existing Contract rules, because Protocol 2 is the active project's
 effective Contract. Its wording uses MUST for the repository state and
-explicitly separates the baseline commit from Implementation. The rule does not define
+explicitly separates the complete pre-Change state from Change artifacts and
+Implementation. The rule does not define
 how a Harness performs `git add`; that remains Harness/runtime capability.
 
 Both `resources/skills/workflow.md` files receive the same two-line reminder:

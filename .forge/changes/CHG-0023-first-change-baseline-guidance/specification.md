@@ -35,10 +35,11 @@ semantics: when a Change is conducted in a repository with no prior Git
 commit, the complete pre-existing state within the declared intended
 repository scope MUST be committed as one baseline commit, with no file
 excluded, before Implementation begins. The baseline is the before-state,
-not Implementation, and subsequent Change commits MUST be reviewable as the
-delta from that baseline. If operational or generated material is
-intentionally outside the scope, that scope MUST be declared before the
-baseline is committed.
+not Implementation; it is the complete state that existed before the Change
+began, excluding Change artifacts created after the baseline. Subsequent
+Change commits MUST be reviewable as the delta from that baseline. If
+operational or generated material is intentionally outside the scope, that
+scope MUST be declared before the baseline is committed.
 
 ### FR-002
 
@@ -117,7 +118,11 @@ normative decision and this Specification MUST NOT silently replace it.
 - **AC-006** (Documentation Impact): `examples/README.md` indexes the new
   example, `ROADMAP-REMEDIATION.md` marks item #3 done with the real Change
   link, and Knowledge Capture records the durable lesson.
-- **AC-007**: full `pytest`, `forge validate`, and `forge doctor` results
+- **AC-007** (FR-001, FR-002):
+  `tests/unit/test_first_change_baseline_guidance.py` is the focused test
+  module for both effective Contract files and both packaged workflow
+  templates; its RED/GREEN evidence is recorded in `tdd-evidence.yml`.
+- **AC-008**: full `pytest`, `forge validate`, and `forge doctor` results
   remain green, with any pre-existing warnings called out rather than
   silently treated as failures.
 

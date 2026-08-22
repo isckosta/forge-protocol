@@ -309,3 +309,12 @@ A migration MUST NOT fabricate, infer, or reconstruct data that does not
 already exist in the instance being migrated. A transformation that
 cannot be performed without inventing information MUST be refused, not
 approximated.
+
+## C-076 — Complete baseline for a first-commit Change
+A Change conducted in a repository with no prior Git commit MUST first
+declare its intended repository scope and commit the complete state that
+existed before the Change began as one baseline, with no in-scope file
+excluded, before Implementation begins. Change artifacts created after that
+point are not pre-existing state. The baseline commit represents the
+before-state, not Implementation. Subsequent Change commits MUST therefore
+be reviewable as the delta from that complete baseline.

@@ -27,11 +27,13 @@ does not state how the first-commit before-state must be established.
 Add the following Contract rule:
 
 **C-076 — Complete baseline for a first-commit Change.** When a Change is
-conducted in a repository with no prior Git commit, the complete pre-existing
-state within the intended repository scope MUST be committed, with no file
-excluded, before Implementation begins. The baseline commit represents the
-before-state; it is not Implementation. The Change's subsequent commits
-MUST therefore be reviewable as the delta from that complete baseline.
+conducted in a repository with no prior Git commit, the intended repository
+scope MUST be declared, and the complete state that existed before the Change
+began MUST be committed as one baseline, with no in-scope file excluded,
+before Implementation begins. Change artifacts created after that point are
+not pre-existing state. The baseline commit represents the before-state; it
+is not Implementation. The Change's subsequent commits MUST therefore be
+reviewable as the delta from that complete baseline.
 
 This is a repository-state requirement, not a claim that a Harness can
 technically prevent an incomplete commit. An Adapter may project the rule as
