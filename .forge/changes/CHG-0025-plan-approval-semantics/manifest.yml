@@ -45,7 +45,7 @@ review:
       revision: chg-0025-resolution-001
       subject_provenance: resolution-001
       reviewer_provenance: review-002
-      kind: resolution_review
+      kind: resolution_verification
       status: pending
       new_material_findings: 0
 documentation:
