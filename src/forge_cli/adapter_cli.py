@@ -220,6 +220,14 @@ def install(
         typer.echo("No changes required.")
         return
     harness = registry.get(adapter_id).manifest.harness
+    skill_path = next(
+        (
+            operation.path
+            for operation in result.plan.operations
+            if operation.path == "SKILL.md" or operation.path.endswith("/SKILL.md")
+        ),
+        f"{result.target}/SKILL.md",
+    )
     typer.echo(f"{adapter_id} Adapter installed at {result.target}.")
     typer.echo(
         f"Open {harness} in this repository to begin a Forge-governed Change; "
@@ -228,7 +236,7 @@ def install(
     typer.echo(
         "Skill discovery note: the Harness may not refresh its skill catalog "
         "until a later turn or session; if the Forge skill is not available "
-        f"yet, read `{result.target}/SKILL.md` directly."
+        f"yet, read `{skill_path}` directly."
     )
 
 
