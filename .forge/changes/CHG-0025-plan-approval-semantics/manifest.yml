@@ -45,6 +45,13 @@ review:
       revision: chg-0025-resolution-002
       subject_provenance: resolution-002
       reviewer_provenance: review-002
+      kind: initial_review
+      status: pending
+      new_material_findings: 0
+    - id: review-003
+      revision: chg-0025-resolution-002
+      subject_provenance: resolution-002
+      reviewer_provenance: review-003
       kind: resolution_verification
       status: pending
       new_material_findings: 0

@@ -37,10 +37,6 @@ records:
         provider-native or cryptographic attestation is claimed.
   - id: resolution-001
     role: resolution
-    scope:
-      - src/forge_cli/validation/__init__.py
-      - tests/unit/test_unresolved_decisions.py
-    targets: [PR17-verified-assurance, PR17-large-change-id, PR18-historical-compatibility, PR18-legacy-provenance]
     execution: {id: resolution-exec-chg0025-20260822-01, context_id: resolution-context-chg0025-20260822-01}
     recorded_at: "2026-08-22T18:00:00-03:00"
     revision:
@@ -79,3 +75,17 @@ records:
       statement: >-
         Resolution-002 preserves the first resolution record and provides the
         complete scoped subject for independent Resolution Verification.
+  - id: review-002
+    role: review
+    execution: {id: review-exec-chg0025-20260822-resolution-initial, context_id: review-context-chg0025-20260822-resolution-initial}
+    recorded_at: "2026-08-22T18:20:00-03:00"
+    revision:
+      id: chg-0025-resolution-001
+      immutable_ref: {type: git_commit, value: 9b71fdd815eaba8f91959d3e9521201c5e91ee5e}
+    source:
+      assurance: recorded
+      observed_by: independent_subagent
+      harness: codex
+      statement: >-
+        An independent cold review inspected the resolution subject and
+        identified metadata and contract-evidence issues before merge.
