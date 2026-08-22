@@ -36,7 +36,8 @@ status: passed
   produced **1 failed, 4 passed** before the Contract wording correction.
 - Resolution TDD-003 GREEN: the focused module produced **5 passed** after
   the correction in `98a45f3`.
-- Full suite: `.venv/bin/python -m pytest -q` → **565 passed, 0 failed**.
+- Full suite: `.venv/bin/python -m pytest -q` → **566 passed, 0 failed**
+  after the separately committed compatibility test.
 
 The example and roadmap/index changes are prose/documentation evidence, not
 executable behavior; no post-hoc test is represented as TDD for them.
@@ -73,3 +74,9 @@ REQUEST CHANGES with a BLOCKER for provenance binding and a MAJOR for
 compatibility/TDD evidence. The compatibility defect is corrected in
 `98a45f3`; the original single-commit TDD chronology remains an explicitly
 disclosed limitation, while the correction has its own real RED/GREEN cycle.
+
+The clean Review worktree does not contain the ignored local `.venv`; the
+reproducible independent-worktree command is therefore
+`/home/isckosta/forge-protocol/.venv/bin/python -m pytest -q` with that
+worktree as the current directory. The shared interpreter is outside Git,
+but is the same interpreter used for the recorded full-suite run.
