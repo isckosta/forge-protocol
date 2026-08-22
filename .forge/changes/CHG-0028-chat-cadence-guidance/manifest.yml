@@ -24,10 +24,10 @@ tdd:
     executable behavior or enforceable Protocol rule.
 verification: {status: passed}
 review:
-  status: pending
-  iteration: 0
-  blockers: 0
-  majors: 0
+  status: failed
+  iteration: 1
+  blockers: 1
+  majors: 1
   minors: 0
   observations: 0
   iterations: []
