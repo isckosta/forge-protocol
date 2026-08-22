@@ -1,0 +1,40 @@
+schema: forge/tdd-evidence@1
+change: CHG-0022
+status: compliant
+cycle_count: 7
+cycles:
+  - id: TDD-001
+    title: Pure scaffold rendering and numbering
+    requirements: [FR-002, FR-004, FR-005, FR-006]
+    red: {observed: true, failure_reason: "ModuleNotFoundError: No module named 'forge_cli.change_scaffolding' -- pytest -q tests/unit/test_change_scaffolding.py, first run before production implementation."}
+    green: {observed: true, evidence: "19 focused unit tests pass for slug validation, numbering, Flow artifact truth tables, frontmatter, TDD evidence, manifest, and deterministic title/order."}
+  - id: TDD-002
+    title: Exclusive publication and rollback
+    requirements: [FR-007]
+    red: {observed: true, failure_reason: "ImportError: cannot import name 'publish_scaffold' -- pytest -q tests/unit/test_change_publication.py, first run before publication implementation."}
+    green: {observed: true, evidence: "Publication tests pass for injected race collision, exclusive file creation, complete rollback, and preservation of concurrent content."}
+  - id: TDD-003
+    title: Public change command wiring
+    requirements: [FR-001, FR-003, FR-007]
+    red: {observed: true, failure_reason: "CLI help exited 2 and reported No such command 'change' -- pytest -q tests/cli/test_cli_contract.py, before change_app registration."}
+    green: {observed: true, evidence: "CLI contract tests pass for help, plan-before-mutation, STANDARD, FULL, and non-behavioral scaffolds."}
+  - id: TDD-004
+    title: Installed wheel offline path
+    requirements: [FR-008]
+    red: {observed: false, failure_reason: "Compatibility/distribution guard; the installed-wheel probe had no prior change command to exercise, so no meaningful pre-implementation failure was isolated."}
+    green: {observed: true, evidence: "Installed-wheel golden path passes offline and invokes forge change new followed by forge validate."}
+  - id: TDD-005
+    title: Documentation and roadmap impact
+    requirements: [FR-009]
+    red: {observed: false, failure_reason: "Documentation requirement is an evidence-assembly guard, not a runtime behavior with a meaningful RED."}
+    green: {observed: true, evidence: "README.md, CHANGELOG.md, and ROADMAP-REMEDIATION.md item #2 contain the documented command and CHG-0022 link."}
+  - id: TDD-006
+    title: Full regression baseline
+    requirements: [FR-010]
+    red: {observed: false, failure_reason: "Regression guard; no new behavior is expected to fail before implementation."}
+    green: {observed: true, evidence: "pytest -q: 561 passed, 0 failed; forge validate passes."}
+  - id: TDD-007
+    title: Strict Review resolution evidence
+    requirements: [FR-010]
+    red: {observed: false, failure_reason: "Review evidence is produced after implementation and is not a pre-implementation behavior test."}
+    green: {observed: true, evidence: "Independent cold Strict Review and resolution checks recorded in review.md after final verification."}

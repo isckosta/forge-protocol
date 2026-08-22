@@ -10,6 +10,13 @@ until then.
 
 ## Unreleased
 
+### Change Scaffolding CLI
+
+Added `forge change new <slug>` with active-Flow-aware artifact generation,
+plan-before-mutation output, collision-safe publication, rollback, and offline
+installed-wheel support. `--non-behavioral` is available for Changes that do
+not modify behavior.
+
 ### Adapter Reference Schema Projection
 
 Added:

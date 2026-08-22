@@ -1,0 +1,40 @@
+schema: forge/execution-provenance@2
+change: CHG-0022
+records:
+  - id: implementation-002
+    role: implementation
+    execution: {id: implementation-exec-chg0022, context_id: implementation-context-chg0022}
+    recorded_at: "2026-08-22T12:00:00-03:00"
+    revision:
+      id: e32ad69
+      immutable_ref: {type: git_commit, value: e32ad69e48b8f35ca3d0147b117d1eda855aa4e4}
+    source: {assurance: recorded, observed_by: self, harness: codex, statement: "Implementation and filesystem-safety resolutions were executed and tested in the dedicated branch."}
+  - id: review-001
+    role: review
+    execution: {id: review-exec-chg0022-initial, context_id: review-context-chg0022-initial}
+    recorded_at: "2026-08-22T12:30:00-03:00"
+    revision:
+      id: e32ad69
+      immutable_ref: {type: git_commit, value: e32ad69e48b8f35ca3d0147b117d1eda855aa4e4}
+      description: Independent cold review found the symlink escape and rollback race.
+    source: {assurance: recorded, observed_by: self, harness: delegated-reviewer, statement: "Distinct cold reviewer execution reproduced two blocking filesystem defects and did not modify the repository."}
+  - id: resolution-001
+    role: resolution
+    execution: {id: resolution-exec-chg0022, context_id: resolution-context-chg0022}
+    recorded_at: "2026-08-22T13:00:00-03:00"
+    scope: [src/forge_cli/change_cli.py, src/forge_cli/change_scaffolding.py, tests/unit/test_change_publication.py, tests/cli/test_cli_contract.py]
+    targets: [R001, R002]
+    revision:
+      id: e32ad69
+      immutable_ref: {type: git_commit, value: e32ad69e48b8f35ca3d0147b117d1eda855aa4e4}
+      description: Resolution for symlink containment and concurrent-writer rollback preservation.
+    source: {assurance: recorded, observed_by: self, harness: codex, statement: "Resolution added symlink rejection and preserved unknown content when a writer fails before ownership is recorded."}
+  - id: review-003
+    role: review
+    execution: {id: review-exec-chg0022-final, context_id: review-context-chg0022-final}
+    recorded_at: "2026-08-22T14:00:00-03:00"
+    revision:
+      id: e32ad69
+      immutable_ref: {type: git_commit, value: e32ad69e48b8f35ca3d0147b117d1eda855aa4e4}
+      description: "Final independent resolution verification: PASS after evidence refresh."
+    source: {assurance: recorded, observed_by: self, harness: delegated-reviewer, statement: "Independent reviewer reproduced focused tests, full suite, wheel, forge validation, doctor, and both safety fixes with no new findings."}
