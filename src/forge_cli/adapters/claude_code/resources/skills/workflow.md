@@ -18,8 +18,8 @@ starting Implementation. This Adapter projects the requirement but cannot
 technically enforce Git behavior.
 The baseline commit is the before-state, not Implementation.
 Chat-cadence suggestion (non-binding): prefer concise narration at meaningful
-stage transitions—such as Discovery, Implementation, Verification, and Review
-completion—rather than a status message for every command or tool call. Keep
+stage transitions—such as Discovery, Implementation, Verification, and when
+Review is complete—rather than a status message for every command or tool call. Keep
 the detailed record in `.forge/changes/.../` artifacts; narrate intermediate
 steps when they need human input, change scope, or surface a blocker. This is
 a communication suggestion, not a technical enforcement mechanism.
