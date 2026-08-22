@@ -5,7 +5,7 @@ change:
   title: Chat Cadence Guidance
   kind: documentation
 flow: {initial: fast, current: fast, escalations: []}
-state: {current: complete}
+state: {current: review}
 artifacts:
   intent: complete
   inspection: complete
@@ -24,10 +24,10 @@ tdd:
     executable behavior or enforceable Protocol rule.
 verification: {status: passed}
 review:
-  status: passed
-  iteration: 2
-  blockers: 0
-  majors: 0
+  status: failed
+  iteration: 3
+  blockers: 1
+  majors: 1
   minors: 0
   observations: 0
   iterations:
@@ -54,6 +54,15 @@ review:
         resolution subject 588c02d788ee7416d02f64495e72171562f59315. No new
         material finding was found; targeted schema, scope, parity, and
         untracked-file checks passed.
+    - id: review-003
+      revision: chg-0028-correction-001
+      subject_provenance: correction-001
+      reviewer_provenance: review-003
+      kind: initial_review
+      status: failed
+      evidence_gap: >-
+        The editorial correction changed the templates after review-002 and
+        left the recorded verification hash stale. See review.md.
 documentation:
   impact_evaluated: true
   update_required: true

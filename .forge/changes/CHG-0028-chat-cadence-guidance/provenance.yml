@@ -59,3 +59,44 @@ records:
         Independent cold Resolution Verification distinct from the initial
         Strict Review and Resolution executions. It made no repository edits
         and reproduced schema, scope, parity, and untracked-file checks.
+  - id: correction-001
+    role: resolution
+    execution: {id: correction-exec-chg0028-20260823-01, context_id: correction-context-chg0028-20260823-01}
+    recorded_at: "2026-08-23T01:00:00-03:00"
+    scope:
+      - src/forge_cli/adapters/claude_code/resources/skills/workflow.md
+      - src/forge_cli/adapters/codex/resources/skills/workflow.md
+      - .forge/changes/CHG-0028-chat-cadence-guidance/verification.md
+    targets: [BLOCKER, MAJOR]
+    revision:
+      id: chg-0028-correction-001
+      immutable_ref: {type: git_commit, value: 031e22df021435cecbf0efb86dcdef1317109712}
+      description: >-
+        Editorially rephrases the Review transition to avoid colliding with
+        the projection gate test's stage-token order check and updates the
+        recorded verification hash.
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: codex
+      statement: >-
+        CI showed that the phrase "Review completion" appeared before the
+        effective Flow stage reference used by existing projection tests. The
+        correction preserves meaning and non-binding status.
+  - id: review-003
+    role: review
+    execution: {id: review-exec-chg0028-correction-cold-01, context_id: review-context-chg0028-correction-cold-01}
+    recorded_at: "2026-08-23T01:10:00-03:00"
+    revision:
+      id: chg-0028-correction-001
+      immutable_ref: {type: git_commit, value: 031e22df021435cecbf0efb86dcdef1317109712}
+      description: >-
+        Independent cold Strict Review found the subject and stale-evidence
+        findings recorded in review.md.
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: codex
+      statement: >-
+        Independent cold review with no conversation memory or hints about
+        expected findings.

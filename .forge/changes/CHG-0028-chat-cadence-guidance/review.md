@@ -41,3 +41,16 @@ because unrelated CHG-0021 provenance anchors are absent from its local
 history. No CHG-0028 finding results from that limitation.
 
 **PASS (final).**
+
+## Iteration 3 — REQUEST CHANGES (`kind: strict_review`)
+
+The independent cold review of the post-Review correction found two control
+findings:
+
+- **BLOCKER:** the reviewed subject remained `588c02d...`, while the current
+  `HEAD` included the template correction at `031e22d...`;
+- **MAJOR:** the verification artifact still recorded the previous template
+  hash.
+
+This Resolution Delta updates the verification evidence to the corrected
+template hash and records the new subject before the next cold verification.

@@ -10,7 +10,7 @@ status: passed
 ## Evidence
 
 - Both workflow templates have identical SHA-256
-  `4475313eff274aaa46b52fc9f06ec0f434ed6680e2131c7a06dc3d9b5eff3815`.
+  `b92986ce8aa3872a67e1611f87acf0c5c3e191efbdca11fbf3f78eae77ae5a7b`.
 - The new paragraph contains `non-binding`, stage-transition examples, and
   the explicit statement that it is not a technical enforcement mechanism.
 - The existing disclaimer remains present in both templates.
@@ -19,6 +19,7 @@ status: passed
   schema file changed.
 - `git diff --check`: passed.
 - Direct JSON Schema validation of `tdd-evidence.yml`: passed.
+- Focused projection tests: passed (`24 passed`).
 
 TDD is not applicable: this Change adds no executable behavior. `forge
 validate` is deferred to the final control-metadata verification because
