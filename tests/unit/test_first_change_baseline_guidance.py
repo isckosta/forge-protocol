@@ -60,3 +60,10 @@ def test_c076_does_not_retroactively_invalidate_existing_changes() -> None:
 
     assert C076_COMPATIBILITY in shared
     assert C076_COMPATIBILITY in protocol_2
+
+
+def test_workflow_identifies_baseline_as_before_state_not_implementation() -> None:
+    expected = "The baseline commit is the before-state, not Implementation"
+
+    assert expected in " ".join(CODEX_WORKFLOW.read_text(encoding="utf-8").split())
+    assert expected in " ".join(CLAUDE_WORKFLOW.read_text(encoding="utf-8").split())
