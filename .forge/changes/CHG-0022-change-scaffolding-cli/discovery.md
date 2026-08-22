@@ -50,12 +50,14 @@ identifiers and are resolved against packaged Protocol resources by
 `test_strategy`, `tasks`, and `knowledge_capture` around the shared lifecycle.
 
 The scaffold must map stage identifiers to this repository's established
-artifact filenames (`test_design` → `test-design.md`,
-`tdd_implementation` → `tdd-evidence.yml`, and lifecycle metadata to
-`manifest.yml`/`traceability.yml` where applicable). It must not generate a
-literal list that silently diverges from the selected Flow. A stage that is
-represented by the manifest or by a non-file lifecycle state should be
-represented in the manifest rather than as a fabricated Markdown artifact.
+artifact filenames (`inspection` → `inspection.md`, `test_design` →
+`test-design.md`, `tdd_implementation` → `tdd-evidence.yml`, and lifecycle
+metadata to `manifest.yml`). It must not generate a literal list that
+silently diverges from the selected Flow. A stage that is represented by the
+manifest or by a non-file lifecycle state should be represented in the
+manifest rather than as a fabricated Markdown artifact. The initial scaffold
+must cover FAST, STANDARD, and FULL; this repository's current default
+remains STANDARD.
 
 ## Artifact conventions and schema constraints
 

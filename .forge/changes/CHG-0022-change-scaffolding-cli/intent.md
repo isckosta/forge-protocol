@@ -39,7 +39,7 @@ unchanged.
   canonical Flow resources packaged with Forge.
 - Scan `.forge/changes/` at runtime to select the next free four-digit Change
   number; no number is reserved in source code.
-- Generate the artifact set required by the active STANDARD or FULL Flow,
+- Generate the artifact set required by the active FAST, STANDARD, or FULL Flow,
   including correct `forge:` frontmatter and useful placeholder sections.
 - Generate an initially valid `forge/change@2` manifest with pending lifecycle
   state and only schema-valid prefilled values.
@@ -64,7 +64,8 @@ unchanged.
 - A valid initialized project can scaffold a Change offline from the CLI and
   from a built wheel.
 - The selected artifact filenames exactly follow the active canonical Flow's
-  `stages:` requirements, with STANDARD and FULL distinguishable in tests.
+  `stages:` requirements, with FAST, STANDARD, and FULL distinguishable in
+  tests.
 - Every generated Markdown artifact has the required `forge:` frontmatter;
   the generated manifest passes the repository's current schema validation.
 - The command prints all creation operations before writing any file.
