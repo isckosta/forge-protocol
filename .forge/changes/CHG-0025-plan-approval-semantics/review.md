@@ -3,26 +3,34 @@ forge:
   artifact: review
   schema: 1
 change: CHG-0025
-status: pending
+status: passed
 ---
 
 # Review — Plan Approval Semantics
 
 ## Verdict
 
-**PENDING.** A resolução dos bloqueadores externos está preparada em
-`9b71fdd815eaba8f91959d3e9521201c5e91ee5` e aguarda Strict Review
-independente e fria.
+**PASS.** A segunda resolução foi verificada por execução independente, fria e
+sem dicas, sobre o sujeito imutável `d499fec32fd87d6622f94c0d16434345bf62ee1b`.
+O Reviewer também conferiu o commit final de metadados `dc79c2a` e não editou
+arquivos.
 
-A revisão anterior foi executada por subagente independente, em execução fria
-e sem acesso à conversa de implementação ou a dicas sobre os defeitos. O
-sujeito anterior foi `145b9743be6f29b10a332107bb421d855fa7382a`.
+## Resolution verification
 
-## Resolution scope
+A primeira revisão da resolução encontrou um bloqueador de schema e uma
+inconsistência de metadados TDD. Esses pontos foram corrigidos, preservando os
+registros imutáveis anteriores e criando `resolution-002`/`review-003` com
+escopo explícito.
 
-A resolução aceita as formas de revision previstas pelos schemas
-(`revision.commit` e `revision.immutable_ref`), aceita assurance `recorded` e
-`verified` mantendo `observed_by: operator`, limita o Gate de Plan ao CHG-0025
-em diante e evita conversão inteira ilimitada para IDs de Change. A suíte
-focada passa 37 testes; a suíte completa na cópia de resolução passa 582, com
-três falhas ambientais/históricas documentadas em `verification.md`.
+Evidências da revisão independente:
+
+- 37 testes unitários de decisões — PASS.
+- 34 testes de contrato — PASS.
+- `git diff --check` — PASS.
+- Nenhum finding específico do CHG-0025.
+- As três falhas restantes da suíte completa são ambientais/históricas e estão
+  documentadas em `verification.md`.
+
+O `forge validate` da cópia temporária ainda identifica somente referências
+históricas do CHG-0021 ausentes daquela cópia; não há finding específico do
+CHG-0025.

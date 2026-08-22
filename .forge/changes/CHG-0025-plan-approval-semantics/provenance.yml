@@ -89,3 +89,19 @@ records:
       statement: >-
         An independent cold review inspected the resolution subject and
         identified metadata and contract-evidence issues before merge.
+  - id: review-003
+    role: review
+    execution: {id: review-exec-chg0025-20260822-resolution-independent, context_id: review-context-chg0025-20260822-resolution-independent}
+    recorded_at: "2026-08-22T18:45:00-03:00"
+    revision:
+      id: chg-0025-resolution-002
+      immutable_ref: {type: git_commit, value: d499fec32fd87d6622f94c0d16434345bf62ee1b}
+    source:
+      assurance: recorded
+      observed_by: independent_subagent
+      harness: codex
+      statement: >-
+        A cold, hint-free independent Strict Review inspected the cumulative
+        resolution and final control metadata, reran focused and contract
+        tests, found no CHG-0025-specific defect, and reported PASS. No files
+        were edited by the Reviewer.
