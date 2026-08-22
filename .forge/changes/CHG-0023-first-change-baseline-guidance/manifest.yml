@@ -24,7 +24,7 @@ tdd: {status: compliant, cycles: 4}
 verification: {status: passed}
 review:
   status: pending
-  iteration: 7
+  iteration: 8
   blockers: 0
   majors: 0
   minors: 0
@@ -58,6 +58,14 @@ review:
       revision: chg-0023-resolution-007
       subject_provenance: resolution-007
       reviewer_provenance: review-007
+      kind: initial_review
+      status: failed
+      full_review_required: true
+      new_material_findings: 0
+    - id: review-008
+      revision: chg-0023-resolution-007
+      subject_provenance: resolution-007
+      reviewer_provenance: review-008
       kind: initial_review
       status: pending
       new_material_findings: 0

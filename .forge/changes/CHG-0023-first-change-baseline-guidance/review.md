@@ -10,7 +10,7 @@ status: pending
 
 ## Verdict
 
-**PENDING (Iteration 7).** Iterations 4–6 requested changes because evidence
+**PENDING (Iteration 8).** Iterations 4–7 requested changes because evidence
 anchors still referenced the pre-rewrite lineage. The final subject is
 `bb40bdb`; its
 repository-native provenance and independent Reviewer binding are recorded
