@@ -30,7 +30,7 @@
 | --- | --- | --- | --- | --- |
 | P0 | Project Schemas/enums into adapter references | `adapter-reference-schema-projection` | **Done** | `CHG-0021` (merged, PR #13) |
 | P0 | `forge change new <slug>` scaffolding | `change-scaffolding-cli` | **Done** | [`CHG-0022`](.forge/changes/CHG-0022-change-scaffolding-cli/) |
-| P0 | Document first Change with no prior Git history | `first-change-baseline-guidance` | Open | — |
+| P0 | Document first Change with no prior Git history | `first-change-baseline-guidance` | **Done** | [`CHG-0023`](.forge/changes/CHG-0023-first-change-baseline-guidance/) |
 | P1 | `forge doctor` detect zero adapters installed | `adapter-readiness-doctor-check` | Open | — |
 | P1 | Real semantics for `plan.md status: approved` | `plan-approval-semantics` | Open | — |
 | P1 | Document skill-propagation latency after adapter install | `skill-propagation-diagnostics` | Open | — |
@@ -41,9 +41,9 @@
 
 Slugs have no fixed `CHG-NNNN` number reserved, matching `ROADMAP.md`'s
 own stated convention: Forge assigns the next stable identifier when a
-stage begins as an actual repository-native Change. The last Change in
-this repository's history is `CHG-0021`; the next free number is
-`CHG-0022`.
+stage begins as an actual repository-native Change. The last Change assigned
+in this repository's history is `CHG-0023`; the next free number is
+`CHG-0024`.
 
 ## P0 — Block healthy adoption
 
@@ -92,7 +92,7 @@ Implemented by this Change's Specification:
 any Flow this repository does not already define; changes to
 `protocol/schemas/*.json`.
 
-### 3. `first-change-baseline-guidance` — OPEN
+### 3. `first-change-baseline-guidance` — DONE (`CHG-0023`)
 
 **Origin**: Achado #5 — the report's own repository was on its first Git
 commit; nothing in the Contract/`SKILL.md` covers how to establish a
@@ -105,6 +105,10 @@ skill instructions: *if this is the repository's first commit, commit
 the complete pre-existing state — no file excluded — before starting
 Implementation.* Should be demonstrated in at least one `examples/`
 entry, not only stated in prose.
+
+Implemented by `CHG-0023`: RFC-0003, C-076 in both effective Contract
+representations, identical Codex/Claude Code workflow guidance, and the
+illustrative `examples/first-change-baseline/` fixture.
 
 ## P1 — Reduce friction and cost without weakening rigor
 

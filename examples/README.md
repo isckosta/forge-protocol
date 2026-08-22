@@ -7,7 +7,8 @@ milestone). Where a scenario already exists in this repository's own
 real history, these examples curate and annotate that real evidence
 rather than fabricate a fresh one.
 
-`ROADMAP.md`'s five named categories, mapped to real evidence:
+`ROADMAP.md`'s named categories, mapped to real or explicitly labeled
+illustrative evidence:
 
 | Category | Directory | Evidence |
 | --- | --- | --- |
@@ -16,6 +17,7 @@ rather than fabricate a fresh one.
 | `full-feature` | `full-feature/` | `CHG-0018` — two Core fixes, a new Harness Adapter, a genuinely independent dogfooded bug-catch |
 | `strict-review-remediation` | `strict-review-remediation/` | `CHG-0016` — a real `REQUEST CHANGES` cycle (1 BLOCKER, 2 MAJOR), fully remediated |
 | `codex-adapter-project` | `golden-path-standard/` | the same STANDARD scenario, specifically against the Codex Adapter |
+| `first-change-baseline` | `first-change-baseline/` | an explicitly illustrative first-commit fixture demonstrating the complete baseline before Implementation (C-076) |
 
 ## Directories
 
@@ -36,6 +38,9 @@ rather than fabricate a fresh one.
   evidence.
 - `strict-review-remediation/` — a guided tour of `CHG-0016`'s real
   Strict Review `REQUEST CHANGES` → Resolution → PASS cycle.
+- `first-change-baseline/` — an explicitly illustrative, realistic fixture
+  showing the complete pre-existing state committed before a first Change's
+  Implementation; it is not presented as a real external history.
 - `canonical-artifacts/` — two annotated, illustrative examples
   (`verification.md`, `review.md`) demonstrating outcome-first Artifact
   structure (`protocol/artifact-structure.md`).

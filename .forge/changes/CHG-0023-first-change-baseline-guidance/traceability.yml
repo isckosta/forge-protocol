@@ -1,0 +1,21 @@
+schema: forge/traceability@1
+change: CHG-0023
+requirements:
+  FR-001: {tasks: [T-002, T-003], tests: [test_both_effective_contracts_define_the_same_first_commit_rule], evidence: identical_C076_in_both_effective_contracts}
+  FR-002: {tasks: [T-003, T-004], tests: [test_codex_workflow_explicitly_guides_first_commit_baseline, test_claude_code_workflow_explicitly_guides_first_commit_baseline], evidence: identical_explicit_guidance_in_both_templates}
+  FR-003: {tasks: [T-005], tests: [], evidence: examples_first_change_baseline_readme_inventory_and_commit_sequence}
+  FR-004: {tasks: [T-002, T-003, T-004, T-005], tests: [], evidence: prohibited_paths_absent_from_change_diff}
+  NFR-001: {tasks: [T-002, T-003], tests: [test_both_effective_contracts_define_the_same_first_commit_rule], evidence: provider_independent_contract_wording_and_projection_disclosure}
+  NFR-002: {tasks: [T-003, T-004], tests: [test_workflow_templates_project_identical_baseline_guidance], evidence: normalized_template_block_parity}
+  CON-001: {tasks: [T-002, T-003, T-004, T-005], evidence: no_file_under_protocol_schemas_changed}
+  CON-002: {tasks: [T-002, T-003, T-004, T-005], evidence: prohibited_cli_paths_unchanged}
+  CON-003: {tasks: [T-002, T-006], evidence: RFC_addendum_5be3afa_precedes_contract_clarification_8f64829}
+acceptance:
+  AC-001: [test_both_effective_contracts_define_the_same_first_commit_rule]
+  AC-002: [test_codex_workflow_explicitly_guides_first_commit_baseline, test_claude_code_workflow_explicitly_guides_first_commit_baseline, test_workflow_identifies_baseline_as_before_state_not_implementation]
+  AC-003: []
+  AC-004: []
+  AC-005: [test_workflow_templates_project_identical_baseline_guidance, test_workflow_identifies_baseline_as_before_state_not_implementation]
+  AC-006: []
+  AC-007: [test_both_effective_contracts_define_the_same_first_commit_rule, test_codex_workflow_explicitly_guides_first_commit_baseline, test_claude_code_workflow_explicitly_guides_first_commit_baseline]
+  AC-008: []

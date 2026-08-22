@@ -1,0 +1,151 @@
+schema: forge/execution-provenance@2
+change: CHG-0023
+records:
+  - id: resolution-004
+    role: resolution
+    execution: {id: resolution-exec-chg0023-20260822-04, context_id: resolution-context-chg0023-20260822-04}
+    recorded_at: "2026-08-22T04:00:00-03:00"
+    scope:
+      - .forge/changes/CHG-0023-first-change-baseline-guidance/tasks.md
+      - .forge/changes/CHG-0023-first-change-baseline-guidance/verification.md
+      - tests/unit/test_first_change_baseline_guidance.py
+    targets: [R001, R002, R003, R004, R005]
+    revision:
+      id: chg-0023-resolution-004
+      immutable_ref: {type: git_commit, value: 64fa8d4af0767b693117d795bd1b320d8498b213}
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: codex
+      statement: >-
+        Final evidence subject after the authorized provenance-history
+        reconstruction. The subject contains all reviewable Change artifacts;
+        this provenance and the review-control metadata are appended after it.
+  - id: review-004
+    role: review
+    execution: {id: review-exec-chg0023-20260822-04, context_id: review-context-chg0023-20260822-04}
+    recorded_at: "2026-08-22T04:15:00-03:00"
+    revision:
+      id: chg-0023-resolution-004
+      immutable_ref: {type: git_commit, value: 64fa8d4af0767b693117d795bd1b320d8498b213}
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: codex
+      statement: >-
+        Independent cold Strict Review of the reconstructed final subject;
+        no files were edited by the Reviewer.
+  - id: resolution-005
+    role: resolution
+    execution: {id: resolution-exec-chg0023-20260822-05, context_id: resolution-context-chg0023-20260822-05}
+    recorded_at: "2026-08-22T05:00:00-03:00"
+    scope:
+      - .forge/changes/CHG-0023-first-change-baseline-guidance/tdd-evidence.yml
+      - .forge/changes/CHG-0023-first-change-baseline-guidance/tasks.md
+      - .forge/changes/CHG-0023-first-change-baseline-guidance/verification.md
+      - .forge/changes/CHG-0023-first-change-baseline-guidance/traceability.yml
+    targets: [R001, R003, R005]
+    revision:
+      id: chg-0023-resolution-005
+      immutable_ref: {type: git_commit, value: 0979e3be2a38ac39091f8abe18a76e542de16a1b}
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: codex
+      statement: >-
+        Resolution aligned all documentary evidence anchors with the
+        rewritten branch lineage. It is independently reviewable as a new
+        Resolution subject after the prior frozen subject.
+  - id: review-005
+    role: review
+    execution: {id: review-exec-chg0023-20260822-05, context_id: review-context-chg0023-20260822-05}
+    recorded_at: "2026-08-22T05:15:00-03:00"
+    revision:
+      id: chg-0023-resolution-005
+      immutable_ref: {type: git_commit, value: 0979e3be2a38ac39091f8abe18a76e542de16a1b}
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: codex
+      statement: >-
+        Independent cold Strict Review of the aligned-evidence subject is
+        pending; no files were edited by the Reviewer.
+  - id: resolution-006
+    role: resolution
+    execution: {id: resolution-exec-chg0023-20260822-06, context_id: resolution-context-chg0023-20260822-06}
+    recorded_at: "2026-08-22T06:00:00-03:00"
+    scope:
+      - .forge/changes/CHG-0023-first-change-baseline-guidance/traceability.yml
+      - .forge/changes/CHG-0023-first-change-baseline-guidance/verification.md
+      - .forge/changes/CHG-0023-first-change-baseline-guidance/tasks.md
+      - .forge/changes/CHG-0023-first-change-baseline-guidance/manifest.yml
+    targets: [R001, R003, R005]
+    revision:
+      id: chg-0023-resolution-006
+      immutable_ref: {type: git_commit, value: 121daf0de80ad0dc3a3d17ab574941023ab19328}
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: codex
+      statement: >-
+        Resolution corrected the RFC/Contract chronology, removed nonexistent
+        test identifiers from traceability, and synchronized the Review state.
+  - id: review-006
+    role: review
+    execution: {id: review-exec-chg0023-20260822-06, context_id: review-context-chg0023-20260822-06}
+    recorded_at: "2026-08-22T06:15:00-03:00"
+    revision:
+      id: chg-0023-resolution-006
+      immutable_ref: {type: git_commit, value: 121daf0de80ad0dc3a3d17ab574941023ab19328}
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: codex
+      statement: >-
+        Independent cold Strict Review of the corrected final subject is
+        pending; no files were edited by the Reviewer.
+  - id: resolution-007
+    role: resolution
+    execution: {id: resolution-exec-chg0023-20260822-07, context_id: resolution-context-chg0023-20260822-07}
+    recorded_at: "2026-08-22T07:00:00-03:00"
+    scope:
+      - .forge/changes/CHG-0023-first-change-baseline-guidance/test-strategy.md
+    targets: [R005]
+    revision:
+      id: chg-0023-resolution-007
+      immutable_ref: {type: git_commit, value: bb40bdbfec60f58724e696dd506dbf2a7ad03bb3}
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: codex
+      statement: >-
+        Resolution reconciled the declared TDD cycle IDs with the observed
+        RED/GREEN evidence and separated documentary non-applicability.
+  - id: review-007
+    role: review
+    execution: {id: review-exec-chg0023-20260822-07, context_id: review-context-chg0023-20260822-07}
+    recorded_at: "2026-08-22T07:15:00-03:00"
+    revision:
+      id: chg-0023-resolution-007
+      immutable_ref: {type: git_commit, value: bb40bdbfec60f58724e696dd506dbf2a7ad03bb3}
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: codex
+      statement: >-
+        Independent cold Strict Review of the reconciled TDD strategy is
+        pending; no files were edited by the Reviewer.
+  - id: review-008
+    role: review
+    execution: {id: reviewer-exec-chg0023-20260822-08, context_id: reviewer-context-chg0023-20260822-08}
+    recorded_at: "2026-08-22T08:15:00-03:00"
+    revision:
+      id: chg-0023-resolution-007
+      immutable_ref: {type: git_commit, value: bb40bdbfec60f58724e696dd506dbf2a7ad03bb3}
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: codex
+      statement: >-
+        Independent cold Strict Review of the reconciled TDD strategy with a
+        distinct Reviewer Execution and Context; no files were edited.
