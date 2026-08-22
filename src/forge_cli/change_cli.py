@@ -89,7 +89,11 @@ def _active_flow(root: Path) -> tuple[str, dict]:
 @change_app.command("new")
 def new_change(
     slug: Annotated[str, typer.Argument(metavar="SLUG")],
-    non_behavioral: Annotated[bool, typer.Option("--non-behavioral")] = False,
+    non_behavioral: bool = typer.Option(
+        False,
+        "--non-behavioral",
+        help="Create a non-behavioral Change scaffold without executable TDD evidence.",
+    ),
 ) -> None:
     """Plan and create a new repository-native Change scaffold.
 
