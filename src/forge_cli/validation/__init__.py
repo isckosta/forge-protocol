@@ -520,7 +520,7 @@ def _validate_plan_authorization(r:Path,mpath:Path,m:dict)->list[ValidationFindi
         plan_text=""
     provenance=_load_mapping(mpath.parent/"provenance.yml")
     provenance_matches=(isinstance(provenance,dict)
-                        and provenance.get("schema")=="forge/execution-provenance@2"
+                        and provenance.get("schema") in {"forge/execution-provenance@1","forge/execution-provenance@2"}
                         and provenance.get("change")==change_id)
     records=provenance.get("records") if provenance_matches else None
     provenance_confirmation=any(
