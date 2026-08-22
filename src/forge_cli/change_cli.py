@@ -99,8 +99,12 @@ def new_change(
         _fail("E_FORGE_CHANGE_INVALID_SLUG", str(error))
     forge_root = root / ".forge"
     changes_root = forge_root / "changes"
+    if forge_root.is_symlink() or (forge_root.exists() and not forge_root.is_dir()):
+        _fail("E_FORGE_CHANGE_INVALID_PATH", "Forge workspace path is unsafe.")
     if not forge_root.is_dir():
         _fail("E_FORGE_NOT_INITIALIZED", "Forge is not initialized. Run `forge init` first.")
+    if changes_root.is_symlink() or (changes_root.exists() and not changes_root.is_dir()):
+        _fail("E_FORGE_CHANGE_INVALID_PATH", "Change destination path is unsafe.")
     flow_id, flow_data = _active_flow(root)
     number = allocate_change_number(changes_root)
     change_id = f"CHG-{number:04d}"

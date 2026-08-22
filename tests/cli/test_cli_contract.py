@@ -71,6 +71,21 @@ def test_change_new_supports_full_flow_and_non_behavioral_mode(tmp_path: Path, m
     assert manifest["tdd"]["status"] == "not_applicable"
 
 
+def test_change_new_rejects_symlinked_change_destination(tmp_path: Path, monkeypatch) -> None:
+    _init_git_repository(tmp_path)
+    monkeypatch.chdir(tmp_path)
+    assert runner.invoke(app_module.app, ["init"]).exit_code == 0
+    outside = tmp_path.parent / "outside-change-target"
+    outside.mkdir()
+    (tmp_path / ".forge" / "changes").symlink_to(outside, target_is_directory=True)
+
+    result = runner.invoke(app_module.app, ["change", "new", "escape-test"])
+
+    assert result.exit_code == 2
+    assert "E_FORGE_CHANGE_INVALID_PATH" in result.stdout
+    assert not (outside / "CHG-0001-escape-test").exists()
+
+
 def test_init_creates_a_valid_forge_project_from_nested_directory(tmp_path: Path, monkeypatch) -> None:
     _init_git_repository(tmp_path)
     nested = tmp_path / "services" / "api"

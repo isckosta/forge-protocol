@@ -4,7 +4,11 @@ from pathlib import Path
 
 import pytest
 
-from forge_cli.change_scaffolding import ScaffoldPlan, publish_scaffold
+from forge_cli.change_scaffolding import (
+    ChangeRollbackIncompleteError,
+    ScaffoldPlan,
+    publish_scaffold,
+)
 
 
 def _plan() -> ScaffoldPlan:
@@ -40,3 +44,16 @@ def test_publish_scaffold_rolls_back_files_when_file_write_fails(tmp_path: Path)
         publish_scaffold(target, _plan(), write_file=fail_on_manifest)
 
     assert not target.exists()
+
+
+def test_publish_scaffold_preserves_content_created_by_failed_writer(tmp_path: Path) -> None:
+    target = tmp_path / "changes" / "CHG-0001-race"
+
+    def write_then_fail(path: Path, content: str) -> None:
+        path.write_text("CONCURRENT", encoding="utf-8")
+        raise OSError("injected failure after concurrent write")
+
+    with pytest.raises(ChangeRollbackIncompleteError):
+        publish_scaffold(target, ScaffoldPlan(files={"intent.md": "owned"}), write_file=write_then_fail)
+
+    assert (target / "intent.md").read_text(encoding="utf-8") == "CONCURRENT"

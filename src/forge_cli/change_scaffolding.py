@@ -221,8 +221,8 @@ def publish_scaffold(
     try:
         for relative_path, content in plan.files.items():
             destination = target / relative_path
-            created.append(destination)
             writer(destination, content)
+            created.append(destination)
     except Exception as publication_error:
         rollback_errors: list[Exception] = []
         for path in reversed(created):
