@@ -19,6 +19,5 @@ status: active
 
 ## Status
 
-Implementation, Verification, Documentation, and the independent Strict
-Review cycle are complete. The final subject is 64fa8d4; remaining review
-observations are non-blocking and documented in review.md.
+Implementation, Verification, and Documentation are complete. The final
+independent Strict Review is pending for the aligned evidence subject.

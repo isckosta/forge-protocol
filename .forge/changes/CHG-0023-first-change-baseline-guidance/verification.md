@@ -51,8 +51,8 @@ executable behavior; no post-hoc test is represented as TDD for them.
 - `forge doctor` → all configured checks PASS except the pre-existing,
   non-blocking Adapter capability-limitations WARNs and
   `migration_available` WARN (6 candidates). No new failure was introduced.
-- RFC-0003 commit `84d15f8` and its final-boundary amendment precede the
-  corrected Contract commit `ee5e900`.
+- RFC-0003 addendum `5be3afa` precedes the corrected Contract commit
+  `8f64829`.
 - `git diff --name-only 27e4fc0..25161ce` contains no
   `protocol/schemas/*.json`, `src/forge_cli/app.py`, or
   `src/forge_cli/adapter_cli.py` path; the later Resolution diffs touch only
@@ -67,9 +67,9 @@ possible external repository state.
 
 ## Conclusion
 
-All Acceptance Criteria pass. Independent Strict Review of the final
-Resolution subject passed with no blocking findings; the two non-blocking
-observations are recorded in review.md.
+All Acceptance Criteria pass. The final independent Strict Review remains
+pending after the evidence-anchor correction; its result will be recorded in
+review.md.
 
 ## Review Resolution Note
 
