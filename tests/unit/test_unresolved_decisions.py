@@ -403,6 +403,88 @@ def test_protocol1_provenance_remains_compatible_with_plan_authorization(tmp_pat
     assert result.passed, _messages(result)
 
 
+def test_verified_plan_authorization_is_accepted(tmp_path: Path) -> None:
+    _init(tmp_path)
+    decision = {
+        "id": "DEC-001", "class": "technical", "materiality": "material",
+        "status": "resolved", "authority": "human", "owning_artifact": "plan",
+        "discovered_in": "plan", "resolved_via": "human_decision",
+    }
+    change_dir = "CHG-9120-verified-provenance"
+    _write_manifest(
+        tmp_path,
+        change_dir,
+        _approved_plan_manifest([decision], change={"id": "CHG-9120", "title": "T", "kind": "feature"}),
+    )
+    _write_plan_confirmation(tmp_path, change_dir)
+    provenance_path = tmp_path / ".forge/changes" / change_dir / "provenance.yml"
+    provenance = yaml.safe_load(provenance_path.read_text())
+    provenance["records"][0]["source"]["assurance"] = "verified"
+    provenance_path.write_text(yaml.safe_dump(provenance, sort_keys=False), encoding="utf-8")
+
+    result = validate_project(tmp_path, PROTOCOL_ROOT)
+
+    assert result.passed, _messages(result)
+
+
+def test_protocol1_legacy_commit_provenance_is_accepted(tmp_path: Path) -> None:
+    _init(tmp_path)
+    decision = {
+        "id": "DEC-001", "class": "technical", "materiality": "material",
+        "status": "resolved", "authority": "human", "owning_artifact": "plan",
+        "discovered_in": "plan", "resolved_via": "human_decision",
+    }
+    change_dir = "CHG-9121-legacy-commit-provenance"
+    _write_manifest(
+        tmp_path,
+        change_dir,
+        _approved_plan_manifest([decision], change={"id": "CHG-9121", "title": "T", "kind": "feature"}),
+    )
+    _write_plan_confirmation(tmp_path, change_dir, schema="forge/execution-provenance@1")
+    provenance_path = tmp_path / ".forge/changes" / change_dir / "provenance.yml"
+    provenance = yaml.safe_load(provenance_path.read_text())
+    revision = provenance["records"][0]["revision"]
+    revision["commit"] = revision.pop("immutable_ref")["value"]
+    provenance_path.write_text(yaml.safe_dump(provenance, sort_keys=False), encoding="utf-8")
+
+    result = validate_project(tmp_path, PROTOCOL_ROOT)
+
+    assert result.passed, _messages(result)
+
+
+def test_pre_chg0025_active_approved_plan_remains_compatible(tmp_path: Path) -> None:
+    _init(tmp_path)
+    decision = {
+        "id": "DEC-001", "class": "technical", "materiality": "material",
+        "status": "awaiting_decision", "authority": "human", "owning_artifact": "plan",
+        "discovered_in": "plan",
+    }
+    manifest = _approved_plan_manifest(
+        [decision],
+        change={"id": "CHG-0024", "title": "Historical", "kind": "feature"},
+    )
+    _write_manifest(tmp_path, "CHG-0024-historical-active", manifest)
+
+    result = validate_project(tmp_path, PROTOCOL_ROOT)
+
+    assert result.passed, _messages(result)
+
+
+def test_extremely_large_change_id_does_not_crash_validation(tmp_path: Path) -> None:
+    _init(tmp_path)
+    large_id = "CHG-" + "9" * 5000
+    manifest = _approved_plan_manifest(
+        [],
+        change={"id": large_id, "title": "Large identifier", "kind": "feature"},
+    )
+    _write_manifest(tmp_path, "CHG-9122-large-id", manifest)
+
+    result = validate_project(tmp_path, PROTOCOL_ROOT)
+
+    assert not result.passed
+    assert any("authorization" in message for message in _messages(result))
+
+
 def test_active_approved_plan_with_multiple_approvals_is_ambiguous(tmp_path: Path) -> None:
     _init(tmp_path)
     def decision(number: int) -> dict:
