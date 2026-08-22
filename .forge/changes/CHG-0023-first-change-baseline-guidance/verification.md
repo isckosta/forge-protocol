@@ -39,8 +39,8 @@ status: passed
   produced **1 failed, 4 passed** before the Contract wording correction.
 - Resolution TDD-003 GREEN: the focused module produced **5 passed** after
   the correction in `98a45f3`.
-- Full suite: `.venv/bin/python -m pytest -q` → **566 passed, 0 failed**
-  after the separately committed compatibility test.
+- Full suite: `.venv/bin/python -m pytest -q` → **567 passed, 0 failed**
+  after the separately committed before-state guidance test.
 
 The example and roadmap/index changes are prose/documentation evidence, not
 executable behavior; no post-hoc test is represented as TDD for them.
