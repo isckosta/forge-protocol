@@ -67,9 +67,9 @@ possible external repository state.
 
 ## Conclusion
 
-All Acceptance Criteria pass. The Change is ready for independent Strict
-Review of the Resolution subject; review-control metadata and final
-Completion state remain pending.
+All Acceptance Criteria pass. Independent Strict Review of the final
+Resolution subject passed with no blocking findings; the two non-blocking
+observations are recorded in review.md.
 
 ## Review Resolution Note
 
