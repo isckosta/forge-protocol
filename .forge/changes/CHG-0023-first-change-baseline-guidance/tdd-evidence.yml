@@ -1,0 +1,18 @@
+schema: forge/tdd-evidence@1
+change: CHG-0023
+status: compliant
+cycle_count: 2
+cycles:
+  - id: TDD-001
+    title: First-commit baseline guidance is projected by both workflow templates
+    requirements: [FR-002, NFR-002, AC-002, AC-005]
+    red: {observed: true, failure_reason: "Four focused assertions failed before the resource edits: both workflow templates lacked the baseline guidance and parity extraction could not find it -- pytest -q tests/unit/test_first_change_baseline_guidance.py, 2026-08-22."}
+    green: {observed: true, evidence: "The same focused module passes 4 tests after the identical guidance was added to both packaged workflow resources; workflow authority tests also pass."}
+  - id: TDD-002
+    title: Both effective Contract files define C-076
+    requirements: [FR-001, NFR-001, AC-001, AC-007]
+    red: {observed: true, failure_reason: "The focused Contract assertion failed before C-076 existed in the shared Contract (and the Protocol 2 assertion also failed); pytest -q tests/unit/test_first_change_baseline_guidance.py, 2026-08-22."}
+    green: {observed: true, evidence: "The focused assertion passes and confirms identical C-076 suffix content in protocol/contract/engineering.md and protocol/versions/2/contract/engineering.md."}
+notes:
+  - "The example and RFC/Contract prose are documentary content; their non-mechanical review is recorded in verification.md, not represented as fabricated TDD behavior."
+  - "No RED is claimed for the illustrative example or roadmap/index documentation; those are evidence-assembly obligations under TDD exception C-017."
