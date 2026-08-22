@@ -1,7 +1,7 @@
 schema: forge/tdd-evidence@1
 change: CHG-0023
 status: compliant
-cycle_count: 2
+cycle_count: 3
 cycles:
   - id: TDD-001
     title: First-commit baseline guidance is projected by both workflow templates
@@ -13,6 +13,12 @@ cycles:
     requirements: [FR-001, NFR-001, AC-001, AC-007]
     red: {observed: true, failure_reason: "The focused Contract assertion failed before C-076 existed in the shared Contract (and the Protocol 2 assertion also failed); pytest -q tests/unit/test_first_change_baseline_guidance.py, 2026-08-22."}
     green: {observed: true, evidence: "The focused assertion passes and confirms identical C-076 suffix content in protocol/contract/engineering.md and protocol/versions/2/contract/engineering.md."}
+  - id: TDD-003
+    title: Resolution preserves existing Protocol instances
+    requirements: [FR-001, NFR-001, AC-001, AC-008]
+    red: {observed: true, failure_reason: "The new compatibility assertion failed 1 test before the prospective-adoption wording was added: pytest -q tests/unit/test_first_change_baseline_guidance.py -> 1 failed, 4 passed, 2026-08-22."}
+    green: {observed: true, evidence: "The same focused module passes 5 tests after identical prospective-application wording was added to both Contracts; the correction is committed as 98a45f3."}
 notes:
   - "The example and RFC/Contract prose are documentary content; their non-mechanical review is recorded in verification.md, not represented as fabricated TDD behavior."
   - "No RED is claimed for the illustrative example or roadmap/index documentation; those are evidence-assembly obligations under TDD exception C-017."
+  - "The original TDD-001 chronology cannot be reconstructed from the single implementation commit 25161ce; this limitation is disclosed rather than retroactively claimed as commit-verifiable. TDD-003 is a separately committed RED/GREEN Resolution cycle."
