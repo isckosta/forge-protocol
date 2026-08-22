@@ -10,13 +10,12 @@ status: pending
 
 ## Verdict
 
-**PENDING (Iteration 4).** The final subject is `64fa8d4`; its
+**PENDING (Iteration 5).** The final subject is `0979e3b`; its
 repository-native provenance and independent Reviewer binding are recorded
 append-only in `provenance.yml`.
 
-The review was performed against a clean worktree derived from the branch,
-excluding unrelated untracked parallel-work files in the shared workspace.
-the independent clean-worktree review is still pending.
+The final independent clean-worktree review is pending after the provenance
+anchors were aligned with the rewritten branch lineage.
 
 ## Evidence
 

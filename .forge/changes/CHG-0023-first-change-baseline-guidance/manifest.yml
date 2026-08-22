@@ -37,6 +37,13 @@ review:
       kind: initial_review
       status: pending
       new_material_findings: 0
+    - id: review-005
+      revision: chg-0023-resolution-005
+      subject_provenance: resolution-005
+      reviewer_provenance: review-005
+      kind: initial_review
+      status: pending
+      new_material_findings: 0
 documentation:
   impact_evaluated: true
   update_required: true

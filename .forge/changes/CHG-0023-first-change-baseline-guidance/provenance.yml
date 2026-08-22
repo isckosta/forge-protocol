@@ -35,3 +35,38 @@ records:
       statement: >-
         Independent cold Strict Review of the reconstructed final subject;
         no files were edited by the Reviewer.
+  - id: resolution-005
+    role: resolution
+    execution: {id: resolution-exec-chg0023-20260822-05, context_id: resolution-context-chg0023-20260822-05}
+    recorded_at: "2026-08-22T05:00:00-03:00"
+    scope:
+      - .forge/changes/CHG-0023-first-change-baseline-guidance/tdd-evidence.yml
+      - .forge/changes/CHG-0023-first-change-baseline-guidance/tasks.md
+      - .forge/changes/CHG-0023-first-change-baseline-guidance/verification.md
+      - .forge/changes/CHG-0023-first-change-baseline-guidance/traceability.yml
+    targets: [R001, R003, R005]
+    revision:
+      id: chg-0023-resolution-005
+      immutable_ref: {type: git_commit, value: 0979e3be2a38ac39091f8abe18a76e542de16a1b}
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: codex
+      statement: >-
+        Resolution aligned all documentary evidence anchors with the
+        rewritten branch lineage. It is independently reviewable as a new
+        Resolution subject after the prior frozen subject.
+  - id: review-005
+    role: review
+    execution: {id: review-exec-chg0023-20260822-05, context_id: review-context-chg0023-20260822-05}
+    recorded_at: "2026-08-22T05:15:00-03:00"
+    revision:
+      id: chg-0023-resolution-005
+      immutable_ref: {type: git_commit, value: 0979e3be2a38ac39091f8abe18a76e542de16a1b}
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: codex
+      statement: >-
+        Independent cold Strict Review of the aligned-evidence subject is
+        pending; no files were edited by the Reviewer.
