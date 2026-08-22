@@ -1,0 +1,107 @@
+schema: forge/execution-provenance@2
+change: CHG-0025
+records:
+  - id: implementation-001
+    role: implementation
+    execution: {id: implementation-exec-chg0025-20260822-01, context_id: implementation-context-chg0025-20260822-01}
+    recorded_at: "2026-08-22T12:00:00-03:00"
+    revision:
+      id: chg-0025-implementation-001
+      immutable_ref: {type: git_commit, value: 145b9743be6f29b10a332107bb421d855fa7382a}
+    source:
+      assurance: recorded
+      observed_by: operator
+      harness: codex
+      reference: plan.md#approval-record
+      statement: >-
+        Explicit human approval was received from the user as “Pode criar” in
+        the active session on 2026-08-22, authorizing continuation past the
+        Plan/Implementation boundary. This is durable repository evidence,
+        not cryptographic or provider-native attestation.
+  - id: review-001
+    role: review
+    execution: {id: review-exec-chg0025-20260822-independent, context_id: review-context-chg0025-20260822-independent}
+    recorded_at: "2026-08-22T16:30:00-03:00"
+    revision:
+      id: chg-0025-implementation-001
+      immutable_ref: {type: git_commit, value: 145b9743be6f29b10a332107bb421d855fa7382a}
+    source:
+      assurance: recorded
+      observed_by: independent_subagent
+      harness: codex
+      statement: >-
+        Cold, hint-free Strict Review execution distinct from the
+        implementation execution. The Reviewer read the committed Change
+        artifacts and actual diff, reran the focused and full verification,
+        made no repository edits, and reported PASS with no findings. No
+        provider-native or cryptographic attestation is claimed.
+  - id: resolution-001
+    role: resolution
+    execution: {id: resolution-exec-chg0025-20260822-01, context_id: resolution-context-chg0025-20260822-01}
+    recorded_at: "2026-08-22T18:00:00-03:00"
+    revision:
+      id: chg-0025-resolution-001
+      immutable_ref: {type: git_commit, value: 9b71fdd815eaba8f91959d3e9521201c5e91ee5e}
+    source:
+      assurance: recorded
+      observed_by: operator
+      harness: codex
+      statement: >-
+        The resolution implements and tests the four blocking review findings:
+        canonical provenance compatibility, prospective Gate scoping, and
+        non-raising Change identifier comparison.
+  - id: resolution-002
+    role: resolution
+    scope:
+      - .forge/changes/CHG-0025-plan-approval-semantics/knowledge-capture.md
+      - .forge/changes/CHG-0025-plan-approval-semantics/manifest.yml
+      - .forge/changes/CHG-0025-plan-approval-semantics/provenance.yml
+      - .forge/changes/CHG-0025-plan-approval-semantics/review.md
+      - .forge/changes/CHG-0025-plan-approval-semantics/tdd-evidence.yml
+      - .forge/changes/CHG-0025-plan-approval-semantics/traceability.yml
+      - .forge/changes/CHG-0025-plan-approval-semantics/verification.md
+      - src/forge_cli/validation/__init__.py
+      - tests/unit/test_unresolved_decisions.py
+    targets: [PR17-verified-assurance, PR17-large-change-id, PR18-historical-compatibility, PR18-legacy-provenance]
+    execution: {id: resolution-exec-chg0025-20260822-02, context_id: resolution-context-chg0025-20260822-02}
+    recorded_at: "2026-08-22T18:15:00-03:00"
+    revision:
+      id: chg-0025-resolution-002
+      immutable_ref: {type: git_commit, value: d499fec32fd87d6622f94c0d16434345bf62ee1b}
+    source:
+      assurance: recorded
+      observed_by: operator
+      harness: codex
+      statement: >-
+        Resolution-002 preserves the first resolution record and provides the
+        complete scoped subject for independent Resolution Verification.
+  - id: review-002
+    role: review
+    execution: {id: review-exec-chg0025-20260822-resolution-initial, context_id: review-context-chg0025-20260822-resolution-initial}
+    recorded_at: "2026-08-22T18:20:00-03:00"
+    revision:
+      id: chg-0025-resolution-001
+      immutable_ref: {type: git_commit, value: 9b71fdd815eaba8f91959d3e9521201c5e91ee5e}
+    source:
+      assurance: recorded
+      observed_by: independent_subagent
+      harness: codex
+      statement: >-
+        An independent cold review inspected the resolution subject and
+        identified metadata and contract-evidence issues before merge.
+  - id: review-003
+    role: review
+    execution: {id: review-exec-chg0025-20260822-resolution-independent, context_id: review-context-chg0025-20260822-resolution-independent}
+    recorded_at: "2026-08-22T18:45:00-03:00"
+    revision:
+      id: chg-0025-resolution-002
+      immutable_ref: {type: git_commit, value: d499fec32fd87d6622f94c0d16434345bf62ee1b}
+    source:
+      assurance: recorded
+      observed_by: independent_subagent
+      harness: codex
+      statement: >-
+        A cold, hint-free independent Strict Review inspected the cumulative
+        resolution and final control metadata, reran focused and contract
+        tests, found no CHG-0025-specific defect, and reported PASS. No files
+        were edited by the Reviewer.

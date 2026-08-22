@@ -50,6 +50,7 @@ gates:
       - architecture_complete
       - architecture_gate_passed
       - test_strategy_complete
+      # C-077: plan_complete also requires recorded human Plan authority.
       - plan_complete
       - tasks_ready
   before_behavioral_implementation:

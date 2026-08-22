@@ -152,6 +152,13 @@ that Protocol integer; it would not have retroactively invalidated
 `CHG-0001`–`CHG-0015`, exactly as Protocol 2 itself did not retroactively
 invalidate Protocol 1's completed Changes.
 
+### CHG-0025 — Plan authorization semantics
+
+CHG-0025 adds a prospective C-077 check for active approved Plans. It reuses
+the existing Decision vocabulary and requires a Plan/provenance record, while
+lower-numbered historical Changes remain valid. The rule applies to both
+Protocol 1 and Protocol 2 representations without changing their schemas.
+
 ## Schema catalog
 
 `schemas/catalog.yml` is the portable list of schemas shipped by the distribution. Catalog presence does not imply that every schema is normative for every Protocol version. Applicability is defined by the selected Protocol contract and the artifact's own identifier. Cross-field semantic constraints that JSON Schema cannot express remain deterministic Core validation responsibilities.

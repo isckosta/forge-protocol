@@ -226,7 +226,12 @@ Verification SHOULD present its Result before supporting evidence. Review SHOULD
 An approved Plan SHOULD NOT be edited to silently absorb an Implementation-time discovery. Such a discovery SHOULD be recorded in Verification, a Decision record, or a documented re-Plan, per `protocol/artifact-structure.md`.
 
 ## C-077 — Plan Implementation requires recorded human authorization
-A Change MUST NOT cross its Plan/Implementation boundary while its Plan is declared `approved` unless its manifest records a material technical Decision owned by `plan` with `authority: human`, `status: resolved`, and `resolved_via: human_decision`, and the Plan and provenance record the explicit human confirmation. An agent MUST NOT silently infer or claim that confirmation. `forge validate` MUST report a finding when the required Decision is absent or unresolved. This is recorded repository evidence, not cryptographic or external attestation; a provenance record observed only by `self` does not satisfy the rule, and the recorded confirmation MUST identify the operator as observer. This rule applies prospectively from CHG-0025 onward; lower-numbered historical Changes remain valid under C-045/C-046. `specification_gate_passed` remains a technical lifecycle Gate and is not human approval evidence under this rule.
+A Change MUST NOT cross its Plan/Implementation boundary while its Plan is declared `approved` unless its manifest records a material technical Decision owned by `plan` with `authority: human`, `status: resolved`, and `resolved_via: human_decision`, and the Plan and provenance record the explicit human confirmation observed by the operator. An agent MUST NOT silently infer or claim that confirmation. This is recorded repository evidence, not cryptographic or external attestation. This rule applies from CHG-0025 onward; `specification_gate_passed` remains a technical Gate.
+
+For C-077, `forge validate` MUST fail closed when the Plan or provenance is
+malformed, foreign to the Change, self-observed, or missing the canonical
+language-invariant approval markers. Historical Changes allocated before
+CHG-0025 remain valid.
 
 ## C-070 — Interaction language governs prose only
 Canonical identifiers — schema keys, Change and requirement identifiers, Gate names, and Contract rule identifiers — MUST remain invariant regardless of the configured interaction language. Interaction language MAY vary generated and human-authored prose; it MUST NOT vary any machine-readable identifier.
@@ -248,16 +253,39 @@ A Change introducing a new Harness Adapter MUST pass the shared, Harness-agnosti
 ## C-075 — Migration MUST be truth-preserving
 A migration MUST NOT fabricate, infer, or reconstruct data that does not already exist in the instance being migrated. A transformation that cannot be performed without inventing information MUST be refused, not approximated.
 
-## C-076 — Complete baseline for a first-commit Change
-A Change conducted in a repository with no prior Git commit MUST first
-declare its intended repository scope and commit the complete state that
-existed before the Change began as one baseline, with no in-scope file
-excluded, before Implementation begins. Change artifacts created after that
-point are not pre-existing state. The baseline commit represents the
-before-state, not Implementation. Subsequent Change commits MUST therefore
-be reviewable as the delta from that complete baseline.
-This rule applies only to Changes begun after C-076 adoption; it does not
-retroactively invalidate a previously valid Change or require a historical
-Change to acquire a baseline it did not have.
-This prospective boundary preserves existing instance meaning under C-045
-and C-046 while requiring the complete baseline for newly begun Changes.
+# Forge Project Engineering Contract
+
+The Forge project is governed by `protocol/contract/engineering.md` plus the rules below.
+
+## F-001 — Forge dogfoods Forge
+Every material Forge Change MUST use Forge.
+
+## F-002 — Protocol-first development
+Behavior that changes Forge semantics MUST be specified in the Protocol before or together with Implementation.
+
+## F-003 — TDD-first development
+Forge executable behavior MUST be developed through TDD when reasonably testable.
+
+## F-004 — Harness independence
+Canonical Forge behavior MUST NOT exist exclusively inside a Harness Adapter.
+
+## F-005 — CLI boundary
+The Forge CLI MUST remain focused on installation, initialization, configuration, validation, migration, diagnostics, version reporting, and Adapter management.
+
+## F-006 — No Forge Cloud dependency
+Core Forge operation MUST remain possible without a Forge-hosted backend.
+
+## F-007 — No LLM SDK in Protocol Core
+Canonical Protocol behavior MUST NOT depend directly on an LLM SDK.
+
+## F-008 — Public architectural decisions
+Material Protocol Changes require RFC. Material Architecture Changes require ADR.
+
+## F-009 — Compatibility awareness
+Changes to Schemas, Protocol semantics, or Adapter contracts MUST evaluate backward compatibility.
+
+## F-010 — Foundation simplicity
+Forge MUST prefer explicit structures over premature plugin systems, services, or hidden automation.
+
+## F-011 — Deterministic validation
+Machine-readable Protocol Artifacts SHOULD become deterministically validatable.

@@ -409,6 +409,13 @@ def render_decision_rules_reference()->str:
     ]
     return "\n".join(lines)+"\n"
 def _dec_finding(r:Path,p:Path,m:str)->ValidationFinding:return ValidationFinding("C-051",str(p.relative_to(r)),m,p)
+def _c077_applies(m:dict)->bool:
+    change=m.get("change") if isinstance(m.get("change"),dict) else {}
+    change_id=change.get("id")
+    match=re.fullmatch(r"CHG-(\d+)",change_id) if isinstance(change_id,str) else None
+    if match is None:return False
+    suffix=match.group(1).lstrip("0") or "0"
+    return len(suffix)>2 or len(suffix)==2 and suffix>="25"
 def _decision_gates(m:dict)->list[tuple[str,set[str]|None]]:
     """CHG-0013: which already-passed Gates a manifest currently asserts.
 
@@ -421,6 +428,7 @@ def _decision_gates(m:dict)->list[tuple[str,set[str]|None]]:
     state=m.get("state")if isinstance(m.get("state"),dict)else{}
     gates:list[tuple[str,set[str]|None]]=[]
     if artifacts.get("specification_review")in{"complete","passed"}:gates.append(("specification_review_passed",{"specification","compatibility"}))
+    if artifacts.get("plan")=="approved" and _c077_applies(m):gates.append(("before_implementation",{"plan"}))
     if artifacts.get("architecture")=="complete":gates.append(("before_implementation",{"architecture"}))
     if review.get("status")=="passed":gates.append(("review_passed",None))
     if state.get("current")=="complete":gates.append(("before_completion",None))
@@ -502,12 +510,76 @@ def _validate_unresolved_decisions(r:Path,mpath:Path,m:dict)->list[ValidationFin
             if current in{"complete","approved"}:
                 out.append(_dec_finding(r,mpath,f"Decision {entry.get('id')!r} declares invalidates: {key!r}, but artifacts.{key} is still {current!r}; it must become invalidated until revisited (C-057)."))
     return out
+def _validate_plan_authorization(r:Path,mpath:Path,m:dict)->list[ValidationFinding]:
+    """CHG-0025: C-077 human authority at the Plan/Implementation boundary."""
+    change=m.get("change")if isinstance(m.get("change"),dict)else{}
+    change_id=change.get("id")
+    if not _c077_applies(m):return[]
+    state=m.get("state")if isinstance(m.get("state"),dict)else{}
+    artifacts=m.get("artifacts")if isinstance(m.get("artifacts"),dict)else{}
+    if state.get("current")=="complete"or artifacts.get("plan")!="approved":return[]
+    decisions=m.get("decisions")
+    if not isinstance(decisions,list):decisions=[]
+    try:
+        plan_text=(mpath.parent/"plan.md").read_text(encoding="utf-8") if (mpath.parent/"plan.md").is_file() else ""
+    except (OSError,UnicodeError):
+        plan_text=""
+    provenance=_load_mapping(mpath.parent/"provenance.yml")
+    provenance_matches=(isinstance(provenance,dict)
+                        and provenance.get("schema") in {"forge/execution-provenance@1","forge/execution-provenance@2"}
+                        and provenance.get("change")==change_id)
+    records=provenance.get("records") if provenance_matches else None
+    provenance_confirmation=False
+    if isinstance(records,list):
+        for record in records:
+            fields=_record_fields(record)
+            source=record.get("source") if isinstance(record,dict) else None
+            if fields is None or not isinstance(source,dict):continue
+            _,role,_,_,_,_=fields
+            if (
+                role=="implementation"
+                and source.get("assurance") in {"recorded","verified"}
+                and source.get("observed_by")=="operator"
+                and source.get("reference")=="plan.md#approval-record"
+                and isinstance(source.get("statement"),str)
+                and bool(source["statement"].strip())
+            ):
+                provenance_confirmation=True
+                break
+    recorded_confirmation=("<!-- forge:plan-approval-confirmation -->" in plan_text
+                           and "<!-- forge:plan-approval-record -->" in plan_text
+                           and provenance_confirmation)
+    matching=[]
+    superseded_plan=False
+    for entry in decisions:
+        if isinstance(entry,dict) and entry.get("owning_artifact")=="plan" and entry.get("status")=="superseded":
+            superseded_plan=True
+        if not(
+            isinstance(entry,dict)
+            and entry.get("class")=="technical"
+            and entry.get("materiality")=="material"
+            and entry.get("owning_artifact")=="plan"
+            and entry.get("authority")=="human"
+            and entry.get("status")=="resolved"
+            and entry.get("resolved_via")=="human_decision"
+        ):continue
+        matching.append(entry)
+    if len(matching)>1:
+        return[_deleg_finding(r,mpath,"C-077","Plan authorization is ambiguous: more than one active resolved human Plan Decision exists; supersede all but one before crossing the Plan/Implementation boundary (C-077).")]
+    authorized=bool(matching) and recorded_confirmation
+    if authorized:return[]
+    if superseded_plan:
+        return[_deleg_finding(r,mpath,"C-077","Plan authorization is missing: the recorded Plan Decision is superseded and cannot authorize crossing the Plan/Implementation boundary (C-077).")]
+    return[_deleg_finding(r,mpath,"C-077",("Plan authorization is missing: an active Change with artifacts.plan: approved MUST record a material "
+        "technical Decision owned by plan with authority: human, status: resolved, resolved_via: human_decision, and explicit confirmation in plan.md and provenance.yml before crossing the Plan/Implementation boundary "
+        "(C-077)."))]
 def _validate_all_unresolved_decisions(r:Path)->list[ValidationFinding]:
     out:list[ValidationFinding]=[];changes=r/".forge/changes"
     if not changes.is_dir():return out
     for mpath in sorted(changes.glob("*/manifest.yml")):
         m=_load_mapping(mpath)
         if m is None:continue
+        out.extend(_validate_plan_authorization(r,mpath,m))
         out.extend(_validate_unresolved_decisions(r,mpath,m))
     return out
 # --- CHG-0015: Delegated Execution Authority (C-060-C-066) ---------------

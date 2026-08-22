@@ -7,6 +7,11 @@ representations; do not redefine their lifecycle here.
 - Classify the work and resolve the applicable effective Flow before acting.
 - Preserve every applicable Flow gate, including TDD RED-before-behavior and
   Strict Review requirements.
+Before crossing the Plan/Implementation boundary on a Change adopted from
+CHG-0025 onward, obtain an explicit human-authority Plan Decision and record
+the operator-observed confirmation in the Plan and provenance. `status: approved` alone is not
+authorization; this guidance does not technically enforce the conversation
+boundary, so recorded Change state remains authoritative.
 When this is the repository's first commit, commit the complete pre-existing
 state in the intended repository scope, with no file excluded, before
 starting Implementation. This Adapter projects the requirement but cannot
