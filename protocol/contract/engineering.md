@@ -321,3 +321,5 @@ be reviewable as the delta from that complete baseline.
 This rule applies only to Changes begun after C-076 adoption; it does not
 retroactively invalidate a previously valid Change or require a historical
 Change to acquire a baseline it did not have.
+This prospective boundary preserves existing instance meaning under C-045
+and C-046 while requiring the complete baseline for newly begun Changes.
