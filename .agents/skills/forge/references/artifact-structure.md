@@ -205,9 +205,6 @@ re-Plan — not in a silent edit to already-approved Plan content. Two
 Changes (`CHG-0013`, `CHG-0015`) independently hand-wrote nearly the same
 paragraph under an ad-hoc "Explicit boundary" heading; naming and
 positioning it canonically removes the need to reinvent it a third time.
-For an active Change adopted from CHG-0025 onward, the Plan/Implementation
-boundary additionally requires the C-077 recorded human Decision; a Plan's
-`status: approved` string alone is not authorization.
 
 ### Tasks
 
