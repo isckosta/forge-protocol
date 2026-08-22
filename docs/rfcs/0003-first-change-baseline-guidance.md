@@ -104,3 +104,9 @@ that existed before the Change began, and Change artifacts created afterward
 are not part of that pre-existing state. The rule applies prospectively to
 new Changes after adoption. This addendum records those boundaries before
 the corresponding Contract correction is accepted.
+
+## RFC Addendum 2 — acceptance wording
+
+The prospective-application boundary is part of C-076's compatibility
+meaning: it preserves the meaning of existing instances under C-045/C-046
+while requiring the complete baseline for newly begun first-commit Changes.
