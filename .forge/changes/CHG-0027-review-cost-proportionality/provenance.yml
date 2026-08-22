@@ -1,0 +1,38 @@
+schema: forge/execution-provenance@2
+change: CHG-0027
+records:
+  - id: implementation-001
+    role: implementation
+    execution: {id: implementation-exec-chg0027-20260822-docs, context_id: implementation-context-chg0027-20260822-docs}
+    recorded_at: "2026-08-22T21:00:00-03:00"
+    revision:
+      id: chg-0027-documentation-001
+      immutable_ref: {type: git_commit, value: 6cf1b7164695e846f5b44a145a72fcb20ec2c399}
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: codex
+      statement: >-
+        Repository-native provenance for the RFC-only documentation subject.
+        No executable implementation or TDD cycle exists; tdd-evidence.yml
+        records not_applicable honestly.
+  - id: review-001
+    role: review
+    execution: {id: review-exec-chg0027-strict-cold-01, context_id: review-context-chg0027-strict-cold-01}
+    recorded_at: "2026-08-22T22:00:00-03:00"
+    revision:
+      id: chg-0027-documentation-001
+      immutable_ref: {type: git_commit, value: 6cf1b7164695e846f5b44a145a72fcb20ec2c399}
+      description: >-
+        Cold independent Strict Review Iteration 1 returned REQUEST CHANGES:
+        two BLOCKER findings and one MAJOR finding. The findings and exact
+        evidence are recorded in review.md.
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: codex
+      statement: >-
+        The Review execution was performed cold by an independent subagent
+        without conversation memory or hints. This self-recorded source uses
+        the schema-valid observed_by vocabulary; it does not claim provider
+        native or cryptographic attestation.

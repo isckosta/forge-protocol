@@ -4,36 +4,54 @@ change:
   id: CHG-0027
   title: Review Cost Proportionality
   kind: feature
-flow:
-  initial: standard
-  current: standard
-  escalations: []
-state:
-  current: intent
+flow: {initial: full, current: full, escalations: []}
+state: {current: complete}
 artifacts:
-  intent: active
-  discovery: pending
-  specification: pending
-  plan: pending
-  verification: pending
-  review: pending
-  documentation: pending
-requirements:
-  total: 0
-  implemented: 0
-  verified: 0
+  intent: complete
+  discovery: complete
+  specification: complete
+  specification_review: complete
+  architecture: complete
+  test_strategy: complete
+  plan: complete
+  tasks: complete
+  traceability: complete
+  tdd_evidence: complete
+  implementation: not_applicable
+  provenance: complete
+  verification: complete
+  review: complete
+  documentation: complete
+  knowledge_capture: complete
+requirements: {total: 5, implemented: 5, verified: 5}
 tdd:
   status: not_applicable
-  reason: The scaffold was created as non-behavioral.
-verification:
-  status: pending
+  reason: >-
+    This Change is an RFC-only documentation proposal with no executable
+    production behavior, schema, Flow, Gate, or Review-policy implementation.
+verification: {status: passed}
 review:
-  status: pending
-  iteration: 0
-  blockers: 0
-  majors: 0
+  status: failed
+  iteration: 1
+  blockers: 2
+  majors: 1
   minors: 0
   observations: 0
-  iterations: []
+  iterations:
+    - id: review-001
+      revision: chg-0027-documentation-001
+      subject_provenance: implementation-001
+      reviewer_provenance: review-001
+      kind: initial_review
+      status: failed
+      evidence_gap: >-
+        R001 manifest Flow/state mismatch, R002 schema-invalid TDD evidence,
+        and R003 unfrozen/schema-invalid provenance. See review.md.
 documentation:
-  impact_evaluated: false
+  impact_evaluated: true
+  update_required: true
+  reason: >-
+    Added RFC-0005 with Status Proposed and updated item #7 in
+    ROADMAP-REMEDIATION.md to RFC proposed, pending human decision. No
+    implementation, Flow, Review policy, Contract, schema, CLI, or parallel
+    roadmap item was changed.

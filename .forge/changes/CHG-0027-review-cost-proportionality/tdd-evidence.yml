@@ -1,6 +1,8 @@
 schema: forge/tdd-evidence@1
 change: CHG-0027
 status: not_applicable
+cycle_count: 0
+cycles: []
 reason: >-
   This Change is an RFC-only documentation proposal. It adds no executable
   production behavior, schema, Flow, Gate, or Review-policy implementation,
