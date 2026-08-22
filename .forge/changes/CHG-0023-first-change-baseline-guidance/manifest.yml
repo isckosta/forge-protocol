@@ -43,6 +43,14 @@ review:
       subject_provenance: resolution-005
       reviewer_provenance: review-005
       kind: initial_review
+      status: failed
+      full_review_required: true
+      new_material_findings: 0
+    - id: review-006
+      revision: chg-0023-resolution-006
+      subject_provenance: resolution-006
+      reviewer_provenance: review-006
+      kind: initial_review
       status: pending
       new_material_findings: 0
 documentation:
