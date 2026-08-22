@@ -29,11 +29,16 @@ Contract change; STANDARD lacks the required `specification_review` stage.
 
 ### FR-001
 
-`protocol/contract/engineering.md` MUST contain C-076 stating that when a
-Change is conducted in a repository with no prior Git commit, the complete
-pre-existing state within the intended repository scope MUST be committed,
-with no file excluded, before Implementation begins. The baseline commit is
-the before-state and is not Implementation.
+Both `protocol/contract/engineering.md` and the effective Protocol 2 Contract
+at `protocol/versions/2/contract/engineering.md` MUST contain identical C-076
+semantics: when a Change is conducted in a repository with no prior Git
+commit, the complete pre-existing state within the declared intended
+repository scope MUST be committed as one baseline commit, with no file
+excluded, before Implementation begins. The baseline is the before-state,
+not Implementation, and subsequent Change commits MUST be reviewable as the
+delta from that baseline. If operational or generated material is
+intentionally outside the scope, that scope MUST be declared before the
+baseline is committed.
 
 ### FR-002
 
@@ -95,8 +100,9 @@ normative decision and this Specification MUST NOT silently replace it.
 ## Acceptance Criteria
 
 - **AC-001** (FR-001): Contract validation and a focused repository test
-  confirm C-076 contains the complete-state/no-exclusion rule and its
-  before-Implementation boundary.
+  confirm both effective Contract files contain C-076 with one complete
+  baseline, declared scope, no-exclusion, before-Implementation, and
+  baseline-to-delta requirements.
 - **AC-002** (FR-002, NFR-001): both workflow-resource tests observe the
   explicit guidance in the packaged templates and confirm it does not claim
   technical enforcement.
@@ -108,7 +114,10 @@ normative decision and this Specification MUST NOT silently replace it.
   scaffolding-command, or unrelated remediation-item changes.
 - **AC-005** (NFR-002): the Codex and Claude Code workflow templates carry
   byte-identical baseline guidance.
-- **AC-006**: full `pytest`, `forge validate`, and `forge doctor` results
+- **AC-006** (Documentation Impact): `examples/README.md` indexes the new
+  example, `ROADMAP-REMEDIATION.md` marks item #3 done with the real Change
+  link, and Knowledge Capture records the durable lesson.
+- **AC-007**: full `pytest`, `forge validate`, and `forge doctor` results
   remain green, with any pre-existing warnings called out rather than
   silently treated as failures.
 

@@ -47,6 +47,13 @@ no schema field, Flow stage, CLI command, Adapter lifecycle state, or
 provider-specific dependency. Existing valid Protocol 1 instances are not
 invalidated; the rule applies when the first-commit condition is present.
 
+Because this repository's active project resolves Protocol 2's effective
+Contract from `protocol/versions/2/contract/engineering.md`, C-076 is
+recorded with identical meaning in both that versioned Contract and the
+shared `protocol/contract/engineering.md`. This compatibility-preserving
+dual representation follows existing repository precedent and does not
+create a new integer Protocol identifier.
+
 The rule does not prescribe a particular commit message, branch name, Git
 hosting provider, or automation. It requires completeness within the scope
 the Change is actually conducting, which must be stated when the repository
