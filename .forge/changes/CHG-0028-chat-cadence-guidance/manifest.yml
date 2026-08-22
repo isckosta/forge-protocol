@@ -24,8 +24,8 @@ tdd:
     executable behavior or enforceable Protocol rule.
 verification: {status: passed}
 review:
-  status: failed
-  iteration: 4
+  status: pending
+  iteration: 5
   blockers: 1
   majors: 1
   minors: 0
@@ -77,10 +77,17 @@ review:
         The frozen finalization-001 scope omitted verification.md, so the
         resolution delta was correctly rejected and requires a new full
         review. See review.md.
+    - id: review-005
+      revision: chg-0028-finalization-004
+      subject_provenance: finalization-004
+      kind: initial_review
+      status: pending
+      evidence_gap: >-
+        Full Strict Review pending against the finalization-004 subject.
 documentation:
   impact_evaluated: true
   update_required: true
   reason: >-
     Added identical non-binding chat-cadence guidance to both Adapter
-    workflow templates and marked roadmap item #8 Done with the CHG-0028
-    link. No runtime or enforced Protocol behavior changed.
+    workflow templates. Roadmap item #8 remains Open until the pending Full
+    Strict Review passes; no runtime or enforced Protocol behavior changed.

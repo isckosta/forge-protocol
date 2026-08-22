@@ -3,7 +3,7 @@ forge:
   artifact: review
   schema: 1
 change: CHG-0028
-status: failed
+status: pending
 ---
 # Strict Review — CHG-0028
 
@@ -64,3 +64,8 @@ out-of-scope mutation and requires a new full Strict Review.
 
 - The templates, hash, non-binding wording, focused tests, and worktree were
   otherwise verified sound.
+
+## Iteration 5 — PENDING (`kind: initial_review`)
+
+A new Full Strict Review is pending against the frozen `finalization-004`
+subject after the lifecycle and roadmap state corrections.
