@@ -5,7 +5,7 @@ change:
   title: Chat Cadence Guidance
   kind: documentation
 flow: {initial: fast, current: fast, escalations: []}
-state: {current: complete}
+state: {current: review}
 artifacts:
   intent: complete
   inspection: complete
@@ -24,10 +24,10 @@ tdd:
     executable behavior or enforceable Protocol rule.
 verification: {status: passed}
 review:
-  status: passed
+  status: failed
   iteration: 4
-  blockers: 0
-  majors: 0
+  blockers: 1
+  majors: 1
   minors: 0
   observations: 0
   iterations:
@@ -69,13 +69,14 @@ review:
       subject_provenance: finalization-001
       reviewer_provenance: review-004
       kind: resolution_verification
-      status: passed
-      full_review_required: false
-      new_material_findings: 0
-      finding_classes: []
+      status: failed
+      full_review_required: true
+      new_material_findings: 1
+      finding_classes: [out_of_scope_mutation]
       evidence_gap: >-
-        Finalization metadata was independently verified against exact
-        subject 4a0b13c; templates, evidence, scope, and lifecycle all pass.
+        The frozen finalization-001 scope omitted verification.md, so the
+        resolution delta was correctly rejected and requires a new full
+        review. See review.md.
 documentation:
   impact_evaluated: true
   update_required: true

@@ -55,16 +55,12 @@ findings:
 This Resolution Delta updates the verification evidence to the corrected
 template hash and records the new subject before the next cold verification.
 
-## Iteration 4 — PASS (`kind: resolution_verification`)
+## Iteration 4 — REQUEST CHANGES (`kind: resolution_verification`)
 
-The independent cold verification bound to the finalization subject
-`4a0b13c...` confirmed that the current review subject is authoritative, the
-previous passed iteration is explicitly superseded, and the final control
-metadata is limited to the declared review paths. It also confirmed:
+The independent cold verification found that the frozen finalization subject
+`4a0b13c...` omitted `verification.md` from its declared Resolution scope,
+although that file changed in the delta. Under the review policy this is an
+out-of-scope mutation and requires a new full Strict Review.
 
-- both templates are byte-identical with the recorded SHA-256;
-- the cadence guidance remains non-binding and preserves the disclaimer;
-- focused projection tests and targeted schema checks pass; and
-- no untracked reviewable files or out-of-scope source changes exist.
-
-**PASS (final).**
+- The templates, hash, non-binding wording, focused tests, and worktree were
+  otherwise verified sound.

@@ -140,3 +140,26 @@ records:
       statement: >-
         Independent cold verification with no conversation memory or hints;
         it made no repository edits.
+  - id: finalization-002
+    role: resolution
+    execution: {id: finalization2-exec-chg0028-20260823-01, context_id: finalization2-context-chg0028-20260823-01}
+    recorded_at: "2026-08-23T02:00:00-03:00"
+    scope:
+      - .forge/changes/CHG-0028-chat-cadence-guidance/manifest.yml
+      - .forge/changes/CHG-0028-chat-cadence-guidance/provenance.yml
+      - .forge/changes/CHG-0028-chat-cadence-guidance/review.md
+      - .forge/changes/CHG-0028-chat-cadence-guidance/verification.md
+    targets: [BLOCKER, MAJOR]
+    revision:
+      id: chg-0028-finalization-002
+      immutable_ref: {type: git_commit, value: 4cbebb6712c8d3fab0cc554114745002b705da4d}
+      description: >-
+        New full-review subject after the prior Resolution Verification
+        correctly rejected an out-of-scope evidence mutation.
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: codex
+      statement: >-
+        This subject includes the complete declared control/evidence scope;
+        no Adapter template content changed after correction-001.
