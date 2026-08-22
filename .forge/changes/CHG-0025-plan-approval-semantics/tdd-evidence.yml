@@ -1,7 +1,7 @@
 schema: forge/tdd-evidence@1
 change: CHG-0025
 status: compliant
-cycle_count: 4
+cycle_count: 5
 cycles:
   - id: TDD-001
     title: Active approved Plans require a human-authority Decision (FR-001, FR-002, AC-001, AC-002, AC-003)
@@ -67,3 +67,19 @@ cycles:
       evidence: >-
         After the final validator accepted only status: resolved, the dedicated
         superseded Plan Decision regression passed with the focused suite.
+  - id: TDD-005
+    title: Resolve external review findings for provenance compatibility and historical Gates
+    requirements: [FR-006, AC-004]
+    red:
+      observed: true
+      failure_reason: >-
+        The four review regression tests failed before the resolution: verified
+        assurance and Protocol 1 revision.commit were rejected, an active
+        pre-CHG-0025 Plan could produce C-051, and a 5,000-digit valid Change
+        identifier raised ValueError during validation.
+    green:
+      observed: true
+      evidence: >-
+        The new four-test regression set and the complete
+        tests/unit/test_unresolved_decisions.py module passed 37/37 after the
+        resolution implementation.
