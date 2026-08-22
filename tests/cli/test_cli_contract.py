@@ -1,10 +1,12 @@
 from pathlib import Path
+import inspect
 import subprocess
 
 from typer.testing import CliRunner
 import yaml
 
 import forge_cli.app as app_module
+from forge_cli.change_cli import new_change
 import forge_cli.git as git_module
 
 
@@ -30,7 +32,8 @@ def test_cli_exposes_change_scaffolding_command() -> None:
     result = runner.invoke(app_module.app, ["change", "new", "--help"])
 
     assert result.exit_code == 0
-    assert "--non-behavioral" in result.stdout
+    option = inspect.signature(new_change).parameters["non_behavioral"].default
+    assert "--non-behavioral" in option.param_decls
 
 
 def test_change_new_prints_plan_before_creating_the_scaffold(tmp_path: Path, monkeypatch) -> None:
