@@ -201,8 +201,10 @@ def _write_plan_confirmation(root: Path, change_dir: str) -> None:
     change.mkdir(parents=True, exist_ok=True)
     change_id = "-".join(change_dir.split("-")[:2])
     (change / "plan.md").write_text(
-        "## Explicit approval boundary\n\n"
-        "**Approval record.** Explicit human approval was received from the user.\n",
+        "<!-- forge:plan-approval-confirmation -->\n"
+        "## Registro de aprovação\n\n"
+        "<!-- forge:plan-approval-record -->\n"
+        "Aprovação humana explícita foi recebida do operador.\n",
         encoding="utf-8",
     )
     (change / "provenance.yml").write_text(
@@ -219,7 +221,8 @@ def _write_plan_confirmation(root: Path, change_dir: str) -> None:
                     "source": {
                         "assurance": "recorded",
                         "observed_by": "operator",
-                        "statement": "Explicit human approval was received from the user.",
+                        "reference": "plan.md#approval-record",
+                        "statement": "Aprovação humana explícita foi recebida do operador.",
                     },
                 }],
             },
@@ -342,6 +345,18 @@ def test_active_approved_plan_with_foreign_provenance_is_a_finding(tmp_path: Pat
     provenance = yaml.safe_load(provenance_path.read_text())
     provenance["change"] = "CHG-9999"
     provenance_path.write_text(yaml.safe_dump(provenance, sort_keys=False), encoding="utf-8")
+
+    result = validate_project(tmp_path, PROTOCOL_ROOT)
+
+    assert not result.passed
+    assert any("authorization" in message for message in _messages(result))
+
+
+def test_active_approved_plan_with_malformed_plan_is_a_finding(tmp_path: Path) -> None:
+    _init(tmp_path)
+    _write_manifest(tmp_path, "CHG-9118-plan-malformed", _approved_plan_manifest())
+    change = tmp_path / ".forge/changes/CHG-9118-plan-malformed"
+    (change / "plan.md").write_bytes(b"\\xff\\xfe malformed")
 
     result = validate_project(tmp_path, PROTOCOL_ROOT)
 
