@@ -1,0 +1,39 @@
+schema: forge/change@2
+protocol: 2
+change:
+  id: CHG-0027
+  title: Review Cost Proportionality
+  kind: feature
+flow:
+  initial: standard
+  current: standard
+  escalations: []
+state:
+  current: intent
+artifacts:
+  intent: active
+  discovery: pending
+  specification: pending
+  plan: pending
+  verification: pending
+  review: pending
+  documentation: pending
+requirements:
+  total: 0
+  implemented: 0
+  verified: 0
+tdd:
+  status: not_applicable
+  reason: The scaffold was created as non-behavioral.
+verification:
+  status: pending
+review:
+  status: pending
+  iteration: 0
+  blockers: 0
+  majors: 0
+  minors: 0
+  observations: 0
+  iterations: []
+documentation:
+  impact_evaluated: false
