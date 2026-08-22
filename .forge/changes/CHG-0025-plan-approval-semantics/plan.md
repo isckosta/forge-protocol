@@ -32,11 +32,15 @@ Decision record, or a documented re-Plan, not in a silent edit to this Plan.
 
 ## Explicit approval boundary
 
+<!-- forge:plan-approval-confirmation -->
+
 This Change adopts the existing repository-native approval convention used by
 CHG-0014. The Plan/Implementation boundary requires the user to explicitly
 confirm continuation; the confirmation is then recorded here and in
 `provenance.yml`. The record is durable repository evidence, not a claim of
 cryptographic or provider-native attestation.
+
+<!-- forge:plan-approval-record -->
 
 **Approval record.** Explicit human approval was received from the user as
 “Pode criar” in the active session on 2026-08-22. This confirmation authorizes the

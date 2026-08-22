@@ -514,7 +514,10 @@ def _validate_plan_authorization(r:Path,mpath:Path,m:dict)->list[ValidationFindi
     if state.get("current")=="complete"or artifacts.get("plan")!="approved":return[]
     decisions=m.get("decisions")
     if not isinstance(decisions,list):decisions=[]
-    plan_text=(mpath.parent/"plan.md").read_text(encoding="utf-8") if (mpath.parent/"plan.md").is_file() else ""
+    try:
+        plan_text=(mpath.parent/"plan.md").read_text(encoding="utf-8") if (mpath.parent/"plan.md").is_file() else ""
+    except (OSError,UnicodeError):
+        plan_text=""
     provenance=_load_mapping(mpath.parent/"provenance.yml")
     provenance_matches=(isinstance(provenance,dict)
                         and provenance.get("schema")=="forge/execution-provenance@2"
@@ -535,12 +538,13 @@ def _validate_plan_authorization(r:Path,mpath:Path,m:dict)->list[ValidationFindi
         and isinstance(record.get("source"),dict)
         and record["source"].get("assurance")=="recorded"
         and record["source"].get("observed_by")=="operator"
-        and "explicit human approval" in str(record["source"].get("statement","")).lower()
+        and record["source"].get("reference")=="plan.md#approval-record"
+        and isinstance(record["source"].get("statement"),str)
+        and bool(record["source"].get("statement").strip())
         for record in records or []
     ) if isinstance(records,list) else False
-    recorded_confirmation=("## Explicit approval boundary" in plan_text
-                           and "Approval record" in plan_text
-                           and "Explicit human approval" in plan_text
+    recorded_confirmation=("<!-- forge:plan-approval-confirmation -->" in plan_text
+                           and "<!-- forge:plan-approval-record -->" in plan_text
                            and provenance_confirmation)
     matching=[]
     for entry in decisions:
