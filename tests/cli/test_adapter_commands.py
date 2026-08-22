@@ -171,6 +171,18 @@ def test_adapter_install_confirms_success_and_names_the_next_step(
     assert "No changes required." not in result.stdout
 
 
+def test_claude_code_install_names_the_nested_skill_path(
+    tmp_path: Path, monkeypatch
+) -> None:
+    _initialize_project(tmp_path, monkeypatch)
+
+    result = runner.invoke(app, ["adapter", "install", "claude-code"])
+
+    assert result.exit_code == 0, result.output
+    assert "claude-code Adapter installed at .claude." in result.stdout
+    assert "read `.claude/skills/forge/SKILL.md` directly" in result.stdout
+
+
 def test_adapter_install_dry_run_prints_no_success_confirmation(
     tmp_path: Path, monkeypatch
 ) -> None:
