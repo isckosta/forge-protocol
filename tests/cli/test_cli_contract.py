@@ -15,15 +15,60 @@ def _init_git_repository(path: Path) -> None:
     subprocess.run(["git", "init", str(path)], check=True, capture_output=True, text=True)
 
 
-def test_cli_exposes_only_infrastructure_commands() -> None:
+def test_cli_exposes_infrastructure_and_change_scaffolding_commands() -> None:
     result = runner.invoke(app_module.app, ["--help"])
 
     assert result.exit_code == 0
     for command in ("version", "init", "validate", "doctor", "adapter"):
         assert command in result.stdout
 
-    for forbidden in ("change", "specify", "test-design", "implement", "verify", "review", "resolve", "complete"):
+    for forbidden in ("specify", "test-design", "implement", "verify", "review", "resolve", "complete"):
         assert forbidden not in result.stdout
+
+
+def test_cli_exposes_change_scaffolding_command() -> None:
+    result = runner.invoke(app_module.app, ["change", "new", "--help"])
+
+    assert result.exit_code == 0
+    assert "--non-behavioral" in result.stdout
+
+
+def test_change_new_prints_plan_before_creating_the_scaffold(tmp_path: Path, monkeypatch) -> None:
+    _init_git_repository(tmp_path)
+    monkeypatch.chdir(tmp_path)
+    assert runner.invoke(app_module.app, ["init"]).exit_code == 0
+
+    result = runner.invoke(app_module.app, ["change", "new", "sample-change"])
+
+    assert result.exit_code == 0, result.output
+    assert "CREATE forge_owned .forge/changes/CHG-0001-sample-change/intent.md" in result.stdout
+    assert result.stdout.index("CREATE forge_owned") < result.stdout.index("Created CHG-0001")
+    target = tmp_path / ".forge" / "changes" / "CHG-0001-sample-change"
+    assert target.is_dir()
+    assert (target / "manifest.yml").is_file()
+
+
+def test_change_new_supports_full_flow_and_non_behavioral_mode(tmp_path: Path, monkeypatch) -> None:
+    _init_git_repository(tmp_path)
+    monkeypatch.chdir(tmp_path)
+    assert runner.invoke(app_module.app, ["init"]).exit_code == 0
+    configuration = tmp_path / ".forge" / "forge.yml"
+    configuration.write_text(
+        configuration.read_text(encoding="utf-8").replace("default: standard", "default: full"),
+        encoding="utf-8",
+    )
+
+    result = runner.invoke(app_module.app, ["change", "new", "full-change", "--non-behavioral"])
+
+    assert result.exit_code == 0, result.output
+    target = tmp_path / ".forge" / "changes" / "CHG-0001-full-change"
+    assert {path.name for path in target.iterdir()} == {
+        "intent.md", "discovery.md", "specification.md", "specification-review.md",
+        "architecture.md", "test-strategy.md", "plan.md", "tasks.md",
+        "verification.md", "review.md", "knowledge-capture.md", "manifest.yml",
+    }
+    manifest = yaml.safe_load((target / "manifest.yml").read_text(encoding="utf-8"))
+    assert manifest["tdd"]["status"] == "not_applicable"
 
 
 def test_init_creates_a_valid_forge_project_from_nested_directory(tmp_path: Path, monkeypatch) -> None:
