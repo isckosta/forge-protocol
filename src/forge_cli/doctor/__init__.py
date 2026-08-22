@@ -153,10 +153,12 @@ def _adapter_readiness_checks(repository_root: Path) -> list[DoctorCheck]:
     registry = build_packaged_registry()
     service = AdapterService(registry)
     checks: list[DoctorCheck] = []
+    installed_adapters = 0
     for driver in registry.list():
         adapter_id = driver.manifest.adapter_id
         if load_optional_installation_record(repository_root, adapter_id) is None:
             continue
+        installed_adapters += 1
         result = service.doctor(repository_root, adapter_id)
         status_map = {"passed": "passed", "failed": "failed", "warning": "warning"}
         for check in result.checks:
@@ -167,4 +169,12 @@ def _adapter_readiness_checks(repository_root: Path) -> list[DoctorCheck]:
                     check.message,
                 )
             )
+    if installed_adapters == 0:
+        checks.append(
+            _check(
+                "adapter:installation_missing",
+                "warning",
+                "No Adapter is installed; run `forge adapter install <adapter>` to install one.",
+            )
+        )
     return checks

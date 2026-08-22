@@ -154,7 +154,7 @@ def test_doctor_warns_when_no_adapter_is_installed(tmp_path: Path, monkeypatch) 
 
     assert len(adapter_checks) == 1
     assert adapter_checks[0].status == "warning"
-    assert "no Adapter is installed" in adapter_checks[0].message
+    assert "No Adapter is installed" in adapter_checks[0].message
     assert "forge adapter install" in adapter_checks[0].message
 
 
