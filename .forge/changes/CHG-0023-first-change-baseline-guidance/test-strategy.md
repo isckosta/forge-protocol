@@ -39,20 +39,27 @@ fails for the same absent-guidance reason.
 **GREEN:** add the same reminder to the Claude Code resource and observe the
 focused test pass.
 
-## TDD-003 — Template parity (NFR-002)
+## TDD-003 — Existing Protocol instances remain compatible (FR-001)
 
-**RED:** assert the baseline-guidance block extracted from both templates is
-identical; this is a compatibility/parity guard whose pre-change RED may be
-reported as not applicable if the test cannot distinguish two absent blocks.
+**RED:** assert that C-076 states its prospective adoption boundary; this
+fails before the compatibility wording is added to both effective Contracts.
 
-**GREEN:** both resources carry byte-identical guidance.
+**GREEN:** both effective Contracts carry identical prospective-application
+wording, and the focused test passes.
 
-## TDD-004 — Contract and example evidence (FR-001, FR-003)
+## TDD-004 — Workflow identifies the baseline as before-state (FR-002)
 
-**RED:** not applicable. C-076 and the example are normative/documentary
-content, not executable behavior; content review and repository-native
-artifact validation provide the appropriate evidence. This is recorded as
-`tdd: not_applicable` for this content portion, not fabricated as a test.
+**RED:** a separately committed focused assertion fails while the workflow
+templates lack the explicit before-state sentence.
+
+**GREEN:** both resources carry the sentence and the focused test passes.
+
+## Documentary content — Contract/example evidence (FR-001, FR-003)
+
+The remaining C-076 and example content is normative/documentary, not
+executable behavior. Content review and repository-native artifact validation
+provide the appropriate evidence; this portion is `tdd: not_applicable`, not
+fabricated as a test.
 
 ## Non-mechanical Validation
 
@@ -66,8 +73,8 @@ artifact validation provide the appropriate evidence. This is recorded as
 ## Completion Criteria
 
 - TDD-001 and TDD-002 are valid RED/GREEN cycles;
-- TDD-003 is GREEN with an honest RED applicability record;
-- TDD-004 is recorded as not applicable for prose-only content;
+- TDD-003 and TDD-004 are repository-visible RED/GREEN cycles;
+- Contract/example prose is recorded as not applicable for TDD;
 - all Acceptance Criteria pass and full Forge verification is green;
 - independent Specification Review and Strict Review have no blocking
   findings.
