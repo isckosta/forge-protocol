@@ -1,0 +1,7 @@
+schema: forge/tdd-evidence@1
+change: CHG-0027
+status: not_applicable
+reason: >-
+  This Change is an RFC-only documentation proposal. It adds no executable
+  production behavior, schema, Flow, Gate, or Review-policy implementation,
+  so no genuine RED/GREEN cycle exists to observe.
