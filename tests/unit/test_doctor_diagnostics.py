@@ -143,14 +143,19 @@ def test_doctor_reports_drifted_adapter_as_failed(tmp_path: Path, monkeypatch) -
     )
 
 
-def test_doctor_adds_no_adapter_checks_when_none_installed(tmp_path: Path, monkeypatch) -> None:
+def test_doctor_warns_when_no_adapter_is_installed(tmp_path: Path, monkeypatch) -> None:
     _init_git_repository(tmp_path)
     monkeypatch.chdir(tmp_path)
     runner.invoke(app, ["init"])
 
     result = doctor.diagnose(tmp_path, PROTOCOL_ROOT)
 
-    assert not any(check.id.startswith("adapter:") for check in result.checks)
+    adapter_checks = [check for check in result.checks if check.id.startswith("adapter:")]
+
+    assert len(adapter_checks) == 1
+    assert adapter_checks[0].status == "warning"
+    assert "no Adapter is installed" in adapter_checks[0].message
+    assert "forge adapter install" in adapter_checks[0].message
 
 
 def test_doctor_is_read_only(tmp_path: Path) -> None:
