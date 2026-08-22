@@ -12,10 +12,10 @@ requirements:
   CON-003: {tasks: [T-002, T-006], evidence: RFC_addendum_b7a275c_precedes_contract_clarification_a875f6b}
 acceptance:
   AC-001: [test_both_effective_contracts_define_the_same_first_commit_rule]
-  AC-002: [test_codex_workflow_explicitly_guides_first_commit_baseline, test_claude_code_workflow_explicitly_guides_first_commit_baseline]
+  AC-002: [test_codex_workflow_explicitly_guides_first_commit_baseline, test_claude_code_workflow_explicitly_guides_first_commit_baseline, test_workflow_identifies_baseline_as_before_state_not_implementation]
   AC-003: [example_readme_content_review]
   AC-004: [test_full_regression]
-  AC-005: [test_workflow_templates_project_identical_baseline_guidance]
+  AC-005: [test_workflow_templates_project_identical_baseline_guidance, test_workflow_identifies_baseline_as_before_state_not_implementation]
   AC-006: [examples_readme_mapping_review, roadmap_item_3_status_link_review, knowledge_capture_review]
   AC-007: [test_both_effective_contracts_define_the_same_first_commit_rule, test_codex_workflow_explicitly_guides_first_commit_baseline, test_claude_code_workflow_explicitly_guides_first_commit_baseline]
   AC-008: [test_full_regression]

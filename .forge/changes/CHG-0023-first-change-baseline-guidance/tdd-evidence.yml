@@ -1,7 +1,7 @@
 schema: forge/tdd-evidence@1
 change: CHG-0023
 status: compliant
-cycle_count: 3
+cycle_count: 4
 cycles:
   - id: TDD-001
     title: First-commit baseline guidance is projected by both workflow templates
@@ -18,6 +18,11 @@ cycles:
     requirements: [FR-001, NFR-001, AC-001, AC-008]
     red: {observed: true, failure_reason: "The new compatibility assertion failed 1 test before the prospective-adoption wording was added: pytest -q tests/unit/test_first_change_baseline_guidance.py -> 1 failed, 4 passed, 2026-08-22."}
     green: {observed: true, evidence: "The same focused module passes 5 tests after identical prospective-application wording was added to both Contracts; the correction is committed as 98a45f3."}
+  - id: TDD-004
+    title: Workflow identifies the baseline as before-state, not Implementation
+    requirements: [FR-002, AC-002, AC-005]
+    red: {observed: true, failure_reason: "A separately committed test failed 1 assertion before the new sentence was added: pytest -q tests/unit/test_first_change_baseline_guidance.py -> 1 failed, 5 passed, 2026-08-22; test commit 1f638c8."}
+    green: {observed: true, evidence: "The focused module passes 6 tests after the identical sentence was added to both workflow templates."}
 notes:
   - "The example and RFC/Contract prose are documentary content; their non-mechanical review is recorded in verification.md, not represented as fabricated TDD behavior."
   - "No RED is claimed for the illustrative example or roadmap/index documentation; those are evidence-assembly obligations under TDD exception C-017."

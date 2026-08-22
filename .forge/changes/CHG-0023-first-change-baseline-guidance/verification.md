@@ -32,6 +32,9 @@ status: passed
   missing-guidance reasons.
 - Focused GREEN: the same module plus both workflow authority tests produced
   **6 passed**.
+- Resolution TDD-004 RED/GREEN: a test-only commit `1f638c8` produced
+  **1 failed, 5 passed**, followed by **6 passed** after the matching
+  before-state sentence was added to both templates.
 - Resolution TDD-003 RED: the new prospective-compatibility assertion
   produced **1 failed, 4 passed** before the Contract wording correction.
 - Resolution TDD-003 GREEN: the focused module produced **5 passed** after
@@ -86,3 +89,9 @@ The final review subject includes the complete evidence assembly after the
 RFC addendum and Contract clarification. Only the exact Change-local
 `manifest.yml`, `provenance.yml`, and `review.md` files may differ afterward
 as review-control metadata.
+
+The original TDD-001 test/implementation ordering was observed in the
+authoring execution but is not reconstructible from its single implementation
+commit; it is disclosed in `tdd-evidence.yml`. TDD-003 and TDD-004 are
+separately committed Resolution cycles with repository-visible RED before
+their production/documentation changes.
