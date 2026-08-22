@@ -18,3 +18,6 @@ starting Implementation. This Adapter projects the requirement but cannot
 technically enforce Git behavior.
 The baseline commit is the before-state, not Implementation.
 These instructions represent Forge requirements; they are not technical enforcement.
+
+Skill discovery limitation: after `forge adapter install`, the Harness may not refresh its skill catalog in the current session. This is Harness runtime behavior, not technically controlled by Forge. If the `forge` skill is not
+available yet, read this `SKILL.md` directly or retry in a later turn/session.

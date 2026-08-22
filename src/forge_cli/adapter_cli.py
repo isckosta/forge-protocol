@@ -225,6 +225,11 @@ def install(
         f"Open {harness} in this repository to begin a Forge-governed Change; "
         "no further Forge-side step is required."
     )
+    typer.echo(
+        "Skill discovery note: the Harness may not refresh its skill catalog "
+        "until a later turn or session; if the Forge skill is not available "
+        f"yet, read `{result.target}/SKILL.md` directly."
+    )
 
 
 @adapter_app.command()
