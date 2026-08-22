@@ -36,11 +36,7 @@ def test_workflow_templates_project_identical_baseline_guidance() -> None:
     codex = CODEX_WORKFLOW.read_text(encoding="utf-8")
     claude = CLAUDE_WORKFLOW.read_text(encoding="utf-8")
 
-    normalized_codex = " ".join(codex.split())
-    normalized_claude = " ".join(claude.split())
-    codex_block = normalized_codex[normalized_codex.index(BASELINE_GUIDANCE) : normalized_codex.index(NON_ENFORCEMENT) + len(NON_ENFORCEMENT)]
-    claude_block = normalized_claude[normalized_claude.index(BASELINE_GUIDANCE) : normalized_claude.index(NON_ENFORCEMENT) + len(NON_ENFORCEMENT)]
-    assert codex_block == claude_block
+    assert codex == claude
 
 
 def test_both_effective_contracts_define_the_same_first_commit_rule() -> None:
