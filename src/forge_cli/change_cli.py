@@ -91,7 +91,10 @@ def new_change(
     slug: Annotated[str, typer.Argument(metavar="SLUG")],
     non_behavioral: Annotated[bool, typer.Option("--non-behavioral")] = False,
 ) -> None:
-    """Plan and create a new repository-native Change scaffold."""
+    """Plan and create a new repository-native Change scaffold.
+
+    Use ``--non-behavioral`` when the Change has no executable behavior.
+    """
     root = _root()
     try:
         validate_slug(slug)
