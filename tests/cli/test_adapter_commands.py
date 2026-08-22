@@ -161,6 +161,8 @@ def test_adapter_install_confirms_success_and_names_the_next_step(
     assert result.exit_code == 0, result.output
     assert "codex Adapter installed at .agents/skills/forge." in result.stdout
     assert "Open codex in this repository" in result.stdout
+    assert "may not refresh its skill catalog until a later turn or session" in result.stdout
+    assert "read `.agents/skills/forge/SKILL.md` directly" in result.stdout
     lines = result.stdout.splitlines()
     confirmation_index = next(
         index for index, line in enumerate(lines) if "Adapter installed at" in line
