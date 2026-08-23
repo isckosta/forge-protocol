@@ -1,5 +1,6 @@
 schema: forge/tdd-evidence@1
 change: CHG-0032
 status: not_applicable
+reason: Revalidation-only successor; implementation TDD evidence belongs to CHG-0030.
 cycle_count: 0
 cycles: []
