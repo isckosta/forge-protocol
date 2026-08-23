@@ -115,3 +115,65 @@ def test_recorder_exposes_secondary_failure_without_raising(tmp_path: Path, monk
 
     assert recorder.capture(event) is None
     assert recorder.last_diagnostic == "injected FER failure"
+
+
+def test_malformed_configuration_does_not_escape_recorder(tmp_path: Path) -> None:
+    (tmp_path / ".forge").mkdir()
+    (tmp_path / ".forge" / "contributor.yml").write_text(
+        "schema: forge/contributor@1\nexperience_reporting: malformed\n",
+        encoding="utf-8",
+    )
+    event = ExperienceEvent(
+        event_type="adapter_conformance",
+        detector="adapter-conformance",
+        expected="A required gate remains represented.",
+        observed="A required gate was removed.",
+        evidence=("E_FORGE_ADAPTER_GATE_REMOVED: review_gate",),
+        context={"change": "CHG-0035"},
+    )
+
+    assert ExperienceRecorder(tmp_path, context={}).capture(event) is None
+
+
+def test_recorder_deduplicates_across_instances(tmp_path: Path) -> None:
+    write_experience_configuration(tmp_path, True)
+    event = ExperienceEvent(
+        event_type="adapter_conformance",
+        detector="adapter-conformance",
+        expected="A required gate remains represented.",
+        observed="A required gate was removed.",
+        evidence=("E_FORGE_ADAPTER_GATE_REMOVED: review_gate",),
+        context={"change": "CHG-0035"},
+    )
+
+    first = ExperienceRecorder(tmp_path, context={})
+    second = ExperienceRecorder(tmp_path, context={})
+    first_path = first.capture(event)
+    second_path = second.capture(event)
+
+    assert second_path == first_path
+    assert len(list((tmp_path / "dogfooding" / "reports").glob("FER-*.yml"))) == 1
+
+
+def test_secondary_diagnostic_remains_non_raising_when_warnings_are_errors(
+    tmp_path: Path, monkeypatch, recwarn
+) -> None:
+    write_experience_configuration(tmp_path, True)
+    event = ExperienceEvent(
+        event_type="adapter_conformance",
+        detector="adapter-conformance",
+        expected="A required gate remains represented.",
+        observed="A required gate was removed.",
+        evidence=("E_FORGE_ADAPTER_GATE_REMOVED: review_gate",),
+        context={"change": "CHG-0035"},
+    )
+
+    def fail(*args, **kwargs):
+        raise ExperienceStorageError("injected FER failure")
+
+    monkeypatch.setattr(ExperienceStorage, "record", fail)
+    import warnings
+
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
+        assert ExperienceRecorder(tmp_path, context={}).capture(event) is None

@@ -23,13 +23,23 @@ isolation.
 
 ## Test Evidence
 
-- Focused FER/Markdown/Adapter selection: **78 passed, 1 expected warning**.
+- Focused FER/Markdown/Adapter selection: **81 passed, 2 expected bounded
+  warnings** for simulated secondary failures.
 - Full suite: **626 passed, 2 failed** in 56.74s. Both failures are existing
   wheel-distribution probes that require downloading `hatchling` from PyPI;
   DNS/network access was unavailable. No functional FER or Adapter assertion
   failed.
 - TDD RED/GREEN evidence is recorded in `tdd-evidence.yml`.
 - `git diff --check`: passed.
+
+## Review Remediation Evidence
+
+- P1 malformed `.forge/contributor.yml` is now caught by the recorder and
+  cannot escape Adapter diagnostics.
+- Stable fingerprints are searched across existing local FER reports when FER
+  is enabled, preventing duplicate reports across diagnostic invocations.
+- Secondary warning emission is protected from warning-as-error environments;
+  the primary Adapter result remains unchanged.
 
 ## Forge Evidence
 

@@ -10,6 +10,7 @@ import yaml
 
 from forge_cli.experience.capture import ExperienceCapturePolicy, ExperienceEvent
 from forge_cli.experience.configuration import load_experience_configuration
+from forge_cli.experience.configuration import ExperienceConfigurationError
 from forge_cli.experience.model import ObservationInput
 from forge_cli.experience.storage import ExperienceStorage, ExperienceStorageError
 
@@ -30,13 +31,15 @@ class ExperienceRecorder:
             decision = self.policy.evaluate(event)
             if not decision.capture:
                 return None
+            existing = self._find_existing(decision.fingerprint)
+            if existing is not None:
+                self.report_id = existing.stem
+                return existing
             storage = ExperienceStorage(
                 self.project_root,
                 context={**self.context, **event.context},
                 report_id=self.report_id,
             )
-            if self.report_id is not None and self._already_recorded(decision.fingerprint):
-                return self.project_root / "dogfooding" / "reports" / f"{self.report_id}.yml"
             entry = ObservationInput(
                 area=event.event_type,
                 classification=decision.classification,
@@ -53,25 +56,35 @@ class ExperienceRecorder:
             path = storage.record(entry)
             self.report_id = path.stem
             return path
-        except (OSError, yaml.YAMLError, ExperienceStorageError) as error:
+        except (OSError, yaml.YAMLError, ExperienceStorageError, ExperienceConfigurationError) as error:
             self.last_diagnostic = str(error)
-            warnings.warn(
-                f"FER automatic capture failed without changing the primary operation: {error}",
-                RuntimeWarning,
-                stacklevel=2,
-            )
+            try:
+                warnings.warn(
+                    f"FER automatic capture failed without changing the primary operation: {error}",
+                    RuntimeWarning,
+                    stacklevel=2,
+                )
+            except Exception:
+                pass
             return None
 
-    def _already_recorded(self, fingerprint: str) -> bool:
-        if self.report_id is None:
-            return False
-        path = self.project_root / "dogfooding" / "reports" / f"{self.report_id}.yml"
-        if path.is_symlink() or not path.is_file():
-            return False
-        document = yaml.safe_load(path.read_text(encoding="utf-8"))
-        return any(
-            isinstance(item, dict)
-            and isinstance(item.get("capture"), dict)
-            and item["capture"].get("fingerprint") == fingerprint
-            for item in document.get("observations", [])
-        )
+    def _find_existing(self, fingerprint: str) -> Path | None:
+        reports_root = self.project_root / "dogfooding" / "reports"
+        if not reports_root.is_dir() or reports_root.is_symlink():
+            return None
+        for path in sorted(reports_root.glob("FER-*.yml")):
+            if path.is_symlink() or not path.is_file():
+                continue
+            try:
+                document = yaml.safe_load(path.read_text(encoding="utf-8"))
+            except (OSError, yaml.YAMLError):
+                continue
+            observations = document.get("observations", []) if isinstance(document, dict) else []
+            if any(
+                isinstance(item, dict)
+                and isinstance(item.get("capture"), dict)
+                and item["capture"].get("fingerprint") == fingerprint
+                for item in observations
+            ):
+                return path
+        return None

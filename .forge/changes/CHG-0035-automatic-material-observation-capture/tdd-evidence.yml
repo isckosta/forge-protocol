@@ -1,7 +1,7 @@
 schema: forge/tdd-evidence@1
 change: CHG-0035
 status: active
-cycle_count: 4
+cycle_count: 5
 cycles:
   - id: TDD-001
     title: Structured event policy
@@ -23,3 +23,8 @@ cycles:
     requirements: [FR-007]
     red: {observed: true, evidence: "Failure-isolation test failed because the recorder did not expose a secondary diagnostic."}
     green: {observed: true, evidence: "Recorder exposes the diagnostic and emits a bounded warning without raising or changing the primary result; focused suite passed with 78 tests."}
+  - id: TDD-005
+    title: Review remediation for configuration, cross-run deduplication, and warning isolation
+    requirements: [FR-001, FR-005, FR-007]
+    red: {observed: true, evidence: "PR review reproduced malformed configuration escape, duplicate reports across recorder instances, and RuntimeWarning escalation."}
+    green: {observed: true, evidence: "Regression tests pass for all three findings; focused FER/Adapter suite passed with 81 tests."}
