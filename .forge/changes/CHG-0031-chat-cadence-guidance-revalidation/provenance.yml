@@ -60,3 +60,18 @@ records:
       statement: >-
         Resolution aligns the artifact front matter and records the exact
         focused verification command after independent review findings.
+  - id: review-001
+    role: review
+    execution: {id: review-exec-chg0031-resolution-independent-01, context_id: review-context-chg0031-resolution-independent-01}
+    recorded_at: "2026-08-23T00:30:00-03:00"
+    revision:
+      id: chg-0031-resolution-001
+      immutable_ref: {type: git_commit, value: 12eb40acde7dd39af4cdc0c5a707d30d2babd07d}
+    source:
+      assurance: recorded
+      observed_by: independent_subagent
+      harness: codex
+      statement: >-
+        Independent cold review reproduced the exact focused command, Forge
+        validation, parity evidence, and control metadata checks. No files
+        were modified by the Reviewer and no material finding remains.
