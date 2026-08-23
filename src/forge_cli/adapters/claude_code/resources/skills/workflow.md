@@ -27,3 +27,10 @@ These instructions represent Forge requirements; they are not technical enforcem
 
 Skill discovery limitation: after `forge adapter install`, the Harness may not refresh its skill catalog in the current session. This is Harness runtime behavior, not technically controlled by Forge. If the `forge` skill is not
 available yet, read this `SKILL.md` directly or retry in a later turn/session.
+Artifact-publication suggestion (non-binding): when a key stage completes—especially
+Specification or Strict Review—and the active Harness supports shareable Artifacts,
+offer to publish the relevant full `.forge/changes/.../specification.md` or
+`review.md` so the human can read the detail in chat. If no such Harness mechanism
+exists, point the human to the repository-native file instead; do not imply that
+publishing is automatic or supported by every Harness. This is communication
+guidance, not technical enforcement.

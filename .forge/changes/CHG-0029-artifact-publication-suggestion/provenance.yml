@@ -1,0 +1,86 @@
+schema: forge/execution-provenance@2
+change: CHG-0029
+records:
+  - id: implementation-001
+    role: implementation
+    execution: {id: implementation-exec-chg0029-20260823-01, context_id: implementation-context-chg0029-20260823-01}
+    recorded_at: "2026-08-23T00:30:00-03:00"
+    revision:
+      id: chg-0029-implementation-001
+      immutable_ref: {type: git_commit, value: b06fa5e0712adc301e665039a467d63b903dd442}
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: codex
+      statement: >-
+        Self-recorded provenance for the implementation that added the same
+        conditional, non-binding artifact-publication suggestion to both
+        Adapter workflow templates. The Change is prose-only; no executable
+        behavior was introduced and TDD is not applicable.
+  - id: review-001
+    role: review
+    execution: {id: review-exec-chg0029-initial-cold-01, context_id: review-context-chg0029-initial-cold-01}
+    recorded_at: "2026-08-23T01:00:00-03:00"
+    revision:
+      id: chg-0029-implementation-001
+      immutable_ref: {type: git_commit, value: b06fa5e0712adc301e665039a467d63b903dd442}
+      description: >-
+        Independent cold Strict Review of implementation-001. REQUEST
+        CHANGES with one MINOR evidence finding: inspection.md conflated
+        Codex local Adapter resource publication with a shareable session
+        Artifact mechanism and needed more precise Claude Code evidence.
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: codex
+      statement: >-
+        The reviewer ran in a distinct cold sub-agent execution with no
+        conversation memory or hints, inspected the committed Change and
+        repository evidence, and recorded the finding in review.md. No
+        implementation files were changed by the reviewer.
+  - id: resolution-001
+    role: resolution
+    execution: {id: resolution-exec-chg0029-20260823-01, context_id: resolution-context-chg0029-20260823-01}
+    recorded_at: "2026-08-23T01:20:00-03:00"
+    scope:
+      - .forge/changes/CHG-0029-artifact-publication-suggestion/inspection.md
+    targets: [MINOR]
+    revision:
+      id: chg-0029-resolution-001
+      immutable_ref: {type: git_commit, value: 89cf878e9796c68c2963c3e3a014869d7bf147af}
+      description: >-
+        Clarified the evidence boundary: Codex local Adapter resource
+        publication is distinct from a Harness-native shareable session
+        Artifact, and Claude Code documentation does not establish automatic
+        publication of every Markdown file.
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: codex
+      statement: >-
+        The Resolution updated only inspection.md to address the single MINOR
+        finding. The guidance remains conditional and non-binding; no runtime,
+        Contract, schema, or Adapter publication mechanism was changed.
+  - id: review-002
+    role: review
+    execution: {id: review-exec-chg0029-resolution-cold-01, context_id: review-context-chg0029-resolution-cold-01}
+    recorded_at: "2026-08-22T23:30:00-03:00"
+    revision:
+      id: chg-0029-resolution-001
+      immutable_ref: {type: git_commit, value: 89cf878e9796c68c2963c3e3a014869d7bf147af}
+      description: >-
+        Resolution Verification (kind: resolution_verification) independently
+        confirmed that the MINOR finding is resolved. PASS (final), with zero
+        new material findings.
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: codex
+      statement: >-
+        Independent cold Reviewer Execution with no conversation memory or
+        hints from the implementation or prior Review. It inspected the exact
+        resolution subject, recomputed template parity and scope, validated
+        the manifest, provenance, and TDD schemas, and ran focused tests. It
+        found no residual material defect. The global forge validate limitation
+        is an unrelated historical CHG-0028 provenance reference issue; no
+        CHG-0029 validation error was produced.

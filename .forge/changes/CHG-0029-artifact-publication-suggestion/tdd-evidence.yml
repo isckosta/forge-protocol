@@ -1,0 +1,8 @@
+schema: forge/tdd-evidence@1
+change: CHG-0029
+status: not_applicable
+reason: >-
+  The Change adds only non-binding Markdown guidance to Adapter workflow
+  templates; it introduces no executable behavior or enforced Protocol rule.
+cycle_count: 0
+cycles: []
