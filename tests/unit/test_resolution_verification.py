@@ -213,6 +213,50 @@ def test_scoped_resolution_verification_passes(tmp_path: Path) -> None:
     assert result.passed, _messages(result)
 
 
+def test_legacy_abbreviated_subject_sha_can_be_migrated_to_matching_full_sha(tmp_path: Path) -> None:
+    root = tmp_path
+    _init_repo(root)
+    implementation = _freeze_commit(root, {"src/feature.py": "v1\n"}, "implementation")
+    change_dir = "CHG-9007-legacy-sha"
+
+    legacy = _impl_record(implementation)
+    legacy["revision"]["immutable_ref"]["value"] = implementation[:7]
+    first_manifest = _manifest("CHG-9007", [_first_iteration(implementation)], top_status="active")
+    _write_metadata_commit(root, change_dir, first_manifest, _provenance("CHG-9007", [legacy]), "record legacy abbreviated subject")
+
+    resolution = _freeze_commit(root, {"src/feature.py": "v2\n"}, "resolution")
+    final_manifest = _manifest(
+        "CHG-9007",
+        [
+            _first_iteration(implementation),
+            {
+                "id": "review-002",
+                "revision": "chg-9007-resolution-001",
+                "subject_provenance": "resolution-001",
+                "reviewer_provenance": "review-002",
+                "kind": "resolution_verification",
+                "status": "passed",
+            },
+        ],
+        top_status="passed",
+    )
+    full_implementation = _impl_record(implementation)
+    resolution_record = _record(
+        "resolution-001", "resolution", resolution, "chg-9007-resolution-001",
+        "resolution-exec", "resolution-ctx", extra={"scope": ["src/feature.py"], "targets": ["CHG-9007-R001"]},
+    )
+    reviewer = _record("review-002", "review", resolution, "chg-9007-resolution-001", "review-exec", "review-ctx")
+    _write_metadata_commit(
+        root, change_dir, final_manifest,
+        _provenance("CHG-9007", [full_implementation, resolution_record, reviewer]),
+        "migrate abbreviated subject to matching full sha",
+    )
+
+    result = validate_project(root, resolve_protocol_root())
+
+    assert result.passed, _messages(result)
+
+
 # ---------------------------------------------------------------------------
 # TDD-016 — out-of-scope material mutation: passed-without-escalation fails;
 # failed+full_review_required passes; a further resolution_verification is

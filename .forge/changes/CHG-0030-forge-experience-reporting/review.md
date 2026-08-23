@@ -10,24 +10,23 @@ status: active
 
 ## Verdict
 
-**PENDING — final review binding is blocked by an earlier abbreviated
-provenance SHA; no completion is claimed.**
+**PASS — independent Strict Review passed against the final frozen subject.**
 
 ## Iteration 1 — FAIL
 
-The independent review of frozen subject `258f62b` found two BLOCKERs and
+The independent review of frozen subject `258f62bc26cc5d4c807e2ba09139eff5c1377011` found two BLOCKERs and
 three MAJORs: unsupported manifest metadata and incomplete TDD schema
 evidence; privacy input was not guarded; malformed reports could crash
 recording; verification/documentation metadata was inaccurate. The findings
-were recorded and addressed in `resolution-001` at frozen subject `e03a8b2`.
+were recorded and addressed in `resolution-001` at frozen subject `e03a8b2e48e4b89214ca32f73b7e36d288ffc6f7`.
 
 ## Iteration 2 — FAIL
 
-The independent Resolution Verification of frozen subject `e03a8b2` confirmed
+The independent Resolution Verification of frozen subject `e03a8b2e48e4b89214ca32f73b7e36d288ffc6f7` confirmed
 the prior fixes but found three remaining MAJORs: evidence-item sanitization,
 symlinked `dogfooding` ancestor containment, and deep follow-up candidate
 validation. These are addressed in `resolution-002` at frozen subject
-`358bf84`.
+`358bf848bc45c25406931091e16cc4c0adf9beea`.
 
 ## Iteration 3 — PASS
 

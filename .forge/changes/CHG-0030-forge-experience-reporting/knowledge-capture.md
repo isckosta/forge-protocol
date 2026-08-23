@@ -29,6 +29,13 @@ observation warrants an Issue, RFC, or Change. FER does not prioritize or
 automate that decision. Future tooling must preserve the default-off,
 local-only, non-normative boundary.
 
+The repository contains one historical provenance record with an abbreviated
+Git subject SHA. The validator now treats that exact legacy shape as a
+migration marker only when a later complete record has the abbreviated value
+as an exact prefix; unrelated malformed or non-matching history still fails
+closed. This preserves immutable subject identity while allowing old local
+metadata to converge.
+
 ## References
 
 - `docs/experience-reporting.md`

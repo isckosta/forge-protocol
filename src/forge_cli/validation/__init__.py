@@ -237,6 +237,7 @@ def _committed_history_mappings(r:Path,path:Path)->list[object]|None:
 def _first_committed_provenance_record(r:Path,path:Path,record_id:str):
     documents=_committed_history_mappings(r,path)
     if documents is None:return _HISTORY_ERROR
+    legacy_prefixes:list[str]=[]
     for document in documents:
         if document is _HISTORY_ERROR:return _HISTORY_ERROR
         assert isinstance(document,dict)
@@ -248,7 +249,28 @@ def _first_committed_provenance_record(r:Path,path:Path,record_id:str):
         candidate=matches[0]
         revision=candidate.get("revision") if isinstance(candidate,dict) else None
         if not isinstance(revision,dict) or revision.get("immutable_ref") is None:continue
-        if _record_fields(candidate) is None:return _HISTORY_ERROR
+        if _record_fields(candidate) is None:
+            immutable=revision.get("immutable_ref")
+            value=immutable.get("value") if isinstance(immutable,dict) else None
+            if (
+                isinstance(immutable,dict)
+                and immutable.get("type")=="git_commit"
+                and isinstance(value,str)
+                and 7<=len(value)<40
+                and all(c in"0123456789abcdefABCDEF"for c in value)
+            ):
+                # Historical Forge versions recorded abbreviated Git SHAs.
+                # They are not valid immutable subjects by themselves, but a
+                # later complete record may migrate the same subject safely if
+                # its full SHA preserves every legacy prefix exactly.
+                legacy_prefixes.append(value.lower())
+                continue
+            return _HISTORY_ERROR
+        if legacy_prefixes:
+            immutable=candidate["revision"].get("immutable_ref")
+            value=immutable.get("value") if isinstance(immutable,dict) else None
+            if not isinstance(value,str) or any(not value.lower().startswith(prefix) for prefix in legacy_prefixes):
+                return _HISTORY_ERROR
         return candidate
     return None
 def _first_committed_review_iteration(r:Path,path:Path,iteration_id:str):
