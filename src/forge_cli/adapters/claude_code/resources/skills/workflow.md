@@ -17,6 +17,12 @@ state in the intended repository scope, with no file excluded, before
 starting Implementation. This Adapter projects the requirement but cannot
 technically enforce Git behavior.
 The baseline commit is the before-state, not Implementation.
+Chat-cadence suggestion (non-binding): prefer concise narration at meaningful
+stage transitions—such as Discovery, Implementation, Verification, and when
+Review is complete—rather than a status message for every command or tool call. Keep
+the detailed record in `.forge/changes/.../` artifacts; narrate intermediate
+steps when they need human input, change scope, or surface a blocker. This is
+a communication suggestion, not a technical enforcement mechanism.
 These instructions represent Forge requirements; they are not technical enforcement.
 
 Skill discovery limitation: after `forge adapter install`, the Harness may not refresh its skill catalog in the current session. This is Harness runtime behavior, not technically controlled by Forge. If the `forge` skill is not

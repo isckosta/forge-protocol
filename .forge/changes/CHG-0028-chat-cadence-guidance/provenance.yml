@@ -1,0 +1,269 @@
+schema: forge/execution-provenance@2
+change: CHG-0028
+records:
+  - id: implementation-001
+    role: implementation
+    execution: {id: implementation-exec-chg0028-20260822-01, context_id: implementation-context-chg0028-20260822-01}
+    recorded_at: "2026-08-22T23:30:00-03:00"
+    revision:
+      id: chg-0028-implementation-001
+      immutable_ref: {type: git_commit, value: b51067c20c6fa78746f47818f2bda562bbf66ffb}
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: codex
+      statement: >-
+        Repository-native provenance for the prose-only Adapter workflow
+        guidance Change. No executable behavior was added and TDD is
+        explicitly not applicable. Both templates were verified byte
+        identical before the subject was frozen.
+  - id: resolution-001
+    role: resolution
+    execution: {id: resolution-exec-chg0028-20260822-01, context_id: resolution-context-chg0028-20260822-01}
+    recorded_at: "2026-08-23T00:00:00-03:00"
+    scope:
+      - .forge/changes/CHG-0028-chat-cadence-guidance/manifest.yml
+      - .forge/changes/CHG-0028-chat-cadence-guidance/plan.md
+      - .forge/changes/CHG-0028-chat-cadence-guidance/review.md
+      - .forge/changes/CHG-0028-chat-cadence-guidance/specification.md
+    targets: [R001, R002]
+    revision:
+      id: chg-0028-resolution-001
+      immutable_ref: {type: git_commit, value: 588c02d788ee7416d02f64495e72171562f59315}
+      description: >-
+        Resolution removes the unused scaffold artifacts and corrects the
+        lifecycle state before the independent Resolution Verification.
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: codex
+      statement: >-
+        Resolution was limited to the Review Delta declared by R001/R002;
+        no Adapter template or substantive guidance content was changed.
+  - id: review-002
+    role: review
+    execution: {id: review-exec-chg0028-resverify-cold-01, context_id: review-context-chg0028-resverify-cold-01}
+    recorded_at: "2026-08-23T00:30:00-03:00"
+    revision:
+      id: chg-0028-resolution-001
+      immutable_ref: {type: git_commit, value: 588c02d788ee7416d02f64495e72171562f59315}
+      description: >-
+        Cold Resolution Verification passed. R001/R002 were independently
+        re-verified against the exact frozen resolution subject and no new
+        material finding was found.
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: codex
+      statement: >-
+        Independent cold Resolution Verification distinct from the initial
+        Strict Review and Resolution executions. It made no repository edits
+        and reproduced schema, scope, parity, and untracked-file checks.
+  - id: correction-001
+    role: resolution
+    execution: {id: correction-exec-chg0028-20260823-01, context_id: correction-context-chg0028-20260823-01}
+    recorded_at: "2026-08-23T01:00:00-03:00"
+    scope:
+      - src/forge_cli/adapters/claude_code/resources/skills/workflow.md
+      - src/forge_cli/adapters/codex/resources/skills/workflow.md
+      - .forge/changes/CHG-0028-chat-cadence-guidance/verification.md
+    targets: [BLOCKER, MAJOR]
+    revision:
+      id: chg-0028-correction-001
+      immutable_ref: {type: git_commit, value: 031e22df021435cecbf0efb86dcdef1317109712}
+      description: >-
+        Editorially rephrases the Review transition to avoid colliding with
+        the projection gate test's stage-token order check and updates the
+        recorded verification hash.
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: codex
+      statement: >-
+        CI showed that the phrase "Review completion" appeared before the
+        effective Flow stage reference used by existing projection tests. The
+        correction preserves meaning and non-binding status.
+  - id: review-003
+    role: review
+    execution: {id: review-exec-chg0028-correction-cold-01, context_id: review-context-chg0028-correction-cold-01}
+    recorded_at: "2026-08-23T01:10:00-03:00"
+    revision:
+      id: chg-0028-correction-001
+      immutable_ref: {type: git_commit, value: 031e22df021435cecbf0efb86dcdef1317109712}
+      description: >-
+        Independent cold Strict Review found the subject and stale-evidence
+        findings recorded in review.md.
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: codex
+      statement: >-
+        Independent cold review with no conversation memory or hints about
+        expected findings.
+  - id: finalization-001
+    role: resolution
+    execution: {id: finalization-exec-chg0028-20260823-01, context_id: finalization-context-chg0028-20260823-01}
+    recorded_at: "2026-08-23T01:30:00-03:00"
+    scope:
+      - .forge/changes/CHG-0028-chat-cadence-guidance/manifest.yml
+      - .forge/changes/CHG-0028-chat-cadence-guidance/provenance.yml
+      - .forge/changes/CHG-0028-chat-cadence-guidance/review.md
+    targets: [BLOCKER, MAJOR]
+    revision:
+      id: chg-0028-finalization-001
+      immutable_ref: {type: git_commit, value: 4a0b13c845bae3269bb58e4e0ffcad7ba1acf917}
+      description: >-
+        Finalization subject records the corrected evidence and the lifecycle
+        transition to Review before the final independent verification.
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: codex
+      statement: >-
+        Control metadata only; the corrected Adapter templates and their
+        verification evidence were already fixed in correction-001.
+  - id: review-004
+    role: review
+    execution: {id: review-exec-chg0028-final-cold-01, context_id: review-context-chg0028-final-cold-01}
+    recorded_at: "2026-08-23T01:45:00-03:00"
+    revision:
+      id: chg-0028-finalization-001
+      immutable_ref: {type: git_commit, value: 4a0b13c845bae3269bb58e4e0ffcad7ba1acf917}
+      description: >-
+        Independent cold final verification passed with no new material
+        findings.
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: codex
+      statement: >-
+        Independent cold verification with no conversation memory or hints;
+        it made no repository edits.
+  - id: finalization-002
+    role: resolution
+    execution: {id: finalization2-exec-chg0028-20260823-01, context_id: finalization2-context-chg0028-20260823-01}
+    recorded_at: "2026-08-23T02:00:00-03:00"
+    scope:
+      - .forge/changes/CHG-0028-chat-cadence-guidance/manifest.yml
+      - .forge/changes/CHG-0028-chat-cadence-guidance/provenance.yml
+      - .forge/changes/CHG-0028-chat-cadence-guidance/review.md
+      - .forge/changes/CHG-0028-chat-cadence-guidance/verification.md
+    targets: [BLOCKER, MAJOR]
+    revision:
+      id: chg-0028-finalization-002
+      immutable_ref: {type: git_commit, value: 4cbebb6712c8d3fab0cc554114745002b705da4d}
+      description: >-
+        New full-review subject after the prior Resolution Verification
+        correctly rejected an out-of-scope evidence mutation.
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: codex
+      statement: >-
+        This subject includes the complete declared control/evidence scope;
+        no Adapter template content changed after correction-001.
+  - id: finalization-003
+    role: resolution
+    execution: {id: finalization3-exec-chg0028-20260823-01, context_id: finalization3-context-chg0028-20260823-01}
+    recorded_at: "2026-08-23T02:15:00-03:00"
+    scope:
+      - .forge/changes/CHG-0028-chat-cadence-guidance/manifest.yml
+      - .forge/changes/CHG-0028-chat-cadence-guidance/provenance.yml
+      - .forge/changes/CHG-0028-chat-cadence-guidance/review.md
+      - .forge/changes/CHG-0028-chat-cadence-guidance/verification.md
+    targets: [BLOCKER, MAJOR]
+    revision:
+      id: chg-0028-finalization-003
+      immutable_ref: {type: git_commit, value: 1e5cf090ea82869b04fbc3e4977e7950ef70c1b8}
+      description: >-
+        Exact subject for the reopened full review, including the complete
+        control/evidence scope and the recorded prior scope finding.
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: codex
+      statement: >-
+        No Adapter template content changed after correction-001; this commit
+        only records the new full-review subject and its complete scope.
+  - id: finalization-004
+    role: resolution
+    execution: {id: finalization4-exec-chg0028-20260823-01, context_id: finalization4-context-chg0028-20260823-01}
+    recorded_at: "2026-08-23T02:30:00-03:00"
+    scope:
+      - .forge/changes/CHG-0028-chat-cadence-guidance/manifest.yml
+      - .forge/changes/CHG-0028-chat-cadence-guidance/provenance.yml
+      - .forge/changes/CHG-0028-chat-cadence-guidance/review.md
+      - .forge/changes/CHG-0028-chat-cadence-guidance/verification.md
+      - ROADMAP-REMEDIATION.md
+    targets: [MAJOR]
+    revision:
+      id: chg-0028-finalization-004
+      immutable_ref: {type: git_commit, value: 763a30980da79aecd70f290916b5c7db3314bf1f}
+      description: >-
+        Exact subject for the reopened full review with consistent failed
+        Review and roadmap states.
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: codex
+      statement: >-
+        This subject fixes control-state consistency only; no functional
+        template content changed.
+  - id: finalization-005
+    role: resolution
+    execution: {id: finalization5-exec-chg0028-20260823-01, context_id: finalization5-context-chg0028-20260823-01}
+    recorded_at: "2026-08-23T03:00:00-03:00"
+    scope:
+      - .forge/changes/CHG-0028-chat-cadence-guidance/manifest.yml
+      - .forge/changes/CHG-0028-chat-cadence-guidance/provenance.yml
+      - .forge/changes/CHG-0028-chat-cadence-guidance/review.md
+      - .forge/changes/CHG-0028-chat-cadence-guidance/verification.md
+      - ROADMAP-REMEDIATION.md
+    targets: [BLOCKER, MAJOR]
+    revision:
+      id: chg-0028-finalization-005
+      immutable_ref: {type: git_commit, value: 3ab5313e62faa276c90862f7dd34f9ec821ce095}
+      description: >-
+        Frozen subject prepared for the final independent Full Strict Review
+        with pending lifecycle state and coherent documentation evidence.
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: codex
+      statement: >-
+        No functional template content changed; this subject records only the
+        pending final-review state and complete declared control scope.
+  - id: review-005
+    role: review
+    execution: {id: review-exec-chg0028-final-full-cold-01, context_id: review-context-chg0028-final-full-cold-01}
+    recorded_at: "2026-08-23T03:30:00-03:00"
+    revision:
+      id: chg-0028-finalization-005
+      immutable_ref: {type: git_commit, value: 3ab5313e62faa276c90862f7dd34f9ec821ce095}
+      description: >-
+        Independent cold Full Strict Review found only the missing manifest
+        subject binding; functional and scope checks passed.
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: codex
+      statement: >-
+        Independent cold Full Strict Review with no conversation memory or
+        hints; no repository edits were made.
+  - id: review-006
+    role: review
+    execution: {id: review-exec-chg0028-final-full-cold-02, context_id: review-context-chg0028-final-full-cold-02}
+    recorded_at: "2026-08-23T03:45:00-03:00"
+    revision:
+      id: chg-0028-finalization-005
+      immutable_ref: {type: git_commit, value: 3ab5313e62faa276c90862f7dd34f9ec821ce095}
+      description: >-
+        Independent cold Full Strict Review passed after the final
+        subject-binding correction.
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: codex
+      statement: >-
+        Independent cold review execution with no conversation memory or
+        hints; no repository edits were made.
