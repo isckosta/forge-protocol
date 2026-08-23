@@ -266,6 +266,35 @@ def test_record_rejects_obvious_secret_material() -> None:
         )
 
 
+def test_record_rejects_secret_and_oversized_evidence_items() -> None:
+    with pytest.raises(ExperienceInputError, match="sensitive"):
+        parse_record_input(
+            {
+                "observation": {
+                    "area": "security",
+                    "classification": "uncertain",
+                    "expected": "Evidence is safe.",
+                    "observed": "The evidence is sensitive.",
+                    "evidence": ["Authorization: Bearer very-secret-token"],
+                    "impact": "The evidence must be rejected.",
+                }
+            }
+        )
+    with pytest.raises(ExperienceInputError, match="concise"):
+        parse_record_input(
+            {
+                "observation": {
+                    "area": "size",
+                    "classification": "uncertain",
+                    "expected": "Evidence is concise.",
+                    "observed": "The evidence is too large.",
+                    "evidence": ["x" * 2001],
+                    "impact": "The evidence must be rejected.",
+                }
+            }
+        )
+
+
 def test_record_rejects_unbounded_prompt_sized_text() -> None:
     with pytest.raises(ExperienceInputError, match="concise"):
         parse_record_input(
@@ -321,6 +350,35 @@ def test_experience_validate_rejects_a_malformed_entry(tmp_path: Path, monkeypat
     (reports / "FER-0001.yml").write_text(
         "schema: forge/experience-report@1\nreport: FER-0001\nsource: {}\n"
         "observations: [not-a-mapping]\npositive_evidence: []\nfollow_up_candidates: []\n",
+        encoding="utf-8",
+    )
+
+    result = CliRunner().invoke(app_module.app, ["experience", "validate"])
+
+    assert result.exit_code == 2
+
+
+def test_recording_rejects_a_symlinked_dogfooding_ancestor(tmp_path: Path) -> None:
+    target = tmp_path / "outside"
+    target.mkdir()
+    (tmp_path / "dogfooding").symlink_to(target, target_is_directory=True)
+    storage = ExperienceStorage(tmp_path, context={})
+    entry = parse_record_input(
+        {"positive_evidence": {"area": "storage", "observed": "An ancestor was symlinked."}}
+    )
+
+    with pytest.raises(ExperienceStorageError, match="safe directory"):
+        storage.record(entry)
+
+
+def test_experience_validate_rejects_unstructured_follow_up_candidates(tmp_path: Path, monkeypatch) -> None:
+    subprocess.run(["git", "init", str(tmp_path)], check=True, capture_output=True, text=True)
+    monkeypatch.chdir(tmp_path)
+    reports = tmp_path / "dogfooding" / "reports"
+    reports.mkdir(parents=True)
+    (reports / "FER-0001.yml").write_text(
+        "schema: forge/experience-report@1\nreport: FER-0001\nsource: {}\n"
+        "observations: []\npositive_evidence: []\nfollow_up_candidates: [42]\n",
         encoding="utf-8",
     )
 

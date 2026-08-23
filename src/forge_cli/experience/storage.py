@@ -13,7 +13,7 @@ from typing import Any
 
 import yaml
 
-from forge_cli.experience.model import ObservationInput, PositiveEvidenceInput
+from forge_cli.experience.model import ExperienceInputError, ObservationInput, PositiveEvidenceInput, ensure_safe_text
 
 
 _REPORT_RE = re.compile(r"^FER-(?P<number>[0-9]{4,})\.yml$")
@@ -40,6 +40,9 @@ class ExperienceStorage:
 
     def record(self, entry: ObservationInput | PositiveEvidenceInput) -> Path:
         with self._mutex:
+            dogfooding_root = self.project_root / "dogfooding"
+            if dogfooding_root.is_symlink():
+                raise ExperienceStorageError("FER report directory is not a safe directory.")
             self.reports_root.mkdir(parents=True, exist_ok=True)
             if self.reports_root.is_symlink() or not self.reports_root.is_dir():
                 raise ExperienceStorageError("FER report directory is not a safe directory.")
@@ -103,6 +106,8 @@ class ExperienceStorage:
             and isinstance(document.get("follow_up_candidates"), list)
         ):
             return False
+        if not ExperienceStorage._safe_values(document):
+            return False
         for observation in document["observations"]:
             if not isinstance(observation, dict) or not all(
                 isinstance(observation.get(field), str) and observation[field].strip()
@@ -118,6 +123,26 @@ class ExperienceStorage:
                 for field in ("id", "area", "observed")
             ):
                 return False
+        for candidate in document["follow_up_candidates"]:
+            if not isinstance(candidate, dict) or not all(
+                isinstance(candidate.get(field), str) and candidate[field].strip()
+                for field in ("observation", "type", "summary")
+            ):
+                return False
+        return True
+
+    @staticmethod
+    def _safe_values(value: Any) -> bool:
+        if isinstance(value, str):
+            try:
+                ensure_safe_text(value, "report")
+            except ExperienceInputError:
+                return False
+            return True
+        if isinstance(value, dict):
+            return all(ExperienceStorage._safe_values(key) and ExperienceStorage._safe_values(item) for key, item in value.items())
+        if isinstance(value, list):
+            return all(ExperienceStorage._safe_values(item) for item in value)
         return True
 
     @contextmanager

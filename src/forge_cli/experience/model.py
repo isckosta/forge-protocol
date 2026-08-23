@@ -73,7 +73,7 @@ def parse_record_input(document: Any) -> ObservationInput | PositiveEvidenceInpu
             classification=classification,
             expected=_text(observation.get("expected"), "expected"),
             observed=_text(observation.get("observed"), "observed"),
-            evidence=tuple(item.strip() for item in evidence),
+            evidence=tuple(ensure_safe_text(item.strip(), "evidence") for item in evidence),
             impact=_text(observation.get("impact"), "impact"),
             workaround=_optional_text(observation.get("workaround"), "workaround"),
             follow_up=_optional_text(observation.get("follow_up"), "follow_up"),
