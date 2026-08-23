@@ -17,6 +17,10 @@ records:
       assurance: recorded
       observed_by: operator
       reference: plan.md#approval-record
+      content_digest:
+        algorithm: sha256
+        path: plan.md
+        value: e474d51a6e104503ac501e86ce33d90ff6caf202bc9d7c21e11a1ba5387a8843
       statement: The user explicitly approved continuation of CHG-0039 to Implementation in the active session on 2026-08-23, confirming that the ERP domain example is not needed.
   - id: implementation-subject-001
     role: implementation
