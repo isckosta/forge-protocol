@@ -110,8 +110,8 @@ def test_merge_check_accepts_complete_change_without_material_runtime_diff(tmp_p
     )
     (change_dir / "provenance.yml").write_text(
         yaml.safe_dump({"records": [
-            {"id": "impl-001", "role": "implementation", "execution": {"id": "impl", "context_id": "impl-context"}, "revision": {"commit": base}},
-            {"id": "review-001", "role": "review", "execution": {"id": "review", "context_id": "review-context"}, "revision": {"commit": base}},
+            {"id": "impl-001", "role": "implementation", "execution": {"id": "impl", "context_id": "impl-context"}, "revision": {"id": "fixture", "commit": base}, "source": {"assurance": "recorded", "observed_by": "self"}},
+            {"id": "review-001", "role": "review", "execution": {"id": "review", "context_id": "review-context"}, "revision": {"id": "fixture", "commit": base}, "source": {"assurance": "recorded", "observed_by": "self"}},
         ]}, sort_keys=False),
         encoding="utf-8",
     )

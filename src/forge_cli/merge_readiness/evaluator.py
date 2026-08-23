@@ -82,6 +82,8 @@ def _check_change(root: Path, change_id: str, head_revision: str) -> tuple[list[
                 provenance = {}
             records = provenance.get("records", []) if isinstance(provenance, dict) else []
             record_index = {item.get("id"): item for item in records if isinstance(item, dict)}
+            if len(record_index) != len(records):
+                diagnostics.append(ReadinessDiagnostic("MR-018", "Provenance contains duplicate record identities", change_id, relative))
             subject_record = record_index.get(final_iteration.get("subject_provenance")) if final_iteration else None
             reviewer_record = record_index.get(final_iteration.get("reviewer_provenance")) if final_iteration else None
             if not isinstance(reviewer_record, dict) or reviewer_record.get("role") != "review":
@@ -116,10 +118,18 @@ def _check_change(root: Path, change_id: str, head_revision: str) -> tuple[list[
                     if delta.returncode != 0 or any(item and item not in allowed for item in delta.stdout.splitlines()):
                         diagnostics.append(ReadinessDiagnostic("MR-015", "REVIEW SUBJECT STALE", change_id, relative, head_revision, subject_commit))
             if isinstance(subject_record, dict) and isinstance(reviewer_record, dict):
+                if subject_record.get("role") not in {"implementation", "resolution"}:
+                    diagnostics.append(ReadinessDiagnostic("MR-018", "Review subject provenance has an invalid role", change_id, relative))
+                subject_logical = subject_revision.get("id")
                 reviewer_revision = reviewer_record.get("revision", {})
                 reviewer_commit = reviewer_revision.get("commit") or reviewer_revision.get("immutable_ref", {}).get("value")
                 if reviewer_commit != subject_commit:
                     diagnostics.append(ReadinessDiagnostic("MR-018", "Reviewer provenance does not bind to the reviewed subject", change_id, relative))
+                if reviewer_revision.get("id") != subject_logical:
+                    diagnostics.append(ReadinessDiagnostic("MR-018", "Reviewer provenance logical revision does not match the reviewed subject", change_id, relative))
+                reviewer_source = reviewer_record.get("source", {})
+                if reviewer_source.get("assurance") not in {"recorded", "verified"} or reviewer_source.get("observed_by") not in {"self", "operator", "adapter", "harness"}:
+                    diagnostics.append(ReadinessDiagnostic("MR-018", "Reviewer provenance assurance/source is malformed", change_id, relative))
                 subject_execution = subject_record.get("execution", {})
                 reviewer_execution = reviewer_record.get("execution", {})
                 if (
@@ -183,19 +193,24 @@ def _check_change(root: Path, change_id: str, head_revision: str) -> tuple[list[
             provenance = yaml.safe_load(tree_file(root, head_revision, provenance_relative)) or {}
         except MergeReadinessOperationalError:
             provenance = {}
-            for record in provenance.get("records", []) if isinstance(provenance, dict) else []:
-                source = record.get("source") if isinstance(record, dict) else None
-                if (
-                    isinstance(record, dict)
-                    and record.get("role") == "implementation"
-                    and isinstance(source, dict)
-                    and source.get("reference") == "plan.md#approval-record"
-                    and source.get("assurance") in {"recorded", "verified"}
-                    and source.get("observed_by") == "operator"
-                ):
-                    content_digest = source.get("content_digest")
-                    if isinstance(content_digest, dict) and content_digest.get("algorithm") == "sha256" and content_digest.get("path") == "plan.md":
-                        digest = content_digest.get("value")
+        approval_records = []
+        for record in provenance.get("records", []) if isinstance(provenance, dict) else []:
+            source = record.get("source") if isinstance(record, dict) else None
+            if (
+                isinstance(record, dict)
+                and record.get("role") == "implementation"
+                and isinstance(source, dict)
+                and source.get("reference") == "plan.md#approval-record"
+                and source.get("assurance") in {"recorded", "verified"}
+                and source.get("observed_by") == "operator"
+            ):
+                approval_records.append(record)
+        if len(approval_records) == 1:
+            content_digest = approval_records[0].get("source", {}).get("content_digest", {})
+            if isinstance(content_digest, dict) and content_digest.get("algorithm") == "sha256" and content_digest.get("path") == "plan.md":
+                digest = content_digest.get("value")
+        elif len(approval_records) > 1:
+            diagnostics.append(ReadinessDiagnostic("MR-019", "Plan authorization is ambiguous", change_id, relative))
         plan_relative = f"{path.parent.relative_to(root).as_posix()}/plan.md"
         try:
             plan_text = tree_file(root, head_revision, plan_relative)
