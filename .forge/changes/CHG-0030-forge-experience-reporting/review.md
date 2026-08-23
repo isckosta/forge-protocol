@@ -3,14 +3,15 @@ forge:
   artifact: review
   schema: 1
 change: CHG-0030
-status: complete
+status: active
 ---
 
 # Review — CHG-0030 Forge Experience Reporting
 
 ## Verdict
 
-**PASS — independent Strict Review passed against the final frozen subject.**
+**PENDING — final review binding is blocked by an earlier abbreviated
+provenance SHA; no completion is claimed.**
 
 ## Iteration 1 — FAIL
 
