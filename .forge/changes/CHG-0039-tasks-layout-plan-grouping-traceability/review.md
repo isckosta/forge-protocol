@@ -42,4 +42,28 @@ Correct and expected: CHG-0039 is Flow STANDARD, and `tasks.md` only exists as a
 
 Addressing Observation 1: a `CHANGELOG.md` entry for CHG-0039 is added as part of Documentation Impact evaluation (Contract requirement, STANDARD Flow `documentation` stage), consistent with `CHG-0037`/`CHG-0038`'s own entries.
 
-**Strict Review for CHG-0039 is closed with a PASS verdict.**
+## Iteration 2 — PASS
+
+The Documentation-stage `CHANGELOG.md` addition above landed in a commit (`bc4575a`) that also closed out Review/Completion metadata, after Iteration 1's frozen subject (`adec098`). `CHANGELOG.md` is not review-control metadata (only `manifest.yml`/`provenance.yml`/`review.md` may differ post-freeze), so Forge's own Merge Readiness gate correctly flagged the Iteration 1 subject as stale (`MR-006`/`MR-015`, REVIEW SUBJECT STALE) once `CHG-0039`'s PR was evaluated for merge — the Flow's `documentation` stage runs after `strict_review`, but Merge Readiness still requires everything reviewable, including a Documentation-stage addition, to be covered by a Review subject that was actually reviewed.
+
+This Iteration re-freezes and independently re-reviews the full subject at `fca1d4fc41f6722dc17f7769aeb7d43ba7514292` (an independent Reviewer, fresh execution, isolated Git worktree, no shared context with Implementation or with Iteration 1). No BLOCKER or MAJOR findings. The Reviewer independently reproduced the full test suite (658 passed, 2 warnings) and `test_change_scaffolding.py` (36 passed) at this exact commit, confirmed `forge validate` is clean, independently recomputed the `plan-approval-001` `content_digest` and confirmed it matches, confirmed `plan.md`/`test-strategy.md` remain unchanged (only CHG-0039's own new `plan.md` differs), confirmed the diff touches exactly the 14 files this Change claims (no `protocol/schemas/`, no Protocol integer, no out-of-scope file), and independently called `render_scaffold` (not the test suite) to confirm the rendered `tasks.md` structure matches every claim in `verification.md`/`protocol/artifact-structure.md`. The `CHANGELOG.md` entry itself was checked line-by-line against the real diff and found factually accurate, with no overclaiming and no omission.
+
+### OBSERVATION 3 — Merge Readiness still blocked pending this Iteration's own provenance binding
+
+At the moment this Iteration ran, `forge change merge-check` still reported `MERGE BLOCKED` (`MR-015`/`MR-006`) because `provenance.yml` had not yet been updated to bind `reviewer-002`/`implementation-subject-002` into `manifest.yml`'s `iterations[]`. This is expected — recording this Iteration's own PASS verdict is what closes that gap, done immediately after this Iteration completes, not before.
+
+### OBSERVATION 4 — Harness Adapter skill projections remain stale (pre-existing, out of scope)
+
+`.claude/skills/forge/references/artifact-structure.md` and its `.agents/` equivalent still carry the old flat-checklist "Tasks" text; this diff does not touch them. `verification.md` already discloses this honestly as pre-existing staleness (the same gap `CHG-0038` noted for its own Artifact), not a hidden gap introduced by this Change.
+
+### Checked and found sound (Iteration 2)
+
+- Full suite and `test_change_scaffolding.py` reproduce exactly at `fca1d4f`, matching `verification.md`.
+- `forge validate` is clean at `fca1d4f`.
+- `content_digest` for `plan-approval-001` independently recomputed and matches.
+- `plan.md`/`test-strategy.md` unchanged; only CHG-0039's own new `plan.md` differs from the base.
+- Diff scope is exactly the 14 files this Change claims — no schema, no Protocol integer, no unrelated file.
+- `render_scaffold` output independently verified, not just the test suite's assertions.
+- `CHANGELOG.md` entry is factually accurate against the real diff.
+
+**Strict Review for CHG-0039 is closed with a PASS verdict (Iteration 2, superseding Iteration 1's now-stale subject binding).**
