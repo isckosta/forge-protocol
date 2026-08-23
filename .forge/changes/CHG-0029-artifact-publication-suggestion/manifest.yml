@@ -17,6 +17,7 @@ artifacts:
   implementation: complete
   verification: complete
   review: pending
+  provenance: complete
   documentation: complete
 requirements:
   total: 2
