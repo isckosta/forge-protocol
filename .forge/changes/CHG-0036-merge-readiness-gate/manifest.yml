@@ -14,7 +14,7 @@ flow:
         Discovery confirmed a new merge-authorization boundary spanning
         Protocol semantics, CLI, CI, provenance, compatibility, and security.
 state:
-  current: implementation
+  current: complete
 artifacts:
   intent: complete
   discovery: complete
@@ -28,7 +28,7 @@ artifacts:
   tdd_evidence: complete
   implementation: complete
   verification: complete
-  review: pending
+  review: complete
   documentation: complete
   knowledge_capture: complete
 requirements:
@@ -41,13 +41,19 @@ tdd:
 verification:
   status: passed
 review:
-  status: pending
-  iteration: 0
+  status: passed
+  iteration: 2
   blockers: 0
   majors: 0
   minors: 0
   observations: 0
-  iterations: []
+  iterations:
+    - id: review-001
+      revision: chg-0036-implementation-008
+      subject_provenance: implementation-subject-008
+      reviewer_provenance: reviewer-001
+      kind: initial_review
+      status: passed
 documentation:
   impact_evaluated: true
   update_required: false

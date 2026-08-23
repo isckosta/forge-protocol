@@ -209,3 +209,20 @@ records:
       observed_by: operator
       reference: verification.md
       statement: Verification evidence is bound to the frozen implementation subject.
+  - id: reviewer-001
+    role: review
+    execution:
+      id: 01a02ffc-37e8-7d10-8f77-d98ba618e2d5
+      context_id: strict-review-CHG-0036-008
+    recorded_at: '2026-08-23T20:20:00Z'
+    revision:
+      id: chg-0036-implementation-008
+      immutable_ref:
+        type: git_commit
+        value: 918723e5b3e3c5f6ae2c6aa5b7974edec3f334e3
+      commit: 918723e5b3e3c5f6ae2c6aa5b7974edec3f334e3
+    source:
+      assurance: verified
+      observed_by: harness
+      reference: review.md#iteration-2
+      statement: Independent Strict Review passed for the frozen implementation subject.

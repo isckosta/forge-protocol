@@ -3,14 +3,26 @@ forge:
   artifact: review
   schema: 1
 change: CHG-0036
-status: active
+status: complete
 ---
 
 # Review — CHG-0036 Merge Readiness Gate
 
 ## Verdict
 
-**REQUEST CHANGES**
+**PASS**
+
+The independent final review confirmed that the resolved implementation
+subject is merge-readiness safe and that the metadata-only provenance delta
+does not change the reviewed subject.
+
+## Iteration 2 — PASS
+
+Reviewer: independent Strict Review execution `01a02ffc-37e8-7d10-8f77-d98ba618e2d5`.
+
+The FULL Flow task evidence, canonical completion gates, immutable
+Verification binding, Plan authorization digest, Review provenance, and
+fail-closed revision/materiality behavior were independently checked.
 
 ## Iteration 1 — REQUEST CHANGES
 
