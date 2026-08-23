@@ -7,7 +7,7 @@ records:
     recorded_at: "2026-08-23T00:00:00-03:00"
     revision:
       id: chg-0031-subject-001
-      immutable_ref: {type: git_commit, value: 308ae07669b3b773c7b643a5e644ce02c9e70a03}
+      immutable_ref: {type: git_commit, value: 1904aa57c21810d38e71ef61fcdc23dcc4e8f601}
     source:
       assurance: recorded
       observed_by: operator
@@ -22,7 +22,7 @@ records:
     recorded_at: "2026-08-23T00:00:00-03:00"
     revision:
       id: chg-0031-subject-001
-      immutable_ref: {type: git_commit, value: 308ae07669b3b773c7b643a5e644ce02c9e70a03}
+      immutable_ref: {type: git_commit, value: 1904aa57c21810d38e71ef61fcdc23dcc4e8f601}
     source:
       assurance: recorded
       observed_by: operator
@@ -32,3 +32,17 @@ records:
         Explicit user authorization was received as “Prossiga então.” in the
         active session on 2026-08-23. This is repository evidence of human
         approval, not provider-native attestation.
+  - id: implementation-002
+    role: implementation
+    execution: {id: implementation-exec-chg0031-20260823-02, context_id: implementation-context-chg0031-20260823-02}
+    recorded_at: "2026-08-23T00:10:00-03:00"
+    revision:
+      id: chg-0031-subject-002
+      immutable_ref: {type: git_commit, value: 308ae07669b3b773c7b643a5e644ce02c9e70a03}
+    source:
+      assurance: recorded
+      observed_by: operator
+      harness: codex
+      statement: >-
+        Verified revalidation subject records the final parity hash and
+        focused test evidence for the existing non-binding guidance.
