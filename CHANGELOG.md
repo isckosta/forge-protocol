@@ -10,6 +10,25 @@ until then.
 
 ## Unreleased
 
+## [0.1.0b1] - 2026-08-23
+
+### Structured Intent Artifacts
+
+Added:
+
+- a structured human-facing `intent.md` layout with Change identity,
+  executive intent, Overview metadata, Problem, Goal, Scope, Out of Scope,
+  and Success Criteria;
+- conditional guidance for Business Impact, behavior comparisons, business
+  rules, expected outcomes, operational boundaries, and references;
+- matching Intent authoring guidance for Codex and Claude Code Adapters;
+- representative business and technical Intent examples.
+
+Changed:
+
+- preserved `schema: 1`, YAML front matter, historical artifacts, and Forge
+  lifecycle semantics while improving Intent presentation and scanability.
+
 ### Change Scaffolding CLI
 
 Added `forge change new <slug>` with active-Flow-aware artifact generation,
