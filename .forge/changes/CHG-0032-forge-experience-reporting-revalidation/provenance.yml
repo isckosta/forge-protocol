@@ -1,0 +1,34 @@
+schema: forge/execution-provenance@2
+change: CHG-0032
+records:
+  - id: implementation-001
+    role: implementation
+    execution: {id: implementation-exec-chg0032-20260823-01, context_id: implementation-context-chg0032-20260823-01}
+    recorded_at: "2026-08-23T00:45:00-03:00"
+    revision:
+      id: chg-0032-subject-001
+      immutable_ref: {type: git_commit, value: 7a16f07adb3ca87417d96874e813aeeeb7411fff}
+    source:
+      assurance: recorded
+      observed_by: operator
+      harness: codex
+      statement: >-
+        Fresh revalidation subject records the FER behavioral scope,
+        documentation, and verification plan without changing the existing
+        implementation.
+  - id: plan-approval-001
+    role: implementation
+    execution: {id: plan-approval-exec-chg0032-20260823-01, context_id: plan-approval-context-chg0032-20260823-01}
+    recorded_at: "2026-08-23T00:45:00-03:00"
+    revision:
+      id: chg-0032-subject-001
+      immutable_ref: {type: git_commit, value: 7a16f07adb3ca87417d96874e813aeeeb7411fff}
+    source:
+      assurance: recorded
+      observed_by: operator
+      harness: codex
+      reference: plan.md#approval-record
+      statement: >-
+        Explicit user authorization was received as “Prossiga.” in the active
+        session on 2026-08-23. This is repository evidence of human approval,
+        not provider-native attestation.
