@@ -1,0 +1,40 @@
+schema: forge/change@2
+protocol: 2
+change:
+  id: CHG-0038
+  title: Test Design Verification Contract
+  kind: feature
+flow:
+  initial: standard
+  current: standard
+  escalations: []
+state:
+  current: plan
+artifacts:
+  intent: complete
+  discovery: complete
+  specification: complete
+  test_design: complete
+  plan: complete
+  tdd_evidence: active
+  verification: pending
+  review: pending
+  documentation: pending
+requirements:
+  total: 6
+  implemented: 0
+  verified: 0
+tdd:
+  status: pending
+verification:
+  status: pending
+review:
+  status: pending
+  iteration: 0
+  blockers: 0
+  majors: 0
+  minors: 0
+  observations: 0
+  iterations: []
+documentation:
+  impact_evaluated: false
