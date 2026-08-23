@@ -30,3 +30,15 @@ Evidence independently reproduced:
 - Roadmap sequencing and CHG-0034 linkage are accurate for the active Change.
 
 The Reviewer did not modify repository files.
+
+## Iteration 2 — PASS
+
+Independent cold re-review passed against Resolution-002 subject
+`61b7b373e4ade6b851fd4ff9b0d0966cac65eb9f` with no BLOCKER, MAJOR, MINOR,
+or observation findings.
+
+The Reviewer independently confirmed the append-only resolution provenance,
+the final roadmap status and prose, the corrected factual Discovery wording,
+the truthful completion metadata, and a clean isolated worktree. `forge
+validate`, focused projection/Contract tests (58 passed), and diff checks
+passed.

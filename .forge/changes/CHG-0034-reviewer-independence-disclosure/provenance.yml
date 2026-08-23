@@ -1,6 +1,21 @@
 schema: forge/execution-provenance@2
 change: CHG-0034
 records:
+  - id: review-002
+    role: review
+    execution: {id: review-exec-chg0034-resolution-independent-02, context_id: review-context-chg0034-resolution-independent-02}
+    recorded_at: "2026-08-23T03:05:00-03:00"
+    revision:
+      id: chg-0034-resolution-002
+      immutable_ref: {type: git_commit, value: 61b7b373e4ade6b851fd4ff9b0d0966cac65eb9f}
+    source:
+      assurance: recorded
+      observed_by: independent_subagent
+      harness: codex
+      statement: >-
+        Independent cold re-review passed after reproducing validation,
+        focused tests, provenance append-only checks, final roadmap checks,
+        and clean-worktree checks. No findings remained.
   - id: resolution-002
     role: resolution
     execution: {id: resolution-exec-chg0034-20260823-02, context_id: resolution-context-chg0034-20260823-02}

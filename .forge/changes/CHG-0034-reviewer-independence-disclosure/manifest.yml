@@ -31,7 +31,7 @@ verification:
   status: passed
 review:
   status: passed
-  iteration: 1
+  iteration: 2
   blockers: 0
   majors: 0
   minors: 0
@@ -41,6 +41,13 @@ review:
       revision: chg-0034-implementation-001
       subject_provenance: implementation-001
       reviewer_provenance: review-001
+      kind: initial_review
+      status: passed
+      new_material_findings: 0
+    - id: review-002
+      revision: chg-0034-resolution-002
+      subject_provenance: resolution-002
+      reviewer_provenance: review-002
       kind: initial_review
       status: passed
       new_material_findings: 0
