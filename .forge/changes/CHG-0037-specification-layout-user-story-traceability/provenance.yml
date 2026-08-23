@@ -20,5 +20,5 @@ records:
       content_digest:
         algorithm: sha256
         path: plan.md
-        value: 126b8b92855a35eba6c548fcf7e51415cd4be8525c9f1e05ebf89ad369b64977
+        value: 678bd78fb5ba6ec1f88532fc572c7d37c3c57328321a5f8f7f3d5e573263acaf
       statement: Explicit human approval of the CHG-0037 Plan was received.
