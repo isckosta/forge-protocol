@@ -10,6 +10,14 @@ until then.
 
 ## Unreleased
 
+### Merge Readiness Gate
+
+Added a separate `forge change merge-check` evaluation with deterministic
+revision/provenance diagnostics, material-change policy, Plan content-digest
+binding, and a GitHub Actions required-check workflow. `forge validate`
+retains its existing validity semantics, and release provenance remains
+independent.
+
 ## [0.1.0b1] - 2026-08-23
 
 ### Structured Intent Artifacts

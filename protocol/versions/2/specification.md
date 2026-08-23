@@ -120,3 +120,18 @@ requires the effective project configuration to explicitly permit it
 (`review.convergence.allow_residual_risk_acceptance: true`); Core MUST reject
 it otherwise. Forge MUST NOT select an option automatically; reaching
 Non-Convergence returns authority to the engineer.
+
+## 14. Merge Readiness
+
+Merge Readiness is a separate evaluation from structural and semantic
+validation. It evaluates an explicit immutable revision subject against the
+effective Flow and repository-native evidence. A material revision with no
+governing Change, or with materially ambiguous provenance, authorization,
+history, Verification, Review, Resolution, or Completion evidence, MUST NOT
+be reported ready. A manifest claim such as `state.current: complete` or
+`review.status: passed` is not sufficient authorization.
+
+For prospective Protocol 2 Changes using C-077 Plan authorization, the
+human-authority approval record MUST bind to the canonical SHA-256 digest of
+`plan.md` after removing only the two approval marker comments and
+normalizing UTF-8 LF content. A digest mismatch is stale authorization.

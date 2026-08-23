@@ -295,6 +295,14 @@ C-045/C-046.
 `specification_gate_passed` remains a technical lifecycle Gate and is not
 human approval evidence under this rule.
 
+## C-078 — Merge Readiness is distinct from validity
+A Merge Readiness evaluation, when provided, MUST remain distinct from
+`forge validate` and MUST derive authorization from the effective revision,
+applicable Flow requirements, and admissible repository-native evidence.
+Manifest claims alone MUST NOT authorize merge. Material changes without
+governing Change provenance and materially ambiguous evidence MUST fail
+closed.
+
 ## C-070 — Interaction language governs prose only
 Canonical identifiers — schema keys, Change and requirement identifiers,
 Gate names, and Contract rule identifiers — MUST remain invariant

@@ -44,12 +44,13 @@ Forge exposes infrastructure commands and Change scaffolding:
 forge version
 forge init
 forge validate
+forge change merge-check --base <base-sha> --head <head-sha>
 forge doctor
 forge change new <slug>
 forge change new <slug> --non-behavioral
 ```
 
-`forge init` requires Git and initializes `.forge/` at the Git repository root, even when invoked from a nested directory. `forge validate` validates project state against the bundled canonical Protocol. `forge doctor` performs read-only diagnostics.
+`forge init` requires Git and initializes `.forge/` at the Git repository root, even when invoked from a nested directory. `forge validate` validates project state against the bundled canonical Protocol. `forge change merge-check` separately evaluates whether an explicit revision is merge-ready. `forge doctor` performs read-only diagnostics.
 
 `forge change new <slug>` scans the repository's existing Changes for the next
 `CHG-NNNN`, resolves the enabled active Flow, prints its complete publication

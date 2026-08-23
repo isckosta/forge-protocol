@@ -1,0 +1,16 @@
+schema: forge/policy/merge-readiness@1
+merge_readiness:
+  material_prefixes:
+    - .github/workflows/
+    - protocol/
+    - src/
+    - tests/
+    - adapters/
+  material_paths:
+    - pyproject.toml
+    - setup.cfg
+    - tox.ini
+  permitted_prefixes:
+    - docs/
+    - examples/
+  change_prefix: .forge/changes/

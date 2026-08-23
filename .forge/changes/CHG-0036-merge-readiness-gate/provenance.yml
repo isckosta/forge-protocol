@@ -1,0 +1,24 @@
+schema: forge/execution-provenance@2
+change: CHG-0036
+records:
+  - id: plan-approval-001
+    role: implementation
+    execution:
+      id: codex-implementation-0036
+      context_id: codex-session-2026-08-23
+    recorded_at: '2026-08-23T17:55:39Z'
+    revision:
+      id: chg-0036-plan-approval-001
+      immutable_ref:
+        type: git_commit
+        value: f71a5541c2a3586d9777b342205c06fa784ed788
+      commit: f71a5541c2a3586d9777b342205c06fa784ed788
+    source:
+      assurance: recorded
+      observed_by: operator
+      reference: plan.md#approval-record
+      content_digest:
+        algorithm: sha256
+        path: plan.md
+        value: 638bb38d858e82f676496fc923de01fa4c351112a91ce68b0336680f0353e34f
+      statement: Explicit human approval of the CHG-0036 Plan was received.

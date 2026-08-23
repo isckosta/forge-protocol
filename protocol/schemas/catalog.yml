@@ -16,6 +16,7 @@ schemas:
   - {id: forge/policy/review@1, file: policy-review.schema.json}
   - {id: forge/policy/review@2, file: policy-review-v2.schema.json}
   - {id: forge/policy/security@1, file: policy-security.schema.json}
+  - {id: forge/policy/merge-readiness@1, file: policy-merge-readiness.schema.json}
   - {id: forge/policy/testing@1, file: policy-testing.schema.json}
   - {id: forge/project-flow@1, file: project-flow.schema.json}
   - {id: forge/project@1, file: project.schema.json}
