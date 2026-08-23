@@ -175,3 +175,37 @@ records:
       observed_by: operator
       reference: verification.md
       statement: Verification evidence is bound to the frozen implementation subject.
+  - id: implementation-subject-008
+    role: implementation
+    execution:
+      id: codex-implementation-0036-subject-008
+      context_id: codex-session-2026-08-23-subject-008
+    recorded_at: '2026-08-23T20:05:00Z'
+    revision:
+      id: chg-0036-implementation-008
+      immutable_ref:
+        type: git_commit
+        value: 918723e5b3e3c5f6ae2c6aa5b7974edec3f334e3
+      commit: 918723e5b3e3c5f6ae2c6aa5b7974edec3f334e3
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: implementation-subject
+      statement: Frozen implementation subject with canonical Review thread gate semantics.
+  - id: verification-008
+    role: implementation
+    execution:
+      id: codex-verification-0036-008
+      context_id: codex-verification-context-0036-008
+    recorded_at: '2026-08-23T20:05:00Z'
+    revision:
+      id: chg-0036-implementation-008
+      immutable_ref:
+        type: git_commit
+        value: 918723e5b3e3c5f6ae2c6aa5b7974edec3f334e3
+      commit: 918723e5b3e3c5f6ae2c6aa5b7974edec3f334e3
+    source:
+      assurance: verified
+      observed_by: operator
+      reference: verification.md
+      statement: Verification evidence is bound to the frozen implementation subject.
