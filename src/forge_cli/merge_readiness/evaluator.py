@@ -42,6 +42,27 @@ def _manifest(root: Path, change_id: str, head_revision: str) -> tuple[Path, dic
     return path, data
 
 
+def _first_committed_record(root: Path, relative_path: str, record_id: str) -> dict | None:
+    commits = subprocess.run(
+        ["git", "log", "--reverse", "--format=%H", "--", relative_path],
+        cwd=root,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if commits.returncode:
+        return None
+    for commit in commits.stdout.splitlines():
+        try:
+            data = yaml.safe_load(tree_file(root, commit, relative_path)) or {}
+        except MergeReadinessOperationalError:
+            continue
+        for record in data.get("records", []) if isinstance(data, dict) else []:
+            if isinstance(record, dict) and record.get("id") == record_id:
+                return record
+    return None
+
+
 def _check_change(root: Path, change_id: str, head_revision: str) -> tuple[list[ReadinessCheck], list[ReadinessDiagnostic]]:
     path, manifest = _manifest(root, change_id, head_revision)
     checks: list[ReadinessCheck] = []
@@ -75,6 +96,8 @@ def _check_change(root: Path, change_id: str, head_revision: str) -> tuple[list[
         elif isinstance(iterations, list):
             passed = [item for item in iterations if isinstance(item, dict) and item.get("status") == "passed"]
             final_iteration = passed[-1] if passed else None
+            if iterations and (not isinstance(iterations[-1], dict) or iterations[-1].get("status") != "passed"):
+                diagnostics.append(ReadinessDiagnostic("MR-020", "Review history ends with a non-passed iteration", change_id, relative))
             provenance_relative = f"{path.parent.relative_to(root).as_posix()}/provenance.yml"
             try:
                 provenance = yaml.safe_load(tree_file(root, head_revision, provenance_relative)) or {}
@@ -89,6 +112,10 @@ def _check_change(root: Path, change_id: str, head_revision: str) -> tuple[list[
             if not isinstance(reviewer_record, dict) or reviewer_record.get("role") != "review":
                 diagnostics.append(ReadinessDiagnostic("MR-018", "Passed Review lacks admissible reviewer provenance", change_id, relative))
             subject_revision = subject_record.get("revision", {}) if isinstance(subject_record, dict) else {}
+            if isinstance(subject_record, dict):
+                anchored = _first_committed_record(root, provenance_relative, subject_record.get("id", ""))
+                if anchored is None or anchored != subject_record:
+                    diagnostics.append(ReadinessDiagnostic("MR-021", "Review subject provenance was rewritten or lacks committed authority", change_id, relative))
             subject_commit = subject_revision.get("commit") or subject_revision.get("immutable_ref", {}).get("value")
             if not isinstance(subject_commit, str) or len(subject_commit) != 40:
                 diagnostics.append(ReadinessDiagnostic("MR-015", "REVIEW SUBJECT STALE: immutable subject provenance is missing", change_id, relative))
@@ -240,6 +267,9 @@ def evaluate_merge_readiness(root: Path, request: MergeReadinessRequest) -> Merg
             raise MergeReadinessOperationalError("Cannot determine working tree state")
         if workspace.stdout.strip():
             raise MergeReadinessOperationalError("Working tree is dirty; merge readiness requires an unambiguous repository subject")
+        current_head = subprocess.run(["git", "rev-parse", "HEAD"], cwd=root, capture_output=True, text=True, check=False)
+        if current_head.returncode != 0 or current_head.stdout.strip() != request.head_revision:
+            raise MergeReadinessOperationalError("Checked-out HEAD does not equal the requested merge subject")
         paths = changed_paths(root, request.base_revision, request.head_revision)
         policy = load_materiality_policy()
         material = tuple(path for path in paths if classify_path(path, policy) == "material")

@@ -108,19 +108,13 @@ def test_merge_check_accepts_complete_change_without_material_runtime_diff(tmp_p
     (change_dir / "manifest.yml").write_text(
         yaml.safe_dump(_manifest(), sort_keys=False), encoding="utf-8"
     )
-    (change_dir / "provenance.yml").write_text(
-        yaml.safe_dump({"records": [
-            {"id": "impl-001", "role": "implementation", "execution": {"id": "impl", "context_id": "impl-context"}, "revision": {"id": "fixture", "commit": base}, "source": {"assurance": "recorded", "observed_by": "self"}},
-            {"id": "review-001", "role": "review", "execution": {"id": "review", "context_id": "review-context"}, "revision": {"id": "fixture", "commit": base}, "source": {"assurance": "recorded", "observed_by": "self"}},
-        ]}, sort_keys=False),
-        encoding="utf-8",
-    )
     (change_dir / "verification.md").write_text("## Result\n\n**PASS**\n", encoding="utf-8")
     (change_dir / "review.md").write_text("## Verdict\n\n**PASS**\n", encoding="utf-8")
     subject = _commit(tmp_path, "freeze complete Change subject")
-    provenance = yaml.safe_load((change_dir / "provenance.yml").read_text(encoding="utf-8"))
-    for record in provenance["records"]:
-        record["revision"]["commit"] = subject
+    provenance = {"records": [
+        {"id": "impl-001", "role": "implementation", "execution": {"id": "impl", "context_id": "impl-context"}, "revision": {"id": "fixture", "commit": subject}, "source": {"assurance": "recorded", "observed_by": "self"}},
+        {"id": "review-001", "role": "review", "execution": {"id": "review", "context_id": "review-context"}, "revision": {"id": "fixture", "commit": subject}, "source": {"assurance": "recorded", "observed_by": "self"}},
+    ]}
     (change_dir / "provenance.yml").write_text(yaml.safe_dump(provenance, sort_keys=False), encoding="utf-8")
     head = _commit(tmp_path, "record review-control metadata")
     result = runner.invoke(app, ["change", "merge-check", "--base", base, "--head", head])
