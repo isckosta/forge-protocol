@@ -32,3 +32,17 @@ records:
         Explicit user authorization was received as “Prossiga.” in the active
         session on 2026-08-23. This is repository evidence of human approval,
         not provider-native attestation.
+  - id: implementation-002
+    role: resolution
+    execution: {id: resolution-exec-chg0032-20260823-01, context_id: resolution-context-chg0032-20260823-01}
+    recorded_at: "2026-08-23T00:55:00-03:00"
+    revision:
+      id: chg-0032-resolution-001
+      immutable_ref: {type: git_commit, value: b5cb7ec49bdabd0306e9d8e90337b997436bebfb}
+    source:
+      assurance: recorded
+      observed_by: operator
+      harness: codex
+      statement: >-
+        Resolution records the executed FER focused suite and explicit
+        default-off validation evidence.
