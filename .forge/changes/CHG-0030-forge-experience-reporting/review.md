@@ -50,3 +50,9 @@ The resolution subject adds a fail-closed migration path for historical
 abbreviated Git subject SHAs. Verify that matching full SHAs are accepted,
 non-matching or malformed historical values remain rejected, and the focused
 regression suite plus `forge validate` pass against the frozen subject.
+
+## Iteration 5 — PENDING
+
+The follow-up subject isolates the validator change that prevents unrelated
+commits merged between frozen subjects from entering a Resolution Delta.
+Review the exact frozen subject recorded as `resolution-004`.
