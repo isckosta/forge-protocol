@@ -56,3 +56,20 @@ records:
       observed_by: operator
       reference: review.md#iteration-1
       statement: Independent Strict Review passed with no blocking findings.
+  - id: verification-001
+    role: implementation
+    execution:
+      id: codex-implementation-0037-subject-001
+      context_id: codex-session-2026-08-23-subject-001
+    recorded_at: '2026-08-23T00:00:00Z'
+    revision:
+      id: chg-0037-implementation-001
+      immutable_ref:
+        type: git_commit
+        value: 37a7f9162dc00f03e75e7e5260776df17024de74
+      commit: 37a7f9162dc00f03e75e7e5260776df17024de74
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: verification.md
+      statement: Verification evidence for the frozen CHG-0037 implementation subject.
