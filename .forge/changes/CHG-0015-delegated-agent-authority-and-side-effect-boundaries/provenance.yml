@@ -50,3 +50,52 @@ records:
         record its own review-role provenance separately; this session does
         not and cannot produce that record itself without constituting
         self-review.
+  - id: resolution-001
+    role: resolution
+    scope:
+      - src/forge_cli/validation/__init__.py
+      - tests/unit/test_delegated_authority.py
+      - .forge/changes/CHG-0015-delegated-agent-authority-and-side-effect-boundaries/knowledge-capture.md
+      - .forge/changes/CHG-0015-delegated-agent-authority-and-side-effect-boundaries/tasks.md
+      - .forge/changes/CHG-0015-delegated-agent-authority-and-side-effect-boundaries/test-strategy.md
+      - .forge/changes/CHG-0015-delegated-agent-authority-and-side-effect-boundaries/verification.md
+    targets: [CHG-0015-R001, CHG-0015-R002]
+    execution:
+      id: resolution-exec-chg0015-20260823-01
+      context_id: resolution-context-chg0015-20260823-01
+    recorded_at: "2026-08-23T00:00:00-03:00"
+    revision:
+      id: chg-0015-resolution-001
+      immutable_ref: {type: git_commit, value: 6f5436d73c7eaaa43d86d401450d24b1caaccc92}
+      commit: 6f5436d73c7eaaa43d86d401450d24b1caaccc92
+      description: >-
+        Frozen Resolution 1 subject. Preserves tracked deletions as an
+        observed effect and adds TDD-017 regression coverage. The
+        concurrency/TOCTOU boundary remains explicitly bounded by the
+        Specification. Subsequent commits are restricted to Change-local
+        review-control metadata.
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: claude-code
+      statement: >-
+        Self-recorded repository-native provenance for the Resolution
+        execution. The original implementation-001 subject remains immutable;
+        this resolution is bound through a separate resolution record.
+  - id: review-001
+    role: review
+    execution: {id: review-exec-chg0015-resolution-independent-01, context_id: review-context-chg0015-resolution-independent-01}
+    recorded_at: "2026-08-23T00:00:00-03:00"
+    revision:
+      id: chg-0015-resolution-001
+      immutable_ref: {type: git_commit, value: 6f5436d73c7eaaa43d86d401450d24b1caaccc92}
+    source:
+      assurance: recorded
+      observed_by: harness
+      harness: codex
+      statement: >-
+        Independent Strict Review / Resolution Verification against immutable
+        subject 6f5436d73c7eaaa43d86d401450d24b1caaccc92. Resolution behavior,
+        deletion detection, TDD-017, scope, schema, and bounded concurrency
+        evidence passed; review requests changes for stale cycle-count and
+        verification claims in Change-local control artifacts.
