@@ -36,6 +36,44 @@ records:
         re-reviewed the frozen CHG-0033 subject and passed. Traversal,
         per-report locking, Git review guidance, focused tests, Forge
         validation, FER validation, and diff checks were confirmed.
+  - id: resolution-001
+    role: resolution
+    scope:
+      - .forge/changes/CHG-0033-forge-experience-report-markdown/manifest.yml
+      - .forge/changes/CHG-0033-forge-experience-report-markdown/provenance.yml
+      - .forge/changes/CHG-0033-forge-experience-report-markdown/review.md
+      - .forge/changes/CHG-0033-forge-experience-report-markdown/specification-review.md
+    targets: [R001, R002, R003]
+    execution:
+      id: resolution-exec-chg0033-20260823-01
+      context_id: resolution-context-chg0033-20260823-01
+    recorded_at: "2026-08-23T01:50:00-03:00"
+    revision:
+      id: chg-0033-resolution-001
+      immutable_ref: {type: git_commit, value: 706a63c866774ee1fdd9159e58adeab3cd809e92}
+    source:
+      assurance: recorded
+      observed_by: operator
+      harness: codex
+      statement: >-
+        Resolution-001 records the completed Specification Review and the
+        independent Strict Review resolution metadata for CHG-0033.
+  - id: review-002
+    role: review
+    execution:
+      id: review-exec-chg0033-resolution-independent-01
+      context_id: review-context-chg0033-resolution-independent-01
+    recorded_at: "2026-08-23T01:51:00-03:00"
+    revision:
+      id: chg-0033-resolution-001
+      immutable_ref: {type: git_commit, value: 706a63c866774ee1fdd9159e58adeab3cd809e92}
+    source:
+      assurance: recorded
+      observed_by: independent_subagent
+      harness: codex
+      statement: >-
+        Independent re-review verified the Resolution metadata, exact subject
+        bindings, reviewer independence, and absence of behavioral changes.
   - id: plan-approval-001
     role: implementation
     execution:
