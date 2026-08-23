@@ -7,6 +7,14 @@ representations; do not redefine their lifecycle here.
 - Classify the work and resolve the applicable effective Flow before acting.
 - Preserve every applicable Flow gate, including TDD RED-before-behavior and
   Strict Review requirements.
+- Before modifying repository files, create or use a working branch; do not
+  implement directly on `main`.
+- After the Change is ready for integration, open a Pull Request against
+  `main` and use that PR as the repository-native integration record.
+- Unresolved review comments or conversations block merge. The agent must not
+  merge or claim the Change complete while unresolved review comments remain;
+  resolve applicable feedback, rerun relevant checks, and then merge through
+  the Pull Request.
 Before crossing the Plan/Implementation boundary on a Change adopted from
 CHG-0025 onward, obtain an explicit human-authority Plan Decision and record
 the operator-observed confirmation in the Plan and provenance. `status: approved` alone is not
