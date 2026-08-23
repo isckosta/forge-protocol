@@ -144,6 +144,21 @@ records:
         Resolution-004 isolates Resolution Delta computation to the frozen
         subject commit, preventing unrelated Changes merged between subjects
         from being classified as out-of-scope mutations.
+  - id: review-005
+    role: review
+    execution: {id: review-exec-chg0030-resolution-independent-05, context_id: review-context-chg0030-resolution-independent-05}
+    recorded_at: "2026-08-23T03:45:00-03:00"
+    revision:
+      id: chg-0030-resolution-004
+      immutable_ref: {type: git_commit, value: 5413b3f020fb9afb2c65b88aea1402c11de3d058}
+    source:
+      assurance: recorded
+      observed_by: independent_subagent
+      harness: codex
+      statement: >-
+        Independent review passed on branch tip 0c8c7e4. Forge validation and
+        54 focused tests passed; the subject delta was isolated to the
+        validator implementation and SHA migration remained fail-closed.
   - id: plan-approval-001
     role: implementation
     execution: {id: implementation-exec-chg0030-20260822-01, context_id: implementation-context-chg0030-20260822-01}

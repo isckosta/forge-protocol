@@ -10,7 +10,7 @@ status: active
 
 ## Verdict
 
-**PENDING — Resolution Verification is required for the provenance migration.**
+**PASS — independent review passed for the isolated resolution subject.**
 
 ## Iteration 1 — FAIL
 
@@ -55,4 +55,9 @@ regression suite plus `forge validate` pass against the frozen subject.
 
 The follow-up subject isolates the validator change that prevents unrelated
 commits merged between frozen subjects from entering a Resolution Delta.
-Review the exact frozen subject recorded as `resolution-004`.
+Independent review passed on the branch tip with the exact frozen subject
+`5413b3f020fb9afb2c65b88aea1402c11de3d058` recorded as `resolution-004`.
+The validator, focused tests, provenance binding, abbreviated-SHA migration,
+and first-parent delta isolation all passed.
+
+**PASS (final).**
