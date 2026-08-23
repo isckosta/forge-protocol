@@ -84,15 +84,19 @@ def _changed(r:Path,m:Path,c:str)->bool:
     delta=_reviewable_workspace_delta(r,m,c)
     return delta is None or bool(delta)
 def _resolution_delta(r:Path,m:Path,from_commit:str,to_commit:str)->set[str]|None:
-    """CHG-0011: committed diff between two already-frozen historical commits.
+    """CHG-0011: committed diff introduced by the frozen resolution commit.
 
     Unlike _reviewable_workspace_delta (a frozen commit vs. the *current*
-    workspace), both endpoints here are immutable history, so only the
-    committed-diff half of that machinery applies.
+    workspace), this uses the resolution commit's first-parent delta. Using
+    the full range from the prior subject would incorrectly include unrelated
+    Changes merged into the branch between the two frozen subjects.
     """
     root=_git_root(r)
     if root is None:return None
-    diff=_diff_paths(root,f"{from_commit}..{to_commit}")
+    if from_commit==to_commit:return set()
+    parent=subprocess.run(["git","rev-parse",f"{to_commit}^"],cwd=root,capture_output=True,text=True,check=False)
+    if parent.returncode:return None
+    diff=_diff_paths(root,f"{parent.stdout.strip()}..{to_commit}")
     if diff is None:return None
     allowed=_review_control_metadata_paths(root,m)
     return diff if allowed is None else diff-allowed
@@ -237,6 +241,7 @@ def _committed_history_mappings(r:Path,path:Path)->list[object]|None:
 def _first_committed_provenance_record(r:Path,path:Path,record_id:str):
     documents=_committed_history_mappings(r,path)
     if documents is None:return _HISTORY_ERROR
+    legacy_prefixes:list[str]=[]
     for document in documents:
         if document is _HISTORY_ERROR:return _HISTORY_ERROR
         assert isinstance(document,dict)
@@ -248,7 +253,28 @@ def _first_committed_provenance_record(r:Path,path:Path,record_id:str):
         candidate=matches[0]
         revision=candidate.get("revision") if isinstance(candidate,dict) else None
         if not isinstance(revision,dict) or revision.get("immutable_ref") is None:continue
-        if _record_fields(candidate) is None:return _HISTORY_ERROR
+        if _record_fields(candidate) is None:
+            immutable=revision.get("immutable_ref")
+            value=immutable.get("value") if isinstance(immutable,dict) else None
+            if (
+                isinstance(immutable,dict)
+                and immutable.get("type")=="git_commit"
+                and isinstance(value,str)
+                and 7<=len(value)<40
+                and all(c in"0123456789abcdefABCDEF"for c in value)
+            ):
+                # Historical Forge versions recorded abbreviated Git SHAs.
+                # They are not valid immutable subjects by themselves, but a
+                # later complete record may migrate the same subject safely if
+                # its full SHA preserves every legacy prefix exactly.
+                legacy_prefixes.append(value.lower())
+                continue
+            return _HISTORY_ERROR
+        if legacy_prefixes:
+            immutable=candidate["revision"].get("immutable_ref")
+            value=immutable.get("value") if isinstance(immutable,dict) else None
+            if not isinstance(value,str) or any(not value.lower().startswith(prefix) for prefix in legacy_prefixes):
+                return _HISTORY_ERROR
         return candidate
     return None
 def _first_committed_review_iteration(r:Path,path:Path,iteration_id:str):
@@ -326,7 +352,7 @@ def _validate_protocol2_review_provenance(r:Path)->list[ValidationFinding]:
             if f is None or f[0] in idx:bad=True;break
             idx[f[0]]=rec
         if bad:out.append(_finding(r,ppath,"Protocol 2 provenance contains a partial, duplicate, inconsistent, or incomplete immutable revision record."));continue
-        for it in bound:
+        for position,it in enumerate(bound):
             rid,sref,rref,status=it.get("revision"),it.get("subject_provenance"),it.get("reviewer_provenance"),it.get("status")
             if not(isinstance(rid,str)and rid and isinstance(sref,str)and sref):out.append(_finding(r,mpath,"A bound Review Iteration requires revision and subject_provenance."));continue
             iid=it.get("id")
@@ -346,7 +372,7 @@ def _validate_protocol2_review_provenance(r:Path)->list[ValidationFinding]:
             explicit=isinstance(sub.get("revision"),dict)and sub["revision"].get("immutable_ref") is not None
             if explicit and sim[0]=="git_commit":
                 if not _git_exists(r,sim[1]):out.append(_finding(r,mpath,"C-026 review subject immutable git commit does not exist in the local repository."))
-                elif status in{"pending","passed"}and st.get("current")!="complete"and _changed(r,mpath,sim[1]):out.append(_finding(r,mpath,"C-026 review subject changed after its immutable revision freeze; create new subject provenance."))
+                elif position==len(bound)-1 and status in{"pending","passed"}and st.get("current")!="complete"and _changed(r,mpath,sim[1]):out.append(_finding(r,mpath,"C-026 review subject changed after its immutable revision freeze; create new subject provenance."))
             if status!="passed":continue
             if not isinstance(rref,str)or not rref:out.append(_finding(r,mpath,"A passed Protocol 2 Review Iteration requires reviewer_provenance."));continue
             reviewer=idx.get(rref)

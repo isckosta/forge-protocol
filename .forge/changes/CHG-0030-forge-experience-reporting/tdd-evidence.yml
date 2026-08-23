@@ -1,7 +1,7 @@
 schema: forge/tdd-evidence@1
 change: CHG-0030
 status: complete
-cycle_count: 8
+cycle_count: 9
 cycles:
   - id: TDD-001
     title: Default-off configuration and classification parsing
@@ -43,3 +43,8 @@ cycles:
     requirements: [FR-002, FR-008]
     red: {observed: true, evidence: "Independent review reproduced a symlinked report file escaping dogfooding/reports while forge experience validate returned success."}
     green: {observed: true, evidence: "Validation now rejects symlinked report files and ancestors; focused FER tests pass."}
+  - id: TDD-009
+    title: Legacy abbreviated provenance subject migration
+    requirements: [FR-002]
+    red: {observed: true, evidence: "A fixture with the historical abbreviated subject SHA returned C-026 before the migration guard was added."}
+    green: {observed: true, evidence: "test_legacy_abbreviated_subject_sha_can_be_migrated_to_matching_full_sha passed; non-legacy immutable history remains fail-closed."}

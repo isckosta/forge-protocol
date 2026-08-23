@@ -22,6 +22,7 @@ entry and no captured conversation, prompt, log, secret, or project defect.
 ## Test Evidence
 
 - FER-focused suite: **21 passed**.
+- Provenance migration regression: **1 passed** (`TDD-009`).
 - CLI, Adapter workflow-authority, and FER-focused integration selection:
   **22 passed** before the final report-validation test was added.
 - Full suite: **602 passed, 1 failed**.

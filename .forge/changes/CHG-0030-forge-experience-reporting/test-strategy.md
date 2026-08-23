@@ -38,6 +38,10 @@ repositories and injected storage failures for deterministic isolation.
    FAST/STANDARD/FULL golden paths, and both Adapter projections remain
    unchanged when FER is disabled.
 
+10. A real Git fixture with a historical abbreviated provenance SHA migrates
+    only to a later full SHA that preserves the exact prefix; malformed or
+    non-matching history remains fail-closed.
+
 ## TDD-001 — Disabled behavior
 
 RED: a test asserts that a normal project with no contributor configuration
