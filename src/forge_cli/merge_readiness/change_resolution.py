@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import subprocess
 from pathlib import Path
+import re
 
 from .policy import classify_path, load_materiality_policy
 
@@ -30,6 +31,10 @@ def tree_file(root: Path, revision: str, relative_path: str) -> str:
 
 
 def validate_revision(root: Path, revision: str) -> None:
+    if not re.fullmatch(r"[0-9a-f]{40}", revision):
+        raise MergeReadinessOperationalError(
+            f"Revision must be an immutable 40-character commit SHA: {revision}"
+        )
     shallow = _git(root, "rev-parse", "--is-shallow-repository").strip()
     if shallow == "true":
         raise MergeReadinessOperationalError("Complete Git history is required; repository is shallow")

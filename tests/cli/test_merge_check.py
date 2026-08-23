@@ -23,7 +23,7 @@ def _manifest(status: str = "complete", review_status: str = "passed") -> dict:
         "change": {"id": "CHG-9001", "title": "Fixture", "kind": "bugfix"},
         "flow": {"initial": "standard", "current": "standard", "escalations": []},
         "state": {"current": status},
-        "artifacts": {},
+        "artifacts": {"intent": "complete", "discovery": "complete", "specification": "complete", "inspection": "complete", "test_design": "complete", "plan": "complete", "tdd_evidence": "complete", "verification": "complete", "review": "complete", "documentation": "complete"},
         "tdd": {"status": "compliant", "cycles": 1},
         "verification": {"status": "passed"},
         "review": {
@@ -82,6 +82,10 @@ def test_merge_check_blocks_incomplete_lifecycle_claim(tmp_path, monkeypatch) ->
     subprocess.run(["git", "config", "user.email", "test@example.com"], cwd=tmp_path, check=True)
     subprocess.run(["git", "config", "user.name", "Test"], cwd=tmp_path, check=True)
     (tmp_path / "README.md").write_text("base\n", encoding="utf-8")
+    (tmp_path / ".forge").mkdir()
+    (tmp_path / ".forge" / "forge.yml").write_text("schema: forge/project@1\nproject:\n  name: fixture\nforge:\n  protocol: 2\nflows:\n  default: standard\n  allow_fast: true\n  auto_escalation: true\ntesting:\n  approach: tdd_first\nreview:\n  strict: true\ndocumentation:\n  impact_evaluation: required\n", encoding="utf-8")
+    (tmp_path / ".forge" / "flows").mkdir()
+    (tmp_path / ".forge" / "flows" / "standard.yml").write_text("schema: forge/project-flow@1\nflow:\n  canonical: standard\n  enabled: true\n", encoding="utf-8")
     base = _commit(tmp_path, "base")
     change_dir = tmp_path / ".forge" / "changes" / "CHG-9001-fixture"
     change_dir.mkdir(parents=True)
@@ -102,6 +106,10 @@ def test_merge_check_accepts_complete_change_without_material_runtime_diff(tmp_p
     subprocess.run(["git", "config", "user.email", "test@example.com"], cwd=tmp_path, check=True)
     subprocess.run(["git", "config", "user.name", "Test"], cwd=tmp_path, check=True)
     (tmp_path / "README.md").write_text("base\n", encoding="utf-8")
+    (tmp_path / ".forge").mkdir()
+    (tmp_path / ".forge" / "forge.yml").write_text("schema: forge/project@1\nproject:\n  name: fixture\nforge:\n  protocol: 2\nflows:\n  default: standard\n  allow_fast: true\n  auto_escalation: true\ntesting:\n  approach: tdd_first\nreview:\n  strict: true\ndocumentation:\n  impact_evaluation: required\n", encoding="utf-8")
+    (tmp_path / ".forge" / "flows").mkdir()
+    (tmp_path / ".forge" / "flows" / "standard.yml").write_text("schema: forge/project-flow@1\nflow:\n  canonical: standard\n  enabled: true\n", encoding="utf-8")
     base = _commit(tmp_path, "base")
     change_dir = tmp_path / ".forge" / "changes" / "CHG-9001-fixture"
     change_dir.mkdir(parents=True)
@@ -111,14 +119,14 @@ def test_merge_check_accepts_complete_change_without_material_runtime_diff(tmp_p
     (change_dir / "verification.md").write_text("## Result\n\n**PASS**\n", encoding="utf-8")
     (change_dir / "review.md").write_text("## Verdict\n\n**PASS**\n", encoding="utf-8")
     subject = _commit(tmp_path, "freeze complete Change subject")
-    provenance = {"records": [
-        {"id": "impl-001", "role": "implementation", "execution": {"id": "impl", "context_id": "impl-context"}, "revision": {"id": "fixture", "commit": subject}, "source": {"assurance": "recorded", "observed_by": "self"}},
-        {"id": "review-001", "role": "review", "execution": {"id": "review", "context_id": "review-context"}, "revision": {"id": "fixture", "commit": subject}, "source": {"assurance": "recorded", "observed_by": "self"}},
+    provenance = {"schema": "forge/execution-provenance@2", "change": "CHG-9001", "records": [
+        {"id": "impl-001", "role": "implementation", "execution": {"id": "impl", "context_id": "impl-context"}, "revision": {"id": "fixture", "immutable_ref": {"type": "git_commit", "value": subject}, "commit": subject}, "source": {"assurance": "recorded", "observed_by": "self", "reference": "implementation-subject", "statement": "Fixture implementation subject."}},
+        {"id": "review-001", "role": "review", "execution": {"id": "review", "context_id": "review-context"}, "revision": {"id": "fixture", "immutable_ref": {"type": "git_commit", "value": subject}, "commit": subject}, "source": {"assurance": "recorded", "observed_by": "self", "reference": "strict-review", "statement": "Fixture independent review."}},
     ]}
     (change_dir / "provenance.yml").write_text(yaml.safe_dump(provenance, sort_keys=False), encoding="utf-8")
     head = _commit(tmp_path, "record review-control metadata")
     result = runner.invoke(app, ["change", "merge-check", "--base", base, "--head", head])
-    assert result.exit_code == 0
+    assert result.exit_code == 0, result.stdout
     assert "MERGE READY" in result.stdout
 
 

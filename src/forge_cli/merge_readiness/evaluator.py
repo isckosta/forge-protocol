@@ -17,7 +17,7 @@ from .change_resolution import (
     is_material,
     tree_file,
 )
-from .policy import classify_path, load_materiality_policy
+from .policy import MaterialityPolicyError, classify_path, load_materiality_policy
 from .models import (
     MergeReadinessEvaluation,
     MergeReadinessRequest,
@@ -191,7 +191,9 @@ def _check_change(root: Path, change_id: str, head_revision: str) -> tuple[list[
             diagnostics.append(ReadinessDiagnostic("MR-014", "Material Decision remains unresolved", change_id, relative))
     artifacts = manifest.get("artifacts") if isinstance(manifest.get("artifacts"), dict) else {}
     project_config_path = root / ".forge" / "forge.yml"
-    if project_config_path.is_file():
+    if not project_config_path.is_file():
+        diagnostics.append(ReadinessDiagnostic("MR-901", "Project Flow configuration is missing", change_id, ".forge/forge.yml"))
+    else:
         try:
             project_config = yaml.safe_load(tree_file(root, head_revision, ".forge/forge.yml")) or {}
             protocol_id = int(project_config.get("forge", {}).get("protocol", 1))
@@ -209,6 +211,11 @@ def _check_change(root: Path, change_id: str, head_revision: str) -> tuple[list[
                     diagnostics.append(ReadinessDiagnostic("MR-009", f"Required artifact is not complete: {key}", change_id, relative, "complete", str(artifacts.get(key))))
         except Exception as error:
             diagnostics.append(ReadinessDiagnostic("MR-901", f"Cannot resolve effective Flow: {error}", change_id, relative))
+    documentation = manifest.get("documentation") if isinstance(manifest.get("documentation"), dict) else {}
+    if documentation.get("impact_evaluated") is not True:
+        diagnostics.append(ReadinessDiagnostic("MR-009", "Documentation impact has not been evaluated", change_id, relative))
+    if documentation.get("update_required") is True and artifacts.get("documentation") not in {"complete", "approved", "passed"}:
+        diagnostics.append(ReadinessDiagnostic("MR-009", "Required documentation update is not complete", change_id, relative))
     if review.get("blockers", 0) > 0:
         diagnostics.append(ReadinessDiagnostic("MR-010", "Unresolved BLOCKER findings remain", change_id, relative))
     if review.get("majors", 0) > 0:
@@ -271,7 +278,10 @@ def evaluate_merge_readiness(root: Path, request: MergeReadinessRequest) -> Merg
         if current_head.returncode != 0 or current_head.stdout.strip() != request.head_revision:
             raise MergeReadinessOperationalError("Checked-out HEAD does not equal the requested merge subject")
         paths = changed_paths(root, request.base_revision, request.head_revision)
-        policy = load_materiality_policy()
+        try:
+            policy = load_materiality_policy()
+        except MaterialityPolicyError as error:
+            raise MergeReadinessOperationalError(str(error)) from error
         material = tuple(path for path in paths if classify_path(path, policy) == "material")
         changes = affected_changes(root, paths, request.head_revision)
         checks: list[ReadinessCheck] = []
