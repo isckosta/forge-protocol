@@ -7,14 +7,6 @@ status: complete
 ---
 # Knowledge Capture — CHG-0015
 
-- **A missing content fingerprint is not equivalent to no effect.** The
-  initial Strict Review found that `_current_dirty_fingerprint()` silently
-  discarded tracked deletions because `_content_fingerprint()` returned
-  `None` for a missing file. TDD-017 reproduced the gap; the resolution now
-  records `<deleted>` for paths present in `HEAD`, preserving deletion as an
-  auditable Observed Effect while continuing to ignore genuinely untracked
-  non-file paths.
-
 - **An exclusion designed to fix one gap can silently reopen a different
   one at the exact same call site — verify the fix against the mechanism's
   own bootstrapping behavior, not only against the vulnerability that
