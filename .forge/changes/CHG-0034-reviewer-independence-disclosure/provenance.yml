@@ -1,6 +1,21 @@
 schema: forge/execution-provenance@2
 change: CHG-0034
 records:
+  - id: resolution-001
+    role: resolution
+    execution: {id: resolution-exec-chg0034-20260823-01, context_id: resolution-context-chg0034-20260823-01}
+    recorded_at: "2026-08-23T02:52:00-03:00"
+    revision:
+      id: chg-0034-resolution-001
+      immutable_ref: {type: git_commit, value: d6a3247b00205ee90974057a268142ad93382e97}
+    source:
+      assurance: recorded
+      observed_by: operator
+      harness: codex
+      statement: >-
+        Resolution corrects the final roadmap prose, last-assigned Change
+        reference, and factual CHG-0021 evidence wording while preserving the
+        reviewed Contract clarification.
   - id: review-001
     role: review
     execution: {id: review-exec-chg0034-independent-01, context_id: review-context-chg0034-independent-01}
