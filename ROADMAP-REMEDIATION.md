@@ -42,7 +42,7 @@
 Slugs have no fixed `CHG-NNNN` number reserved, matching `ROADMAP.md`'s
 own stated convention: Forge assigns the next stable identifier when a
 stage begins as an actual repository-native Change. The last Change assigned
-in this repository's history is `CHG-0033`; this remediation item is being
+in this repository's history is `CHG-0034`; this remediation item was
 conducted as `CHG-0034`.
 
 ## P0 — Block healthy adoption
@@ -171,17 +171,13 @@ instructions.
 ### 10. `reviewer-independence-disclosure`
 
 The Reviewer sub-agent's independence today is *execution* independence
-(distinct Execution/Execution Context), not vendor/model independence —
-a real, current limitation the Contract does not currently state
-explicitly. Add a Contract note clarifying the exact guarantee, and
-consider allowing an explicit hint-free review mode as a stricter
-option (this repository already demonstrated the value of a genuinely
-hint-free Review three times over in `CHG-0021` alone).
+(distinct Execution/Execution Context), not vendor/model independence — a
+real limitation now documented by the Contract. The Change deliberately did
+not introduce a hint-free review mode; that remains future work.
 
 ## Sequencing note
 
-Items #1 through #9 are complete. `reviewer-independence-disclosure` (#10)
-is the next and final open item in this remediation addendum, conducted as
-CHG-0034. Its planned Contract edit is intentionally limited to disclosing
-the evidence boundary of existing Reviewer independence; it does not change
-the normative requirements of C-026 or C-037.
+Items #1 through #10 are complete. `reviewer-independence-disclosure` (#10)
+was conducted as CHG-0034. Its Contract edit was limited to disclosing the
+evidence boundary of existing Reviewer independence; it did not change the
+normative requirements of C-026 or C-037.

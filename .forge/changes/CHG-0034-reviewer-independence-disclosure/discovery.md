@@ -20,10 +20,11 @@ The Contract gap is real but narrow. C-026 requires conceptual
 Reviewer/Resolver separation, and C-037 prohibits dependence on a specific AI
 provider; neither states that the verifiable independence boundary is a
 distinct Execution and Execution Context rather than a distinct vendor or
-model. Existing CHG-0021 review provenance demonstrates that independent
-reviews can run with the same underlying provider/model as Implementation.
-The evidence supports an explicit limitation disclosure, not a claim that
-execution independence is ineffective.
+model. Existing CHG-0021 review provenance records independent execution and
+context identifiers but does not record provider or model identity. It
+therefore demonstrates the repository's execution-boundary evidence while
+not establishing vendor/model diversity. The evidence supports an explicit
+limitation disclosure, not a claim that execution independence is ineffective.
 
 ## Investigation
 

@@ -35,7 +35,7 @@ change was necessary.
   C-026 meaning while linking the stronger Protocol 2 boundary.
 - `protocol/versions/2/contract/engineering.md` states the vendor/model
   limitation directly.
-- `ROADMAP-REMEDIATION.md` identifies CHG-0034 as item #10 in progress.
+- `ROADMAP-REMEDIATION.md` identifies CHG-0034 as the completed item #10.
 
 ## Conclusion
 
