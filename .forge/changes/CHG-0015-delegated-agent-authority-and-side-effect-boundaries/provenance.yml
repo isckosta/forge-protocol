@@ -82,6 +82,33 @@ records:
         Self-recorded repository-native provenance for the Resolution
         execution. The original implementation-001 subject remains immutable;
         this resolution is bound through a separate resolution record.
+  - id: resolution-002
+    role: resolution
+    scope:
+      - .forge/changes/CHG-0015-delegated-agent-authority-and-side-effect-boundaries/manifest.yml
+      - .forge/changes/CHG-0015-delegated-agent-authority-and-side-effect-boundaries/review.md
+      - .forge/changes/CHG-0015-delegated-agent-authority-and-side-effect-boundaries/verification.md
+    targets: [CHG-0015-BLOCKER-001, CHG-0015-MAJOR-001, CHG-0015-BLOCKER-002]
+    execution:
+      id: resolution-exec-chg0015-20260823-02
+      context_id: resolution-context-chg0015-20260823-02
+    recorded_at: "2026-08-23T00:00:00-03:00"
+    revision:
+      id: chg-0015-resolution-002
+      immutable_ref: {type: git_commit, value: 7ed21e181edd3a86b2c42b9fce119c4a3bc9f914}
+      commit: 7ed21e181edd3a86b2c42b9fce119c4a3bc9f914
+      description: >-
+        Frozen Resolution 2 subject preserving the Resolution 1 anchor while
+        reconciling TDD counts and recording the failed Resolution 1 review.
+        Subsequent commits are restricted to Change-local review-control
+        metadata.
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: claude-code
+      statement: >-
+        Self-recorded provenance for Resolution 2. Resolution 1 remains
+        immutable and Resolution 2 is a separate appended subject.
   - id: review-001
     role: review
     execution: {id: review-exec-chg0015-resolution-independent-01, context_id: review-context-chg0015-resolution-independent-01}
@@ -99,3 +126,39 @@ records:
         deletion detection, TDD-017, scope, schema, and bounded concurrency
         evidence passed; review requests changes for stale cycle-count and
         verification claims in Change-local control artifacts.
+  - id: review-002
+    role: review
+    execution: {id: review-exec-chg0015-resolution-verification-02, context_id: review-context-chg0015-resolution-verification-02}
+    recorded_at: "2026-08-23T00:00:00-03:00"
+    revision:
+      id: chg-0015-resolution-002
+      immutable_ref: {type: git_commit, value: 7ed21e181edd3a86b2c42b9fce119c4a3bc9f914}
+      commit: 7ed21e181edd3a86b2c42b9fce119c4a3bc9f914
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: codex
+      statement: >-
+        Independent Resolution Verification against immutable Resolution 2
+        subject 7ed21e181edd3a86b2c42b9fce119c4a3bc9f914. This review is
+        superseded by the appended Resolution 2 subject binding.
+  - id: review-003
+    role: review
+    execution: {id: review-exec-chg0015-resolution-verification-03, context_id: review-context-chg0015-resolution-verification-03}
+    recorded_at: "2026-08-23T00:00:00-03:00"
+    revision:
+      id: chg-0015-resolution-002
+      immutable_ref: {type: git_commit, value: 7ed21e181edd3a86b2c42b9fce119c4a3bc9f914}
+      commit: 7ed21e181edd3a86b2c42b9fce119c4a3bc9f914
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: codex
+      statement: >-
+        Independent bounded Resolution Verification against immutable subject
+        7ed21e181edd3a86b2c42b9fce119c4a3bc9f914. Verified preservation of
+        implementation-001 at db814b7e946ac1616f634245173ca3bc29d2cda5,
+        resolution-001 at 6f5436d73c7eaaa43d86d401450d24b1caaccc92, and
+        resolution-002 at this subject. Historical review-001 and review-002
+        remain failed; no new material finding was found within the bounded
+        Resolution Verification scope.
