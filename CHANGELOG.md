@@ -10,6 +10,16 @@ until then.
 
 ## Unreleased
 
+### Tasks Layout, Plan Grouping, and Traceability
+
+Updated newly generated `tasks.md` (FULL) with an Overview, an Execution
+section grouping the `T-xxx` checklist under the Plan item each group
+executes, and compact optional per-Task traceability metadata
+(`Plan`/`Requirements`/`Stories`/`Test Design`, using the `TDD-xxx`
+convention). Historical `tasks.md` files, `plan.md`, `test-strategy.md`,
+Schemas, Protocol integers, and `forge validate` semantics remain
+unchanged.
+
 ### Test Design Verification Contract
 
 Updated newly generated `test-design.md` (FAST/STANDARD) with an Overview,

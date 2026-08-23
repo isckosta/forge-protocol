@@ -365,3 +365,92 @@ def test_render_scaffold_test_strategy_template_is_unchanged() -> None:
         "## TDD-001 — <behavior>\n\nDefine the test case.\n\n"
         "## Completion Criteria\n\nList completion criteria.\n"
     )
+
+
+def test_render_scaffold_plan_template_is_unchanged() -> None:
+    plan = render_scaffold(
+        change_id="CHG-0039",
+        slug="plan-unaffected",
+        flow_id="full",
+        flow_data=_canonical_flow("full"),
+        behavioral=True,
+    )
+
+    assert plan.files["plan.md"].endswith(
+        "1. Describe the first approved work item and files.\n\n"
+        "## Implementation Boundary\n\n"
+        "Reaching `plan_complete` is not authorization to begin Implementation.\n"
+    )
+
+
+def test_render_scaffold_tasks_uses_grouped_execution_checklist_layout() -> None:
+    plan = render_scaffold(
+        change_id="CHG-0042",
+        slug="tasks-layout",
+        flow_id="full",
+        flow_data=_canonical_flow("full"),
+        behavioral=True,
+    )
+
+    tasks = plan.files["tasks.md"]
+
+    assert tasks.startswith(
+        "---\nforge:\n  artifact: tasks\n  schema: 1\n"
+        "change: CHG-0042\nstatus: pending\n---\n\n"
+        "# CHG-0042 · Tasks\n\n"
+        "> Execution Checklist\n"
+    )
+    for heading in ("Overview", "Execution", "Status"):
+        assert f"## {heading}" in tasks
+    assert "- [ ] T-001 <work item>\n\n## Status\n\nNo task has started.\n" not in tasks
+
+
+def test_render_scaffold_tasks_groups_by_plan_item() -> None:
+    plan = render_scaffold(
+        change_id="CHG-0042",
+        slug="tasks-plan-grouping",
+        flow_id="full",
+        flow_data=_canonical_flow("full"),
+        behavioral=True,
+    )
+
+    tasks = plan.files["tasks.md"]
+
+    assert "### Plan 1 ·" in tasks
+    plan_section = tasks.split("### Plan 1 ·", 1)[1]
+    assert "- [ ] T-001" in plan_section
+
+
+def test_render_scaffold_tasks_has_compact_optional_traceability() -> None:
+    plan = render_scaffold(
+        change_id="CHG-0042",
+        slug="tasks-traceability",
+        flow_id="full",
+        flow_data=_canonical_flow("full"),
+        behavioral=True,
+    )
+
+    tasks = plan.files["tasks.md"]
+
+    assert "`Plan: 1`" in tasks
+    assert "`Requirements: FR-001`" in tasks
+    assert "`Test Design: TDD-001`" in tasks
+    assert "not every Task needs every reference" in tasks
+
+
+def test_render_scaffold_tasks_overview_and_status_are_compact() -> None:
+    plan = render_scaffold(
+        change_id="CHG-0042",
+        slug="tasks-overview-status",
+        flow_id="full",
+        flow_data=_canonical_flow("full"),
+        behavioral=True,
+    )
+
+    tasks = plan.files["tasks.md"]
+
+    assert "## Overview\n| | |\n|---|---|\n| **Change** | CHG-0042 |" in tasks
+    assert "| **Flow** | FULL |" in tasks
+    assert tasks.rstrip().endswith("No task has started.")
+    last_heading = [line for line in tasks.splitlines() if line.startswith("## ")][-1]
+    assert last_heading == "## Status"

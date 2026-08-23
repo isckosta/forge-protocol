@@ -273,10 +273,46 @@ boundary additionally requires the C-077 recorded human Decision; a Plan's
 
 ### Tasks
 
-**Structural core:** a checklist (`- [ ] T-xxx <work>`) referencing the
-Plan items it executes, and a closing `## Status` section stating
-plainly what has and has not started and why. Matches real, stable,
-minimal precedent (`CHG-0015/tasks.md`) closely.
+**Structural core (redesigned by `CHG-0039`):** an `Overview` (Change,
+Flow, Status), an `Execution` section grouping the checklist under the
+Plan item each group executes (`### Plan N · <Plan item title>`), and a
+closing `## Status` section stating plainly what has and has not
+started and why. `T-xxx` remains a stable checklist identifier
+(`- [ ] T-xxx <work>`) — never a Markdown list number — and the
+checklist itself remains the authoritative source of execution state;
+`Overview`/`Status` present that state, they do not introduce a second,
+manually-maintained one.
+
+This supersedes the prior guidance for this Artifact, which described
+only a flat checklist with no grouping (matching `CHG-0015/tasks.md`
+closely). That prior guidance is non-binding (C-067) and was not wrong
+for the Change it was written against; it stopped scaling once a Plan
+grows past a handful of items and the reader has to reconstruct, by
+hand, which Plan item produced which Task. The same pattern already
+applied to Specification (`CHG-0037`) and Test Design (`CHG-0038`)
+applies here: evolve the existing, stable shape rather than replace it
+with an incompatible one. `Tasks` only exists as a Flow stage in FULL
+(`protocol/flows/full.yml`); FAST and STANDARD have no `tasks.md`, so
+this guidance is scoped to FULL scaffolds only.
+
+**Conditional, present only when the relationship actually exists:** a
+compact inline metadata line beneath a Task —
+`` `Plan: N` · `Requirements: FR-xxx` · `Stories: US-xxx` · `Test Design: TDD-xxx` ``
+— referencing the Plan item, Requirement(s), User Story(ies), and/or
+Test Strategy case(s) it implements. `TDD-xxx` is the correct
+convention here (Test Strategy, FULL's own pre-Implementation
+verification Artifact); `TD-xxx` is Test Design's convention and only
+exists in FAST/STANDARD Changes, which never have a `tasks.md`. Not
+every Task carries every reference kind, and a Task with none of them
+is still valid — forcing a reference that does not exist would misstate
+the Change's real traceability rather than clarify it.
+
+Marking a Task complete (`- [x] T-xxx`) records that the work was
+executed; it does not mean the Requirement it references is verified —
+Verification remains the Artifact responsible for demonstrating that
+(§2.2). Material work discovered during Implementation that the Plan
+did not anticipate belongs to a Decision, a re-Plan, or Verification's
+own findings, not to a Task silently added to absorb new scope.
 
 ### Verification
 
