@@ -36,7 +36,7 @@
 | P1 | Document skill-propagation latency after adapter install | `skill-propagation-diagnostics` | **Done** | [`CHG-0026`](.forge/changes/CHG-0026-skill-propagation-diagnostics/) |
 | P1 | Review cost proportional to diff size (RFC-level) | `review-cost-proportionality` | **Done** | [`CHG-0027`](.forge/changes/CHG-0027-review-cost-proportionality/) |
 | P2 | Chat communication cadence guidance | `chat-cadence-guidance` | **Done** | [`CHG-0028`](.forge/changes/CHG-0028-chat-cadence-guidance/) |
-| P2 | Suggest publishing key artifacts as Artifact | `artifact-publication-suggestion` | Open | — |
+| P2 | Suggest publishing key artifacts as Artifact | `artifact-publication-suggestion` | **Done** | [`CHG-0029`](.forge/changes/CHG-0029-artifact-publication-suggestion/) |
 | P2 | Document real limits of Reviewer "independence" | `reviewer-independence-disclosure` | Open | — |
 
 Slugs have no fixed `CHG-NNNN` number reserved, matching `ROADMAP.md`'s

@@ -9,23 +9,24 @@ flow:
   current: fast
   escalations: []
 state:
-  current: inspection
+  current: implementation
 artifacts:
   intent: complete
   inspection: complete
   tdd_evidence: complete
-  verification: pending
+  implementation: complete
+  verification: complete
   review: pending
-  documentation: pending
+  documentation: complete
 requirements:
   total: 2
-  implemented: 0
-  verified: 0
+  implemented: 2
+  verified: 2
 tdd:
   status: not_applicable
   reason: This Change adds only non-binding Markdown guidance and no executable behavior.
 verification:
-  status: pending
+  status: passed
 review:
   status: pending
   iteration: 0
@@ -35,4 +36,9 @@ review:
   observations: 0
   iterations: []
 documentation:
-  impact_evaluated: false
+  impact_evaluated: true
+  update_required: true
+  reason: >-
+    Added conditional non-binding publication guidance to both Adapter
+    workflow templates and marked roadmap item #9 Done. No runtime or
+    enforced Protocol behavior changed.
