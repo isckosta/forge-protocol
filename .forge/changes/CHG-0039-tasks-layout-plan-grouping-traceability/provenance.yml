@@ -35,3 +35,20 @@ records:
       observed_by: self
       reference: implementation-subject
       statement: Frozen CHG-0039 implementation subject (immutable per C-026 once committed) — includes change_scaffolding.py, tests/unit/test_change_scaffolding.py, protocol/artifact-structure.md, and all CHG-0039 planning/design/verification Artifacts. Reviewable Git workspace confirmed clean before freeze.
+  - id: reviewer-001
+    role: review
+    execution:
+      id: aa1cec3c2cf58c5b6
+      context_id: independent-review-context-aa1cec3c2cf58c5b6
+    recorded_at: '2026-08-23T00:00:00Z'
+    revision:
+      id: chg-0039-implementation-001
+      immutable_ref:
+        type: git_commit
+        value: adec09805f0eb8732836078e7a853d5d52b448e8
+      commit: adec09805f0eb8732836078e7a853d5d52b448e8
+    source:
+      assurance: recorded
+      observed_by: operator
+      reference: review.md#iteration-1
+      statement: Independent Strict Review Iteration 1 (fresh execution, isolated worktree, no shared context with Implementation) returned PASS — no BLOCKER or MAJOR findings; 2 non-blocking OBSERVATIONs. Every claim in verification.md and tdd-evidence.yml was independently reproduced against this exact commit.
