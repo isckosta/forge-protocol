@@ -7,7 +7,7 @@ records:
     recorded_at: "2026-08-23T00:00:00-03:00"
     revision:
       id: chg-0031-subject-001
-      immutable_ref: {type: git_commit, value: 1904aa57c21810d38e71ef61fcdc23dcc4e8f601}
+      immutable_ref: {type: git_commit, value: b63622d0d2294bcad7a6620922f385832dcad229}
     source:
       assurance: recorded
       observed_by: operator
@@ -22,7 +22,7 @@ records:
     recorded_at: "2026-08-23T00:00:00-03:00"
     revision:
       id: chg-0031-subject-001
-      immutable_ref: {type: git_commit, value: 1904aa57c21810d38e71ef61fcdc23dcc4e8f601}
+      immutable_ref: {type: git_commit, value: b63622d0d2294bcad7a6620922f385832dcad229}
     source:
       assurance: recorded
       observed_by: operator
