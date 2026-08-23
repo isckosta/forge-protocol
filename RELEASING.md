@@ -40,7 +40,11 @@ Additional prereleases are evidence-driven, not deadline-driven
 
 `main` is branch-protected (see `CONTRIBUTING.md`): direct pushes are
 rejected, including for administrators, so the version bump itself goes
-through a PR like any other change.
+through a PR like any other change. In addition, `publish.yml` verifies the
+release commit before building: the tag must point to a commit reachable from
+`main`, and GitHub must report a merged Pull Request into `main` for that
+commit. A release created from a direct push fails before any artifact is
+published.
 
 1. Confirm `forge validate`, `forge doctor`, and `pytest -q` are clean on
    `main`.
@@ -49,7 +53,8 @@ through a PR like any other change.
    `## [<version>] - <YYYY-MM-DD>` with a fresh empty `## Unreleased`
    added above it. Commit.
 3. Open a PR, wait for the `test` and `distribution` required status
-   checks to pass, then merge into `main`.
+   checks to pass, then merge into `main`. Do not bypass this step: the
+   publication workflow enforces the merged-PR provenance automatically.
 4. Tag the merged commit on `main`: `git checkout main && git pull`,
    then `git tag v<version>` (e.g. `git tag v0.1.0a1`), then
    `git push origin v<version>`.

@@ -16,7 +16,49 @@ permissions:
   id-token: write
 
 jobs:
+  release-provenance:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+    steps:
+      - name: Checkout full history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Require release commit on main
+        id: release-ref
+        env:
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+        run: |
+          set -euo pipefail
+          git fetch origin main --no-tags
+          release_sha="$(git rev-list -n 1 "$RELEASE_TAG")"
+          git merge-base --is-ancestor "$release_sha" origin/main
+          echo "release_sha=$release_sha" >> "$GITHUB_OUTPUT"
+      - name: Require merged Pull Request provenance
+        uses: actions/github-script@v7
+        env:
+          RELEASE_SHA: ${{ steps.release-ref.outputs.release_sha }}
+        with:
+          script: |
+            const { data: pulls } = await github.rest.repos.listPullRequestsAssociatedWithCommit({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              commit_sha: process.env.RELEASE_SHA,
+              per_page: 100,
+            });
+            const mergedIntoMain = pulls.some(
+              (pull) => pull.base.ref === "main" && pull.merged_at,
+            );
+            if (!mergedIntoMain) {
+              core.setFailed(
+                `Release commit ${process.env.RELEASE_SHA} has no merged Pull Request into main.`,
+              );
+            }
+
   build:
+    needs: release-provenance
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
