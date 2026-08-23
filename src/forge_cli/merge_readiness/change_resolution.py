@@ -19,6 +19,16 @@ def _git(root: Path, *args: str) -> str:
     return result.stdout
 
 
+def tree_file(root: Path, revision: str, relative_path: str) -> str:
+    listing = _git(root, "ls-tree", revision, "--", relative_path)
+    if not listing:
+        raise MergeReadinessOperationalError(f"Missing file in revision {revision}: {relative_path}")
+    mode = listing.split(None, 1)[0]
+    if mode == "120000":
+        raise MergeReadinessOperationalError(f"Symlink is not admissible evidence: {relative_path}")
+    return _git(root, "show", f"{revision}:{relative_path}")
+
+
 def validate_revision(root: Path, revision: str) -> None:
     shallow = _git(root, "rev-parse", "--is-shallow-repository").strip()
     if shallow == "true":
@@ -48,25 +58,21 @@ def is_material(path: str) -> bool:
     return classify_path(path, load_materiality_policy()) == "material"
 
 
-def affected_changes(root: Path, paths: tuple[str, ...]) -> tuple[str, ...]:
+def affected_changes(root: Path, paths: tuple[str, ...], head_revision: str) -> tuple[str, ...]:
     result: set[str] = set()
     for path in paths:
         parts = Path(path).parts
         if len(parts) < 3 or parts[0] != ".forge" or parts[1] != "changes":
             continue
-        directory = root / ".forge" / "changes" / parts[2]
-        manifest = directory / "manifest.yml"
-        if not directory.is_dir() or directory.is_symlink() or manifest.is_symlink():
-            raise MergeReadinessOperationalError(f"Malformed Change directory: {parts[2]}")
+        manifest_relative = f".forge/changes/{parts[2]}/manifest.yml"
         try:
             import yaml
-
-            data = yaml.safe_load(manifest.read_text(encoding="utf-8")) or {}
-        except (OSError, UnicodeError, yaml.YAMLError) as error:
-            raise MergeReadinessOperationalError(f"Cannot read Change manifest: {manifest}") from error
+            data = yaml.safe_load(tree_file(root, head_revision, manifest_relative)) or {}
+        except (OSError, UnicodeError, yaml.YAMLError, MergeReadinessOperationalError) as error:
+            raise MergeReadinessOperationalError(f"Cannot read Change manifest: {manifest_relative}") from error
         change = data.get("change") if isinstance(data, dict) else None
         change_id = change.get("id") if isinstance(change, dict) else None
         if not isinstance(change_id, str) or not change_id.startswith("CHG-"):
-            raise MergeReadinessOperationalError(f"Malformed Change identity: {manifest}")
+            raise MergeReadinessOperationalError(f"Malformed Change identity: {manifest_relative}")
         result.add(change_id)
     return tuple(sorted(result))

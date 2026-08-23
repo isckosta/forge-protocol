@@ -117,7 +117,12 @@ def test_merge_check_accepts_complete_change_without_material_runtime_diff(tmp_p
     )
     (change_dir / "verification.md").write_text("## Result\n\n**PASS**\n", encoding="utf-8")
     (change_dir / "review.md").write_text("## Verdict\n\n**PASS**\n", encoding="utf-8")
-    head = _commit(tmp_path, "record complete Change")
+    subject = _commit(tmp_path, "freeze complete Change subject")
+    provenance = yaml.safe_load((change_dir / "provenance.yml").read_text(encoding="utf-8"))
+    for record in provenance["records"]:
+        record["revision"]["commit"] = subject
+    (change_dir / "provenance.yml").write_text(yaml.safe_dump(provenance, sort_keys=False), encoding="utf-8")
+    head = _commit(tmp_path, "record review-control metadata")
     result = runner.invoke(app, ["change", "merge-check", "--base", base, "--head", head])
     assert result.exit_code == 0
     assert "MERGE READY" in result.stdout

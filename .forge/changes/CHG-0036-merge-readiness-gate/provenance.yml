@@ -22,3 +22,20 @@ records:
         path: plan.md
         value: 638bb38d858e82f676496fc923de01fa4c351112a91ce68b0336680f0353e34f
       statement: Explicit human approval of the CHG-0036 Plan was received.
+  - id: implementation-subject-002
+    role: implementation
+    execution:
+      id: codex-implementation-0036-subject-002
+      context_id: codex-session-2026-08-23-subject-002
+    recorded_at: '2026-08-23T18:10:00Z'
+    revision:
+      id: chg-0036-implementation-002
+      immutable_ref:
+        type: git_commit
+        value: 3bea840373f378577d6466d14f918fbf170f49eb
+      commit: 3bea840373f378577d6466d14f918fbf170f49eb
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: implementation-subject
+      statement: Frozen implementation subject for independent Strict Review.

@@ -15,6 +15,7 @@ from .change_resolution import (
     affected_changes,
     changed_paths,
     is_material,
+    tree_file,
 )
 from .policy import classify_path, load_materiality_policy
 from .models import (
@@ -25,7 +26,7 @@ from .models import (
 )
 
 
-def _manifest(root: Path, change_id: str) -> tuple[Path, dict]:
+def _manifest(root: Path, change_id: str, head_revision: str) -> tuple[Path, dict]:
     changes = root / ".forge" / "changes"
     matches = []
     for path in sorted(changes.glob(f"{change_id}-*/manifest.yml")):
@@ -35,14 +36,14 @@ def _manifest(root: Path, change_id: str) -> tuple[Path, dict]:
             f"Expected exactly one manifest for {change_id}, found {len(matches)}"
         )
     path = matches[0]
-    data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+    data = yaml.safe_load(tree_file(root, head_revision, path.relative_to(root).as_posix())) or {}
     if not isinstance(data, dict):
         raise MergeReadinessOperationalError(f"Malformed manifest: {path}")
     return path, data
 
 
 def _check_change(root: Path, change_id: str, head_revision: str) -> tuple[list[ReadinessCheck], list[ReadinessDiagnostic]]:
-    path, manifest = _manifest(root, change_id)
+    path, manifest = _manifest(root, change_id, head_revision)
     checks: list[ReadinessCheck] = []
     diagnostics: list[ReadinessDiagnostic] = []
     relative = path.relative_to(root).as_posix()
@@ -54,11 +55,14 @@ def _check_change(root: Path, change_id: str, head_revision: str) -> tuple[list[
     verification = manifest.get("verification", {}).get("status") if isinstance(manifest.get("verification"), dict) else None
     if verification != "passed":
         diagnostics.append(ReadinessDiagnostic("MR-003", "VERIFICATION NOT READY", change_id, relative, "passed", str(verification)))
-    verification_path = path.parent / "verification.md"
-    if verification == "passed" and verification_path.is_file() and not verification_path.is_symlink():
-        verification_text = verification_path.read_text(encoding="utf-8")
+    verification_relative = f"{path.parent.relative_to(root).as_posix()}/verification.md"
+    if verification == "passed":
+        try:
+            verification_text = tree_file(root, head_revision, verification_relative)
+        except MergeReadinessOperationalError:
+            verification_text = ""
         if "**PASS**" not in verification_text and "\nPASS\n" not in verification_text:
-            diagnostics.append(ReadinessDiagnostic("MR-006", "Verification status is contradicted by verification.md", change_id, verification_path.relative_to(root).as_posix()))
+            diagnostics.append(ReadinessDiagnostic("MR-006", "Verification status is contradicted by verification.md", change_id, verification_relative))
     review = manifest.get("review", {}) if isinstance(manifest.get("review"), dict) else {}
     if review.get("status") != "passed":
         diagnostics.append(ReadinessDiagnostic("MR-004", "STRICT REVIEW NOT READY", change_id, relative, "passed", str(review.get("status"))))
@@ -71,8 +75,11 @@ def _check_change(root: Path, change_id: str, head_revision: str) -> tuple[list[
         elif isinstance(iterations, list):
             passed = [item for item in iterations if isinstance(item, dict) and item.get("status") == "passed"]
             final_iteration = passed[-1] if passed else None
-            provenance_path = path.parent / "provenance.yml"
-            provenance = yaml.safe_load(provenance_path.read_text(encoding="utf-8")) if provenance_path.is_file() else {}
+            provenance_relative = f"{path.parent.relative_to(root).as_posix()}/provenance.yml"
+            try:
+                provenance = yaml.safe_load(tree_file(root, head_revision, provenance_relative)) or {}
+            except MergeReadinessOperationalError:
+                provenance = {}
             records = provenance.get("records", []) if isinstance(provenance, dict) else []
             record_index = {item.get("id"): item for item in records if isinstance(item, dict)}
             subject_record = record_index.get(final_iteration.get("subject_provenance")) if final_iteration else None
@@ -92,6 +99,22 @@ def _check_change(root: Path, change_id: str, head_revision: str) -> tuple[list[
                 )
                 if ancestor.returncode != 0:
                     diagnostics.append(ReadinessDiagnostic("MR-015", "REVIEW SUBJECT STALE", change_id, relative, head_revision, subject_commit))
+                else:
+                    delta = subprocess.run(
+                        ["git", "diff", "--name-only", subject_commit, head_revision, "--"],
+                        cwd=root,
+                        capture_output=True,
+                        text=True,
+                        check=False,
+                    )
+                    change_root = path.parent.relative_to(root).as_posix()
+                    allowed = {
+                        f"{change_root}/manifest.yml",
+                        f"{change_root}/provenance.yml",
+                        f"{change_root}/review.md",
+                    }
+                    if delta.returncode != 0 or any(item and item not in allowed for item in delta.stdout.splitlines()):
+                        diagnostics.append(ReadinessDiagnostic("MR-015", "REVIEW SUBJECT STALE", change_id, relative, head_revision, subject_commit))
             if isinstance(subject_record, dict) and isinstance(reviewer_record, dict):
                 reviewer_revision = reviewer_record.get("revision", {})
                 reviewer_commit = reviewer_revision.get("commit") or reviewer_revision.get("immutable_ref", {}).get("value")
@@ -104,19 +127,24 @@ def _check_change(root: Path, change_id: str, head_revision: str) -> tuple[list[
                     or subject_execution.get("context_id") == reviewer_execution.get("context_id")
                 ):
                     diagnostics.append(ReadinessDiagnostic("MR-018", "Reviewer Execution and Context are not independent", change_id, relative))
-    review_path = path.parent / "review.md"
-    if review.get("status") == "passed" and review_path.is_file() and not review_path.is_symlink():
-        review_text = review_path.read_text(encoding="utf-8")
+    review_relative = f"{path.parent.relative_to(root).as_posix()}/review.md"
+    if review.get("status") == "passed":
+        try:
+            review_text = tree_file(root, head_revision, review_relative)
+        except MergeReadinessOperationalError:
+            review_text = ""
         if "**PASS**" not in review_text and "\nPASS\n" not in review_text:
-            diagnostics.append(ReadinessDiagnostic("MR-007", "Review status is contradicted by review.md", change_id, review_path.relative_to(root).as_posix()))
+            diagnostics.append(ReadinessDiagnostic("MR-007", "Review status is contradicted by review.md", change_id, review_relative))
     state = manifest.get("state", {}) if isinstance(manifest.get("state"), dict) else {}
     if state.get("current") != "complete":
         diagnostics.append(ReadinessDiagnostic("MR-005", "COMPLETION NOT READY", change_id, relative, "complete", str(state.get("current"))))
     if state.get("current") == "complete":
         for required_name in ("verification.md", "review.md", "provenance.yml"):
-            required_path = path.parent / required_name
-            if not required_path.is_file() or required_path.is_symlink():
-                diagnostics.append(ReadinessDiagnostic("MR-016", "Completion claim lacks required repository-native evidence", change_id, required_path.relative_to(root).as_posix()))
+            required_relative = f"{path.parent.relative_to(root).as_posix()}/{required_name}"
+            try:
+                tree_file(root, head_revision, required_relative)
+            except MergeReadinessOperationalError:
+                diagnostics.append(ReadinessDiagnostic("MR-016", "Completion claim lacks required repository-native evidence", change_id, required_relative))
     tdd = manifest.get("tdd") if isinstance(manifest.get("tdd"), dict) else {}
     if state.get("current") == "complete" and tdd.get("status") not in {"compliant", "not_applicable", "exception"}:
         diagnostics.append(ReadinessDiagnostic("MR-013", "Completion claims are inconsistent with TDD evidence", change_id, relative))
@@ -126,9 +154,9 @@ def _check_change(root: Path, change_id: str, head_revision: str) -> tuple[list[
             diagnostics.append(ReadinessDiagnostic("MR-014", "Material Decision remains unresolved", change_id, relative))
     artifacts = manifest.get("artifacts") if isinstance(manifest.get("artifacts"), dict) else {}
     project_config_path = root / ".forge" / "forge.yml"
-    if artifacts and project_config_path.is_file():
+    if project_config_path.is_file():
         try:
-            project_config = yaml.safe_load(project_config_path.read_text(encoding="utf-8")) or {}
+            project_config = yaml.safe_load(tree_file(root, head_revision, ".forge/forge.yml")) or {}
             protocol_id = int(project_config.get("forge", {}).get("protocol", 1))
             flow_id = flow or project_config.get("flows", {}).get("default")
             effective = resolve_effective_flow(resolve_protocol_root(), root, flow_id, protocol_id)
@@ -149,10 +177,12 @@ def _check_change(root: Path, change_id: str, head_revision: str) -> tuple[list[
     if review.get("majors", 0) > 0:
         diagnostics.append(ReadinessDiagnostic("MR-011", "Unresolved MAJOR findings remain", change_id, relative))
     if artifacts.get("plan") == "approved" and change_id >= "CHG-0025":
-        provenance_path = path.parent / "provenance.yml"
+        provenance_relative = f"{path.parent.relative_to(root).as_posix()}/provenance.yml"
         digest = None
-        if provenance_path.is_file() and not provenance_path.is_symlink():
-            provenance = yaml.safe_load(provenance_path.read_text(encoding="utf-8")) or {}
+        try:
+            provenance = yaml.safe_load(tree_file(root, head_revision, provenance_relative)) or {}
+        except MergeReadinessOperationalError:
+            provenance = {}
             for record in provenance.get("records", []) if isinstance(provenance, dict) else []:
                 source = record.get("source") if isinstance(record, dict) else None
                 if (
@@ -166,11 +196,15 @@ def _check_change(root: Path, change_id: str, head_revision: str) -> tuple[list[
                     content_digest = source.get("content_digest")
                     if isinstance(content_digest, dict) and content_digest.get("algorithm") == "sha256" and content_digest.get("path") == "plan.md":
                         digest = content_digest.get("value")
-        plan_path = path.parent / "plan.md"
-        if not isinstance(digest, str) or not plan_path.is_file() or plan_path.is_symlink():
+        plan_relative = f"{path.parent.relative_to(root).as_posix()}/plan.md"
+        try:
+            plan_text = tree_file(root, head_revision, plan_relative)
+        except MergeReadinessOperationalError:
+            plan_text = None
+        if not isinstance(digest, str) or plan_text is None:
             diagnostics.append(ReadinessDiagnostic("MR-008", "PLAN AUTHORIZATION STALE", change_id, relative))
         else:
-            canonical = plan_path.read_text(encoding="utf-8").replace("\r\n", "\n")
+            canonical = plan_text.replace("\r\n", "\n")
             canonical = "\n".join(
                 line for line in canonical.split("\n")
                 if "<!-- forge:plan-approval-confirmation -->" not in line
@@ -186,10 +220,15 @@ def _check_change(root: Path, change_id: str, head_revision: str) -> tuple[list[
 
 def evaluate_merge_readiness(root: Path, request: MergeReadinessRequest) -> MergeReadinessEvaluation:
     try:
+        workspace = subprocess.run(["git", "status", "--porcelain", "--untracked-files=all"], cwd=root, capture_output=True, text=True, check=False)
+        if workspace.returncode != 0:
+            raise MergeReadinessOperationalError("Cannot determine working tree state")
+        if workspace.stdout.strip():
+            raise MergeReadinessOperationalError("Working tree is dirty; merge readiness requires an unambiguous repository subject")
         paths = changed_paths(root, request.base_revision, request.head_revision)
         policy = load_materiality_policy()
         material = tuple(path for path in paths if classify_path(path, policy) == "material")
-        changes = affected_changes(root, paths)
+        changes = affected_changes(root, paths, request.head_revision)
         checks: list[ReadinessCheck] = []
         diagnostics: list[ReadinessDiagnostic] = []
         if (root / ".forge" / "forge.yml").is_file():
