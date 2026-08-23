@@ -1,0 +1,45 @@
+schema: forge/tdd-evidence@1
+change: CHG-0030
+status: complete
+cycle_count: 8
+cycles:
+  - id: TDD-001
+    title: Default-off configuration and classification parsing
+    requirements: [FR-001, FR-005]
+    red: {observed: true, evidence: "Focused tests failed during collection because forge_cli.experience did not exist."}
+    green: {observed: true, evidence: "tests/unit/test_experience_reporting.py passed after isolated configuration and model implementation."}
+  - id: TDD-002
+    title: Lazy report creation and provenance
+    requirements: [FR-004, FR-007]
+    red: {observed: true, evidence: "Focused tests failed during collection because forge_cli.experience.storage did not exist."}
+    green: {observed: true, evidence: "Report creation, safe context, positive evidence, and collision tests passed."}
+  - id: TDD-003
+    title: Contributor CLI
+    requirements: [FR-003, FR-006]
+    red: {observed: true, evidence: "CLI tests failed because the experience command group was not registered."}
+    green: {observed: true, evidence: "Enable, disable/status, record, and append-by-report CLI tests passed."}
+  - id: TDD-004
+    title: Concurrent append and failure isolation
+    requirements: [FR-008]
+    red: {observed: true, evidence: "Parallel append test lost the reserved placeholder before locking was implemented."}
+    green: {observed: true, evidence: "Concurrent writers, atomic updates, and injected write failure tests passed."}
+  - id: TDD-005
+    title: Explicit FER report validation
+    requirements: [FR-002, FR-008]
+    red: {observed: true, evidence: "Malformed report validation test failed before structural validation was added."}
+    green: {observed: true, evidence: "Malformed report rejection and full focused FER suite passed."}
+  - id: TDD-006
+    title: Privacy, symlink safety, and malformed append isolation
+    requirements: [FR-007, FR-008]
+    red: {observed: true, evidence: "New tests accepted bearer-token-sized text and crashed on malformed existing report entries before the guards were added."}
+    green: {observed: true, evidence: "Secret/oversized input rejection, symlink rejection, deep report validation, and honest storage errors passed."}
+  - id: TDD-007
+    title: Evidence-item, ancestor-path, and follow-up validation
+    requirements: [FR-002, FR-007, FR-008]
+    red: {observed: true, evidence: "Independent review reproduced unsafe evidence entries, symlinked dogfooding ancestry, and scalar follow-up candidates being accepted."}
+    green: {observed: true, evidence: "Evidence sanitization, ancestor symlink rejection, and structured follow-up validation passed in the focused suite."}
+  - id: TDD-008
+    title: Validation path containment
+    requirements: [FR-002, FR-008]
+    red: {observed: true, evidence: "Independent review reproduced a symlinked report file escaping dogfooding/reports while forge experience validate returned success."}
+    green: {observed: true, evidence: "Validation now rejects symlinked report files and ancestors; focused FER tests pass."}

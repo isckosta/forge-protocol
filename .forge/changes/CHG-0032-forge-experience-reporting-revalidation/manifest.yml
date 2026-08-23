@@ -1,0 +1,59 @@
+schema: forge/change@2
+protocol: 2
+change:
+  id: CHG-0032
+  title: Forge Experience Reporting Revalidation
+  kind: documentation
+flow:
+  initial: standard
+  current: standard
+  escalations: []
+state:
+  current: complete
+artifacts:
+  intent: complete
+  discovery: complete
+  specification: complete
+  test_design: complete
+  plan: approved
+  tdd_evidence: complete
+  verification: complete
+  review: complete
+  documentation: complete
+requirements:
+  total: 2
+  implemented: 2
+  verified: 2
+tdd:
+  status: not_applicable
+  reason: Revalidation-only successor; implementation TDD evidence belongs to CHG-0030.
+verification:
+  status: passed
+review:
+  status: passed
+  iteration: 1
+  blockers: 0
+  majors: 0
+  minors: 0
+  observations: 0
+  iterations:
+    - id: review-001
+      revision: chg-0032-resolution-001
+      subject_provenance: implementation-002
+      reviewer_provenance: review-001
+      kind: initial_review
+      status: passed
+      new_material_findings: 0
+documentation:
+  impact_evaluated: true
+  update_required: false
+  reason: No new runtime or contributor-facing behavior was added.
+decisions:
+  - id: DEC-001
+    class: technical
+    materiality: material
+    status: resolved
+    authority: human
+    owning_artifact: plan
+    discovered_in: plan
+    resolved_via: human_decision

@@ -1,0 +1,77 @@
+schema: forge/execution-provenance@2
+change: CHG-0031
+records:
+  - id: implementation-001
+    role: implementation
+    execution: {id: implementation-exec-chg0031-20260823-01, context_id: implementation-context-chg0031-20260823-01}
+    recorded_at: "2026-08-23T00:00:00-03:00"
+    revision:
+      id: chg-0031-subject-001
+      immutable_ref: {type: git_commit, value: 1904aa57c21810d38e71ef61fcdc23dcc4e8f601}
+    source:
+      assurance: recorded
+      observed_by: operator
+      harness: codex
+      statement: >-
+        Fresh revalidation subject records the existing non-binding Chat
+        Cadence Guidance and its current parity evidence without modifying
+        Adapter behavior.
+  - id: plan-approval-001
+    role: implementation
+    execution: {id: plan-approval-exec-chg0031-20260823-01, context_id: plan-approval-context-chg0031-20260823-01}
+    recorded_at: "2026-08-23T00:00:00-03:00"
+    revision:
+      id: chg-0031-subject-001
+      immutable_ref: {type: git_commit, value: 1904aa57c21810d38e71ef61fcdc23dcc4e8f601}
+    source:
+      assurance: recorded
+      observed_by: operator
+      harness: codex
+      reference: plan.md#approval-record
+      statement: >-
+        Explicit user authorization was received as “Prossiga então.” in the
+        active session on 2026-08-23. This is repository evidence of human
+        approval, not provider-native attestation.
+  - id: implementation-002
+    role: implementation
+    execution: {id: implementation-exec-chg0031-20260823-02, context_id: implementation-context-chg0031-20260823-02}
+    recorded_at: "2026-08-23T00:10:00-03:00"
+    revision:
+      id: chg-0031-subject-002
+      immutable_ref: {type: git_commit, value: 308ae07669b3b773c7b643a5e644ce02c9e70a03}
+    source:
+      assurance: recorded
+      observed_by: operator
+      harness: codex
+      statement: >-
+        Verified revalidation subject records the final parity hash and
+        focused test evidence for the existing non-binding guidance.
+  - id: implementation-003
+    role: resolution
+    execution: {id: resolution-exec-chg0031-20260823-01, context_id: resolution-context-chg0031-20260823-01}
+    recorded_at: "2026-08-23T00:20:00-03:00"
+    revision:
+      id: chg-0031-resolution-001
+      immutable_ref: {type: git_commit, value: 12eb40acde7dd39af4cdc0c5a707d30d2babd07d}
+    source:
+      assurance: recorded
+      observed_by: operator
+      harness: codex
+      statement: >-
+        Resolution aligns the artifact front matter and records the exact
+        focused verification command after independent review findings.
+  - id: review-001
+    role: review
+    execution: {id: review-exec-chg0031-resolution-independent-01, context_id: review-context-chg0031-resolution-independent-01}
+    recorded_at: "2026-08-23T00:30:00-03:00"
+    revision:
+      id: chg-0031-resolution-001
+      immutable_ref: {type: git_commit, value: 12eb40acde7dd39af4cdc0c5a707d30d2babd07d}
+    source:
+      assurance: recorded
+      observed_by: independent_subagent
+      harness: codex
+      statement: >-
+        Independent cold review reproduced the exact focused command, Forge
+        validation, parity evidence, and control metadata checks. No files
+        were modified by the Reviewer and no material finding remains.

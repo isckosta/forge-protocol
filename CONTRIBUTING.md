@@ -10,6 +10,11 @@ Before contributing, read `README.md`, `MANIFESTO.md`, `ARCHITECTURE.md`, `proto
 
 Material Forge development uses Forge. Contributors should use the repository's `.forge/` workspace.
 
+When deliberately dogfooding or validating Forge, contributors may opt in to
+[Forge Experience Reporting](docs/experience-reporting.md) to preserve
+material observations. It is disabled by default and is not part of ordinary
+project use or Change validation.
+
 ## TDD-first contributions
 
 Reasonably testable behavioral Changes must use TDD:

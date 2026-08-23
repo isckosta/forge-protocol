@@ -34,3 +34,11 @@ offer to publish the relevant full `.forge/changes/.../specification.md` or
 exists, point the human to the repository-native file instead; do not imply that
 publishing is automatic or supported by every Harness. This is communication
 guidance, not technical enforcement.
+Forge Experience Reporting (FER) is optional contributor tooling. When it is
+explicitly enabled, record only material observations about Forge behavior
+that could help maintainers understand, reproduce, improve, or validate Forge;
+do not record normal project implementation activity, every tool call, or
+complete prompts/conversations/logs. Do not classify an ordinary project
+defect as a Forge problem without evidence; use `uncertain` when causality is
+unclear. FER is local-first, non-blocking evidence and does not create a Gate,
+Review Finding, Issue, RFC, or Change.

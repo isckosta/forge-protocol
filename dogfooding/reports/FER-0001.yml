@@ -1,0 +1,16 @@
+schema: forge/experience-report@1
+report: FER-0001
+source:
+  forge_version: 0.1.0a2
+  repository: forge-protocol
+  recorded_at: '2026-08-23T02:58:03.300383+00:00'
+  commit: 88d9ec20584a7ea1f1e966367e937d1b35eb6767
+  protocol: 2
+  flow: standard
+observations: []
+positive_evidence:
+- id: FER-0001-P001
+  area: disabled-path-compatibility
+  observed: forge validate continued to operate without reading FER as normative project
+    state while contributor reporting was explicitly enabled.
+follow_up_candidates: []

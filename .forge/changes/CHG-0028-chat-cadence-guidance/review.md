@@ -3,9 +3,20 @@ forge:
   artifact: review
   schema: 1
 change: CHG-0028
-status: passed
+status: pending
 ---
 # Strict Review — CHG-0028
+
+## Current state — REOPENED
+
+CHG-0028 is reopened at the Review stage because its historical provenance
+references immutable Git commits that are not present in the current local
+repository. Forge therefore cannot recompute the Resolution Delta or assert a
+current passed Review under Protocol 2. The historical provenance records are
+preserved for investigation; they are not treated as verified authority.
+
+The Change requires a fresh local subject and independent Review before it may
+return to `complete`. No historical SHA was replaced or invented.
 
 ## Iteration 1 — REQUEST CHANGES
 

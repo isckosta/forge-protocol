@@ -1,0 +1,6 @@
+schema: forge/tdd-evidence@1
+change: CHG-0031
+status: not_applicable
+reason: Documentation-only revalidation; no executable behavior changed.
+cycle_count: 0
+cycles: []
