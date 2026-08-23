@@ -18,3 +18,20 @@ records:
       observed_by: operator
       reference: plan.md#approval-record
       statement: The user explicitly approved continuation of CHG-0039 to Implementation in the active session on 2026-08-23, confirming that the ERP domain example is not needed.
+  - id: implementation-subject-001
+    role: implementation
+    execution:
+      id: claude-code-implementation-0039-subject-001
+      context_id: claude-code-session-2026-08-23-subject-001
+    recorded_at: '2026-08-23T00:00:00Z'
+    revision:
+      id: chg-0039-implementation-001
+      immutable_ref:
+        type: git_commit
+        value: adec09805f0eb8732836078e7a853d5d52b448e8
+      commit: adec09805f0eb8732836078e7a853d5d52b448e8
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: implementation-subject
+      statement: Frozen CHG-0039 implementation subject (immutable per C-026 once committed) — includes change_scaffolding.py, tests/unit/test_change_scaffolding.py, protocol/artifact-structure.md, and all CHG-0039 planning/design/verification Artifacts. Reviewable Git workspace confirmed clean before freeze.
