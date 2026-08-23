@@ -9,14 +9,14 @@ flow:
   current: fast
   escalations: []
 state:
-  current: implementation
+  current: complete
 artifacts:
   intent: complete
   inspection: complete
   tdd_evidence: complete
   implementation: complete
   verification: complete
-  review: pending
+  review: complete
   provenance: complete
   documentation: complete
 requirements:
@@ -29,8 +29,8 @@ tdd:
 verification:
   status: passed
 review:
-  status: failed
-  iteration: 1
+  status: passed
+  iteration: 2
   blockers: 0
   majors: 0
   minors: 1
@@ -46,6 +46,18 @@ review:
         Discovery overstated the absence of Codex publication capability by
         conflating local Adapter resource publication with shareable session
         Artifacts. See review.md and the Resolution.
+    - id: review-002
+      revision: chg-0029-resolution-001
+      subject_provenance: resolution-001
+      reviewer_provenance: review-002
+      kind: resolution_verification
+      status: passed
+      full_review_required: false
+      new_material_findings: 0
+      finding_classes: []
+      evidence_gap: >-
+        Resolution Verification independently confirmed the evidence
+        distinction, conditional parity, scope, and artifact consistency.
 documentation:
   impact_evaluated: true
   update_required: true

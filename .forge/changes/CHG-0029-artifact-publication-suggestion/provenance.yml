@@ -61,3 +61,26 @@ records:
         The Resolution updated only inspection.md to address the single MINOR
         finding. The guidance remains conditional and non-binding; no runtime,
         Contract, schema, or Adapter publication mechanism was changed.
+  - id: review-002
+    role: review
+    execution: {id: review-exec-chg0029-resolution-cold-01, context_id: review-context-chg0029-resolution-cold-01}
+    recorded_at: "2026-08-22T23:30:00-03:00"
+    revision:
+      id: chg-0029-resolution-001
+      immutable_ref: {type: git_commit, value: 89cf878e9796c68c2963c3e3a014869d7bf147af}
+      description: >-
+        Resolution Verification (kind: resolution_verification) independently
+        confirmed that the MINOR finding is resolved. PASS (final), with zero
+        new material findings.
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: codex
+      statement: >-
+        Independent cold Reviewer Execution with no conversation memory or
+        hints from the implementation or prior Review. It inspected the exact
+        resolution subject, recomputed template parity and scope, validated
+        the manifest, provenance, and TDD schemas, and ran focused tests. It
+        found no residual material defect. The global forge validate limitation
+        is an unrelated historical CHG-0028 provenance reference issue; no
+        CHG-0029 validation error was produced.
