@@ -42,3 +42,8 @@ complete prompts/conversations/logs. Do not classify an ordinary project
 defect as a Forge problem without evidence; use `uncertain` when causality is
 unclear. FER is local-first, non-blocking evidence and does not create a Gate,
 Review Finding, Issue, RFC, or Change.
+Automatic FER capture is policy-controlled and currently limited to structured
+Forge-owned Adapter conformance facts; it is not an execution log. Automatic
+capture defaults to `uncertain` classification and does not prove a Forge bug.
+Lifecycle, approval, workaround, and root-cause observations still require
+manual contributor or Agent recording.

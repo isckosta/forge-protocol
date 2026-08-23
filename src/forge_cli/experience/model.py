@@ -28,6 +28,7 @@ class ObservationInput:
     impact: str
     workaround: str | None = None
     follow_up: str | None = None
+    capture: dict[str, str] | None = None
 
 
 @dataclass(frozen=True)
