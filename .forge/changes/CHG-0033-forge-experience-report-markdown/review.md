@@ -39,3 +39,10 @@ Resolution Verification independently confirmed the exact Resolution subject
 `706a63c866774ee1fdd9159e58adeab3cd809e92`, its `resolution-001` and
 `review-002` provenance bindings, reviewer independence, and absence of
 behavioral changes. No new material finding was found.
+
+## Iteration 3 — PASS
+
+Resolution Verification independently confirmed the scoped Resolution-002
+subject `0d3abb7cde15d7eb8a9bd4526a355b37e50fe603`, its `resolution-002` and
+`review-003` bindings, reviewer independence, and absence of behavioral
+changes. No new material finding was found.
