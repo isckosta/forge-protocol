@@ -1,0 +1,6 @@
+schema: forge/tdd-evidence@1
+change: CHG-0034
+status: not_applicable
+reason: "This Change updates canonical Contract prose and roadmap/documentation metadata only; it adds no executable behavior."
+cycle_count: 0
+cycles: []

@@ -1,0 +1,95 @@
+schema: forge/execution-provenance@2
+change: CHG-0034
+records:
+  - id: review-002
+    role: review
+    execution: {id: review-exec-chg0034-resolution-independent-02, context_id: review-context-chg0034-resolution-independent-02}
+    recorded_at: "2026-08-23T03:05:00-03:00"
+    revision:
+      id: chg-0034-resolution-002
+      immutable_ref: {type: git_commit, value: 61b7b373e4ade6b851fd4ff9b0d0966cac65eb9f}
+    source:
+      assurance: recorded
+      observed_by: independent_subagent
+      harness: codex
+      statement: >-
+        Independent cold re-review passed after reproducing validation,
+        focused tests, provenance append-only checks, final roadmap checks,
+        and clean-worktree checks. No findings remained.
+  - id: resolution-002
+    role: resolution
+    execution: {id: resolution-exec-chg0034-20260823-02, context_id: resolution-context-chg0034-20260823-02}
+    recorded_at: "2026-08-23T02:58:00-03:00"
+    revision:
+      id: chg-0034-resolution-002
+      immutable_ref: {type: git_commit, value: 61b7b373e4ade6b851fd4ff9b0d0966cac65eb9f}
+    source:
+      assurance: recorded
+      observed_by: operator
+      harness: codex
+      statement: >-
+        Resolution-002 preserves the immutable Resolution-001 record and
+        binds the corrected roadmap completion state to a new concrete subject
+        for independent re-review.
+  - id: resolution-001
+    role: resolution
+    execution: {id: resolution-exec-chg0034-20260823-01, context_id: resolution-context-chg0034-20260823-01}
+    recorded_at: "2026-08-23T02:52:00-03:00"
+    revision:
+      id: chg-0034-resolution-001
+      immutable_ref: {type: git_commit, value: d6a3247b00205ee90974057a268142ad93382e97}
+    source:
+      assurance: recorded
+      observed_by: operator
+      harness: codex
+      statement: >-
+        Resolution corrects the final roadmap prose, last-assigned Change
+        reference, and factual CHG-0021 evidence wording while preserving the
+        reviewed Contract clarification.
+  - id: review-001
+    role: review
+    execution: {id: review-exec-chg0034-independent-01, context_id: review-context-chg0034-independent-01}
+    recorded_at: "2026-08-23T02:30:00-03:00"
+    revision:
+      id: chg-0034-implementation-001
+      immutable_ref: {type: git_commit, value: ba0d97541dac68a6029bc702c4d3e804b914f083}
+    source:
+      assurance: recorded
+      observed_by: independent_subagent
+      harness: codex
+      statement: >-
+        Independent cold Strict Review passed with no findings after
+        reproducing Forge validation, projection tests, contract/compatibility
+        tests, and subject ancestry/provenance checks.
+  - id: implementation-001
+    role: implementation
+    execution: {id: implementation-exec-chg0034-20260823-01, context_id: implementation-context-chg0034-20260823-01}
+    recorded_at: "2026-08-23T02:18:00-03:00"
+    revision:
+      id: chg-0034-implementation-001
+      immutable_ref: {type: git_commit, value: ba0d97541dac68a6029bc702c4d3e804b914f083}
+    source:
+      assurance: recorded
+      observed_by: operator
+      harness: codex
+      statement: >-
+        The canonical Protocol 1 and Protocol 2 Contract texts now disclose
+        that Reviewer independence is an Execution/Execution Context
+        guarantee, not vendor/model diversity. Existing C-026 and C-037
+        normative meaning is preserved.
+  - id: plan-approval-001
+    role: implementation
+    execution: {id: plan-approval-exec-chg0034-20260823-01, context_id: plan-approval-context-chg0034-20260823-01}
+    recorded_at: "2026-08-23T02:12:25-03:00"
+    revision:
+      id: chg-0034-plan-001
+      immutable_ref: {type: git_commit, value: 1700d1570909f060e40bff70cfb7e199a5f43de2}
+    source:
+      assurance: recorded
+      observed_by: operator
+      harness: codex
+      reference: plan.md#approval-record
+      statement: >-
+        Explicit user authorization was received as “Aprovado” in the active
+        session on 2026-08-23. This is repository evidence of human approval,
+        not provider-native attestation.

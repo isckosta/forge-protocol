@@ -92,7 +92,13 @@ The review-control metadata exception MUST NOT allow that metadata to redefine i
 
 After blocking Findings are resolved, acceptance MUST use a new Review Iteration referencing the Resolution provenance for the resolved revision and Reviewer provenance independent from that Resolution Execution and Context. A Resolver MUST NOT resolve blocking Findings in the Reviewer's Execution Context.
 
-The same Harness, provider, model, or agent implementation MAY perform multiple Roles when real execution/context boundaries exist. Core MUST remain provider-independent and MUST NOT require remote infrastructure to establish the repository-native provenance ledger.
+The guarantee above is execution/context independence, not vendor, model, or
+provider diversity. The same Harness, provider, model, or agent implementation
+MAY perform multiple Roles when the required execution/context boundaries are
+real. This is a disclosed limitation of the guarantee, not a substitute for
+the independent Execution and Execution Context required by this rule. Core
+MUST remain provider-independent and MUST NOT require remote infrastructure to
+establish the repository-native provenance ledger.
 
 ## C-027 — Blocking review evidence blocks Completion
 Unresolved BLOCKER Findings MUST prevent Completion. When an active external review surface exists, unresolved threads containing findings classified as blocking MUST also prevent Completion. Without an external review surface, the thread condition is satisfied trivially.
