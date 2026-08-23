@@ -589,6 +589,9 @@ def _content_fingerprint(root:Path,rel:str)->str|None:
     if not target.exists()or target.is_symlink()or not target.is_file():return None
     q=subprocess.run(["git","hash-object",rel],cwd=root,capture_output=True,text=True,check=False)
     return None if q.returncode else q.stdout.strip()
+def _tracked_in_head(root:Path,rel:str)->bool:
+    q=subprocess.run(["git","cat-file","-e",f"HEAD:{rel}"],cwd=root,capture_output=True,check=False)
+    return q.returncode==0
 def _current_dirty_fingerprint(root:Path)->dict[str,str]|None:
     staged=_diff_paths(root,"--cached");unstaged=_diff_paths(root);untracked=_untracked_paths(root)
     if any(x is None for x in(staged,unstaged,untracked)):return None
@@ -596,7 +599,13 @@ def _current_dirty_fingerprint(root:Path)->dict[str,str]|None:
     out:dict[str,str]={}
     for p in paths:
         fp=_content_fingerprint(root,p)
-        if fp is not None:out[p]=fp
+        if fp is not None:
+            out[p]=fp
+        elif _tracked_in_head(root,p):
+            # Preserve tracked deletions as an observable content state. A
+            # missing fingerprint must not collapse "deleted" into "not a
+            # file" and silently erase the path from the delegate's effect.
+            out[p]="<deleted>"
     return out
 def _valid_baseline_shape(b:object)->bool:
     if not isinstance(b,dict):return False
