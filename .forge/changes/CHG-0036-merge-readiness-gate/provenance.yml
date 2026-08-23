@@ -141,3 +141,37 @@ records:
       observed_by: operator
       reference: verification.md
       statement: Verification evidence is bound to the frozen implementation subject.
+  - id: implementation-subject-007
+    role: implementation
+    execution:
+      id: codex-implementation-0036-subject-007
+      context_id: codex-session-2026-08-23-subject-007
+    recorded_at: '2026-08-23T19:50:00Z'
+    revision:
+      id: chg-0036-implementation-007
+      immutable_ref:
+        type: git_commit
+        value: 24c57bf18fddf5538c7c7660974ba71a6892994f
+      commit: 24c57bf18fddf5538c7c7660974ba71a6892994f
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: implementation-subject
+      statement: Frozen implementation subject with complete FULL Flow task evidence.
+  - id: verification-007
+    role: implementation
+    execution:
+      id: codex-verification-0036-007
+      context_id: codex-verification-context-0036-007
+    recorded_at: '2026-08-23T19:50:00Z'
+    revision:
+      id: chg-0036-implementation-007
+      immutable_ref:
+        type: git_commit
+        value: 24c57bf18fddf5538c7c7660974ba71a6892994f
+      commit: 24c57bf18fddf5538c7c7660974ba71a6892994f
+    source:
+      assurance: verified
+      observed_by: operator
+      reference: verification.md
+      statement: Verification evidence is bound to the frozen implementation subject.
