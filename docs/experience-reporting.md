@@ -76,3 +76,36 @@ For Git review, open the `.md` sibling as the first human-readable entry
 point: its stable headings and ordering make diffs easy to scan. Consult the
 canonical `.yml` when checking exact machine-readable values or tooling state;
 the YAML remains authoritative if the two files ever differ.
+
+## Automatic and assisted capture
+
+When FER is enabled, Forge may emit bounded structured facts to an Experience
+Capture Policy. The policy decides `IGNORE` or `CAPTURE` before persistence.
+FER is not an execution log: ordinary commands, tests, exceptions, exit codes,
+and project failures are ignored.
+
+The current automatic detector is Adapter conformance. It records only
+structured Forge-owned findings such as a required stage, gate, or invariant
+being removed or bypassed. Lifecycle, approval, review-authority, workaround,
+and root-cause observations still depend on the Harness, Agent, or contributor
+using manual `forge experience record`; guidance is not enforcement.
+
+Automatic capture does not mean automatic classification as a Forge bug. Its
+initial classification is `uncertain`; later investigation may refine it to
+`forge_problem` or `project_problem`. Equivalent events in one report use a
+stable fingerprint based on event type, boundary context, expected invariant,
+and observed condition. Timestamps and volatile output are excluded, and no
+fingerprint state is created while FER is disabled.
+
+Automatic provenance is bounded and purpose-specific:
+
+```yaml
+capture:
+  mode: automatic
+  detector: adapter-conformance
+  fingerprint: stable-report-local-identity
+```
+
+Automatic persistence failure is secondary and cannot change the primary Forge
+result. FER remains opt-in, local, non-normative, and outside validation,
+lifecycle, Gates, Review, Resolution, and Adapter conformance results.

@@ -1,0 +1,67 @@
+schema: forge/change@2
+protocol: 2
+change:
+  id: CHG-0035
+  title: Automatic Material Observation Capture
+  kind: feature
+flow:
+  initial: standard
+  current: full
+  escalations:
+    - from: standard
+      to: full
+      reason: >-
+        Discovery found cross-module capture policy, persistence
+        deduplication, privacy, failure isolation, and Adapter/CLI boundary
+        work beyond the Standard Flow.
+state:
+  current: review
+artifacts:
+  intent: complete
+  discovery: complete
+  specification: complete
+  specification_review: complete
+  architecture: complete
+  test_strategy: complete
+  plan: approved
+  tasks: complete
+  tdd_evidence: complete
+  provenance: complete
+  verification: complete
+  implementation: complete
+  knowledge_capture: complete
+  review: pending
+  documentation: complete
+requirements:
+  total: 9
+  implemented: 9
+  verified: 9
+tdd:
+  status: compliant
+  cycles: 4
+verification:
+  status: passed
+review:
+  status: pending
+  iteration: 0
+  blockers: 0
+  majors: 0
+  minors: 0
+  observations: 0
+  iterations: []
+documentation:
+  impact_evaluated: true
+  update_required: true
+  reason: >-
+    Added automatic/assisted FER guidance, policy boundaries, provenance,
+    deduplication, and Adapter responsibility documentation without changing
+    Protocol or lifecycle semantics.
+decisions:
+  - id: DEC-001
+    class: technical
+    materiality: material
+    status: resolved
+    authority: human
+    owning_artifact: plan
+    discovered_in: plan
+    resolved_via: human_decision

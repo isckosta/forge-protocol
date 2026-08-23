@@ -1,0 +1,18 @@
+schema: forge/execution-provenance@2
+change: CHG-0035
+records:
+  - id: plan-approval-001
+    role: implementation
+    execution: {id: implementation-exec-chg0035-20260823-01, context_id: implementation-context-chg0035-20260823-01}
+    recorded_at: "2026-08-23T00:00:00-03:00"
+    revision:
+      id: chg-0035-plan-approved
+      immutable_ref: {type: git_commit, value: 76a33aa20c0629a7a3247d4410b53970763a5c6c}
+    source:
+      assurance: recorded
+      observed_by: operator
+      harness: codex
+      reference: plan.md#approval-record
+      statement: >-
+        The user explicitly authorized implementation with “Autorizo” after
+        reviewing the CHG-0035 design artifacts.

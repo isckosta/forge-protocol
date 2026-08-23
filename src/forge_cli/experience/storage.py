@@ -80,6 +80,7 @@ class ExperienceStorage:
                             "observed": entry.observed,
                             "evidence": list(entry.evidence),
                             "impact": entry.impact,
+                            **({"capture": dict(entry.capture)} if entry.capture else {}),
                             **({"workaround": entry.workaround} if entry.workaround else {}),
                             **({"follow_up": entry.follow_up} if entry.follow_up else {}),
                         }
@@ -125,6 +126,16 @@ class ExperienceStorage:
                 return False
             evidence = observation.get("evidence")
             if not isinstance(evidence, list) or not evidence or not all(isinstance(item, str) and item.strip() for item in evidence):
+                return False
+            capture = observation.get("capture")
+            if capture is not None and (
+                not isinstance(capture, dict)
+                or capture.get("mode") != "automatic"
+                or not isinstance(capture.get("detector"), str)
+                or not isinstance(capture.get("fingerprint"), str)
+                or not capture["detector"].strip()
+                or not capture["fingerprint"].strip()
+            ):
                 return False
         for positive in document["positive_evidence"]:
             if not isinstance(positive, dict) or not all(

@@ -56,6 +56,8 @@ from forge_cli.protocol_resolution import (
 )
 from forge_cli.adapters.validation import ConformanceRequirements, validate_conformance
 from forge_cli.validation import render_decision_rules_reference
+from forge_cli.experience.capture import event_from_conformance
+from forge_cli.experience.recorder import ExperienceRecorder
 
 
 class AdapterServiceError(RuntimeError):
@@ -466,6 +468,17 @@ class AdapterService:
                 findings = validate_conformance(
                     _conformance_requirements(flows), projection.representation
                 )
+                recorder = ExperienceRecorder(
+                    root,
+                    context={"adapter": adapter_id, "harness": adapter_id},
+                )
+                for finding in findings:
+                    recorder.capture(
+                        event_from_conformance(
+                            finding,
+                            context={"adapter": adapter_id, "harness": adapter_id},
+                        )
+                    )
                 if findings:
                     labels = ", ".join(
                         f"{finding.code}{f': {finding.subject}' if finding.subject else ''}"

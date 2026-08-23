@@ -1,0 +1,25 @@
+schema: forge/tdd-evidence@1
+change: CHG-0035
+status: active
+cycle_count: 4
+cycles:
+  - id: TDD-001
+    title: Structured event policy
+    requirements: [FR-002, FR-003, FR-004]
+    red: {observed: true, evidence: "Focused tests failed because forge_cli.experience.capture did not exist."}
+    green: {observed: true, evidence: "Allowlisting, uncertain classification, and stable fingerprint tests passed."}
+  - id: TDD-002
+    title: Disabled recorder and deduplication
+    requirements: [FR-001, FR-005]
+    red: {observed: true, evidence: "Focused tests failed because forge_cli.experience.recorder did not exist."}
+    green: {observed: true, evidence: "Disabled path and equivalent-event coalescing tests passed."}
+  - id: TDD-003
+    title: FER-compatible automatic provenance
+    requirements: [FR-006, FR-007]
+    red: {observed: true, evidence: "Automatic capture fields were absent from the observation storage path before implementation."}
+    green: {observed: true, evidence: "Automatic metadata renders in YAML/Markdown and existing FER/Adapter tests pass."}
+  - id: TDD-004
+    title: Secondary FER failure diagnostic
+    requirements: [FR-007]
+    red: {observed: true, evidence: "Failure-isolation test failed because the recorder did not expose a secondary diagnostic."}
+    green: {observed: true, evidence: "Recorder exposes the diagnostic and emits a bounded warning without raising or changing the primary result; focused suite passed with 78 tests."}

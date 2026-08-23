@@ -114,6 +114,16 @@ def _render_observation(observation: Any) -> list[str]:
         value = observation.get(field)
         if value is not None and _text(value).strip():
             rendered.extend(["", f"**{label}**", _escape(_text(value))])
+    capture = observation.get("capture")
+    if isinstance(capture, Mapping):
+        rendered.extend(
+            [
+                "",
+                "**Capture**",
+                "Mode: " + _escape(_text(capture.get("mode"))),
+                "Detector: " + _escape(_text(capture.get("detector"))),
+            ]
+        )
     return rendered
 
 
