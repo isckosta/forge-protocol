@@ -25,5 +25,7 @@ Reaching `plan_complete` is not authorization to begin Implementation.
 
 ## Approval record
 
+<!-- forge:plan-approval-confirmation -->
+<!-- forge:plan-approval-record -->
 The user explicitly authorized continuation with “Prossiga então.” in the
 active session on 2026-08-23.
