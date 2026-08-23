@@ -17,4 +17,8 @@ records:
       assurance: recorded
       observed_by: operator
       reference: plan.md#approval-record
+      content_digest:
+        algorithm: sha256
+        path: plan.md
+        value: 126b8b92855a35eba6c548fcf7e51415cd4be8525c9f1e05ebf89ad369b64977
       statement: Explicit human approval of the CHG-0037 Plan was received.

@@ -3,7 +3,7 @@ forge:
   artifact: plan
   schema: 1
 change: CHG-0037
-status: pending
+status: approved
 ---
 
 # Plan — CHG-0037 Specification Layout User Story Traceability
