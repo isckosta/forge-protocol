@@ -213,6 +213,27 @@ def test_incident_class_read_only_delegate_writes_outside_scope(tmp_path: Path) 
     assert not any("discovery.md" in m for m in _messages(result))
 
 
+def test_read_only_delegate_deleting_tracked_file_is_out_of_scope(tmp_path: Path) -> None:
+    root = tmp_path
+    _init_repo(root)
+    _write(root, "intent.md", "original intent\n")
+    open_commit = _commit(root, "seed")
+    baseline = _baseline(root)
+    (root / "intent.md").unlink()
+    close_commit = open_commit
+    manifest = _manifest("CHG-9002-delete")
+    provenance = _provenance("CHG-9002-delete", [
+        _primary_record("impl-001", open_commit),
+        _delegated_record("deleg-001", [], baseline, "impl-001", close_commit),
+    ])
+    _write_metadata(root, "CHG-9002-delete", manifest, provenance)
+
+    result = validate_project(root, resolve_protocol_root())
+
+    assert _codes(result) == ["C-061"], _messages(result)
+    assert any("intent.md" in m for m in _messages(result))
+
+
 # ---------------------------------------------------------------------------
 # TDD-004 -- scoped writer within declared paths (golden path).
 # ---------------------------------------------------------------------------

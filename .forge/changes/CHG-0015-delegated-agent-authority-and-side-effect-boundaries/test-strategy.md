@@ -217,6 +217,14 @@ for delegated-Execution authority) is proportional; a richer behavioral
 test is deferred until a real Prevention mechanism exists to conflate
 against (Architecture's own "deliberately not built now").
 
+## TDD-017 — tracked deletion is an observed effect
+
+Fixture repo with a committed `intent.md`; capture a clean delegation
+baseline, delete `intent.md` without committing, and close the delegation
+with an empty `scope`. Expect exactly one `C-061` finding naming
+`intent.md`. A tracked deletion is an effect, not an absent path, and must
+not disappear merely because it has no content hash.
+
 ## Verification
 
 `pytest -q`, `forge validate` (must remain "Forge project is valid" — no

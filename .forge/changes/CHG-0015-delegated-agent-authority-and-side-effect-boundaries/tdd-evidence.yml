@@ -1,7 +1,7 @@
 schema: forge/tdd-evidence@1
 change: CHG-0015
 status: compliant
-cycle_count: 16
+cycle_count: 17
 cycles:
   - id: TDD-001
     title: Legacy repository is unaffected (compatibility guard, not a behavior RED)
@@ -85,6 +85,13 @@ cycles:
     red: {observed: true, failure_reason: "AssertionError: assert [] -- pytest -q, first run against the unmodified validator, 2026-08-19"}
     green: {observed: true, evidence: "test_malformed_baseline_is_a_finding"}
     notes: ["Substituted for the originally-planned capture-failure scenario (Test Strategy TDD-016): baseline/close capture is the delegating Execution's own responsibility, not CLI/validator surface (Architecture's own 'no CLI command surface change'), so a malformed-shape fixture is the validator-level test actually exercisable here; the substitution is disclosed, not silent."]
+  - id: TDD-017
+    title: Tracked deletion is an observed effect
+    requirements: [FR-005, FR-011, C-061]
+    red: {observed: true, failure_reason: "AssertionError: [] == ['C-061'] -- focused pytest run against the pre-resolution implementation, 2026-08-23"}
+    green: {observed: true, evidence: "test_read_only_delegate_deleting_tracked_file_is_out_of_scope: tracked intent.md deletion is reported as C-061"}
+    notes: ["Regression added for the initial Strict Review finding: a missing content fingerprint must not erase a tracked deletion from Observed Effect."]
 notes:
   - "All 16 tests were written as one file before any of _delegated_execution_effect/_deleg_uncovered/_validate_delegated_authority/_deleg_first_committed_scope existed (commit history: test file and RED confirmation precede the GREEN implementation commit, 0b788de). 9 of 16 failed for the expected reason on first run; 7 passed trivially (golden-path/absence-of-false-positive assertions that are true independent of whether the new logic exists, matching CHG-0013's own TDD-001 precedent for the same shape of test)."
   - "Two design corrections were found and fixed between RED and a passing GREEN, both recorded in architecture.md and knowledge-capture.md: the review-control-metadata exclusion bootstrapping false positive (fixed before RED was written, commits d1ec5e8/c7ffb47), and _first_committed_provenance_record's role-set incompatibility with delegated_task (found by running RED against the first GREEN attempt, fixed with _deleg_first_committed_scope, both within commit 0b788de)."
+  - "Resolution TDD-017 was written and executed RED before the tracked-deletion fix, then GREEN after the fix in commit 55f42373d475576fa0b0fcf23dd0bc73eade3e72; the focused delegated-authority suite passed 17 tests."
