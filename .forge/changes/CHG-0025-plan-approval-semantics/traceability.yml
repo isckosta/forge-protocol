@@ -1,0 +1,15 @@
+schema: forge/traceability@1
+change: CHG-0025
+requirements:
+  FR-001: {tasks: [T-003, T-004], tests: [test_active_approved_plan_without_human_authorization_is_a_finding, test_active_approved_plan_with_human_decision_passes_plan_check, test_active_approved_plan_without_recorded_confirmation_is_a_finding, test_active_approved_plan_with_self_observed_confirmation_is_a_finding], evidence: validation_plan_authorization}
+  FR-002: {tasks: [T-003, T-004], tests: [test_active_approved_plan_with_open_decision_fails_closed, test_human_authority_cannot_be_resolved_autonomously], evidence: fail_closed_c077_c055}
+  FR-003: {tasks: [T-004], tests: [test_active_approved_plan_with_open_decision_fails_closed], evidence: before_implementation_gate_dependency}
+  FR-004: {tasks: [T-001, T-002], evidence: c077_contract_and_recorded_approval_boundary}
+  FR-005: {tasks: [T-002], tests: [test_specification_gate_remains_technical_without_plan_authorization], evidence: specification_gate_remains_technical}
+  FR-006: {tasks: [T-003, T-005], tests: [test_legacy_manifests_are_unaffected, test_completed_approved_plan_without_new_authorization_remains_compatible, test_pre_chg0025_active_approved_plan_remains_compatible, test_protocol1_legacy_commit_provenance_is_accepted, test_verified_plan_authorization_is_accepted, test_extremely_large_change_id_does_not_crash_validation], evidence: prospective_chg0025_boundary_and_canonical_provenance}
+acceptance:
+  AC-001: [test_active_approved_plan_without_human_authorization_is_a_finding]
+  AC-002: [test_active_approved_plan_with_open_decision_fails_closed, test_human_authority_cannot_be_resolved_autonomously]
+  AC-003: [test_active_approved_plan_with_human_decision_passes_plan_check, test_active_approved_plan_without_recorded_confirmation_is_a_finding, test_active_approved_plan_with_self_observed_confirmation_is_a_finding]
+  AC-004: [test_legacy_manifests_are_unaffected, test_completed_approved_plan_without_new_authorization_remains_compatible, test_pre_chg0025_active_approved_plan_remains_compatible, test_protocol1_legacy_commit_provenance_is_accepted, test_verified_plan_authorization_is_accepted, test_extremely_large_change_id_does_not_crash_validation]
+  AC-005: [test_specification_gate_remains_technical_without_plan_authorization]

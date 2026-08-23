@@ -1,0 +1,85 @@
+schema: forge/tdd-evidence@1
+change: CHG-0025
+status: compliant
+cycle_count: 5
+cycles:
+  - id: TDD-001
+    title: Active approved Plans require a human-authority Decision (FR-001, FR-002, AC-001, AC-002, AC-003)
+    requirements: [FR-001, FR-002, FR-003, AC-001, AC-002, AC-003]
+    red:
+      observed: true
+      failure_reason: >-
+        `.venv/bin/python -m pytest -q tests/unit/test_unresolved_decisions.py
+        -k 'approved_plan or plan_human or plan_completed'` first ran against
+        the unmodified validator and produced 1 failed, 2 passed: the active
+        approved Plan without a Decision incorrectly passed validation.
+    green:
+      observed: true
+      evidence: >-
+        The same focused test selection passed 3/3 after the validator and
+        Gate dependency were implemented. After the test matrix was expanded,
+        the final approved-Plan selection passed 11/11 and the complete
+        tests/unit/test_unresolved_decisions.py module passed 33/33, including
+        open, autonomous, Protocol 2, ambiguity, missing, foreign, or
+        self-observed confirmation, the technical specification Gate, and
+        legacy compatibility cases.
+  - id: TDD-002
+    title: Plan confirmation is language-neutral and malformed Plans fail closed (FR-002, AC-003)
+    requirements: [FR-002, FR-004]
+    red:
+      observed: true
+      failure_reason: >-
+        Against the pre-fix validator at commit b7fbdcb, the final Portuguese
+        confirmation fixtures produced 2 failures because validation required
+        English headings/text. The malformed-plan case also exercised the
+        pre-fix read path before the safe decode handling was restored.
+    green:
+      observed: true
+      evidence: >-
+        After the fix, the complete tests/unit/test_unresolved_decisions.py
+        module passed 33/33, including the Portuguese marker fixture and the
+        malformed UTF-8 Plan finding.
+  - id: TDD-003
+    title: Protocol 1 provenance remains compatible (FR-006, AC-004)
+    requirements: [FR-006]
+    red:
+      observed: true
+      failure_reason: >-
+        Against the previous C-077 validator at commit 4255de3, the valid
+        forge/execution-provenance@1 fixture produced a Plan authorization
+        finding.
+    green:
+      observed: true
+      evidence: >-
+        After accepting both provenance@1 and provenance@2, the focused
+        decision/contract run passed 67/67 and forge validate remained valid.
+  - id: TDD-004
+    title: Superseded Plan Decisions never authorize implementation (FR-003, AC-002)
+    requirements: [FR-003, AC-002]
+    red:
+      observed: true
+      failure_reason: >-
+        The dedicated superseded-Decision fixture was added before the final
+        authorization implementation and exercised the requirement that only
+        an active resolved Plan Decision may authorize Implementation.
+    green:
+      observed: true
+      evidence: >-
+        After the final validator accepted only status: resolved, the dedicated
+        superseded Plan Decision regression passed with the focused suite.
+  - id: TDD-005
+    title: Resolve external review findings for provenance compatibility and historical Gates
+    requirements: [FR-006, AC-004]
+    red:
+      observed: true
+      failure_reason: >-
+        The four review regression tests failed before the resolution: verified
+        assurance and Protocol 1 revision.commit were rejected, an active
+        pre-CHG-0025 Plan could produce C-051, and a 5,000-digit valid Change
+        identifier raised ValueError during validation.
+    green:
+      observed: true
+      evidence: >-
+        The new four-test regression set and the complete
+        tests/unit/test_unresolved_decisions.py module passed 37/37 after the
+        resolution implementation.

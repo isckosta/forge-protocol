@@ -36,6 +36,7 @@ gates:
       - discovery_complete
       - specification_complete
       - specification_gate_passed
+      # C-077: plan_complete also requires recorded human Plan authority.
       - plan_complete
   before_behavioral_implementation:
     require_when: tdd_applicable

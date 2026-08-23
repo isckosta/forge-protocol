@@ -201,13 +201,13 @@ followed by a canonically named, always-last `## Implementation Boundary`
 section stating explicitly that reaching a `tasks_ready` Gate is not
 authorization to begin Implementation, and that Implementation-time
 discoveries belong in Verification, a Decision record, or a documented
-re-Plan — not in a silent edit to already-approved Plan content. Two
+re-Plan — not in a silent edit to already-approved Plan content. For an active
+Change adopted from CHG-0025 onward, the Plan/Implementation boundary
+additionally requires the C-077 recorded human Decision; a Plan's
+`status: approved` string alone is not authorization. Two
 Changes (`CHG-0013`, `CHG-0015`) independently hand-wrote nearly the same
 paragraph under an ad-hoc "Explicit boundary" heading; naming and
 positioning it canonically removes the need to reinvent it a third time.
-For an active Change adopted from CHG-0025 onward, the Plan/Implementation
-boundary additionally requires the C-077 recorded human Decision; a Plan's
-`status: approved` string alone is not authorization.
 
 ### Tasks
 

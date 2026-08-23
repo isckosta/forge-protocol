@@ -1,0 +1,103 @@
+schema: forge/change@2
+protocol: 2
+change:
+  id: CHG-0028
+  title: Chat Cadence Guidance
+  kind: documentation
+flow: {initial: fast, current: fast, escalations: []}
+state: {current: complete}
+artifacts:
+  intent: complete
+  inspection: complete
+  tdd_evidence: complete
+  implementation: complete
+  provenance: complete
+  verification: complete
+  review: complete
+  documentation: complete
+  knowledge_capture: not_required
+requirements: {total: 2, implemented: 2, verified: 2}
+tdd:
+  status: not_applicable
+  reason: >-
+    This Change adds non-binding Markdown guidance only; it introduces no
+    executable behavior or enforceable Protocol rule.
+verification: {status: passed}
+review:
+  status: passed
+  iteration: 6
+  blockers: 1
+  majors: 1
+  minors: 0
+  observations: 0
+  iterations:
+    - id: review-001
+      revision: chg-0028-implementation-001
+      subject_provenance: implementation-001
+      reviewer_provenance: review-001
+      kind: initial_review
+      status: failed
+      evidence_gap: >-
+        R001 completion state preceded Review and R002 left non-control
+        untracked scaffold artifacts after freeze. See review.md.
+    - id: review-002
+      revision: chg-0028-resolution-001
+      subject_provenance: resolution-001
+      reviewer_provenance: review-002
+      kind: resolution_verification
+      status: failed
+      full_review_required: false
+      new_material_findings: 0
+      finding_classes: []
+      evidence_gap: >-
+        R001/R002 independently verified resolved against the exact frozen
+        resolution subject 588c02d788ee7416d02f64495e72171562f59315. No new
+        material finding was found; targeted schema, scope, parity, and
+        untracked-file checks passed at that historical subject, which was
+        superseded by the later editorial correction.
+    - id: review-003
+      revision: chg-0028-correction-001
+      subject_provenance: correction-001
+      reviewer_provenance: review-003
+      kind: initial_review
+      status: failed
+      evidence_gap: >-
+        The editorial correction changed the templates after review-002 and
+        left the recorded verification hash stale. See review.md.
+    - id: review-004
+      revision: chg-0028-finalization-001
+      subject_provenance: finalization-001
+      reviewer_provenance: review-004
+      kind: resolution_verification
+      status: failed
+      full_review_required: true
+      new_material_findings: 1
+      finding_classes: [out_of_scope_mutation]
+      evidence_gap: >-
+        The frozen finalization-001 scope omitted verification.md, so the
+        resolution delta was correctly rejected and requires a new full
+        review. See review.md.
+    - id: review-005
+      revision: chg-0028-finalization-004
+      subject_provenance: finalization-004
+      kind: initial_review
+      status: pending
+      evidence_gap: >-
+        Superseded pending review subject; final review continues as review-006
+        against finalization-005.
+    - id: review-006
+      revision: chg-0028-finalization-005
+      subject_provenance: finalization-005
+      reviewer_provenance: review-006
+      kind: initial_review
+      status: passed
+      evidence_gap: >-
+        Independent Full Strict Review passed against finalization-005 after
+        the subject-binding correction; no material functional finding remains.
+documentation:
+  impact_evaluated: true
+  update_required: true
+  reason: >-
+    Added identical non-binding chat-cadence guidance to both Adapter
+    workflow templates and marked roadmap item #8 Done with the CHG-0028
+    link. No runtime or enforced Protocol behavior changed.

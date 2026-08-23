@@ -39,6 +39,11 @@ def _init(root: Path) -> None:
     (forge / "forge.yml").write_text(FORGE_YML, encoding="utf-8")
 
 
+def _init_protocol2(root: Path) -> None:
+    _init(root)
+    (root / ".forge/forge.yml").write_text(FORGE_YML.replace("protocol: 1", "protocol: 2"), encoding="utf-8")
+
+
 def _write_manifest(root: Path, change_dir: str, manifest: dict) -> None:
     change = root / ".forge/changes" / change_dir
     change.mkdir(parents=True, exist_ok=True)
@@ -175,6 +180,371 @@ def test_human_authority_evidence_resolution_is_allowed(tmp_path: Path) -> None:
     _write_manifest(tmp_path, "CHG-9105-evidence", _base_manifest([decision]))
 
     result = validate_project(tmp_path, PROTOCOL_ROOT)
+    assert result.passed, _messages(result)
+
+
+# ---------------------------------------------------------------------------
+# CHG-0025 TDD-001 — an active approved Plan needs an explicit human act.
+# ---------------------------------------------------------------------------
+
+def _approved_plan_manifest(decisions: list[dict] | None = None, *, state: str = "tasks", **overrides: object) -> dict:
+    return _base_manifest(
+        decisions or [],
+        state={"current": state},
+        artifacts={"plan": "approved"},
+        **overrides,
+    )
+
+
+def _write_plan_confirmation(root: Path, change_dir: str, *, schema: str = "forge/execution-provenance@2") -> None:
+    change = root / ".forge/changes" / change_dir
+    change.mkdir(parents=True, exist_ok=True)
+    change_id = "-".join(change_dir.split("-")[:2])
+    (change / "plan.md").write_text(
+        "<!-- forge:plan-approval-confirmation -->\n"
+        "## Registro de aprovação\n\n"
+        "<!-- forge:plan-approval-record -->\n"
+        "Aprovação humana explícita foi recebida do operador.\n",
+        encoding="utf-8",
+    )
+    (change / "provenance.yml").write_text(
+        yaml.safe_dump(
+            {
+                "schema": schema,
+                "change": change_id,
+                "records": [{
+                    "id": "implementation-001",
+                    "role": "implementation",
+                    "execution": {"id": "exec-001", "context_id": "context-001"},
+                    "recorded_at": "2026-08-22T12:00:00Z",
+                    "revision": {"id": "revision-001", "immutable_ref": {"type": "git_commit", "value": "0" * 40}},
+                    "source": {
+                        "assurance": "recorded",
+                        "observed_by": "operator",
+                        "reference": "plan.md#approval-record",
+                        "statement": "Aprovação humana explícita foi recebida do operador.",
+                    },
+                }],
+            },
+            sort_keys=False,
+        ),
+        encoding="utf-8",
+    )
+
+
+def test_active_approved_plan_without_human_authorization_is_a_finding(tmp_path: Path) -> None:
+    _init(tmp_path)
+    _write_manifest(tmp_path, "CHG-9110-plan-no-authorization", _approved_plan_manifest())
+
+    result = validate_project(tmp_path, PROTOCOL_ROOT)
+
+    assert not result.passed
+    assert any("Plan" in message and "authorization" in message for message in _messages(result))
+
+
+def test_active_approved_plan_with_human_decision_passes_plan_check(tmp_path: Path) -> None:
+    _init(tmp_path)
+    decision = {
+        "id": "DEC-001", "class": "technical", "materiality": "material",
+        "status": "resolved", "authority": "human", "owning_artifact": "plan",
+        "discovered_in": "plan", "resolved_via": "human_decision",
+    }
+    change_dir = "CHG-9111-plan-human-authorization"
+    _write_manifest(
+        tmp_path,
+        change_dir,
+        _approved_plan_manifest([decision], change={"id": "CHG-9111", "title": "T", "kind": "feature"}),
+    )
+    _write_plan_confirmation(tmp_path, change_dir)
+
+    result = validate_project(tmp_path, PROTOCOL_ROOT)
+
+    assert result.passed, _messages(result)
+
+
+def test_superseded_plan_decision_cannot_authorize_implementation(tmp_path: Path) -> None:
+    _init(tmp_path)
+    decision = {
+        "id": "DEC-001", "class": "technical", "materiality": "material",
+        "status": "superseded", "authority": "human", "owning_artifact": "plan",
+        "discovered_in": "plan", "resolved_via": "human_decision",
+    }
+    _write_manifest(
+        tmp_path,
+        "CHG-9112-plan-superseded",
+        _approved_plan_manifest([decision], change={"id": "CHG-9112", "title": "T", "kind": "feature"}),
+    )
+
+    result = validate_project(tmp_path, PROTOCOL_ROOT)
+
+    assert not result.passed
+    assert any("superseded" in message and "C-077" in message for message in _messages(result))
+
+
+def test_protocol2_active_approved_plan_uses_same_authorization_rule(tmp_path: Path) -> None:
+    _init_protocol2(tmp_path)
+    decision = {
+        "id": "DEC-001", "class": "technical", "materiality": "material",
+        "status": "resolved", "authority": "human", "owning_artifact": "plan",
+        "discovered_in": "plan", "resolved_via": "human_decision",
+    }
+    manifest = _approved_plan_manifest(
+        [decision], schema="forge/change@2", protocol=2,
+        change={"id": "CHG-9113", "title": "T", "kind": "feature"},
+    )
+    change_dir = "CHG-9113-protocol2-plan"
+    _write_manifest(tmp_path, change_dir, manifest)
+    _write_plan_confirmation(tmp_path, change_dir)
+
+    result = validate_project(tmp_path, PROTOCOL_ROOT)
+
+    assert result.passed, _messages(result)
+
+
+def test_specification_gate_remains_technical_without_plan_authorization(tmp_path: Path) -> None:
+    _init(tmp_path)
+    manifest = _base_manifest(
+        [],
+        artifacts={"specification_gate_passed": "complete", "specification_review": "complete"},
+    )
+    _write_manifest(tmp_path, "CHG-9116-technical-specification-gate", manifest)
+
+    result = validate_project(tmp_path, PROTOCOL_ROOT)
+
+    assert result.passed, _messages(result)
+
+
+def test_active_approved_plan_without_recorded_confirmation_is_a_finding(tmp_path: Path) -> None:
+    _init(tmp_path)
+    decision = {
+        "id": "DEC-001", "class": "technical", "materiality": "material",
+        "status": "resolved", "authority": "human", "owning_artifact": "plan",
+        "discovered_in": "plan", "resolved_via": "human_decision",
+    }
+    _write_manifest(tmp_path, "CHG-9112-plan-unrecorded", _approved_plan_manifest([decision]))
+
+    result = validate_project(tmp_path, PROTOCOL_ROOT)
+
+    assert not result.passed
+    assert any("plan.md and provenance.yml" in message for message in _messages(result))
+
+
+def test_active_approved_plan_with_self_observed_confirmation_is_a_finding(tmp_path: Path) -> None:
+    _init(tmp_path)
+    decision = {
+        "id": "DEC-001", "class": "technical", "materiality": "material",
+        "status": "resolved", "authority": "human", "owning_artifact": "plan",
+        "discovered_in": "plan", "resolved_via": "human_decision",
+    }
+    change_dir = "CHG-9115-plan-self-observed"
+    _write_manifest(tmp_path, change_dir, _approved_plan_manifest([decision]))
+    _write_plan_confirmation(tmp_path, change_dir)
+    provenance_path = tmp_path / ".forge/changes" / change_dir / "provenance.yml"
+    provenance = yaml.safe_load(provenance_path.read_text())
+    provenance["records"][0]["source"]["observed_by"] = "self"
+    provenance_path.write_text(yaml.safe_dump(provenance, sort_keys=False), encoding="utf-8")
+
+    result = validate_project(tmp_path, PROTOCOL_ROOT)
+
+    assert not result.passed
+    assert any("authorization" in message for message in _messages(result))
+
+
+def test_active_approved_plan_with_foreign_provenance_is_a_finding(tmp_path: Path) -> None:
+    _init(tmp_path)
+    decision = {
+        "id": "DEC-001", "class": "technical", "materiality": "material",
+        "status": "resolved", "authority": "human", "owning_artifact": "plan",
+        "discovered_in": "plan", "resolved_via": "human_decision",
+    }
+    change_dir = "CHG-9117-plan-foreign-provenance"
+    _write_manifest(tmp_path, change_dir, _approved_plan_manifest([decision]))
+    _write_plan_confirmation(tmp_path, change_dir)
+    provenance_path = tmp_path / ".forge/changes" / change_dir / "provenance.yml"
+    provenance = yaml.safe_load(provenance_path.read_text())
+    provenance["change"] = "CHG-9999"
+    provenance_path.write_text(yaml.safe_dump(provenance, sort_keys=False), encoding="utf-8")
+
+    result = validate_project(tmp_path, PROTOCOL_ROOT)
+
+    assert not result.passed
+    assert any("authorization" in message for message in _messages(result))
+
+
+def test_active_approved_plan_with_malformed_plan_is_a_finding(tmp_path: Path) -> None:
+    _init(tmp_path)
+    _write_manifest(tmp_path, "CHG-9118-plan-malformed", _approved_plan_manifest())
+    change = tmp_path / ".forge/changes/CHG-9118-plan-malformed"
+    (change / "plan.md").write_bytes(b"\\xff\\xfe malformed")
+
+    result = validate_project(tmp_path, PROTOCOL_ROOT)
+
+    assert not result.passed
+    assert any("authorization" in message for message in _messages(result))
+
+
+def test_protocol1_provenance_remains_compatible_with_plan_authorization(tmp_path: Path) -> None:
+    _init(tmp_path)
+    decision = {
+        "id": "DEC-001", "class": "technical", "materiality": "material",
+        "status": "resolved", "authority": "human", "owning_artifact": "plan",
+        "discovered_in": "plan", "resolved_via": "human_decision",
+    }
+    change_dir = "CHG-9119-protocol1-provenance"
+    _write_manifest(
+        tmp_path,
+        change_dir,
+        _approved_plan_manifest([decision], change={"id": "CHG-9119", "title": "T", "kind": "feature"}),
+    )
+    _write_plan_confirmation(tmp_path, change_dir, schema="forge/execution-provenance@1")
+
+    result = validate_project(tmp_path, PROTOCOL_ROOT)
+
+    assert result.passed, _messages(result)
+
+
+def test_verified_plan_authorization_is_accepted(tmp_path: Path) -> None:
+    _init(tmp_path)
+    decision = {
+        "id": "DEC-001", "class": "technical", "materiality": "material",
+        "status": "resolved", "authority": "human", "owning_artifact": "plan",
+        "discovered_in": "plan", "resolved_via": "human_decision",
+    }
+    change_dir = "CHG-9120-verified-provenance"
+    _write_manifest(
+        tmp_path,
+        change_dir,
+        _approved_plan_manifest([decision], change={"id": "CHG-9120", "title": "T", "kind": "feature"}),
+    )
+    _write_plan_confirmation(tmp_path, change_dir)
+    provenance_path = tmp_path / ".forge/changes" / change_dir / "provenance.yml"
+    provenance = yaml.safe_load(provenance_path.read_text())
+    provenance["records"][0]["source"]["assurance"] = "verified"
+    provenance_path.write_text(yaml.safe_dump(provenance, sort_keys=False), encoding="utf-8")
+
+    result = validate_project(tmp_path, PROTOCOL_ROOT)
+
+    assert result.passed, _messages(result)
+
+
+def test_protocol1_legacy_commit_provenance_is_accepted(tmp_path: Path) -> None:
+    _init(tmp_path)
+    decision = {
+        "id": "DEC-001", "class": "technical", "materiality": "material",
+        "status": "resolved", "authority": "human", "owning_artifact": "plan",
+        "discovered_in": "plan", "resolved_via": "human_decision",
+    }
+    change_dir = "CHG-9121-legacy-commit-provenance"
+    _write_manifest(
+        tmp_path,
+        change_dir,
+        _approved_plan_manifest([decision], change={"id": "CHG-9121", "title": "T", "kind": "feature"}),
+    )
+    _write_plan_confirmation(tmp_path, change_dir, schema="forge/execution-provenance@1")
+    provenance_path = tmp_path / ".forge/changes" / change_dir / "provenance.yml"
+    provenance = yaml.safe_load(provenance_path.read_text())
+    revision = provenance["records"][0]["revision"]
+    revision["commit"] = revision.pop("immutable_ref")["value"]
+    provenance_path.write_text(yaml.safe_dump(provenance, sort_keys=False), encoding="utf-8")
+
+    result = validate_project(tmp_path, PROTOCOL_ROOT)
+
+    assert result.passed, _messages(result)
+
+
+def test_pre_chg0025_active_approved_plan_remains_compatible(tmp_path: Path) -> None:
+    _init(tmp_path)
+    decision = {
+        "id": "DEC-001", "class": "technical", "materiality": "material",
+        "status": "awaiting_decision", "authority": "human", "owning_artifact": "plan",
+        "discovered_in": "plan",
+    }
+    manifest = _approved_plan_manifest(
+        [decision],
+        change={"id": "CHG-0024", "title": "Historical", "kind": "feature"},
+    )
+    _write_manifest(tmp_path, "CHG-0024-historical-active", manifest)
+
+    result = validate_project(tmp_path, PROTOCOL_ROOT)
+
+    assert result.passed, _messages(result)
+
+
+def test_extremely_large_change_id_does_not_crash_validation(tmp_path: Path) -> None:
+    _init(tmp_path)
+    large_id = "CHG-" + "9" * 5000
+    manifest = _approved_plan_manifest(
+        [],
+        change={"id": large_id, "title": "Large identifier", "kind": "feature"},
+    )
+    _write_manifest(tmp_path, "CHG-9122-large-id", manifest)
+
+    result = validate_project(tmp_path, PROTOCOL_ROOT)
+
+    assert not result.passed
+    assert any("authorization" in message for message in _messages(result))
+
+
+def test_active_approved_plan_with_multiple_approvals_is_ambiguous(tmp_path: Path) -> None:
+    _init(tmp_path)
+    def decision(number: int) -> dict:
+        return {
+            "id": f"DEC-{number:03d}", "class": "technical", "materiality": "material",
+            "status": "resolved", "authority": "human", "owning_artifact": "plan",
+            "discovered_in": "plan", "resolved_via": "human_decision",
+        }
+    _write_manifest(
+        tmp_path,
+        "CHG-9114-plan-ambiguous",
+        _approved_plan_manifest([decision(1), decision(2)]),
+    )
+
+    result = validate_project(tmp_path, PROTOCOL_ROOT)
+
+    assert not result.passed
+    assert any("ambiguous" in message for message in _messages(result))
+
+
+def test_active_approved_plan_with_open_decision_fails_closed(tmp_path: Path) -> None:
+    _init(tmp_path)
+    decision = {
+        "id": "DEC-001", "class": "technical", "materiality": "material",
+        "status": "awaiting_decision", "authority": "human", "owning_artifact": "plan",
+        "discovered_in": "plan",
+    }
+    _write_manifest(tmp_path, "CHG-9111-plan-open-authorization", _approved_plan_manifest([decision]))
+
+    result = validate_project(tmp_path, PROTOCOL_ROOT)
+
+    assert not result.passed
+    assert any("before_implementation" in message for message in _messages(result))
+
+
+def test_active_approved_plan_with_autonomous_human_decision_fails_closed(tmp_path: Path) -> None:
+    _init(tmp_path)
+    decision = {
+        "id": "DEC-001", "class": "technical", "materiality": "material",
+        "status": "resolved", "authority": "human", "owning_artifact": "plan",
+        "discovered_in": "plan", "resolved_via": "autonomous_decision",
+    }
+    _write_manifest(tmp_path, "CHG-9111-plan-autonomous-authorization", _approved_plan_manifest([decision]))
+
+    result = validate_project(tmp_path, PROTOCOL_ROOT)
+
+    assert not result.passed
+    assert any("C-055" in message for message in _messages(result))
+
+
+def test_completed_approved_plan_without_new_authorization_remains_compatible(tmp_path: Path) -> None:
+    _init(tmp_path)
+    _write_manifest(
+        tmp_path,
+        "CHG-9112-plan-completed-compatibility",
+        _approved_plan_manifest(state="complete"),
+    )
+
+    result = validate_project(tmp_path, PROTOCOL_ROOT)
+
     assert result.passed, _messages(result)
 
 
