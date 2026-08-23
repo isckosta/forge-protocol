@@ -1,0 +1,54 @@
+schema: forge/execution-provenance@2
+change: CHG-0038
+records:
+  - id: plan-approval-001
+    role: implementation
+    execution:
+      id: claude-code-implementation-0038
+      context_id: claude-code-session-2026-08-23
+    recorded_at: '2026-08-23T00:00:00Z'
+    revision:
+      id: chg-0038-plan-approval-001
+      immutable_ref:
+        type: git_commit
+        value: 6cf4ef5342c9b67eb36eb738737a01cbe70dadac
+      commit: 6cf4ef5342c9b67eb36eb738737a01cbe70dadac
+    source:
+      assurance: recorded
+      observed_by: operator
+      reference: plan.md#approval-record
+      statement: The user explicitly approved continuation of CHG-0038 to Implementation in the active session on 2026-08-23, with the explicit removal of the ERP domain example from scope.
+  - id: implementation-subject-001
+    role: implementation
+    execution:
+      id: claude-code-implementation-0038-subject-001
+      context_id: claude-code-session-2026-08-23-subject-001
+    recorded_at: '2026-08-23T00:00:00Z'
+    revision:
+      id: chg-0038-implementation-001
+      immutable_ref:
+        type: git_commit
+        value: 6cf4ef5342c9b67eb36eb738737a01cbe70dadac
+      commit: 6cf4ef5342c9b67eb36eb738737a01cbe70dadac
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: implementation-subject
+      statement: Frozen CHG-0038 implementation subject for independent Strict Review.
+  - id: verification-001
+    role: implementation
+    execution:
+      id: claude-code-implementation-0038-subject-001
+      context_id: claude-code-session-2026-08-23-subject-001
+    recorded_at: '2026-08-23T00:00:00Z'
+    revision:
+      id: chg-0038-implementation-001
+      immutable_ref:
+        type: git_commit
+        value: 6cf4ef5342c9b67eb36eb738737a01cbe70dadac
+      commit: 6cf4ef5342c9b67eb36eb738737a01cbe70dadac
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: verification.md
+      statement: Verification evidence for the frozen CHG-0038 implementation subject.
