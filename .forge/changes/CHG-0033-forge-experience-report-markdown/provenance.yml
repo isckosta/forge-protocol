@@ -1,6 +1,41 @@
 schema: forge/execution-provenance@2
 change: CHG-0033
 records:
+  - id: implementation-001
+    role: implementation
+    execution:
+      id: implementation-exec-chg0033-20260823-01
+      context_id: implementation-context-chg0033-20260823-01
+    recorded_at: "2026-08-23T01:35:00-03:00"
+    revision:
+      id: chg-0033-implementation-001
+      immutable_ref: {type: git_commit, value: 863da71a7c42307c593b127f01776df5ff1cb966}
+    source:
+      assurance: recorded
+      observed_by: operator
+      harness: codex
+      statement: >-
+        CHG-0033 implementation subject was frozen at commit 863da71 after
+        TDD, historical rendering, compatibility verification, and
+        documentation updates.
+  - id: review-001
+    role: review
+    execution:
+      id: review-exec-chg0033-independent-01
+      context_id: review-context-chg0033-independent-01
+    recorded_at: "2026-08-23T01:36:00-03:00"
+    revision:
+      id: chg-0033-implementation-001
+      immutable_ref: {type: git_commit, value: 863da71a7c42307c593b127f01776df5ff1cb966}
+    source:
+      assurance: recorded
+      observed_by: independent_subagent
+      harness: codex
+      statement: >-
+        Independent Strict Review execution 01a02cdf-46c7-7d10-bdef-ed85527e930d
+        re-reviewed the frozen CHG-0033 subject and passed. Traversal,
+        per-report locking, Git review guidance, focused tests, Forge
+        validation, FER validation, and diff checks were confirmed.
   - id: plan-approval-001
     role: implementation
     execution:
