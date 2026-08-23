@@ -1,0 +1,20 @@
+schema: forge/execution-provenance@2
+change: CHG-0030
+records:
+  - id: plan-approval-001
+    role: implementation
+    execution: {id: implementation-exec-chg0030-20260822-01, context_id: implementation-context-chg0030-20260822-01}
+    recorded_at: "2026-08-22T23:51:42-03:00"
+    revision:
+      id: chg-0030-plan-approved
+      immutable_ref: {type: git_commit, value: 88d9ec20584a7ea1f1e966367e937d1b35eb6767}
+    source:
+      assurance: recorded
+      observed_by: operator
+      harness: codex
+      reference: plan.md#approval-record
+      statement: >-
+        Explicit human authorization was received from the user as “Autorizo.”
+        in the active session on 2026-08-22T23:51:42-03:00. This authorizes
+        continuation past the Plan/Implementation boundary and is not
+        cryptographic or provider-native attestation.

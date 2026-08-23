@@ -1,0 +1,25 @@
+schema: forge/tdd-evidence@1
+change: CHG-0030
+status: complete
+cycle_count: 5
+cycles:
+  - id: TDD-001
+    title: Default-off configuration and classification parsing
+    red: {observed: true, evidence: "Focused tests failed during collection because forge_cli.experience did not exist."}
+    green: {observed: true, evidence: "tests/unit/test_experience_reporting.py passed after isolated configuration and model implementation."}
+  - id: TDD-002
+    title: Lazy report creation and provenance
+    red: {observed: true, evidence: "Focused tests failed during collection because forge_cli.experience.storage did not exist."}
+    green: {observed: true, evidence: "Report creation, safe context, positive evidence, and collision tests passed."}
+  - id: TDD-003
+    title: Contributor CLI
+    red: {observed: true, evidence: "CLI tests failed because the experience command group was not registered."}
+    green: {observed: true, evidence: "Enable, disable/status, record, and append-by-report CLI tests passed."}
+  - id: TDD-004
+    title: Concurrent append and failure isolation
+    red: {observed: true, evidence: "Parallel append test lost the reserved placeholder before locking was implemented."}
+    green: {observed: true, evidence: "Concurrent writers, atomic updates, and injected write failure tests passed."}
+  - id: TDD-005
+    title: Explicit FER report validation
+    red: {observed: true, evidence: "Malformed report validation test failed before structural validation was added."}
+    green: {observed: true, evidence: "Malformed report rejection and full focused FER suite passed."}

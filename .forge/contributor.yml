@@ -1,0 +1,3 @@
+schema: forge/contributor@1
+experience_reporting:
+  enabled: true

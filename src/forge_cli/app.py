@@ -6,6 +6,7 @@ import yaml
 from forge_cli.adapter_cli import adapter_app
 from forge_cli.change_cli import change_app
 from forge_cli.doctor import diagnose
+from forge_cli.experience_cli import experience_app
 from forge_cli.git import GitUnavailableError, NotGitRepositoryError, resolve_project_root
 from forge_cli.migration import apply_migrations, find_candidates
 from forge_cli.protocol_resources import resolve_protocol_root
@@ -19,6 +20,7 @@ INTERNAL_ERROR_EXIT_CODE = 70
 app = typer.Typer()
 app.add_typer(adapter_app, name="adapter")
 app.add_typer(change_app, name="change")
+app.add_typer(experience_app, name="experience")
 
 
 def _protocol_root() -> Path:

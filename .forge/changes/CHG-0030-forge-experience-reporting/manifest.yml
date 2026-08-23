@@ -1,0 +1,63 @@
+schema: forge/change@2
+protocol: 2
+change:
+  id: CHG-0030
+  title: Forge Experience Reporting
+  kind: feature
+flow:
+  initial: full
+  current: full
+  escalations:
+    - from: standard
+      to: full
+      reason: >-
+        Discovery found a new contributor subsystem spanning configuration,
+        persistence, CLI, Harness guidance, concurrency, and failure isolation.
+state:
+  current: verification
+artifacts:
+  intent: complete
+  discovery: complete
+  specification: complete
+  specification_review: complete
+  architecture: complete
+  test_strategy: complete
+  plan: approved
+  tasks: active
+  tdd_evidence: complete
+  implementation: complete
+  verification: complete
+  review: pending
+  documentation: complete
+  knowledge_capture: complete
+requirements:
+  total: 0
+  implemented: 0
+  verified: 0
+tdd:
+  status: compliant
+  cycles: 5
+verification:
+  status: passed
+  limitation: >-
+    Repository-wide baseline retains one pre-existing CHG-0028
+    Resolution-Delta/local-history failure; CHG-0030-focused tests pass.
+review:
+  status: pending
+  iteration: 0
+  blockers: 0
+  majors: 0
+  minors: 0
+  observations: 0
+  iterations: []
+documentation:
+  impact_evaluated: false
+decisions:
+  - id: DEC-001
+    class: technical
+    materiality: material
+    status: resolved
+    authority: human
+    owning_artifact: plan
+    discovered_in: plan
+    resolved_via: human_decision

@@ -1,0 +1,28 @@
+schema: forge/experience-report@1
+report: FER-0001
+created_at: 2026-08-22T23:55:00-03:00
+source:
+  forge_version: 0.1.0a2
+  protocol: 2
+  change: CHG-0030
+  flow: full
+  adapter: claude-code
+  harness: claude-code
+  repository: external-validation-example
+  commit: unknown
+observations:
+  - id: FER-0001-O001
+    area: plan-approval
+    classification: uncertain
+    expected: The Harness should stop after Plan generation.
+    observed: The Harness continued directly into Implementation.
+    evidence:
+      - The user had to interrupt the execution after Implementation began.
+    impact: Human approval appeared to be bypassed, but the causal boundary was not yet isolated.
+    workaround: The user manually interrupted execution and recorded the observation.
+    follow_up: Investigate whether the cause was Forge, the Harness, the Adapter, or the project setup.
+positive_evidence:
+  - id: FER-0001-P001
+    area: doctor
+    observed: forge doctor correctly reported the missing Adapter installation and suggested the next action.
+follow_up_candidates: []
