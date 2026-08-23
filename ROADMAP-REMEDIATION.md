@@ -37,13 +37,13 @@
 | P1 | Review cost proportional to diff size (RFC-level) | `review-cost-proportionality` | **Done** | [`CHG-0027`](.forge/changes/CHG-0027-review-cost-proportionality/) |
 | P2 | Chat communication cadence guidance | `chat-cadence-guidance` | **Done** | [`CHG-0028`](.forge/changes/CHG-0028-chat-cadence-guidance/) |
 | P2 | Suggest publishing key artifacts as Artifact | `artifact-publication-suggestion` | **Done** | [`CHG-0029`](.forge/changes/CHG-0029-artifact-publication-suggestion/) |
-| P2 | Document real limits of Reviewer "independence" | `reviewer-independence-disclosure` | Open | — |
+| P2 | Document real limits of Reviewer "independence" | `reviewer-independence-disclosure` | **In progress** | [`CHG-0034`](.forge/changes/CHG-0034-reviewer-independence-disclosure/) |
 
 Slugs have no fixed `CHG-NNNN` number reserved, matching `ROADMAP.md`'s
 own stated convention: Forge assigns the next stable identifier when a
 stage begins as an actual repository-native Change. The last Change assigned
-in this repository's history is `CHG-0023`; the next free number is
-`CHG-0024`.
+in this repository's history is `CHG-0033`; this remediation item is being
+conducted as `CHG-0034`.
 
 ## P0 — Block healthy adoption
 
@@ -180,8 +180,8 @@ hint-free Review three times over in `CHG-0021` alone).
 
 ## Sequencing note
 
-`change-scaffolding-cli` (#2) is next. It has no hard dependency left —
-`adapter-reference-schema-projection` (#1) already shipped the piece it
-needed (a real source of truth for valid `manifest.yml` enum values).
-`first-change-baseline-guidance` (#3) can proceed in parallel; it is
-documentation-only and touches no code #2 also touches.
+Items #1 through #9 are complete. `reviewer-independence-disclosure` (#10)
+is the next and final open item in this remediation addendum, conducted as
+CHG-0034. Its planned Contract edit is intentionally limited to disclosing
+the evidence boundary of existing Reviewer independence; it does not change
+the normative requirements of C-026 or C-037.

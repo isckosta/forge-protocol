@@ -1,0 +1,41 @@
+schema: forge/change@2
+protocol: 2
+change:
+  id: CHG-0034
+  title: Reviewer Independence Disclosure
+  kind: documentation
+flow:
+  initial: standard
+  current: standard
+  escalations: []
+state:
+  current: plan
+artifacts:
+  intent: complete
+  discovery: complete
+  specification: complete
+  test_design: complete
+  plan: pending
+  tdd_evidence: active
+  verification: pending
+  review: pending
+  documentation: pending
+requirements:
+  total: 0
+  implemented: 0
+  verified: 0
+tdd:
+  status: not_applicable
+  reason: "This Change updates canonical Contract prose and roadmap/documentation metadata only; it adds no executable behavior."
+verification:
+  status: pending
+review:
+  status: pending
+  iteration: 0
+  blockers: 0
+  majors: 0
+  minors: 0
+  observations: 0
+  iterations: []
+documentation:
+  impact_evaluated: false
