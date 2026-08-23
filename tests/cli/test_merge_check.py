@@ -33,6 +33,7 @@ def _manifest(status: str = "complete", review_status: str = "passed") -> dict:
             "majors": 0,
             "minors": 0,
             "observations": 0,
+            "blocking_threads_resolved": True,
             "iterations": [{"id": "review-001", "revision": "fixture", "status": "passed", "subject_provenance": "impl-001", "reviewer_provenance": "review-001"}],
         },
         "documentation": {"impact_evaluated": True, "update_required": False},
@@ -122,6 +123,7 @@ def test_merge_check_accepts_complete_change_without_material_runtime_diff(tmp_p
     provenance = {"schema": "forge/execution-provenance@2", "change": "CHG-9001", "records": [
         {"id": "impl-001", "role": "implementation", "execution": {"id": "impl", "context_id": "impl-context"}, "revision": {"id": "fixture", "immutable_ref": {"type": "git_commit", "value": subject}, "commit": subject}, "source": {"assurance": "recorded", "observed_by": "self", "reference": "implementation-subject", "statement": "Fixture implementation subject."}},
         {"id": "review-001", "role": "review", "execution": {"id": "review", "context_id": "review-context"}, "revision": {"id": "fixture", "immutable_ref": {"type": "git_commit", "value": subject}, "commit": subject}, "source": {"assurance": "recorded", "observed_by": "self", "reference": "strict-review", "statement": "Fixture independent review."}},
+        {"id": "verification-001", "role": "implementation", "execution": {"id": "verification", "context_id": "verification-context"}, "revision": {"id": "fixture", "immutable_ref": {"type": "git_commit", "value": subject}, "commit": subject}, "source": {"assurance": "recorded", "observed_by": "self", "reference": "verification.md", "statement": "Fixture verification evidence."}},
     ]}
     (change_dir / "provenance.yml").write_text(yaml.safe_dump(provenance, sort_keys=False), encoding="utf-8")
     head = _commit(tmp_path, "record review-control metadata")

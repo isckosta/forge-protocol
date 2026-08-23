@@ -22,10 +22,10 @@ wired into a full-history GitHub Actions workflow.
 
 ## Test Evidence
 
-- `.venv/bin/python -m pytest -q`: **643 passed, 2 warnings**.
-- `.venv/bin/python -m pytest -q tests/cli/test_merge_check.py`: **4 passed**.
+- `.venv/bin/python -m pytest -q`: **645 passed, 2 warnings**.
+- `.venv/bin/python -m pytest -q tests/cli/test_merge_check.py`: **6 passed**.
 - Covered material provenance missing, incomplete lifecycle, complete Change,
-  stale Plan digest, distinct exit code, and JSON result behavior.
+  stale Plan digest, distinct exit code, and manifest-only claims.
 
 ## Forge Evidence
 

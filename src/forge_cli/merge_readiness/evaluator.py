@@ -55,7 +55,7 @@ def _first_committed_record(root: Path, relative_path: str, record_id: str) -> d
     for commit in commits.stdout.splitlines():
         try:
             data = yaml.safe_load(tree_file(root, commit, relative_path)) or {}
-        except MergeReadinessOperationalError:
+        except (MergeReadinessOperationalError, yaml.YAMLError, TypeError):
             continue
         for record in data.get("records", []) if isinstance(data, dict) else []:
             if isinstance(record, dict) and record.get("id") == record_id:
@@ -80,7 +80,7 @@ def _check_change(root: Path, change_id: str, head_revision: str) -> tuple[list[
     if verification == "passed":
         try:
             verification_text = tree_file(root, head_revision, verification_relative)
-        except MergeReadinessOperationalError:
+        except (MergeReadinessOperationalError, yaml.YAMLError, TypeError):
             verification_text = ""
         if "**PASS**" not in verification_text and "\nPASS\n" not in verification_text:
             diagnostics.append(ReadinessDiagnostic("MR-006", "Verification status is contradicted by verification.md", change_id, verification_relative))
@@ -101,7 +101,7 @@ def _check_change(root: Path, change_id: str, head_revision: str) -> tuple[list[
             provenance_relative = f"{path.parent.relative_to(root).as_posix()}/provenance.yml"
             try:
                 provenance = yaml.safe_load(tree_file(root, head_revision, provenance_relative)) or {}
-            except MergeReadinessOperationalError:
+            except (MergeReadinessOperationalError, yaml.YAMLError, TypeError):
                 provenance = {}
             records = provenance.get("records", []) if isinstance(provenance, dict) else []
             record_index = {item.get("id"): item for item in records if isinstance(item, dict)}
@@ -144,6 +144,21 @@ def _check_change(root: Path, change_id: str, head_revision: str) -> tuple[list[
                     }
                     if delta.returncode != 0 or any(item and item not in allowed for item in delta.stdout.splitlines()):
                         diagnostics.append(ReadinessDiagnostic("MR-015", "REVIEW SUBJECT STALE", change_id, relative, head_revision, subject_commit))
+            verification_records = [
+                item for item in records
+                if isinstance(item, dict)
+                and item.get("role") == "implementation"
+                and isinstance(item.get("source"), dict)
+                and item["source"].get("reference") == "verification.md"
+                and item["source"].get("assurance") in {"recorded", "verified"}
+            ]
+            if len(verification_records) != 1 or not isinstance(subject_commit, str) or (
+                verification_records and (
+                    verification_records[0].get("revision", {}).get("commit")
+                    or verification_records[0].get("revision", {}).get("immutable_ref", {}).get("value")
+                ) != subject_commit
+            ):
+                diagnostics.append(ReadinessDiagnostic("MR-006", "Verification evidence is not bound to the immutable implementation subject", change_id, verification_relative, subject_commit))
             if isinstance(subject_record, dict) and isinstance(reviewer_record, dict):
                 if subject_record.get("role") not in {"implementation", "resolution"}:
                     diagnostics.append(ReadinessDiagnostic("MR-018", "Review subject provenance has an invalid role", change_id, relative))
@@ -168,7 +183,7 @@ def _check_change(root: Path, change_id: str, head_revision: str) -> tuple[list[
     if review.get("status") == "passed":
         try:
             review_text = tree_file(root, head_revision, review_relative)
-        except MergeReadinessOperationalError:
+        except (MergeReadinessOperationalError, yaml.YAMLError, TypeError):
             review_text = ""
         if "**PASS**" not in review_text and "\nPASS\n" not in review_text:
             diagnostics.append(ReadinessDiagnostic("MR-007", "Review status is contradicted by review.md", change_id, review_relative))
@@ -209,6 +224,16 @@ def _check_change(root: Path, change_id: str, head_revision: str) -> tuple[list[
                     diagnostics.append(ReadinessDiagnostic("MR-009", f"Required artifact is missing: {key}", change_id, relative))
                 elif key in artifacts and artifacts.get(key) not in {"complete", "approved", "passed"}:
                     diagnostics.append(ReadinessDiagnostic("MR-009", f"Required artifact is not complete: {key}", change_id, relative, "complete", str(artifacts.get(key))))
+            requirements = set(effective["canonical"].get("gates", {}).get("before_completion", {}).get("require", []))
+            if "blocking_review_threads_resolved" in requirements and review.get("blocking_threads_resolved") is not True:
+                diagnostics.append(ReadinessDiagnostic("MR-009", "Blocking Review threads are not proven resolved", change_id, relative))
+            if "required_knowledge_capture_complete" in requirements and artifacts.get("knowledge_capture") not in {"complete", "approved", "passed"}:
+                diagnostics.append(ReadinessDiagnostic("MR-009", "Required Knowledge Capture is not complete", change_id, relative))
+            doc_state = manifest.get("documentation") if isinstance(manifest.get("documentation"), dict) else {}
+            if "required_documentation_updated" in requirements and doc_state.get("update_required") is True and artifacts.get("documentation") not in {"complete", "approved", "passed"}:
+                diagnostics.append(ReadinessDiagnostic("MR-009", "Required documentation update is not complete", change_id, relative))
+            if "tdd_compliant_or_explicitly_excepted" in requirements and tdd.get("status") not in {"compliant", "exception", "not_applicable"}:
+                diagnostics.append(ReadinessDiagnostic("MR-013", "TDD completion gate is not satisfied", change_id, relative))
         except Exception as error:
             diagnostics.append(ReadinessDiagnostic("MR-901", f"Cannot resolve effective Flow: {error}", change_id, relative))
     documentation = manifest.get("documentation") if isinstance(manifest.get("documentation"), dict) else {}
@@ -225,7 +250,7 @@ def _check_change(root: Path, change_id: str, head_revision: str) -> tuple[list[
         digest = None
         try:
             provenance = yaml.safe_load(tree_file(root, head_revision, provenance_relative)) or {}
-        except MergeReadinessOperationalError:
+        except (MergeReadinessOperationalError, yaml.YAMLError, TypeError):
             provenance = {}
         approval_records = []
         for record in provenance.get("records", []) if isinstance(provenance, dict) else []:
@@ -311,6 +336,6 @@ def evaluate_merge_readiness(root: Path, request: MergeReadinessRequest) -> Merg
             diagnostics.extend(d)
         verdict = "ready" if not diagnostics else "blocked"
         return MergeReadinessEvaluation(request, changes, tuple(checks), tuple(diagnostics), verdict)
-    except MergeReadinessOperationalError as error:
+    except (MergeReadinessOperationalError, MaterialityPolicyError, yaml.YAMLError, TypeError) as error:
         diagnostic = ReadinessDiagnostic("MR-900", f"Operational/configuration failure: {error}")
         return MergeReadinessEvaluation(request, (), (), (diagnostic,), "operational")
