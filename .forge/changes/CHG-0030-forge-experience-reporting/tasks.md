@@ -16,10 +16,10 @@ status: active
       example.
 - [x] T-005 Run compatibility verification and dogfood this Change with FER
       enabled, recording only real evidence.
-- [x] T-006 Complete Verification, Knowledge Capture, and independent Strict
+- [ ] T-006 Complete Verification, Knowledge Capture, and independent Strict
       Review.
 
 ## Status
 
-All tasks are complete. The Change is complete after independent Strict Review
-passed against the frozen subject.
+T-001 through T-005 are complete. T-006 remains pending until independent
+Strict Review and final completion decision.
