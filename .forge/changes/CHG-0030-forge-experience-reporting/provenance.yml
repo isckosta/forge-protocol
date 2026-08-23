@@ -100,6 +100,32 @@ records:
         subject. Focused FER, schema, CLI, golden-path, Adapter, validation,
         privacy, malformed-input, and symlink containment checks passed. No
         files were modified by the Reviewer.
+  - id: resolution-003
+    role: resolution
+    scope:
+      - .forge/changes/CHG-0030-forge-experience-reporting/manifest.yml
+      - .forge/changes/CHG-0030-forge-experience-reporting/review.md
+      - .forge/changes/CHG-0030-forge-experience-reporting/tasks.md
+      - .forge/changes/CHG-0030-forge-experience-reporting/tdd-evidence.yml
+      - .forge/changes/CHG-0030-forge-experience-reporting/test-strategy.md
+      - .forge/changes/CHG-0030-forge-experience-reporting/knowledge-capture.md
+      - .forge/changes/CHG-0030-forge-experience-reporting/verification.md
+      - src/forge_cli/validation/__init__.py
+      - tests/unit/test_resolution_verification.py
+    targets: [CHG-0030-PROVENANCE-MIGRATION]
+    execution: {id: resolution-exec-chg0030-20260823-03, context_id: resolution-context-chg0030-20260823-03}
+    recorded_at: "2026-08-23T03:00:00-03:00"
+    revision:
+      id: chg-0030-resolution-003
+      immutable_ref: {type: git_commit, value: 815ef18e709eb610bd3dbe0f79b8e277873dba83}
+    source:
+      assurance: recorded
+      observed_by: operator
+      harness: codex
+      statement: >-
+        Resolution-003 adds fail-closed migration support for historical
+        abbreviated Git subject SHAs and regression evidence requiring a later
+        full SHA to preserve every historical prefix.
   - id: plan-approval-001
     role: implementation
     execution: {id: implementation-exec-chg0030-20260822-01, context_id: implementation-context-chg0030-20260822-01}

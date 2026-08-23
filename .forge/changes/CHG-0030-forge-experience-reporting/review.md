@@ -10,7 +10,7 @@ status: active
 
 ## Verdict
 
-**PASS — independent Strict Review passed against the final frozen subject.**
+**PENDING — Resolution Verification is required for the provenance migration.**
 
 ## Iteration 1 — FAIL
 
@@ -43,3 +43,10 @@ golden-path, Adapter, privacy, malformed-input, and symlink containment
 checks. No material finding remains.
 
 **PASS (final).**
+
+## Iteration 4 — PENDING
+
+The resolution subject adds a fail-closed migration path for historical
+abbreviated Git subject SHAs. Verify that matching full SHAs are accepted,
+non-matching or malformed historical values remain rejected, and the focused
+regression suite plus `forge validate` pass against the frozen subject.

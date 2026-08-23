@@ -14,7 +14,7 @@ flow:
         Discovery found a new contributor subsystem spanning configuration,
         persistence, CLI, Harness guidance, concurrency, and failure isolation.
 state:
-  current: complete
+  current: strict_review
 artifacts:
   intent: complete
   discovery: complete
@@ -23,11 +23,11 @@ artifacts:
   architecture: complete
   test_strategy: complete
   plan: approved
-  tasks: complete
+  tasks: active
   tdd_evidence: complete
   implementation: complete
   verification: complete
-  review: complete
+  review: pending
   documentation: complete
   knowledge_capture: complete
 requirements:
@@ -40,8 +40,8 @@ tdd:
 verification:
   status: passed
 review:
-  status: passed
-  iteration: 3
+  status: pending
+  iteration: 4
   blockers: 0
   majors: 0
   minors: 0
@@ -67,6 +67,12 @@ review:
       kind: initial_review
       status: passed
       new_material_findings: 0
+    - id: review-004
+      revision: chg-0030-resolution-003
+      subject_provenance: resolution-003
+      kind: resolution_verification
+      status: pending
+      full_review_required: false
 documentation:
   impact_evaluated: true
   update_required: true

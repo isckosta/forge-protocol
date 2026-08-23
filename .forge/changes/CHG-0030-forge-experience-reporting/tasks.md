@@ -16,10 +16,10 @@ status: active
       example.
 - [x] T-005 Run compatibility verification and dogfood this Change with FER
       enabled, recording only real evidence.
-- [x] T-006 Complete Verification, Knowledge Capture, and independent Strict
+- [ ] T-006 Complete Verification, Knowledge Capture, and independent Strict
       Review.
 
 ## Status
 
-T-001 through T-006 are complete. Independent Strict Review iteration 3
-passed against the exact frozen final subject recorded in provenance.yml.
+T-001 through T-005 are complete. T-006 remains pending until independent
+Resolution Verification of the provenance migration passes.
