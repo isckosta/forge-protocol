@@ -34,7 +34,7 @@
 | P1 | `forge doctor` detect zero adapters installed | `adapter-readiness-doctor-check` | **Done** | [`CHG-0024`](.forge/changes/CHG-0024-adapter-readiness-doctor-check/) |
 | P1 | Real semantics for `plan.md status: approved` | `plan-approval-semantics` | **Done** | [`CHG-0025`](.forge/changes/CHG-0025-plan-approval-semantics/) |
 | P1 | Document skill-propagation latency after adapter install | `skill-propagation-diagnostics` | **Done** | [`CHG-0026`](.forge/changes/CHG-0026-skill-propagation-diagnostics/) |
-| P1 | Review cost proportional to diff size (RFC-level) | `review-cost-proportionality` | Open | — |
+| P1 | Review cost proportional to diff size (RFC-level) | `review-cost-proportionality` | **Done** | [`CHG-0027`](.forge/changes/CHG-0027-review-cost-proportionality/) |
 | P2 | Chat communication cadence guidance | `chat-cadence-guidance` | **Done** | [`CHG-0028`](.forge/changes/CHG-0028-chat-cadence-guidance/) |
 | P2 | Suggest publishing key artifacts as Artifact | `artifact-publication-suggestion` | Open | — |
 | P2 | Document real limits of Reviewer "independence" | `reviewer-independence-disclosure` | Open | — |

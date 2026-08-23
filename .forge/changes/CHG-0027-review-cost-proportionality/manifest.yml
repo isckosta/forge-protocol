@@ -1,0 +1,73 @@
+schema: forge/change@2
+protocol: 2
+change:
+  id: CHG-0027
+  title: Review Cost Proportionality
+  kind: feature
+flow: {initial: full, current: full, escalations: []}
+state: {current: complete}
+artifacts:
+  intent: complete
+  discovery: complete
+  specification: complete
+  specification_review: complete
+  architecture: complete
+  test_strategy: complete
+  plan: complete
+  tasks: complete
+  traceability: complete
+  tdd_evidence: complete
+  implementation: not_applicable
+  provenance: complete
+  verification: complete
+  review: complete
+  documentation: complete
+  knowledge_capture: complete
+requirements: {total: 5, implemented: 5, verified: 5}
+tdd:
+  status: not_applicable
+  reason: >-
+    This Change is an RFC-only documentation proposal with no executable
+    production behavior, schema, Flow, Gate, or Review-policy implementation.
+verification: {status: passed}
+review:
+  status: passed
+  iteration: 2
+  blockers: 0
+  majors: 0
+  minors: 0
+  observations: 0
+  iterations:
+    - id: review-001
+      revision: chg-0027-documentation-001
+      subject_provenance: implementation-001
+      reviewer_provenance: review-001
+      kind: initial_review
+      status: failed
+      evidence_gap: >-
+        R001 manifest Flow/state mismatch, R002 schema-invalid TDD evidence,
+        and R003 unfrozen/schema-invalid provenance. See review.md.
+    - id: review-002
+      revision: chg-0027-resolution-001
+      subject_provenance: resolution-001
+      reviewer_provenance: review-002
+      kind: resolution_verification
+      status: passed
+      full_review_required: false
+      new_material_findings: 0
+      finding_classes: []
+      evidence_gap: >-
+        R001/R002/R003 independently verified resolved against the exact
+        frozen resolution subject 085c9edfaf1f448629a3fe9c97915871b04a1d46.
+        The Resolution Delta matched declared scope and no new material
+        finding was found. Direct JSON Schema validation passed. The only
+        disclosed limits are unrelated CHG-0021 history reachability and
+        pytest unavailable in this environment.
+documentation:
+  impact_evaluated: true
+  update_required: true
+  reason: >-
+    Added RFC-0005 with Status Proposed and updated item #7 in
+    ROADMAP-REMEDIATION.md to RFC proposed, pending human decision. No
+    implementation, Flow, Review policy, Contract, schema, CLI, or parallel
+    roadmap item was changed.
