@@ -82,6 +82,15 @@ BLOCKER and MAJOR Findings MUST include sufficient evidence.
 ## C-026 — Reviewer/Resolver separation
 Reviewer and Resolver MUST remain distinct conceptual Roles.
 
+Protocol 1's C-026 is a conceptual Role-separation requirement. Protocol 2
+defines the stronger, revision-bound execution guarantee in its versioned
+Contract: the Reviewer MUST use a distinct Execution and Execution Context
+from the Implementation or Resolution under review. That guarantee is about
+execution/context independence, not vendor, model, or provider diversity; the
+same Harness, provider, model, or agent implementation MAY perform multiple
+Roles when the required execution/context boundaries are real. This note does
+not apply Protocol 2's stronger obligation retroactively to Protocol 1.
+
 ## C-027 — Blocking review evidence blocks Completion
 Unresolved BLOCKER Findings MUST prevent Completion. When an active external review surface exists, unresolved threads containing findings classified as blocking MUST also prevent Completion. Without an external review surface, the thread condition is satisfied trivially.
 
