@@ -39,3 +39,54 @@ records:
       observed_by: self
       reference: implementation-subject
       statement: Frozen implementation subject for independent Strict Review.
+  - id: implementation-subject-003
+    role: implementation
+    execution:
+      id: codex-implementation-0036-subject-003
+      context_id: codex-session-2026-08-23-subject-003
+    recorded_at: '2026-08-23T18:30:00Z'
+    revision:
+      id: chg-0036-implementation-003
+      immutable_ref:
+        type: git_commit
+        value: 0659771145adeb737bb6d698ef4d59cf773d307b
+      commit: 0659771145adeb737bb6d698ef4d59cf773d307b
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: implementation-subject
+      statement: Frozen implementation subject after resolution of Strict Review findings.
+  - id: implementation-subject-004
+    role: implementation
+    execution:
+      id: codex-implementation-0036-subject-004
+      context_id: codex-session-2026-08-23-subject-004
+    recorded_at: '2026-08-23T18:45:00Z'
+    revision:
+      id: chg-0036-implementation-004
+      immutable_ref:
+        type: git_commit
+        value: d92a30a3cf9296cde9d4216c0081b9ca70233e06
+      commit: d92a30a3cf9296cde9d4216c0081b9ca70233e06
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: implementation-subject
+      statement: Frozen implementation subject after final evidence-binding fixes.
+  - id: implementation-subject-005
+    role: implementation
+    execution:
+      id: codex-implementation-0036-subject-005
+      context_id: codex-session-2026-08-23-subject-005
+    recorded_at: '2026-08-23T19:10:00Z'
+    revision:
+      id: chg-0036-implementation-005
+      immutable_ref:
+        type: git_commit
+        value: 584d84310be1c5de9702711b81c0e0d8dd29493b
+      commit: 584d84310be1c5de9702711b81c0e0d8dd29493b
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: implementation-subject
+      statement: Frozen implementation subject after fail-closed Flow and revision fixes.
