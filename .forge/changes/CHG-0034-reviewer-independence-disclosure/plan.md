@@ -3,7 +3,7 @@ forge:
   artifact: plan
   schema: 1
 change: CHG-0034
-status: pending
+status: approved
 ---
 
 # Plan — CHG-0034 Reviewer Independence Disclosure
@@ -26,6 +26,17 @@ status: pending
 ## Implementation Boundary
 
 Reaching `plan_complete` is not authorization to begin Implementation.
+Implementation requires the explicit human Plan authorization recorded by
+the canonical `forge:plan-approval-confirmation` and
+`forge:plan-approval-record` markers, with the operator identified in
+provenance. No Contract or projection edits begin before that confirmation.
+
+## Approval record
+
+<!-- forge:plan-approval-confirmation -->
+<!-- forge:plan-approval-record -->
+The user explicitly authorized continuation with “Aprovado” in the active
+session on 2026-08-23.
 Implementation requires the explicit human Plan authorization recorded by
 the canonical `forge:plan-approval-confirmation` and
 `forge:plan-approval-record` markers, with the operator identified in

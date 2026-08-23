@@ -15,7 +15,7 @@ artifacts:
   discovery: complete
   specification: complete
   test_design: complete
-  plan: pending
+  plan: approved
   tdd_evidence: active
   verification: pending
   review: pending
@@ -39,3 +39,12 @@ review:
   iterations: []
 documentation:
   impact_evaluated: false
+decisions:
+  - id: DEC-001
+    class: technical
+    materiality: material
+    status: resolved
+    authority: human
+    owning_artifact: plan
+    discovered_in: plan
+    resolved_via: human_decision
