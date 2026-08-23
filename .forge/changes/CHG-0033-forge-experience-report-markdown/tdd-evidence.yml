@@ -1,0 +1,45 @@
+schema: forge/tdd-evidence@1
+change: CHG-0033
+status: compliant
+cycle_count: 3
+cycles:
+  - id: TDD-001
+    title: Pure deterministic Markdown projection
+    requirements: [FR-002, FR-003, FR-004, FR-005, AC-001, AC-002, AC-003]
+    red:
+      observed: true
+      failure_reason: >-
+        ModuleNotFoundError: forge_cli.experience.markdown while collecting
+        tests/unit/test_experience_markdown.py against the unmodified renderer.
+    green:
+      observed: true
+      evidence: >-
+        Six renderer tests pass, including complete output, optional-section
+        omission, deterministic output, escaping, ordering, and multiline text.
+  - id: TDD-002
+    title: Official FER writes synchronize Markdown
+    requirements: [FR-006, FR-009, AC-004, AC-005]
+    red:
+      observed: true
+      failure_reason: >-
+        Existing record created canonical YAML but no sibling Markdown and the
+        storage object had no Markdown write hook; three new integration tests
+        failed before storage integration.
+    green:
+      observed: true
+      evidence: >-
+        Creation, append/update, and projection-write failure tests pass;
+        canonical YAML remains valid after the simulated Markdown failure.
+  - id: TDD-003
+    title: Explicit historical regeneration and drift repair
+    requirements: [FR-007, FR-008, AC-004]
+    red:
+      observed: true
+      failure_reason: >-
+        The new render CLI tests exited 2 because no experience render command
+        existed.
+    green:
+      observed: true
+      evidence: >-
+        One-report and --all rendering pass without FER enablement, repair
+        manual drift, and produce identical output on repeated runs.

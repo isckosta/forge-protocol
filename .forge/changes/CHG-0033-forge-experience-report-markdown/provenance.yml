@@ -1,0 +1,132 @@
+schema: forge/execution-provenance@2
+change: CHG-0033
+records:
+  - id: implementation-001
+    role: implementation
+    execution:
+      id: implementation-exec-chg0033-20260823-01
+      context_id: implementation-context-chg0033-20260823-01
+    recorded_at: "2026-08-23T01:35:00-03:00"
+    revision:
+      id: chg-0033-implementation-001
+      immutable_ref: {type: git_commit, value: 863da71a7c42307c593b127f01776df5ff1cb966}
+    source:
+      assurance: recorded
+      observed_by: operator
+      harness: codex
+      statement: >-
+        CHG-0033 implementation subject was frozen at commit 863da71 after
+        TDD, historical rendering, compatibility verification, and
+        documentation updates.
+  - id: review-001
+    role: review
+    execution:
+      id: review-exec-chg0033-independent-01
+      context_id: review-context-chg0033-independent-01
+    recorded_at: "2026-08-23T01:36:00-03:00"
+    revision:
+      id: chg-0033-implementation-001
+      immutable_ref: {type: git_commit, value: 863da71a7c42307c593b127f01776df5ff1cb966}
+    source:
+      assurance: recorded
+      observed_by: independent_subagent
+      harness: codex
+      statement: >-
+        Independent Strict Review execution 01a02cdf-46c7-7d10-bdef-ed85527e930d
+        re-reviewed the frozen CHG-0033 subject and passed. Traversal,
+        per-report locking, Git review guidance, focused tests, Forge
+        validation, FER validation, and diff checks were confirmed.
+  - id: resolution-001
+    role: resolution
+    scope:
+      - .forge/changes/CHG-0033-forge-experience-report-markdown/manifest.yml
+      - .forge/changes/CHG-0033-forge-experience-report-markdown/provenance.yml
+      - .forge/changes/CHG-0033-forge-experience-report-markdown/review.md
+      - .forge/changes/CHG-0033-forge-experience-report-markdown/specification-review.md
+    targets: [R001, R002, R003]
+    execution:
+      id: resolution-exec-chg0033-20260823-01
+      context_id: resolution-context-chg0033-20260823-01
+    recorded_at: "2026-08-23T01:50:00-03:00"
+    revision:
+      id: chg-0033-resolution-001
+      immutable_ref: {type: git_commit, value: 706a63c866774ee1fdd9159e58adeab3cd809e92}
+    source:
+      assurance: recorded
+      observed_by: operator
+      harness: codex
+      statement: >-
+        Resolution-001 records the completed Specification Review and the
+        independent Strict Review resolution metadata for CHG-0033.
+  - id: review-002
+    role: review
+    execution:
+      id: review-exec-chg0033-resolution-independent-01
+      context_id: review-context-chg0033-resolution-independent-01
+    recorded_at: "2026-08-23T01:51:00-03:00"
+    revision:
+      id: chg-0033-resolution-001
+      immutable_ref: {type: git_commit, value: 706a63c866774ee1fdd9159e58adeab3cd809e92}
+    source:
+      assurance: recorded
+      observed_by: independent_subagent
+      harness: codex
+      statement: >-
+        Independent re-review verified the Resolution metadata, exact subject
+        bindings, reviewer independence, and absence of behavioral changes.
+  - id: resolution-002
+    role: resolution
+    scope:
+      - .forge/changes/CHG-0033-forge-experience-report-markdown/manifest.yml
+      - .forge/changes/CHG-0033-forge-experience-report-markdown/provenance.yml
+      - .forge/changes/CHG-0033-forge-experience-report-markdown/review.md
+    targets: [R001, R002, R003]
+    execution:
+      id: resolution-exec-chg0033-20260823-02
+      context_id: resolution-context-chg0033-20260823-02
+    recorded_at: "2026-08-23T02:00:00-03:00"
+    revision:
+      id: chg-0033-resolution-002
+      immutable_ref: {type: git_commit, value: 0d3abb7cde15d7eb8a9bd4526a355b37e50fe603}
+    source:
+      assurance: recorded
+      observed_by: operator
+      harness: codex
+      statement: >-
+        Resolution-002 preserves the committed review history and adds the
+        scoped Resolution Verification binding for the frozen metadata subject.
+  - id: review-003
+    role: review
+    execution:
+      id: review-exec-chg0033-resolution-independent-02
+      context_id: review-context-chg0033-resolution-independent-02
+    recorded_at: "2026-08-23T02:01:00-03:00"
+    revision:
+      id: chg-0033-resolution-002
+      immutable_ref: {type: git_commit, value: 0d3abb7cde15d7eb8a9bd4526a355b37e50fe603}
+    source:
+      assurance: recorded
+      observed_by: independent_subagent
+      harness: codex
+      statement: >-
+        Independent re-review verified Resolution-002 scope, targets, exact
+        subject binding, reviewer independence, and no behavioral changes.
+  - id: plan-approval-001
+    role: implementation
+    execution:
+      id: implementation-exec-chg0033-20260823-01
+      context_id: implementation-context-chg0033-20260823-01
+    recorded_at: "2026-08-23T01:19:35-03:00"
+    revision:
+      id: chg-0033-plan-approved
+      immutable_ref: {type: git_commit, value: c776dbdd7d63cfa8e76422c7d1b62301e1030484}
+    source:
+      assurance: recorded
+      observed_by: operator
+      harness: codex
+      reference: plan.md#approval-record
+      statement: >-
+        Explicit human approval was received from the user in the active
+        session on 2026-08-23. This authorizes continuation past the
+        Plan/Implementation boundary and is not cryptographic or
+        provider-native attestation.

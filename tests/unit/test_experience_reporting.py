@@ -96,6 +96,56 @@ def test_first_observation_lazily_creates_a_report_with_safe_context(tmp_path: P
     assert document["schema"] == "forge/experience-report@1"
     assert document["source"]["commit"] == "abc123"
     assert document["observations"][0]["id"] == "FER-0001-O001"
+    markdown_path = path.with_suffix(".md")
+    assert markdown_path.is_file()
+    assert "# FER-0001" in markdown_path.read_text(encoding="utf-8")
+
+
+def test_record_updates_markdown_projection_when_appending_evidence(tmp_path: Path) -> None:
+    storage = ExperienceStorage(tmp_path, context={})
+    positive = parse_record_input(
+        {"positive_evidence": {"area": "doctor", "observed": "Doctor worked."}}
+    )
+
+    path = storage.record(positive)
+    storage.record(
+        parse_record_input(
+            {
+                "observation": {
+                    "area": "storage",
+                    "classification": "uncertain",
+                    "expected": "The report remains readable.",
+                    "observed": "The report was updated.",
+                    "evidence": ["The Markdown projection contains the entry."],
+                    "impact": "Review remains possible.",
+                }
+            }
+        )
+    )
+
+    rendered = path.with_suffix(".md").read_text(encoding="utf-8")
+    assert "## Positive Evidence" in rendered
+    assert "## Observations" in rendered
+    assert "FER-0001-O001" in rendered
+
+
+def test_markdown_write_failure_preserves_canonical_report(tmp_path: Path, monkeypatch) -> None:
+    storage = ExperienceStorage(tmp_path, context={})
+    entry = parse_record_input(
+        {"positive_evidence": {"area": "storage", "observed": "Canonical data was written."}}
+    )
+
+    def fail_markdown(path: Path, content: str) -> None:
+        raise OSError("simulated Markdown disk failure")
+
+    monkeypatch.setattr(storage, "_atomic_write_markdown", fail_markdown)
+
+    with pytest.raises(ExperienceStorageError, match="simulated Markdown disk failure"):
+        storage.record(entry)
+
+    canonical = tmp_path / "dogfooding" / "reports" / "FER-0001.yml"
+    assert canonical.is_file()
+    assert yaml.safe_load(canonical.read_text(encoding="utf-8"))["positive_evidence"][0]["id"] == "FER-0001-P001"
 
 
 def test_positive_evidence_can_create_a_report_without_an_observation(tmp_path: Path) -> None:
@@ -215,6 +265,101 @@ def test_experience_cli_can_append_to_the_report_returned_by_the_first_record(
         (tmp_path / "dogfooding" / "reports" / "FER-0001.yml").read_text(encoding="utf-8")
     )
     assert len(document["positive_evidence"]) == 2
+
+
+def test_experience_cli_renders_existing_report_without_enablement(tmp_path: Path, monkeypatch) -> None:
+    subprocess.run(["git", "init", str(tmp_path)], check=True, capture_output=True, text=True)
+    monkeypatch.chdir(tmp_path)
+    reports = tmp_path / "dogfooding" / "reports"
+    reports.mkdir(parents=True)
+    (reports / "FER-0001.yml").write_text(
+        "schema: forge/experience-report@1\n"
+        "report: FER-0001\n"
+        "source: {protocol: 2}\n"
+        "observations: []\n"
+        "positive_evidence:\n"
+        "  - {id: FER-0001-P001, area: doctor, observed: Doctor worked.}\n"
+        "follow_up_candidates: []\n",
+        encoding="utf-8",
+    )
+
+    result = CliRunner().invoke(app_module.app, ["experience", "render", "FER-0001"])
+
+    assert result.exit_code == 0, result.stdout
+    assert "rendered" in result.stdout.lower()
+    assert "## Positive Evidence" in (reports / "FER-0001.md").read_text(encoding="utf-8")
+
+
+def test_experience_cli_render_all_repairs_drift_deterministically(tmp_path: Path, monkeypatch) -> None:
+    subprocess.run(["git", "init", str(tmp_path)], check=True, capture_output=True, text=True)
+    monkeypatch.chdir(tmp_path)
+    reports = tmp_path / "dogfooding" / "reports"
+    reports.mkdir(parents=True)
+    (reports / "FER-0001.yml").write_text(
+        "schema: forge/experience-report@1\n"
+        "report: FER-0001\n"
+        "source: {}\n"
+        "observations: []\npositive_evidence: []\nfollow_up_candidates: []\n",
+        encoding="utf-8",
+    )
+    projection = reports / "FER-0001.md"
+    projection.write_text("manual drift\n", encoding="utf-8")
+
+    first = CliRunner().invoke(app_module.app, ["experience", "render", "--all"])
+    rendered = projection.read_text(encoding="utf-8")
+    second = CliRunner().invoke(app_module.app, ["experience", "render", "--all"])
+
+    assert first.exit_code == 0, first.stdout
+    assert second.exit_code == 0, second.stdout
+    assert rendered == projection.read_text(encoding="utf-8")
+    assert "manual drift" not in rendered
+
+
+def test_experience_cli_render_rejects_report_path_traversal(tmp_path: Path, monkeypatch) -> None:
+    subprocess.run(["git", "init", str(tmp_path)], check=True, capture_output=True, text=True)
+    monkeypatch.chdir(tmp_path)
+    reports = tmp_path / "dogfooding" / "reports"
+    reports.mkdir(parents=True)
+    outside = tmp_path / "outside.yml"
+    outside.write_text(
+        "schema: forge/experience-report@1\n"
+        "report: outside\n"
+        "source: {}\n"
+        "observations: []\npositive_evidence: []\nfollow_up_candidates: []\n",
+        encoding="utf-8",
+    )
+
+    result = CliRunner().invoke(app_module.app, ["experience", "render", "../../outside"])
+
+    assert result.exit_code == 2
+    assert "invalid" in result.stdout.lower()
+    assert not outside.with_suffix(".md").exists()
+
+
+def test_experience_cli_render_rejects_a_symlinked_dogfooding_ancestor(
+    tmp_path: Path, monkeypatch
+) -> None:
+    subprocess.run(["git", "init", str(tmp_path)], check=True, capture_output=True, text=True)
+    monkeypatch.chdir(tmp_path)
+    outside = tmp_path / "outside"
+    outside.mkdir()
+    (tmp_path / "dogfooding").symlink_to(outside, target_is_directory=True)
+
+    result = CliRunner().invoke(app_module.app, ["experience", "render", "FER-0001"])
+
+    assert result.exit_code == 2
+    assert "invalid" in result.stdout.lower()
+
+
+def test_experience_cli_render_rejects_missing_explicit_report(tmp_path: Path, monkeypatch) -> None:
+    subprocess.run(["git", "init", str(tmp_path)], check=True, capture_output=True, text=True)
+    monkeypatch.chdir(tmp_path)
+    (tmp_path / "dogfooding" / "reports").mkdir(parents=True)
+
+    result = CliRunner().invoke(app_module.app, ["experience", "render", "FER-0001"])
+
+    assert result.exit_code == 2
+    assert "missing" in result.stdout.lower()
 
 
 def test_report_write_failure_is_explicit_and_does_not_touch_change_state(tmp_path: Path, monkeypatch) -> None:

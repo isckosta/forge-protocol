@@ -1,0 +1,88 @@
+schema: forge/change@2
+protocol: 2
+change:
+  id: CHG-0033
+  title: Forge Experience Report Markdown
+  kind: feature
+flow:
+  initial: standard
+  current: full
+  escalations:
+    - from: standard
+      to: full
+      reason: >-
+        Discovery found a derived artifact, persistence/failure semantics,
+        CLI regeneration, historical migration, and cross-module testing
+        beyond the Standard Flow boundary.
+state:
+  current: complete
+artifacts:
+  intent: complete
+  discovery: complete
+  specification: complete
+  specification_review: complete
+  architecture: complete
+  test_strategy: complete
+  plan: approved
+  tasks: complete
+  tdd_evidence: complete
+  verification: complete
+  review: complete
+  documentation: complete
+  knowledge_capture: complete
+requirements:
+  total: 10
+  implemented: 10
+  verified: 10
+tdd:
+  status: compliant
+  cycles: 3
+verification:
+  status: passed
+review:
+  status: passed
+  iteration: 3
+  blockers: 0
+  majors: 0
+  minors: 0
+  observations: 0
+  iterations:
+    - id: review-001
+      revision: chg-0033-implementation-001
+      subject_provenance: implementation-001
+      reviewer_provenance: review-001
+      kind: initial_review
+      status: passed
+      new_material_findings: 0
+    - id: review-002
+      revision: chg-0033-resolution-001
+      subject_provenance: resolution-001
+      reviewer_provenance: review-002
+      kind: resolution_verification
+      status: passed
+      full_review_required: false
+      new_material_findings: 0
+    - id: review-003
+      revision: chg-0033-resolution-002
+      subject_provenance: resolution-002
+      reviewer_provenance: review-003
+      kind: resolution_verification
+      status: passed
+      full_review_required: false
+      new_material_findings: 0
+documentation:
+  impact_evaluated: true
+  update_required: true
+  reason: >-
+    Added the contributor-facing Markdown projection documentation and
+    generated historical fixture; no Protocol, Flow, Harness, or normal
+    validation semantics changed.
+decisions:
+  - id: DEC-001
+    class: technical
+    materiality: material
+    status: resolved
+    authority: human
+    owning_artifact: plan
+    discovered_in: plan
+    resolved_via: human_decision
