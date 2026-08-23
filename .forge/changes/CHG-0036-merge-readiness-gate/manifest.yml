@@ -22,6 +22,7 @@ artifacts:
   specification_review: complete
   architecture: complete
   test_strategy: complete
+  tasks: complete
   test_design: pending
   plan: approved
   tdd_evidence: complete
