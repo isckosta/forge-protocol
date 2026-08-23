@@ -22,3 +22,37 @@ records:
         path: plan.md
         value: 678bd78fb5ba6ec1f88532fc572c7d37c3c57328321a5f8f7f3d5e573263acaf
       statement: Explicit human approval of the CHG-0037 Plan was received.
+  - id: implementation-subject-001
+    role: implementation
+    execution:
+      id: codex-implementation-0037-subject-001
+      context_id: codex-session-2026-08-23-subject-001
+    recorded_at: '2026-08-23T00:00:00Z'
+    revision:
+      id: chg-0037-implementation-001
+      immutable_ref:
+        type: git_commit
+        value: 37a7f9162dc00f03e75e7e5260776df17024de74
+      commit: 37a7f9162dc00f03e75e7e5260776df17024de74
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: implementation-subject
+      statement: Frozen CHG-0037 implementation subject for independent Strict Review.
+  - id: reviewer-001
+    role: review
+    execution:
+      id: 01a03043-e00b-7d20-8c17-1360477b3a95
+      context_id: independent-review-context-01a03043-e00b-7d20-8c17-1360477b3a95
+    recorded_at: '2026-08-23T00:00:00Z'
+    revision:
+      id: chg-0037-implementation-001
+      immutable_ref:
+        type: git_commit
+        value: 37a7f9162dc00f03e75e7e5260776df17024de74
+      commit: 37a7f9162dc00f03e75e7e5260776df17024de74
+    source:
+      assurance: recorded
+      observed_by: operator
+      reference: review.md#iteration-1
+      statement: Independent Strict Review passed with no blocking findings.
