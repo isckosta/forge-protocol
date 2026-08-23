@@ -7,7 +7,7 @@ records:
     recorded_at: "2026-08-23T00:02:14-03:00"
     revision:
       id: chg-0030-implementation-001
-      immutable_ref: {type: git_commit, value: 258f62b}
+      immutable_ref: {type: git_commit, value: 258f62bc26cc5d4c807e2ba09139eff5c1377011}
     source:
       assurance: recorded
       observed_by: operator
@@ -15,6 +15,56 @@ records:
       statement: >-
         CHG-0030 implementation subject frozen at commit 258f62b after TDD,
         focused verification, FER dogfooding, and documentation updates.
+  - id: resolution-001
+    role: resolution
+    scope:
+      - .forge/changes/CHG-0030-forge-experience-reporting/manifest.yml
+      - .forge/changes/CHG-0030-forge-experience-reporting/provenance.yml
+      - .forge/changes/CHG-0030-forge-experience-reporting/tdd-evidence.yml
+      - .forge/changes/CHG-0030-forge-experience-reporting/verification.md
+      - .forge/contributor.yml
+      - src/forge_cli/experience/context.py
+      - src/forge_cli/experience/model.py
+      - src/forge_cli/experience/storage.py
+      - src/forge_cli/experience_cli.py
+      - tests/unit/test_experience_reporting.py
+    targets: [R001, R002, R003, R004, R005]
+    execution: {id: resolution-exec-chg0030-20260823-01, context_id: resolution-context-chg0030-20260823-01}
+    recorded_at: "2026-08-23T00:05:00-03:00"
+    revision:
+      id: chg-0030-resolution-001
+      immutable_ref: {type: git_commit, value: e03a8b2e48e4b89214ca32f73b7e36d288ffc6f7}
+    source:
+      assurance: recorded
+      observed_by: operator
+      harness: codex
+      statement: >-
+        Resolution-001 addresses the independent review findings for default
+        off state, sensitive input rejection, symlink and malformed report
+        isolation, supported manifest schema, TDD evidence requirements, and
+        Documentation Impact metadata.
+  - id: resolution-002
+    role: resolution
+    scope:
+      - .forge/changes/CHG-0030-forge-experience-reporting/tdd-evidence.yml
+      - .forge/changes/CHG-0030-forge-experience-reporting/verification.md
+      - src/forge_cli/experience/model.py
+      - src/forge_cli/experience/storage.py
+      - tests/unit/test_experience_reporting.py
+    targets: [R006, R007, R008]
+    execution: {id: resolution-exec-chg0030-20260823-02, context_id: resolution-context-chg0030-20260823-02}
+    recorded_at: "2026-08-23T00:12:44-03:00"
+    revision:
+      id: chg-0030-resolution-002
+      immutable_ref: {type: git_commit, value: 358bf848bc45c25406931091e16cc4c0adf9beea}
+    source:
+      assurance: recorded
+      observed_by: operator
+      harness: codex
+      statement: >-
+        Resolution-002 addresses the remaining independent review findings for
+        evidence-item sanitization, ancestor symlink containment, and
+        structured follow-up candidate validation.
   - id: plan-approval-001
     role: implementation
     execution: {id: implementation-exec-chg0030-20260822-01, context_id: implementation-context-chg0030-20260822-01}

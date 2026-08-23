@@ -40,13 +40,26 @@ tdd:
 verification:
   status: passed
 review:
-  status: pending
-  iteration: 0
+  status: failed
+  iteration: 2
   blockers: 0
-  majors: 0
+  majors: 3
   minors: 0
   observations: 0
-  iterations: []
+  iterations:
+    - id: review-001
+      revision: chg-0030-implementation-001
+      subject_provenance: implementation-001
+      kind: initial_review
+      status: failed
+      new_material_findings: 5
+    - id: review-002
+      revision: chg-0030-resolution-001
+      subject_provenance: resolution-001
+      kind: resolution_verification
+      status: failed
+      full_review_required: false
+      new_material_findings: 3
 documentation:
   impact_evaluated: true
   update_required: true
