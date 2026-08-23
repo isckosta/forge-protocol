@@ -9,26 +9,26 @@ flow:
   current: standard
   escalations: []
 state:
-  current: plan
+  current: verification
 artifacts:
   intent: complete
   discovery: complete
   specification: complete
   test_design: complete
   plan: approved
-  tdd_evidence: active
-  verification: pending
+  tdd_evidence: complete
+  verification: complete
   review: pending
   documentation: pending
 requirements:
-  total: 0
-  implemented: 0
-  verified: 0
+  total: 4
+  implemented: 4
+  verified: 4
 tdd:
   status: not_applicable
   reason: "This Change updates canonical Contract prose and roadmap/documentation metadata only; it adds no executable behavior."
 verification:
-  status: pending
+  status: passed
 review:
   status: pending
   iteration: 0
@@ -38,7 +38,11 @@ review:
   observations: 0
   iterations: []
 documentation:
-  impact_evaluated: false
+  impact_evaluated: true
+  update_required: true
+  reason: >-
+    The Change updates canonical Contract prose and remediation roadmap
+    documentation; Harness projections were inspected and required no change.
 decisions:
   - id: DEC-001
     class: technical
