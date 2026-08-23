@@ -252,3 +252,116 @@ def test_render_scaffold_specification_explains_optional_user_stories() -> None:
     assert "User Stories are optional" in specification
     assert "Requirement without a User Story is valid" in specification
     assert "As a user" not in specification
+
+
+def test_render_scaffold_test_design_uses_verification_design_contract_layout() -> None:
+    plan = render_scaffold(
+        change_id="CHG-0038",
+        slug="test-design-layout",
+        flow_id="standard",
+        flow_data=_canonical_flow("standard"),
+        behavioral=True,
+    )
+
+    test_design = plan.files["test-design.md"]
+
+    assert test_design.startswith(
+        "---\nforge:\n  artifact: test_design\n  schema: 1\n"
+        "change: CHG-0038\nstatus: pending\n---\n\n"
+        "# CHG-0038 · Test Design\n\n"
+        "> Verification Design\n"
+    )
+    for heading in (
+        "Overview",
+        "Test Strategy",
+        "Coverage Map",
+        "Requirement Coverage",
+        "Coverage Gaps",
+        "Test Design Gate",
+    ):
+        assert f"## {heading}" in test_design
+    for legacy in ("## Objective", "## Strategy", "TDD-001 — <behavior>", "## Completion Criteria"):
+        assert legacy not in test_design
+
+
+def test_render_scaffold_test_design_scenario_is_self_contained_and_not_padded() -> None:
+    plan = render_scaffold(
+        change_id="CHG-0038",
+        slug="test-design-scenario",
+        flow_id="standard",
+        flow_data=_canonical_flow("standard"),
+        behavioral=True,
+    )
+
+    test_design = plan.files["test-design.md"]
+
+    assert "### TD-001 ·" in test_design
+    for subheading in ("Purpose", "Preconditions", "Scenario", "Evidence", "Failure Condition", "Boundary"):
+        assert f"#### {subheading}" in test_design
+    assert "N/A" not in test_design
+
+
+def test_render_scaffold_test_design_explains_optional_user_stories() -> None:
+    plan = render_scaffold(
+        change_id="CHG-0038",
+        slug="test-design-technical",
+        flow_id="fast",
+        flow_data=_canonical_flow("fast"),
+        behavioral=True,
+    )
+
+    test_design = plan.files["test-design.md"]
+
+    assert "Requirement without a User Story is valid" in test_design
+    assert "### US-001" not in test_design
+
+
+def test_render_scaffold_test_design_separates_manual_acceptance() -> None:
+    plan = render_scaffold(
+        change_id="CHG-0038",
+        slug="test-design-manual",
+        flow_id="standard",
+        flow_data=_canonical_flow("standard"),
+        behavioral=True,
+    )
+
+    test_design = plan.files["test-design.md"]
+
+    assert "Manual Acceptance" in test_design
+    assert "Preconditions" in test_design
+    assert "operator instructions" in test_design
+    assert "MUST NOT be presented as an automated guarantee" in test_design
+
+
+def test_render_scaffold_test_design_defines_valid_red() -> None:
+    plan = render_scaffold(
+        change_id="CHG-0038",
+        slug="test-design-red",
+        flow_id="standard",
+        flow_data=_canonical_flow("standard"),
+        behavioral=True,
+    )
+
+    test_design = plan.files["test-design.md"]
+
+    assert "fails for the expected behavioral reason" in test_design
+    for cause in ("syntax error", "broken import", "invalid fixture", "infrastructure unavailability"):
+        assert cause in test_design
+
+
+def test_render_scaffold_test_strategy_template_is_unchanged() -> None:
+    plan = render_scaffold(
+        change_id="CHG-0038",
+        slug="test-strategy-unaffected",
+        flow_id="full",
+        flow_data=_canonical_flow("full"),
+        behavioral=True,
+    )
+
+    test_strategy = plan.files["test-strategy.md"]
+
+    assert test_strategy.endswith(
+        "## Objective\n\nState the test strategy objective.\n\n## Strategy\n\n"
+        "## TDD-001 — <behavior>\n\nDefine the test case.\n\n"
+        "## Completion Criteria\n\nList completion criteria.\n"
+    )

@@ -34,10 +34,6 @@ Isso não bloqueia a Change: C-067 é SHOULD, não MUST, e a própria seção Sp
 
 `test-design.md` históricos (ex.: `CHG-0037/test-design.md`, formato `## Objective` / `## Strategy` / `## TDD-001 — ...` / `## Completion Criteria`) não são reescritos — o redesenho é presentation-only e aplica-se a scaffolds novos, exatamente como a CHG-0037 fez para `specification.md`. Nenhum arquivo em `protocol/schemas/` referencia a estrutura Markdown de `test-design.md`; `manifest.yml`/`change-v2.schema.json` só carregam o status agregado do artefato.
 
-### Precedente de exemplo de domínio
-
-`examples/canonical-artifacts/` já contém artefatos fictícios (`CHG-EXAMPLE`) anotados com comentários HTML apontando para as seções correspondentes de `protocol/artifact-structure.md`, usados para ilustrar a guidance fora de uma Change real (`README.md` do diretório). Esse é o lugar correto para o exemplo de ERP (Customer Price Lists) pedido, em vez de criar uma nova convenção de diretório.
-
 ### Testes existentes relevantes
 
 `tests/unit/test_change_scaffolding.py` já demonstra o padrão de asserção usado pela CHG-0037 para `specification.md` (`test_render_scaffold_specification_uses_traceable_contract_layout`, `test_render_scaffold_specification_explains_optional_user_stories`) — asserções de substring sobre headings e frases-chave, não snapshot de Markdown inteiro. O mesmo padrão será seguido para `test-design.md`. `test_render_scaffold_uses_only_the_selected_flow_stages` já fixa o conjunto de arquivos por Flow/behavioral; nenhuma mudança de conjunto de arquivos é necessária (apenas o conteúdo de `test-design.md`).

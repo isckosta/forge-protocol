@@ -216,16 +216,40 @@ Mixing the two numbering spaces is a real risk this document exists partly
 to prevent — see this repository's own `CHG-0015/architecture.md:37`,
 which already keeps them separate in practice.
 
-### Test Design / Test Strategy
+### Test Design
 
-**Structural core:** Objective, Strategy, per-case entries as `## TDD-xxx`
-headings (this repository's real, stable, already-consistent convention
-— sixteen such cases in `CHG-0015/test-strategy.md` alone; do not
-redesign it), Non-mechanical Validation for content that TDD cannot
-reasonably cover (Protocol §19), Completion Criteria. Test Design and
-Test Strategy are not the same Artifact scaled differently — Test Design
-(FAST/STANDARD, when behavioral) and Test Strategy (FULL) have distinct
-Flow roles and both keep this same shape.
+**Structural core (redesigned by `CHG-0038`):** Overview, Test Strategy
+(a Layer/Scope/Method table when Layers add clarity), a Coverage Map
+indexing Requirement → Scenario → Method, per-scenario entries as stable
+`### TD-xxx ·` headings with `Requirements`/`Stories`/`Type`/`Priority`
+and `#### Purpose`/`#### Preconditions`/`#### Scenario`/`#### Evidence`/
+`#### Failure Condition`/`#### Boundary` subsections (present only when
+materially applicable — an empty subsection is omitted, not padded with
+`N/A`), a closing Requirement Coverage table, Coverage Gaps, and a Test
+Design Gate. `Type: Manual Acceptance` is a distinct category from
+automated types and MUST NOT be presented as an automated guarantee.
+
+This supersedes the prior guidance for this Artifact, which instructed
+"do not redesign" the bare `## TDD-xxx` shape below. That instruction is
+non-binding (C-067) and this document is itself expected to evolve when
+real practice does — the same way this document's own Specification
+entry was rewritten by `CHG-0037`. The reason for diverging here,
+specifically: Test Design (FAST/STANDARD, when behavioral) now needs
+explicit Requirement traceability, evidence typing, and manual/automated
+separation to serve as a pre-Implementation verification contract; Test
+Strategy (FULL) keeps its existing shape unchanged, so the two Artifacts
+no longer share one description (see below).
+
+### Test Strategy
+
+**Structural core (unchanged):** Objective, Strategy, per-case entries as
+`## TDD-xxx` headings (this repository's real, stable, already-consistent
+convention — sixteen such cases in `CHG-0015/test-strategy.md` alone; do
+not redesign it), Non-mechanical Validation for content that TDD cannot
+reasonably cover (Protocol §19), Completion Criteria. Test Strategy is
+the FULL-Flow Artifact; `CHG-0038` deliberately left it unredesigned so
+this shape, and its sixteen real precedent cases, remain valid without
+rewriting.
 
 ### Plan
 

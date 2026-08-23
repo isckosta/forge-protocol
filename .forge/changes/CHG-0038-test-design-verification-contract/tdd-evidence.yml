@@ -1,5 +1,19 @@
 schema: forge/tdd-evidence@1
 change: CHG-0038
-status: active
-cycle_count: 0
-cycles: []
+status: compliant
+cycle_count: 1
+cycles:
+  - id: TDD-001
+    title: Test Design verification design contract layout
+    requirements: [FR-001, FR-002, FR-003, FR-004, FR-005]
+    behavior: Generated test-design.md exposes the Overview/Test Strategy/Coverage Map/TD-xxx/Requirement Coverage/Coverage Gaps/Test Design Gate contract, with Manual Acceptance and valid-RED guidance, replacing the prior minimal template.
+    red:
+      command: .venv/bin/python -m pytest tests/unit/test_change_scaffolding.py -k 'test_design or test_strategy_template' -q
+      result: 5 failed, 1 passed, 25 deselected
+      reason: The old renderer emitted the legacy Objective/Strategy/TDD-001/Completion Criteria template and lacked the new headings, TD-xxx scenario, Manual Acceptance, and valid-RED guidance.
+    green:
+      command: .venv/bin/python -m pytest tests/unit/test_change_scaffolding.py -q
+      result: 31 passed
+    notes:
+      - No Markdown parser or semantic validator was introduced.
+      - test_render_scaffold_test_strategy_template_is_unchanged (FR-006) is a regression guard, not new TDD behavior; it passed both before and after this cycle, confirming the test_strategy template is byte-identical.

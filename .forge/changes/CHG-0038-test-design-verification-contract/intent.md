@@ -39,4 +39,4 @@ O template gerado de `test-design.md` (STANDARD/FAST, quando comportamental), a 
 
 ## Success Criteria
 
-Novos `test-design.md` gerados expõem estrutura de Overview, Test Strategy, Coverage Map, cenários `TD-xxx` autocontidos, Requirement Coverage, Coverage Gaps e um Test Design Gate. `test-design.md` históricos continuam válidos, `forge validate` continua correto, e um exemplo de domínio fora do próprio Forge (ERP — Customer Price Lists) demonstra que o layout funciona além de Changes de tooling.
+Novos `test-design.md` gerados expõem estrutura de Overview, Test Strategy, Coverage Map, cenários `TD-xxx` autocontidos, Requirement Coverage, Coverage Gaps e um Test Design Gate. `test-design.md` históricos continuam válidos e `forge validate` continua correto.

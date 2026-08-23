@@ -18,7 +18,7 @@ status: complete
 | **Flow** | STANDARD |
 | **Status** | Complete |
 | **Automated Scenarios** | 6 |
-| **Manual Scenarios** | 2 |
+| **Manual Scenarios** | 1 |
 | **Primary Layers** | Scaffold Rendering, Documentation Consistency, Repository Compatibility |
 
 ## Test Strategy
@@ -40,7 +40,6 @@ status: complete
 | FR-005 | TD-005 | Automated |
 | FR-006 | TD-006 | Automated |
 | FR-001, FR-006 | TD-007 | Manual Acceptance |
-| FR-001, FR-002, FR-003 | TD-008 | Manual Acceptance |
 
 ## Layer A · Scaffold Rendering
 
@@ -214,36 +213,13 @@ Saída de `pytest`, saída/exit code de `forge validate`, diff do template `test
 #### Failure Condition
 Qualquer teste previamente verde regride, ou o conteúdo de `test_strategy` muda.
 
-### TD-008 · ERP domain example demonstrates the layout outside Forge itself
-Requirements: FR-001, FR-002, FR-003
-Type: Manual Acceptance
-Priority: Minor
-
-#### Purpose
-Demonstrar que o novo layout de Test Design é utilizável para uma feature de domínio comum (Customer Price Lists), não apenas para Changes de tooling do próprio Forge — mitigando o risco de a estrutura estar sobreajustada a Changes de scaffolding.
-
-#### Preconditions
-`examples/canonical-artifacts/test-design.md` adicionado nesta Change.
-
-#### Operator instructions
-Um revisor lê o exemplo e confirma que os cenários `TD-xxx` referenciam Requirements/Stories plausíveis, têm Evidence e Failure Condition concretos, e não inventam uma Story fictícia onde nenhuma se justifica.
-
-#### Evidence
-O próprio arquivo de exemplo; observação humana registrada nesta revisão.
-
-#### Failure Condition
-Falha se o exemplo for internamente inconsistente, inventar uma Story sem justificativa, ou omitir Evidence/Failure Condition em um cenário crítico.
-
-#### Boundary
-Este cenário não prova que o ERP fictício existe ou é implementado — apenas que a forma do artefato é aplicável ao domínio.
-
 ## Requirement Coverage
 
 | Requirement | Automated | Manual | Status |
 |---|---|---|---|
-| FR-001 | TD-001 | TD-007, TD-008 | Covered |
-| FR-002 | TD-002 | TD-008 | Covered |
-| FR-003 | TD-003 | TD-008 | Covered |
+| FR-001 | TD-001 | TD-007 | Covered |
+| FR-002 | TD-002 | — | Covered |
+| FR-003 | TD-003 | — | Covered |
 | FR-004 | TD-004 | — | Covered |
 | FR-005 | TD-005 | — | Covered |
 | FR-006 | TD-006 | TD-007 | Covered |
@@ -257,9 +233,9 @@ Nenhum Requirement obrigatório permanece sem estratégia de verificação.
 
 - Todos os Requirements obrigatórios (FR-001 a FR-006) possuem estratégia de verificação declarada.
 - Cenários críticos (TD-001, TD-002, TD-003, TD-006) possuem Purpose claro e Failure Condition explícita.
-- Automated e Manual Acceptance estão separados (Layer A/C vs. Layer B, TD-007/TD-008).
+- Automated e Manual Acceptance estão separados (Layer A/C vs. Layer B, TD-007).
 - RED válido está definido (TD-005) para o ciclo TDD desta Change.
-- Nenhuma propriedade manual (TD-007, TD-008) é apresentada como garantia automática.
+- Nenhuma propriedade manual (TD-007) é apresentada como garantia automática.
 - Nenhum Requirement crítico permanece sem cobertura conhecida.
 
 **Ready for Plan.**

@@ -10,6 +10,17 @@ until then.
 
 ## Unreleased
 
+### Test Design Verification Contract
+
+Updated newly generated `test-design.md` (FAST/STANDARD) with an Overview,
+Test Strategy, Coverage Map, self-contained `TD-xxx` scenarios (Purpose,
+Preconditions, Scenario, Evidence, Failure Condition, Boundary), a
+Requirement Coverage table, Coverage Gaps, and a Test Design Gate,
+distinguishing automated scenarios from Manual Acceptance and defining
+valid RED. `test-strategy.md` (FULL), historical `test-design.md` files,
+Schemas, Protocol integers, and `forge validate` semantics remain
+unchanged.
+
 ### Specification Layout and User Story Traceability
 
 Updated newly generated Specifications with a clearer engineering-contract

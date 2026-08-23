@@ -135,7 +135,7 @@ O front matter existente, o Change Schema, os inteiros de Protocol, os Flow Gate
 
 ## Specification Gate
 
-Esta Specification está completa quando o comportamento do scaffold, a guidance canônica dividida (Test Design vs. Test Strategy), o exemplo de domínio ERP, a documentação e os testes focados estiverem atualizados sem introduzir enforcement semântico de Markdown.
+Esta Specification está completa quando o comportamento do scaffold, a guidance canônica dividida (Test Design vs. Test Strategy), a documentação e os testes focados estiverem atualizados sem introduzir enforcement semântico de Markdown.
 
 ## Out of Scope
 
