@@ -1,0 +1,19 @@
+schema: forge/execution-provenance@2
+change: CHG-0034
+records:
+  - id: plan-approval-001
+    role: implementation
+    execution: {id: plan-approval-exec-chg0034-20260823-01, context_id: plan-approval-context-chg0034-20260823-01}
+    recorded_at: "2026-08-23T02:12:25-03:00"
+    revision:
+      id: chg-0034-plan-001
+      immutable_ref: {type: git_commit, value: 1700d1570909f060e40bff70cfb7e199a5f43de2}
+    source:
+      assurance: recorded
+      observed_by: operator
+      harness: codex
+      reference: plan.md#approval-record
+      statement: >-
+        Explicit user authorization was received as “Aprovado” in the active
+        session on 2026-08-23. This is repository evidence of human approval,
+        not provider-native attestation.
