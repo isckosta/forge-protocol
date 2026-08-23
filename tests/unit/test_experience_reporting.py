@@ -385,3 +385,21 @@ def test_experience_validate_rejects_unstructured_follow_up_candidates(tmp_path:
     result = CliRunner().invoke(app_module.app, ["experience", "validate"])
 
     assert result.exit_code == 2
+
+
+def test_experience_validate_rejects_symlinked_report_files(tmp_path: Path, monkeypatch) -> None:
+    subprocess.run(["git", "init", str(tmp_path)], check=True, capture_output=True, text=True)
+    monkeypatch.chdir(tmp_path)
+    reports = tmp_path / "dogfooding" / "reports"
+    reports.mkdir(parents=True)
+    target = tmp_path / "outside.yml"
+    target.write_text(
+        "schema: forge/experience-report@1\nreport: FER-0001\nsource: {}\n"
+        "observations: []\npositive_evidence: []\nfollow_up_candidates: []\n",
+        encoding="utf-8",
+    )
+    (reports / "FER-0001.yml").symlink_to(target)
+
+    result = CliRunner().invoke(app_module.app, ["experience", "validate"])
+
+    assert result.exit_code == 2

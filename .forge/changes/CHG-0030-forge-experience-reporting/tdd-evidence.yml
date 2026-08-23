@@ -1,7 +1,7 @@
 schema: forge/tdd-evidence@1
 change: CHG-0030
 status: complete
-cycle_count: 7
+cycle_count: 8
 cycles:
   - id: TDD-001
     title: Default-off configuration and classification parsing
@@ -38,3 +38,8 @@ cycles:
     requirements: [FR-002, FR-007, FR-008]
     red: {observed: true, evidence: "Independent review reproduced unsafe evidence entries, symlinked dogfooding ancestry, and scalar follow-up candidates being accepted."}
     green: {observed: true, evidence: "Evidence sanitization, ancestor symlink rejection, and structured follow-up validation passed in the focused suite."}
+  - id: TDD-008
+    title: Validation path containment
+    requirements: [FR-002, FR-008]
+    red: {observed: true, evidence: "Independent review reproduced a symlinked report file escaping dogfooding/reports while forge experience validate returned success."}
+    green: {observed: true, evidence: "Validation now rejects symlinked report files and ancestors; focused FER tests pass."}

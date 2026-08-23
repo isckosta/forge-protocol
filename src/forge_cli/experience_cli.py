@@ -105,7 +105,13 @@ def validate_reports() -> None:
         typer.echo("No Forge experience reports found.")
         return
     errors: list[str] = []
+    if (root / "dogfooding").is_symlink() or reports_root.is_symlink():
+        typer.echo(f"{reports_root}: invalid FER report directory symlink")
+        raise typer.Exit(code=2)
     for path in sorted(reports_root.glob("FER-*.yml")):
+        if path.is_symlink():
+            errors.append(f"{path}: symlinked FER reports are not allowed")
+            continue
         try:
             document = yaml.safe_load(path.read_text(encoding="utf-8"))
             if (
