@@ -20,10 +20,9 @@ RED was executed against the old scaffold and failed because it emitted `# Speci
 
 Assertions cover front matter preservation, canonical headings, no default fictitious `US-001`, nearby Requirement/Acceptance sections, and valid technical Specifications without Stories.
 
-## TDD-002 — Compatibility and repository contract
-
-Run the full scaffold unit suite, protocol contract tests, `forge validate`, and the relevant adapter/golden-path tests. Assert no schema files changed and historical canonical YAML remains valid.
-
 ## Completion Criteria
 
-List completion criteria.
+- Focused scaffold tests pass with assertions for the new headings and optional Story guidance.
+- Protocol contract tests and `forge validate` pass.
+- The full test suite is run against the implementation subject; environmental failures are reported separately from product failures.
+- No Schema file, Protocol integer, Gate, Adapter semantic, or historical Specification changes are introduced.
