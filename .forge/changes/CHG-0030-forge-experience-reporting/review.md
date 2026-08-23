@@ -30,7 +30,8 @@ validation. These are addressed in `resolution-002` at frozen subject
 
 ## Iteration 3 — PENDING
 
-Review the exact `358bf84` subject independently. The reviewer must verify the
+Review the exact `b5507b6e57523b1353f1072d078f174b80f0a3eb` subject independently.
+The reviewer must verify the
 resolution scope and re-run the focused/contract tests, with special attention
 to default-off configuration, symlink/path safety, deep report validation,
 sensitive-input rejection, TDD schema conformance, and Documentation Impact.
