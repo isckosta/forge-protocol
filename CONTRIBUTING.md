@@ -52,6 +52,13 @@ Mechanically:
 4. merge once green. No second approval is required (there is no fixed reviewer roster today), but the PR itself is mandatory — it is the Change's own repository-native record of what merged and why, not a formality to skip.
 
 PRs should explain what changed, why, the related Forge Change or RFC, TDD evidence when applicable, Verification performed, and Documentation Impact.
+Use `.github/pull_request_template.md` as the default layout. It keeps the
+GitHub review surface aligned with Forge's separation between Intent, Scope,
+Verification, and lifecycle evidence.
+
+Bug reports and Change proposals can use the structured templates under
+`.github/ISSUE_TEMPLATE/`. These templates guide the discussion; they do not
+create a Forge Change or replace the repository-native Change artifacts.
 
 ## Review
 
