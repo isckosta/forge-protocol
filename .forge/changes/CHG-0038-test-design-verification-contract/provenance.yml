@@ -52,3 +52,37 @@ records:
       observed_by: self
       reference: verification.md
       statement: Verification evidence for the frozen CHG-0038 implementation subject.
+  - id: iteration1-subject-000
+    role: implementation
+    execution:
+      id: claude-code-implementation-0038-subject-001
+      context_id: claude-code-session-2026-08-23-subject-001
+    recorded_at: '2026-08-23T00:00:00Z'
+    revision:
+      id: chg-0038-implementation-000
+      immutable_ref:
+        type: git_commit
+        value: 6cf4ef5342c9b67eb36eb738737a01cbe70dadac
+      commit: 6cf4ef5342c9b67eb36eb738737a01cbe70dadac
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: review.md#iteration-1
+      statement: Retroactive record of the commit Iteration 1's Reviewer was actually instructed to check out. It predates provenance.yml existing in the tree, so it is documented here as a distinct historical record rather than by mutating implementation-subject-001 (C-026 forbids rewriting an already-committed subject record).
+  - id: reviewer-001
+    role: review
+    execution:
+      id: aa13bba068a228a6f
+      context_id: independent-review-context-aa13bba068a228a6f
+    recorded_at: '2026-08-23T00:00:00Z'
+    revision:
+      id: chg-0038-implementation-000
+      immutable_ref:
+        type: git_commit
+        value: 6cf4ef5342c9b67eb36eb738737a01cbe70dadac
+      commit: 6cf4ef5342c9b67eb36eb738737a01cbe70dadac
+    source:
+      assurance: recorded
+      observed_by: operator
+      reference: review.md#iteration-1
+      statement: Independent Strict Review Iteration 1 (fresh execution, isolated worktree) returned REQUEST CHANGES — R001 blocker (forge validate/full suite fail against this exact commit because provenance.yml did not yet exist in its tree) plus R002-R004 non-blocking observations.
