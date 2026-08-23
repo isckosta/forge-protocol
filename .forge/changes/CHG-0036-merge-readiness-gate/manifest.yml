@@ -40,7 +40,7 @@ tdd:
   cycles: 2
 verification:
   status: passed
-review:
+  review:
   status: passed
   iteration: 2
   blockers: 0
@@ -53,6 +53,12 @@ review:
       subject_provenance: implementation-subject-008
       reviewer_provenance: reviewer-001
       kind: initial_review
+      status: passed
+    - id: review-002
+      revision: chg-0036-implementation-009
+      subject_provenance: implementation-subject-009
+      reviewer_provenance: reviewer-002
+      kind: resolution_verification
       status: passed
 documentation:
   impact_evaluated: true

@@ -226,6 +226,23 @@ records:
       observed_by: harness
       reference: review.md#iteration-2
       statement: Independent Strict Review passed for the frozen implementation subject.
+  - id: reviewer-002
+    role: review
+    execution:
+      id: 01a03001-3908-78e0-83bc-c29615b9ff2d
+      context_id: strict-review-CHG-0036-009
+    recorded_at: '2026-08-23T21:00:00Z'
+    revision:
+      id: chg-0036-implementation-009
+      immutable_ref:
+        type: git_commit
+        value: f87f654b3a02d1ecceb3edd53f747de3f3871a05
+      commit: f87f654b3a02d1ecceb3edd53f747de3f3871a05
+    source:
+      assurance: verified
+      observed_by: harness
+      reference: review.md#iteration-3
+      statement: Independent Strict Review passed for the clean-checkout subject.
   - id: implementation-subject-009
     role: implementation
     execution:
