@@ -226,3 +226,37 @@ records:
       observed_by: harness
       reference: review.md#iteration-2
       statement: Independent Strict Review passed for the frozen implementation subject.
+  - id: implementation-subject-009
+    role: implementation
+    execution:
+      id: codex-implementation-0036-subject-009
+      context_id: codex-session-2026-08-23-subject-009
+    recorded_at: '2026-08-23T20:40:00Z'
+    revision:
+      id: chg-0036-implementation-009
+      immutable_ref:
+        type: git_commit
+        value: f87f654b3a02d1ecceb3edd53f747de3f3871a05
+      commit: f87f654b3a02d1ecceb3edd53f747de3f3871a05
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: implementation-subject
+      statement: Frozen implementation subject after clean-checkout policy and Verification binding fixes.
+  - id: verification-009
+    role: implementation
+    execution:
+      id: codex-verification-0036-009
+      context_id: codex-verification-context-0036-009
+    recorded_at: '2026-08-23T20:40:00Z'
+    revision:
+      id: chg-0036-implementation-009
+      immutable_ref:
+        type: git_commit
+        value: f87f654b3a02d1ecceb3edd53f747de3f3871a05
+      commit: f87f654b3a02d1ecceb3edd53f747de3f3871a05
+    source:
+      assurance: verified
+      observed_by: operator
+      reference: verification.md
+      statement: Verification evidence is bound to the frozen implementation subject.
