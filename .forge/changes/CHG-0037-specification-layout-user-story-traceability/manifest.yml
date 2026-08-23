@@ -1,0 +1,52 @@
+schema: forge/change@2
+protocol: 2
+change:
+  id: CHG-0037
+  title: Specification Layout User Story Traceability
+  kind: feature
+flow:
+  initial: standard
+  current: standard
+  escalations: []
+state:
+  current: verification
+artifacts:
+  intent: complete
+  discovery: complete
+  specification: complete
+  test_design: complete
+  plan: approved
+  tdd_evidence: complete
+  implementation: complete
+  verification: complete
+  review: pending
+  documentation: pending
+requirements:
+  total: 4
+  implemented: 4
+  verified: 4
+tdd:
+  status: compliant
+  cycles: 1
+verification:
+  status: passed
+review:
+  status: pending
+  iteration: 0
+  blockers: 0
+  majors: 0
+  minors: 0
+  observations: 0
+  iterations: []
+documentation:
+  impact_evaluated: true
+  update_required: true
+decisions:
+  - id: DEC-001
+    class: technical
+    materiality: material
+    status: resolved
+    authority: human
+    owning_artifact: plan
+    discovered_in: plan
+    resolved_via: human_decision

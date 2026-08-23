@@ -1,0 +1,20 @@
+schema: forge/execution-provenance@2
+change: CHG-0037
+records:
+  - id: plan-approval-001
+    role: implementation
+    execution:
+      id: codex-implementation-0037
+      context_id: codex-session-2026-08-23
+    recorded_at: '2026-08-23T00:00:00Z'
+    revision:
+      id: chg-0037-plan-approval-001
+      immutable_ref:
+        type: git_commit
+        value: 507eff82d83d402138b209b02502f6dbd685aca3
+      commit: 507eff82d83d402138b209b02502f6dbd685aca3
+    source:
+      assurance: recorded
+      observed_by: operator
+      reference: plan.md#approval-record
+      statement: Explicit human approval of the CHG-0037 Plan was received.

@@ -41,9 +41,8 @@ illustrative evidence:
 - `first-change-baseline/` — an explicitly illustrative, realistic fixture
   showing the complete pre-existing state committed before a first Change's
   Implementation; it is not presented as a real external history.
-- `canonical-artifacts/` — two annotated, illustrative examples
-  (`verification.md`, `review.md`) demonstrating outcome-first Artifact
-  structure (`protocol/artifact-structure.md`).
+- `canonical-artifacts/` — illustrative examples for Intent, Verification,
+  and Review artifact structure (`protocol/artifact-structure.md`).
 
 ## Still open
 

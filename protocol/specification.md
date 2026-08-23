@@ -280,6 +280,13 @@ its normative binding strength is defined by `protocol/contract/engineering.md`
 C-067–C-069. This section applies independently of declared Protocol
 version.
 
+The guidance supports optional User Stories as behavioral context between
+Discovery and Requirements, with stable identifiers and local Acceptance
+Scenarios. Requirements remain the authoritative contract: technical
+Requirements, Non-functional Requirements, and Constraints remain valid
+without a User Story. A Traceability Matrix is an index and does not replace
+the relationships recorded on the entities themselves.
+
 ## 42. Interaction Language Resolution
 
 Forge's canonical implementation language — Protocol, source, schemas,

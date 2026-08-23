@@ -1,0 +1,19 @@
+schema: forge/tdd-evidence@1
+change: CHG-0037
+status: compliant
+cycle_count: 1
+cycles:
+  - id: TDD-001
+    title: Specification scaffold layout
+    requirements: [FR-001, FR-002, FR-003, FR-004]
+    behavior: Generated Specifications expose the traceable contract layout without fictitious User Stories.
+    red:
+      command: .venv/bin/python -m pytest -q tests/unit/test_change_scaffolding.py -k 'traceable_contract_layout or optional_user_stories'
+      result: 2 failed, 23 deselected
+      reason: The old renderer emitted the legacy heading and lacked the new guidance.
+    green:
+      command: .venv/bin/python -m pytest -q tests/unit/test_change_scaffolding.py
+      result: 26 passed
+    notes:
+      - No Markdown parser or semantic validator was introduced.
+      - The guidance covers many-to-many and no-Story relationships without adding an example artifact.

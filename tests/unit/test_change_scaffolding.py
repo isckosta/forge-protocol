@@ -201,3 +201,54 @@ def test_render_scaffold_manifest_matches_change_schema() -> None:
     assert manifest["review"]["iterations"] == []
     assert manifest["tdd"]["status"] == "pending"
     assert "decisions" not in manifest
+
+
+def test_render_scaffold_specification_uses_traceable_contract_layout() -> None:
+    plan = render_scaffold(
+        change_id="CHG-0037",
+        slug="specification-layout",
+        flow_id="standard",
+        flow_data=_canonical_flow("standard"),
+        behavioral=True,
+    )
+
+    specification = plan.files["specification.md"]
+
+    assert specification.startswith(
+        "---\nforge:\n  artifact: specification\n  schema: 1\n"
+        "change: CHG-0037\nstatus: pending\n---\n\n"
+        "# CHG-0037 · Specification\n\n"
+        "> **Change Contract**\n"
+    )
+    for heading in (
+        "Overview",
+        "User Stories",
+        "Functional Requirements",
+        "Non-functional Requirements",
+        "Constraints",
+        "Traceability Matrix",
+        "Compatibility Statement",
+        "Specification Gate",
+    ):
+        assert f"## {heading}" in specification
+    assert "### US-001" not in specification
+    assert "### FR-001" in specification
+    assert "#### Requirement" in specification
+    assert "#### Acceptance" in specification
+    assert "Acceptance Criteria" not in specification
+
+
+def test_render_scaffold_specification_explains_optional_user_stories() -> None:
+    plan = render_scaffold(
+        change_id="CHG-0037",
+        slug="technical-maintenance",
+        flow_id="standard",
+        flow_data=_canonical_flow("standard"),
+        behavioral=False,
+    )
+
+    specification = plan.files["specification.md"]
+
+    assert "User Stories are optional" in specification
+    assert "Requirement without a User Story is valid" in specification
+    assert "As a user" not in specification
