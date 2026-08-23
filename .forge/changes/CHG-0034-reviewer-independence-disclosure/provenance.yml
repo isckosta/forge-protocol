@@ -1,6 +1,21 @@
 schema: forge/execution-provenance@2
 change: CHG-0034
 records:
+  - id: review-001
+    role: review
+    execution: {id: review-exec-chg0034-independent-01, context_id: review-context-chg0034-independent-01}
+    recorded_at: "2026-08-23T02:30:00-03:00"
+    revision:
+      id: chg-0034-implementation-001
+      immutable_ref: {type: git_commit, value: ba0d97541dac68a6029bc702c4d3e804b914f083}
+    source:
+      assurance: recorded
+      observed_by: independent_subagent
+      harness: codex
+      statement: >-
+        Independent cold Strict Review passed with no findings after
+        reproducing Forge validation, projection tests, contract/compatibility
+        tests, and subject ancestry/provenance checks.
   - id: implementation-001
     role: implementation
     execution: {id: implementation-exec-chg0034-20260823-01, context_id: implementation-context-chg0034-20260823-01}
