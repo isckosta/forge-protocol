@@ -20,9 +20,9 @@ was added.
 
 ## Test Evidence
 
-- `.venv/bin/python -m pytest -q tests/unit/test_change_scaffolding.py`: **26 passed**.
+- `.venv/bin/python -m pytest -q tests/unit/test_change_scaffolding.py`: **25 passed**.
 - `.venv/bin/python -m pytest -q tests/contract/test_protocol_contract.py`: **34 passed**.
-- `.venv/bin/python -m pytest -q`: **648 passed, 2 warnings**.
+- Full suite: **647 passed, 2 packaging-environment failures, 2 warnings**; the failures were caused by unavailable `hatchling` installation in the offline worktree, not product behavior.
 
 ## Forge Evidence
 

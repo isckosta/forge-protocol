@@ -13,7 +13,7 @@ cycles:
       reason: The old renderer emitted the legacy heading and lacked the new guidance.
     green:
       command: .venv/bin/python -m pytest -q tests/unit/test_change_scaffolding.py
-      result: 26 passed
+      result: 25 passed
     notes:
       - No Markdown parser or semantic validator was introduced.
       - The guidance covers many-to-many and no-Story relationships without adding an example artifact.
