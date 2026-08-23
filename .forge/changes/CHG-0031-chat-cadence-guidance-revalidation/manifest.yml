@@ -1,0 +1,54 @@
+schema: forge/change@2
+protocol: 2
+change:
+  id: CHG-0031
+  title: Chat Cadence Guidance Revalidation
+  kind: documentation
+flow:
+  initial: standard
+  current: standard
+  escalations: []
+state:
+  current: review
+artifacts:
+  intent: complete
+  discovery: complete
+  specification: complete
+  test_design: complete
+  plan: approved
+  tdd_evidence: complete
+  verification: complete
+  review: pending
+  documentation: complete
+requirements:
+  total: 2
+  implemented: 2
+  verified: 2
+tdd:
+  status: not_applicable
+  reason: Documentation-only revalidation; no executable behavior changed.
+verification:
+  status: passed
+review:
+  status: pending
+  iteration: 0
+  blockers: 0
+  majors: 0
+  minors: 0
+  observations: 0
+  iterations: []
+documentation:
+  impact_evaluated: true
+  update_required: false
+  reason: >-
+    This Change adds no new user-facing behavior; it creates a fresh
+    verifiable contributor artifact for existing non-binding guidance.
+decisions:
+  - id: DEC-001
+    class: technical
+    materiality: material
+    status: resolved
+    authority: human
+    owning_artifact: plan
+    discovered_in: plan
+    resolved_via: human_decision
