@@ -9,7 +9,7 @@ status: complete
 
 ## Test evidence
 
-- `pytest -q` (full suite): **423 passed, 0 failed** — up from the
+- `pytest -q` (full suite): **424 passed, 0 failed** — up from the
   pre-Implementation baseline of 407 recorded in `plan.md`
   (commit `f41f45e`), matching the 16 new tests in
   `tests/unit/test_delegated_authority.py` exactly.
@@ -104,3 +104,11 @@ stops at Verification, freezes the reviewable subject
 (`provenance.yml`'s `implementation-001` record, commit `db814b7`), and
 hands off to an independent Execution/Context for Strict Review. See the
 final message of this session for the exact next step.
+
+## Resolution verification evidence
+
+The initial independent Strict Review identified that tracked deletions were
+dropped from `_current_dirty_fingerprint()`. TDD-017 reproduced that failure
+before the fix and passes after the implementation records the explicit
+`<deleted>` state for paths tracked by `HEAD`. The focused delegated-authority
+suite passes with 17 tests.
