@@ -10,6 +10,10 @@ merge_readiness:
     - pyproject.toml
     - setup.cfg
     - tox.ini
+  permitted_paths:
+    - README.md
+    - CONTRIBUTING.md
+    - CHANGELOG.md
   permitted_prefixes:
     - docs/
     - examples/

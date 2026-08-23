@@ -152,12 +152,14 @@ def _check_change(root: Path, change_id: str, head_revision: str) -> tuple[list[
                 and item["source"].get("reference") == "verification.md"
                 and item["source"].get("assurance") in {"recorded", "verified"}
             ]
-            if len(verification_records) != 1 or not isinstance(subject_commit, str) or (
-                verification_records and (
-                    verification_records[0].get("revision", {}).get("commit")
-                    or verification_records[0].get("revision", {}).get("immutable_ref", {}).get("value")
-                ) != subject_commit
-            ):
+            bound_verification_records = [
+                item for item in verification_records
+                if (
+                    item.get("revision", {}).get("commit")
+                    or item.get("revision", {}).get("immutable_ref", {}).get("value")
+                ) == subject_commit
+            ]
+            if len(bound_verification_records) != 1 or not isinstance(subject_commit, str):
                 diagnostics.append(ReadinessDiagnostic("MR-006", "Verification evidence is not bound to the immutable implementation subject", change_id, verification_relative, subject_commit))
             if isinstance(subject_record, dict) and isinstance(reviewer_record, dict):
                 if subject_record.get("role") not in {"implementation", "resolution"}:

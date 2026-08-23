@@ -32,6 +32,8 @@ def classify_path(path: str, policy: dict | None = None) -> str:
         return "change"
     if path in policy.get("material_paths", []):
         return "material"
+    if path in policy.get("permitted_paths", []):
+        return "permitted"
     if any(path.startswith(prefix) for prefix in policy.get("ambiguous_prefixes", [])):
         return "ambiguous"
     if any(path.startswith(prefix) for prefix in policy.get("material_prefixes", [])):

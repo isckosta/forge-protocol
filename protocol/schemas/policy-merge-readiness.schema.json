@@ -10,10 +10,11 @@
     "merge_readiness": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["material_prefixes", "material_paths", "permitted_prefixes", "change_prefix"],
+      "required": ["material_prefixes", "material_paths", "permitted_paths", "permitted_prefixes", "change_prefix"],
       "properties": {
         "material_prefixes": {"type": "array", "items": {"type": "string", "minLength": 1}},
         "material_paths": {"type": "array", "items": {"type": "string", "minLength": 1}},
+        "permitted_paths": {"type": "array", "items": {"type": "string", "minLength": 1}},
         "permitted_prefixes": {"type": "array", "items": {"type": "string", "minLength": 1}},
         "change_prefix": {"type": "string", "minLength": 1}
       }
