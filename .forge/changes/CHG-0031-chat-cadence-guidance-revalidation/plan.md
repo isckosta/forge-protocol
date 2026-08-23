@@ -3,17 +3,8 @@ forge:
   artifact: plan
   schema: 1
 change: CHG-0031
-status: pending
+status: approved
 ---
-
-# Plan — CHG-0031 Chat Cadence Guidance Revalidation
-
-1. Describe the first approved work item and files.
-
-## Implementation Boundary
-
-Reaching `plan_complete` is not authorization to begin Implementation.
-# Plan — Chat Cadence Guidance Revalidation
 
 1. Record the current guidance and its parity hash in this Change.
 2. Freeze a new Git subject containing only this Change's evidence and

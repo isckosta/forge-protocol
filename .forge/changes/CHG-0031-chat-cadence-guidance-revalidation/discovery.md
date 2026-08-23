@@ -3,19 +3,10 @@ forge:
   artifact: discovery
   schema: 1
 change: CHG-0031
-status: pending
+status: complete
 ---
 
 # Discovery — CHG-0031 Chat Cadence Guidance Revalidation
-
-## Executive Summary
-
-Record the strongest discovery and implication.
-
-## Investigation
-
-Record evidence.
-# Discovery — Chat Cadence Guidance Revalidation
 
 - The current Codex and Claude Code workflow templates contain identical
   chat-cadence guidance.

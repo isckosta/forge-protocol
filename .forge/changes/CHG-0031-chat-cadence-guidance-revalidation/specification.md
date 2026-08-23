@@ -3,35 +3,10 @@ forge:
   artifact: specification
   schema: 1
 change: CHG-0031
-status: pending
+status: complete
 ---
 
 # Specification — CHG-0031 Chat Cadence Guidance Revalidation
-
-## Summary
-
-State the expected behavior.
-
-## Classification
-
-Record the selected Flow and reason.
-
-## Functional Requirements
-
-## FR-001 — <requirement>
-
-Describe a requirement.
-
-## Acceptance Criteria
-
-## AC-001 — <criterion>
-
-Describe acceptance evidence.
-
-## Out of Scope
-
-List exclusions.
-# Specification — Chat Cadence Guidance Revalidation
 
 ## Scope
 
