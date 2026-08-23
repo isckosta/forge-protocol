@@ -1,6 +1,22 @@
 schema: forge/execution-provenance@2
 change: CHG-0034
 records:
+  - id: implementation-001
+    role: implementation
+    execution: {id: implementation-exec-chg0034-20260823-01, context_id: implementation-context-chg0034-20260823-01}
+    recorded_at: "2026-08-23T02:18:00-03:00"
+    revision:
+      id: chg-0034-implementation-001
+      immutable_ref: {type: git_commit, value: ba0d97541dac68a6029bc702c4d3e804b914f083}
+    source:
+      assurance: recorded
+      observed_by: operator
+      harness: codex
+      statement: >-
+        The canonical Protocol 1 and Protocol 2 Contract texts now disclose
+        that Reviewer independence is an Execution/Execution Context
+        guarantee, not vendor/model diversity. Existing C-026 and C-037
+        normative meaning is preserved.
   - id: plan-approval-001
     role: implementation
     execution: {id: plan-approval-exec-chg0034-20260823-01, context_id: plan-approval-context-chg0034-20260823-01}
