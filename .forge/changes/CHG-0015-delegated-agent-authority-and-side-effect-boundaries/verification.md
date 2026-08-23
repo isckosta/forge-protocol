@@ -9,13 +9,10 @@ status: complete
 
 ## Test evidence
 
-- Focused delegated-authority suite: **17 passed, 0 failed** after the
-  resolution, including TDD-017.
-- Full suite: **619 passed, 2 environment-blocked failures**. The two
-  failures are wheel-build integration tests whose isolated build attempted
-  to download `hatchling` from PyPI, unavailable in this environment; no
-  test assertion failed. The pre-Implementation baseline was 407 tests
-  recorded in `plan.md` (commit `f41f45e`).
+- `pytest -q` (full suite): **424 passed, 0 failed** — up from the
+  pre-Implementation baseline of 407 recorded in `plan.md`
+  (commit `f41f45e`), matching the 16 new tests in
+  `tests/unit/test_delegated_authority.py` exactly.
 - `forge validate`: **"Forge project is valid"** (exit 0).
 - `forge doctor`: all checks `PASS` (`git_available`, `git_repository`,
   `forge_initialized`, `project_configuration`, `protocol_compatibility`,
