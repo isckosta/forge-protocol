@@ -1,6 +1,21 @@
 schema: forge/execution-provenance@2
 change: CHG-0034
 records:
+  - id: resolution-002
+    role: resolution
+    execution: {id: resolution-exec-chg0034-20260823-02, context_id: resolution-context-chg0034-20260823-02}
+    recorded_at: "2026-08-23T02:58:00-03:00"
+    revision:
+      id: chg-0034-resolution-002
+      immutable_ref: {type: git_commit, value: 61b7b373e4ade6b851fd4ff9b0d0966cac65eb9f}
+    source:
+      assurance: recorded
+      observed_by: operator
+      harness: codex
+      statement: >-
+        Resolution-002 preserves the immutable Resolution-001 record and
+        binds the corrected roadmap completion state to a new concrete subject
+        for independent re-review.
   - id: resolution-001
     role: resolution
     execution: {id: resolution-exec-chg0034-20260823-01, context_id: resolution-context-chg0034-20260823-01}
