@@ -11,8 +11,8 @@ records:
       id: chg-0038-plan-approval-001
       immutable_ref:
         type: git_commit
-        value: 6cf4ef5342c9b67eb36eb738737a01cbe70dadac
-      commit: 6cf4ef5342c9b67eb36eb738737a01cbe70dadac
+        value: 0e56e5ba800cab1d5389473537172e7b3424662a
+      commit: 0e56e5ba800cab1d5389473537172e7b3424662a
     source:
       assurance: recorded
       observed_by: operator
@@ -28,13 +28,13 @@ records:
       id: chg-0038-implementation-001
       immutable_ref:
         type: git_commit
-        value: 6cf4ef5342c9b67eb36eb738737a01cbe70dadac
-      commit: 6cf4ef5342c9b67eb36eb738737a01cbe70dadac
+        value: 0e56e5ba800cab1d5389473537172e7b3424662a
+      commit: 0e56e5ba800cab1d5389473537172e7b3424662a
     source:
       assurance: recorded
       observed_by: self
       reference: implementation-subject
-      statement: Frozen CHG-0038 implementation subject for independent Strict Review.
+      statement: Frozen CHG-0038 implementation subject for independent Strict Review — this exact commit is the state where `forge validate` and the full test suite are reproducible (the prior commit, 6cf4ef5342c9b67eb36eb738737a01cbe70dadac, lacked this provenance.yml and fails C-077 when checked out in isolation; this commit's tree is the correct subject to check out for reproducing PASS).
   - id: verification-001
     role: implementation
     execution:
@@ -45,8 +45,8 @@ records:
       id: chg-0038-implementation-001
       immutable_ref:
         type: git_commit
-        value: 6cf4ef5342c9b67eb36eb738737a01cbe70dadac
-      commit: 6cf4ef5342c9b67eb36eb738737a01cbe70dadac
+        value: 0e56e5ba800cab1d5389473537172e7b3424662a
+      commit: 0e56e5ba800cab1d5389473537172e7b3424662a
     source:
       assurance: recorded
       observed_by: self
