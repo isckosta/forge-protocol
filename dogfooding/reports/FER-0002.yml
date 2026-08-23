@@ -1,0 +1,31 @@
+schema: forge/experience-report@1
+report: FER-0002
+source:
+  forge_version: 0.1.0a2
+  repository: forge-protocol
+  recorded_at: '2026-08-23T15:43:20.790203+00:00'
+  commit: 8bc15e71222094584f42e691af308f2af92169db
+  protocol: 2
+  flow: standard
+observations:
+- id: FER-0002-O001
+  area: framework-precedence
+  classification: uncertain
+  expected: The Forge Contract and active Flow should remain authoritative when multiple
+    software-development frameworks are available in the same project.
+  observed: A Superpowers brainstorming gate interrupted a Forge-governed task and
+    required an additional chat approval before implementation, displacing the active
+    Forge workflow temporarily.
+  evidence:
+  - The user requested implementation, but the session stopped after an externally
+    imposed design-approval prompt.
+  - No repository files were changed during the interruption.
+  impact: The task was delayed, and the user had to correct framework precedence before
+    work could continue. This indicates a coordination risk when multiple SDD frameworks
+    coexist in the project.
+  workaround: The user explicitly restored Forge precedence and requested bypassing the
+    extra approval flow.
+  follow_up: Define and document precedence boundaries so auxiliary SDD frameworks may
+    support work without replacing Forge Contract, Flow, or Gate semantics.
+positive_evidence: []
+follow_up_candidates: []
