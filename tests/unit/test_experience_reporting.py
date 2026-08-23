@@ -336,6 +336,32 @@ def test_experience_cli_render_rejects_report_path_traversal(tmp_path: Path, mon
     assert not outside.with_suffix(".md").exists()
 
 
+def test_experience_cli_render_rejects_a_symlinked_dogfooding_ancestor(
+    tmp_path: Path, monkeypatch
+) -> None:
+    subprocess.run(["git", "init", str(tmp_path)], check=True, capture_output=True, text=True)
+    monkeypatch.chdir(tmp_path)
+    outside = tmp_path / "outside"
+    outside.mkdir()
+    (tmp_path / "dogfooding").symlink_to(outside, target_is_directory=True)
+
+    result = CliRunner().invoke(app_module.app, ["experience", "render", "FER-0001"])
+
+    assert result.exit_code == 2
+    assert "invalid" in result.stdout.lower()
+
+
+def test_experience_cli_render_rejects_missing_explicit_report(tmp_path: Path, monkeypatch) -> None:
+    subprocess.run(["git", "init", str(tmp_path)], check=True, capture_output=True, text=True)
+    monkeypatch.chdir(tmp_path)
+    (tmp_path / "dogfooding" / "reports").mkdir(parents=True)
+
+    result = CliRunner().invoke(app_module.app, ["experience", "render", "FER-0001"])
+
+    assert result.exit_code == 2
+    assert "missing" in result.stdout.lower()
+
+
 def test_report_write_failure_is_explicit_and_does_not_touch_change_state(tmp_path: Path, monkeypatch) -> None:
     storage = ExperienceStorage(tmp_path, context={})
     entry = parse_record_input(

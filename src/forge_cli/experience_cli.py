@@ -106,16 +106,23 @@ def render(
     if report is not None and all_reports:
         typer.echo("E_FORGE_EXPERIENCE_RENDER: choose one report or --all, not both.")
         raise typer.Exit(code=2)
+    if report is None and not all_reports:
+        typer.echo("E_FORGE_EXPERIENCE_RENDER: provide a report ID or --all.")
+        raise typer.Exit(code=2)
     root = _root()
+    dogfooding_root = root / "dogfooding"
     reports_root = root / "dogfooding" / "reports"
+    if dogfooding_root.is_symlink():
+        typer.echo(f"E_FORGE_EXPERIENCE_RENDER: invalid FER report directory: {dogfooding_root}")
+        raise typer.Exit(code=2)
     if not reports_root.exists():
+        if report is not None:
+            typer.echo(f"E_FORGE_EXPERIENCE_RENDER: canonical FER report is missing: {report}")
+            raise typer.Exit(code=2)
         typer.echo("No Forge experience reports found.")
         return
     if reports_root.is_symlink() or not reports_root.is_dir():
         typer.echo(f"E_FORGE_EXPERIENCE_RENDER: invalid FER report directory: {reports_root}")
-        raise typer.Exit(code=2)
-    if report is None and not all_reports:
-        typer.echo("E_FORGE_EXPERIENCE_RENDER: provide a report ID or --all.")
         raise typer.Exit(code=2)
     if report is not None:
         try:
