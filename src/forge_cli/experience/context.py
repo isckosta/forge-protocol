@@ -9,6 +9,7 @@ from datetime import datetime, timezone
 
 import yaml
 
+from forge_cli.experience.model import ensure_safe_text
 from forge_cli.version import CLI_VERSION
 
 
@@ -42,5 +43,5 @@ def collect_context(project_root: Path, **explicit: str | None) -> dict[str, Any
         pass
     for key, value in explicit.items():
         if value is not None:
-            context[key] = value
+            context[key] = ensure_safe_text(value, key)
     return context

@@ -12,7 +12,7 @@ from forge_cli.experience.configuration import (
     ExperienceReportingConfiguration,
     load_experience_configuration,
 )
-from forge_cli.experience.model import ObservationInput, parse_record_input
+from forge_cli.experience.model import ExperienceInputError, ObservationInput, parse_record_input
 from forge_cli.experience.storage import ExperienceStorage, ExperienceStorageError
 
 
@@ -248,3 +248,82 @@ def test_experience_validate_rejects_a_malformed_report(tmp_path: Path, monkeypa
 
     assert result.exit_code == 2
     assert "invalid" in result.stdout.lower()
+
+
+def test_record_rejects_obvious_secret_material() -> None:
+    with pytest.raises(ExperienceInputError, match="sensitive"):
+        parse_record_input(
+            {
+                "observation": {
+                    "area": "security",
+                    "classification": "uncertain",
+                    "expected": "The token remains private.",
+                    "observed": "Authorization: Bearer very-secret-token",
+                    "evidence": ["Bearer very-secret-token"],
+                    "impact": "A secret could be exposed.",
+                }
+            }
+        )
+
+
+def test_record_rejects_unbounded_prompt_sized_text() -> None:
+    with pytest.raises(ExperienceInputError, match="concise"):
+        parse_record_input(
+            {
+                "observation": {
+                    "area": "interaction",
+                    "classification": "uncertain",
+                    "expected": "A concise report entry.",
+                    "observed": "x" * 2001,
+                    "evidence": ["short evidence"],
+                    "impact": "The entry is too large.",
+                }
+            }
+        )
+
+
+def test_recording_to_a_malformed_existing_report_returns_storage_error(tmp_path: Path) -> None:
+    reports = tmp_path / "dogfooding" / "reports"
+    reports.mkdir(parents=True)
+    (reports / "FER-0001.yml").write_text(
+        "schema: forge/experience-report@1\nreport: FER-0001\nsource: {}\n",
+        encoding="utf-8",
+    )
+    storage = ExperienceStorage(tmp_path, context={}, report_id="FER-0001")
+    entry = parse_record_input(
+        {"positive_evidence": {"area": "storage", "observed": "A malformed report was found."}}
+    )
+
+    with pytest.raises(ExperienceStorageError, match="invalid"):
+        storage.record(entry)
+
+
+def test_recording_rejects_a_symlinked_report_path(tmp_path: Path) -> None:
+    reports = tmp_path / "dogfooding" / "reports"
+    reports.mkdir(parents=True)
+    target = tmp_path / "secret.yml"
+    target.write_text("source: {token: SECRET}\n", encoding="utf-8")
+    (reports / "FER-0001.yml").symlink_to(target)
+    storage = ExperienceStorage(tmp_path, context={}, report_id="FER-0001")
+    entry = parse_record_input(
+        {"positive_evidence": {"area": "storage", "observed": "A symlink was found."}}
+    )
+
+    with pytest.raises(ExperienceStorageError, match="does not exist"):
+        storage.record(entry)
+
+
+def test_experience_validate_rejects_a_malformed_entry(tmp_path: Path, monkeypatch) -> None:
+    subprocess.run(["git", "init", str(tmp_path)], check=True, capture_output=True, text=True)
+    monkeypatch.chdir(tmp_path)
+    reports = tmp_path / "dogfooding" / "reports"
+    reports.mkdir(parents=True)
+    (reports / "FER-0001.yml").write_text(
+        "schema: forge/experience-report@1\nreport: FER-0001\nsource: {}\n"
+        "observations: [not-a-mapping]\npositive_evidence: []\nfollow_up_candidates: []\n",
+        encoding="utf-8",
+    )
+
+    result = CliRunner().invoke(app_module.app, ["experience", "validate"])
+
+    assert result.exit_code == 2

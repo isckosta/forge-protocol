@@ -116,6 +116,7 @@ def validate_reports() -> None:
                 or not isinstance(document.get("observations"), list)
                 or not isinstance(document.get("positive_evidence"), list)
                 or not isinstance(document.get("follow_up_candidates"), list)
+                or not ExperienceStorage._valid_document(document)
             ):
                 errors.append(f"{path}: invalid FER schema")
         except (OSError, yaml.YAMLError) as error:

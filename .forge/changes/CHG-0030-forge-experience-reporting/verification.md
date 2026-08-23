@@ -21,10 +21,10 @@ entry and no captured conversation, prompt, log, secret, or project defect.
 
 ## Test Evidence
 
-- FER-focused suite: **13 passed**.
+- FER-focused suite: **18 passed**.
 - CLI, Adapter workflow-authority, and FER-focused integration selection:
   **22 passed** before the final report-validation test was added.
-- Full suite: **597 passed, 1 failed**.
+- Full suite: **602 passed, 1 failed**.
 - The remaining failure is
   `tests/unit/test_resolution_verification.py::test_legacy_manifests_are_unaffected`;
   it reports missing local Git subjects and Resolution Delta for the existing

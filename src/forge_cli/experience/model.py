@@ -3,10 +3,15 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+import re
 from typing import Any, Literal
 
 
 Classification = Literal["forge_problem", "project_problem", "uncertain"]
+_MAX_TEXT_LENGTH = 2000
+_SENSITIVE_TEXT = re.compile(
+    r"(?i)(bearer\s+[A-Za-z0-9._~+/=-]+|(?:api[_-]?key|token|password|secret)\s*[:=])"
+)
 
 
 class ExperienceInputError(ValueError):
@@ -34,7 +39,15 @@ class PositiveEvidenceInput:
 def _text(value: Any, field: str) -> str:
     if not isinstance(value, str) or not value.strip():
         raise ExperienceInputError(f"{field} must be a non-empty string.")
-    return value.strip()
+    return ensure_safe_text(value.strip(), field)
+
+
+def ensure_safe_text(value: str, field: str) -> str:
+    if len(value) > _MAX_TEXT_LENGTH:
+        raise ExperienceInputError(f"{field} must remain concise and be at most {_MAX_TEXT_LENGTH} characters.")
+    if _SENSITIVE_TEXT.search(value):
+        raise ExperienceInputError(f"{field} contains sensitive material and cannot be recorded.")
+    return value
 
 
 def _optional_text(value: Any, field: str) -> str | None:

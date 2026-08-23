@@ -39,9 +39,6 @@ tdd:
   cycles: 5
 verification:
   status: passed
-  limitation: >-
-    Repository-wide baseline retains one pre-existing CHG-0028
-    Resolution-Delta/local-history failure; CHG-0030-focused tests pass.
 review:
   status: pending
   iteration: 0
@@ -51,7 +48,11 @@ review:
   observations: 0
   iterations: []
 documentation:
-  impact_evaluated: false
+  impact_evaluated: true
+  update_required: true
+  reason: >-
+    Added contributor-facing FER documentation, CLI guidance, and identical
+    optional Adapter instructions; no normative Protocol documentation changed.
 decisions:
   - id: DEC-001
     class: technical

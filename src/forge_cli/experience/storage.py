@@ -41,9 +41,11 @@ class ExperienceStorage:
     def record(self, entry: ObservationInput | PositiveEvidenceInput) -> Path:
         with self._mutex:
             self.reports_root.mkdir(parents=True, exist_ok=True)
+            if self.reports_root.is_symlink() or not self.reports_root.is_dir():
+                raise ExperienceStorageError("FER report directory is not a safe directory.")
             if self._report_path is None:
                 self._report_path = self._reserve_report()
-            elif not self._report_path.is_file():
+            elif self._report_path.is_symlink() or not self._report_path.is_file():
                 raise ExperienceStorageError(f"FER report does not exist: {self._report_path}")
             with self._file_lock(self._report_path):
                 if self._report_path.stat().st_size > 0:
@@ -51,8 +53,8 @@ class ExperienceStorage:
                         document = yaml.safe_load(self._report_path.read_text(encoding="utf-8"))
                     except (OSError, yaml.YAMLError) as error:
                         raise ExperienceStorageError(str(error)) from error
-                    if not isinstance(document, dict):
-                        raise ExperienceStorageError(f"FER report is not a mapping: {self._report_path}")
+                    if not self._valid_document(document):
+                        raise ExperienceStorageError(f"FER report is invalid: {self._report_path}")
                 else:
                     document = {
                         "schema": "forge/experience-report@1",
@@ -88,6 +90,35 @@ class ExperienceStorage:
                 except OSError as error:
                     raise ExperienceStorageError(str(error)) from error
             return self._report_path
+
+    @staticmethod
+    def _valid_document(document: Any) -> bool:
+        if not (
+            isinstance(document, dict)
+            and document.get("schema") == "forge/experience-report@1"
+            and isinstance(document.get("report"), str)
+            and isinstance(document.get("source"), dict)
+            and isinstance(document.get("observations"), list)
+            and isinstance(document.get("positive_evidence"), list)
+            and isinstance(document.get("follow_up_candidates"), list)
+        ):
+            return False
+        for observation in document["observations"]:
+            if not isinstance(observation, dict) or not all(
+                isinstance(observation.get(field), str) and observation[field].strip()
+                for field in ("id", "area", "classification", "expected", "observed", "impact")
+            ) or observation.get("classification") not in {"forge_problem", "project_problem", "uncertain"}:
+                return False
+            evidence = observation.get("evidence")
+            if not isinstance(evidence, list) or not evidence or not all(isinstance(item, str) and item.strip() for item in evidence):
+                return False
+        for positive in document["positive_evidence"]:
+            if not isinstance(positive, dict) or not all(
+                isinstance(positive.get(field), str) and positive[field].strip()
+                for field in ("id", "area", "observed")
+            ):
+                return False
+        return True
 
     @contextmanager
     def _file_lock(self, report_path: Path):

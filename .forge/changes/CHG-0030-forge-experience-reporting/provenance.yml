@@ -1,6 +1,20 @@
 schema: forge/execution-provenance@2
 change: CHG-0030
 records:
+  - id: implementation-001
+    role: implementation
+    execution: {id: implementation-exec-chg0030-20260823-01, context_id: implementation-context-chg0030-20260823-01}
+    recorded_at: "2026-08-23T00:02:14-03:00"
+    revision:
+      id: chg-0030-implementation-001
+      immutable_ref: {type: git_commit, value: 258f62b}
+    source:
+      assurance: recorded
+      observed_by: operator
+      harness: codex
+      statement: >-
+        CHG-0030 implementation subject frozen at commit 258f62b after TDD,
+        focused verification, FER dogfooding, and documentation updates.
   - id: plan-approval-001
     role: implementation
     execution: {id: implementation-exec-chg0030-20260822-01, context_id: implementation-context-chg0030-20260822-01}
