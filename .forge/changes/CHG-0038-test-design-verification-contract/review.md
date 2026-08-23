@@ -3,14 +3,14 @@ forge:
   artifact: review
   schema: 1
 change: CHG-0038
-status: active
+status: complete
 ---
 
 # Review — CHG-0038 Test Design Verification Contract
 
 ## Verdict
 
-**PENDING** (Iteration 1: REQUEST CHANGES, resolved; Iteration 2: pending)
+**PASS** (Iteration 1: REQUEST CHANGES, resolved; Iteration 2: PASS)
 
 ## Iteration 1 — REQUEST CHANGES
 
@@ -45,6 +45,14 @@ Harmless; Layers are semantic groupings, not required to be numerically ordered.
 
 ## Resolution Applied
 
-R001 was addressed by rebinding `provenance.yml` (commit `4ec7e0b1751b47368908ed646d4190d026c82cde`) so `implementation-subject-002` and `verification-001` reference commit `4ec7e0b1751b47368908ed646d4190d026c82cde` (built on `0e56e5b`, the commit whose tree already includes a working `provenance.yml`). This is a governance-metadata rebind only — no renderer, test, or documentation content changed. `forge validate` and the full suite (`653 passed`) are independently reproducible when `4ec7e0b` is checked out directly. R002–R004 are non-blocking observations; no change was made for them.
+R001 was addressed by adding a **new** `provenance.yml` record, `implementation-subject-002`, pointing at commit `0e56e5ba800cab1d5389473537172e7b3424662a` — the commit whose tree already includes a working `provenance.yml`, so `forge validate` and the full suite (`653 passed`) are independently reproducible when it is checked out directly. `implementation-subject-001` (the record Iteration 1 was reviewed against, permanently bound to `6cf4ef5342c9b67eb36eb738737a01cbe70dadac` since its first commit) was deliberately left untouched: an earlier draft of this fix tried to edit `implementation-subject-001` in place to point at `0e56e5b`, and `forge validate`'s own C-026 check correctly rejected that as rewriting an already-committed subject record. Adding a new record instead of mutating the old one is the correct, C-026-compliant way to advance a frozen subject after resolving a blocking finding. This is a governance-metadata addition only — no renderer, test, or documentation content changed. R002–R004 are non-blocking observations; no change was made for them.
 
-Iteration 2 re-review of the corrected subject is pending.
+## Iteration 2 — PASS
+
+The same independent Reviewer re-checked out the corrected frozen subject `0e56e5ba800cab1d5389473537172e7b3424662a` (`implementation-subject-002`) in a fresh worktree checkout and confirmed: the working tree is clean at that commit; `git diff 6cf4ef5..0e56e5b --stat` shows only `provenance.yml` (54 insertions) — no renderer, test, or documentation content changed since Iteration 1's content review, so R002–R004 and the "Checked and found sound" list carry forward unchanged; `forge validate` reports "Forge project is valid" (exit 0) and the full suite reports `653 passed, 2 warnings` when run directly at this commit. R001 is resolved and independently reproduced.
+
+### R005 — Minor (non-blocking, resolved) — stale commit/record reference in this file's prose
+
+An intermediate draft of the "Resolution Applied" section above briefly cited a since-superseded record name while the provenance rebind was still being corrected. This did not affect any mechanically-checked field and never appeared in a commit reviewed by the Reviewer; the section above reflects the final, `forge validate`-passing state. No further action needed.
+
+**Strict Review for CHG-0038 is closed with a PASS verdict.**

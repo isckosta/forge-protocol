@@ -28,21 +28,21 @@ records:
       id: chg-0038-implementation-001
       immutable_ref:
         type: git_commit
-        value: 0e56e5ba800cab1d5389473537172e7b3424662a
-      commit: 0e56e5ba800cab1d5389473537172e7b3424662a
+        value: 6cf4ef5342c9b67eb36eb738737a01cbe70dadac
+      commit: 6cf4ef5342c9b67eb36eb738737a01cbe70dadac
     source:
       assurance: recorded
       observed_by: self
       reference: implementation-subject
-      statement: Frozen CHG-0038 implementation subject for independent Strict Review — this exact commit is the state where `forge validate` and the full test suite are reproducible (the prior commit, 6cf4ef5342c9b67eb36eb738737a01cbe70dadac, lacked this provenance.yml and fails C-077 when checked out in isolation; this commit's tree is the correct subject to check out for reproducing PASS).
+      statement: First-frozen CHG-0038 implementation subject (immutable per C-026 once committed). This commit's tree does not yet include provenance.yml, so forge validate/the full suite fail when checked out in isolation — see implementation-subject-002 for the corrected, self-consistent subject used for Iteration 2 onward.
   - id: verification-001
     role: implementation
     execution:
-      id: claude-code-implementation-0038-subject-001
-      context_id: claude-code-session-2026-08-23-subject-001
+      id: claude-code-implementation-0038-subject-002
+      context_id: claude-code-session-2026-08-23-subject-002
     recorded_at: '2026-08-23T00:00:00Z'
     revision:
-      id: chg-0038-implementation-001
+      id: chg-0038-implementation-002
       immutable_ref:
         type: git_commit
         value: 0e56e5ba800cab1d5389473537172e7b3424662a
@@ -51,7 +51,7 @@ records:
       assurance: recorded
       observed_by: self
       reference: verification.md
-      statement: Verification evidence for the frozen CHG-0038 implementation subject.
+      statement: Verification evidence, reproducible against implementation-subject-002 (commit 0e56e5b).
   - id: iteration1-subject-000
     role: implementation
     execution:
@@ -86,3 +86,37 @@ records:
       observed_by: operator
       reference: review.md#iteration-1
       statement: Independent Strict Review Iteration 1 (fresh execution, isolated worktree) returned REQUEST CHANGES — R001 blocker (forge validate/full suite fail against this exact commit because provenance.yml did not yet exist in its tree) plus R002-R004 non-blocking observations.
+  - id: implementation-subject-002
+    role: implementation
+    execution:
+      id: claude-code-implementation-0038-subject-002
+      context_id: claude-code-session-2026-08-23-subject-002
+    recorded_at: '2026-08-23T00:00:00Z'
+    revision:
+      id: chg-0038-implementation-002
+      immutable_ref:
+        type: git_commit
+        value: 0e56e5ba800cab1d5389473537172e7b3424662a
+      commit: 0e56e5ba800cab1d5389473537172e7b3424662a
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: implementation-subject
+      statement: Corrected, self-consistent CHG-0038 implementation subject for Iteration 2 of independent Strict Review — this commit's tree already includes provenance.yml, so forge validate and the full test suite (653 passed) are reproducible when it is checked out directly. Recorded as a new record (not a mutation of implementation-subject-001) per C-026.
+  - id: reviewer-002
+    role: review
+    execution:
+      id: aa13bba068a228a6f
+      context_id: independent-review-context-aa13bba068a228a6f
+    recorded_at: '2026-08-23T00:00:00Z'
+    revision:
+      id: chg-0038-implementation-002
+      immutable_ref:
+        type: git_commit
+        value: 0e56e5ba800cab1d5389473537172e7b3424662a
+      commit: 0e56e5ba800cab1d5389473537172e7b3424662a
+    source:
+      assurance: recorded
+      observed_by: operator
+      reference: review.md#iteration-2
+      statement: Independent Strict Review Iteration 2 (same Reviewer execution, re-checked out fresh at the corrected subject) returned PASS. R001 confirmed resolved and reproduced (forge validate PASS, 653 passed at this exact commit); diff against Iteration 1's subject confirmed to be only provenance.yml; R005 (stale prose reference) is a new non-blocking observation, fixed in review.md.
