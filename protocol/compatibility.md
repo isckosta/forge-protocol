@@ -159,6 +159,14 @@ the existing Decision vocabulary and requires a Plan/provenance record, while
 lower-numbered historical Changes remain valid. The rule applies to both
 Protocol 1 and Protocol 2 representations without changing their schemas.
 
+### CHG-0037 — Specification layout and optional User Stories
+
+CHG-0037 updates the non-binding artifact-structure guidance and the new
+Change scaffold's Specification presentation. It introduces no new Protocol
+integer, Schema field, Gate, lifecycle stage, or Markdown validator. User
+Stories are optional context; existing Requirements, Acceptance Criteria,
+historical Specifications, and `traceability.yml` semantics remain valid.
+
 ## Schema catalog
 
 `schemas/catalog.yml` is the portable list of schemas shipped by the distribution. Catalog presence does not imply that every schema is normative for every Protocol version. Applicability is defined by the selected Protocol contract and the artifact's own identifier. Cross-field semantic constraints that JSON Schema cannot express remain deterministic Core validation responsibilities.

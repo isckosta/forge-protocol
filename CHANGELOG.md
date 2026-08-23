@@ -10,6 +10,13 @@ until then.
 
 ## Unreleased
 
+### Specification Layout and User Story Traceability
+
+Updated newly generated Specifications with a clearer engineering-contract
+layout, optional User Stories, local Acceptance content, and traceability
+guidance. Historical Specifications, Schemas, Protocol integers, and
+`forge validate` semantics remain unchanged.
+
 ### Merge Readiness Gate
 
 Added a separate `forge change merge-check` evaluation with deterministic

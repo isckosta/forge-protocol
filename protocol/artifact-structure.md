@@ -166,16 +166,32 @@ Questions section when a Decision is being escalated from this stage.
 
 ### Specification
 
-**Structural core:** Summary, Classification (for STANDARD/FULL),
-Functional Requirements (`FR-xxx`), Acceptance Criteria (`AC-xxx`,
-mapped to Requirements), Out of Scope. **Conditional, present only when
-non-empty:** Non-functional Requirements (`NFR-xxx`), Security
-Requirements (`SEC-xxx` — or an explicit one-line `None` with reason, not
-silent omission, §2.5), Invariants (`INV-xxx`), Constraints (`CON-xxx`),
-Unresolved Decisions (`DEC-xxx`, per `decision.yml`). **Do not add** a
-Markdown Traceability section restating what `traceability.yml` already
-carries — that would duplicate normative authority (§1; this document's
-own Specification omits one for this exact reason).
+**Structural core:** a clear Change Contract identity, Overview, Summary,
+Classification (for STANDARD/FULL), Functional Requirements (`FR-xxx`),
+Compatibility Statement, Specification Gate, and Out of Scope. Functional
+Requirements SHOULD be self-contained units with a visible normative
+`Requirement`, optional `Expected Behavior` and `Boundary`, and nearby
+`Acceptance` content. The historical `Acceptance Criteria` heading remains
+valid; new scaffolds use the more local `Acceptance` form without changing
+its contract meaning.
+
+**Conditional, present only when materially applicable:** User Stories
+(`US-xxx`), Acceptance Scenarios, Non-functional Requirements (`NFR-xxx`),
+Security Requirements (`SEC-xxx` — or an explicit one-line `None` with
+reason, not silent omission, §2.5), Invariants (`INV-xxx`), Constraints
+(`CON-xxx`), and Unresolved Decisions (`DEC-xxx`, per `decision.yml`). User
+Stories are behavioral context for a meaningful actor, capability, and
+outcome; they do not replace Requirements and must not be invented for
+technical Changes. Requirements, NFRs, and Constraints may exist without a
+User Story, and relationships are many-to-many where applicable.
+
+A Traceability Matrix MAY be included as an index connecting Discovery, User
+Stories, Requirements, and Acceptance. It MUST NOT become the only
+relationship representation or restate normative content already carried by
+Requirements, Acceptance, or `traceability.yml`. When no User Stories apply,
+the matrix SHOULD degrade to Discovery → Requirement → Acceptance.
+Acceptance Scenarios MAY use Given/When/Then prose, but are not executable
+BDD tests and do not require a parser or external framework.
 
 ### Specification Review
 
