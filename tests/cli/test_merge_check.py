@@ -33,7 +33,6 @@ def _manifest(status: str = "complete", review_status: str = "passed") -> dict:
             "majors": 0,
             "minors": 0,
             "observations": 0,
-            "blocking_threads_resolved": True,
             "iterations": [{"id": "review-001", "revision": "fixture", "status": "passed", "subject_provenance": "impl-001", "reviewer_provenance": "review-001"}],
         },
         "documentation": {"impact_evaluated": True, "update_required": False},

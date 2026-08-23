@@ -225,8 +225,12 @@ def _check_change(root: Path, change_id: str, head_revision: str) -> tuple[list[
                 elif key in artifacts and artifacts.get(key) not in {"complete", "approved", "passed"}:
                     diagnostics.append(ReadinessDiagnostic("MR-009", f"Required artifact is not complete: {key}", change_id, relative, "complete", str(artifacts.get(key))))
             requirements = set(effective["canonical"].get("gates", {}).get("before_completion", {}).get("require", []))
-            if "blocking_review_threads_resolved" in requirements and review.get("blocking_threads_resolved") is not True:
-                diagnostics.append(ReadinessDiagnostic("MR-009", "Blocking Review threads are not proven resolved", change_id, relative))
+            if "blocking_review_threads_resolved" in requirements and not (
+                review.get("status") == "passed"
+                and review.get("blockers", 0) == 0
+                and review.get("majors", 0) == 0
+            ):
+                diagnostics.append(ReadinessDiagnostic("MR-009", "Blocking Review threads are not resolved according to the canonical Review evidence", change_id, relative))
             if "required_knowledge_capture_complete" in requirements and artifacts.get("knowledge_capture") not in {"complete", "approved", "passed"}:
                 diagnostics.append(ReadinessDiagnostic("MR-009", "Required Knowledge Capture is not complete", change_id, relative))
             doc_state = manifest.get("documentation") if isinstance(manifest.get("documentation"), dict) else {}
