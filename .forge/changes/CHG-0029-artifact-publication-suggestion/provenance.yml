@@ -3,8 +3,8 @@ change: CHG-0029
 records:
   - id: implementation-001
     role: implementation
-    execution: {id: implementation-exec-chg0029-20260822-01, context_id: implementation-context-chg0029-20260822-01}
-    recorded_at: "2026-08-22T22:34:45-03:00"
+    execution: {id: implementation-exec-chg0029-20260823-01, context_id: implementation-context-chg0029-20260823-01}
+    recorded_at: "2026-08-23T00:30:00-03:00"
     revision:
       id: chg-0029-implementation-001
       immutable_ref: {type: git_commit, value: b06fa5e0712adc301e665039a467d63b903dd442}
@@ -20,7 +20,7 @@ records:
   - id: review-001
     role: review
     execution: {id: review-exec-chg0029-initial-cold-01, context_id: review-context-chg0029-initial-cold-01}
-    recorded_at: "2026-08-22T22:34:45-03:00"
+    recorded_at: "2026-08-23T01:00:00-03:00"
     revision:
       id: chg-0029-implementation-001
       immutable_ref: {type: git_commit, value: b06fa5e0712adc301e665039a467d63b903dd442}
@@ -40,8 +40,8 @@ records:
         implementation files were changed by the reviewer.
   - id: resolution-001
     role: resolution
-    execution: {id: resolution-exec-chg0029-20260822-01, context_id: resolution-context-chg0029-20260822-01}
-    recorded_at: "2026-08-22T22:36:35-03:00"
+    execution: {id: resolution-exec-chg0029-20260823-01, context_id: resolution-context-chg0029-20260823-01}
+    recorded_at: "2026-08-23T01:20:00-03:00"
     scope:
       - .forge/changes/CHG-0029-artifact-publication-suggestion/inspection.md
     targets: [MINOR]
@@ -64,7 +64,7 @@ records:
   - id: review-002
     role: review
     execution: {id: review-exec-chg0029-resolution-cold-01, context_id: review-context-chg0029-resolution-cold-01}
-    recorded_at: "2026-08-22T22:43:54-03:00"
+    recorded_at: "2026-08-22T23:30:00-03:00"
     revision:
       id: chg-0029-resolution-001
       immutable_ref: {type: git_commit, value: 89cf878e9796c68c2963c3e3a014869d7bf147af}
