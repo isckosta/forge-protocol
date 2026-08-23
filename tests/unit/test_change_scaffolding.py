@@ -112,6 +112,76 @@ def test_render_scaffold_markdown_has_frontmatter_and_yaml_has_schema() -> None:
                 assert data["change"] == "CHG-0022"
 
 
+def test_render_scaffold_intent_uses_structured_human_facing_layout() -> None:
+    plan = render_scaffold(
+        change_id="CHG-0042",
+        slug="stock-reservation-on-sales-order-confirmation",
+        flow_id="standard",
+        flow_data=_canonical_flow("standard"),
+        behavioral=True,
+    )
+    intent = plan.files["intent.md"]
+
+    assert intent.startswith(
+        "---\nforge:\n  artifact: intent\n  schema: 1\n"
+        "change: CHG-0042\nstatus: active\n---\n\n"
+        "# CHG-0042 · Stock Reservation On Sales Order Confirmation\n\n"
+        "> **Change Intent**\n"
+    )
+    assert "## Overview\n| | |\n|---|---|\n| **Change** | CHG-0042 |" in intent
+    assert "| **Flow** | STANDARD |" in intent
+    assert "| **Status** | Active |" in intent
+    for heading in ("Problem", "Goal", "Scope", "Out of Scope", "Success Criteria"):
+        assert f"## {heading}" in intent
+    for heading in (
+        "Summary",
+        "Desired Outcome",
+        "Non-goals",
+        "FR-001",
+        "AC-001",
+    ):
+        assert heading not in intent
+
+
+def test_render_scaffold_intent_does_not_emit_conditional_empty_sections() -> None:
+    plan = render_scaffold(
+        change_id="CHG-0042",
+        slug="http-timeout-retry-policy",
+        flow_id="fast",
+        flow_data=_canonical_flow("fast"),
+        behavioral=False,
+    )
+
+    intent = plan.files["intent.md"]
+    for heading in (
+        "Business Impact",
+        "Current Behavior",
+        "Desired Behavior",
+        "Expected Outcome",
+        "Business Rules",
+        "Operational Boundary",
+    ):
+        assert f"## {heading}" not in intent
+
+
+@pytest.mark.parametrize("flow_id", ["fast", "full"])
+def test_render_scaffold_intent_derives_only_core_metadata(flow_id: str) -> None:
+    plan = render_scaffold(
+        change_id="CHG-0042",
+        slug="metadata-safe-intent",
+        flow_id=flow_id,
+        flow_data=_canonical_flow(flow_id),
+        behavioral=True,
+    )
+
+    intent = plan.files["intent.md"]
+    assert f"| **Flow** | {flow_id.upper()} |" in intent
+    assert "| **Status** | Active |" in intent
+    assert "Domain" not in intent
+    assert "Primary Module" not in intent
+    assert "Business Risk" not in intent
+
+
 def test_render_scaffold_manifest_matches_change_schema() -> None:
     plan = render_scaffold(
         change_id="CHG-0022",

@@ -25,6 +25,18 @@ steps when they need human input, change scope, or surface a blocker. This is
 a communication suggestion, not a technical enforcement mechanism.
 These instructions represent Forge requirements; they are not technical enforcement.
 
+When authoring `intent.md`, make it the structured declaration of why the
+Change exists and what must be true when it ends. Start with the Change
+identity heading (`# CHG-XXXX · <Change Title>`) and a one- or two-sentence
+`Change Intent` callout. Use the core sections `Overview`, `Problem`, `Goal`,
+`Scope`, `Out of Scope`, and `Success Criteria`; add `Business Impact`,
+`Current Behavior`, `Desired Behavior`, `Expected Outcome`, `Business Rules`,
+`Operational Boundary`, or references only when materially applicable.
+Keep structural headings in English, write prose in the applicable interaction
+language, derive only trustworthy metadata, and omit sections with no content.
+Intent must not become a Discovery, Specification, Plan, repository audit, or
+test plan. Preserve the YAML front matter and `schema: 1`.
+
 Skill discovery limitation: after `forge adapter install`, the Harness may not refresh its skill catalog in the current session. This is Harness runtime behavior, not technically controlled by Forge. If the `forge` skill is not
 available yet, read this `SKILL.md` directly or retry in a later turn/session.
 Artifact-publication suggestion (non-binding): when a key stage completes—especially

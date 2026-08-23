@@ -70,6 +70,11 @@ def _title(slug: str) -> str:
 
 
 def _frontmatter(artifact: str, change_id: str, status: str, title: str) -> str:
+    heading = (
+        f"# {change_id} · {title}"
+        if artifact == "intent"
+        else f"# {artifact.replace('_', ' ').title()} — {change_id} {title}"
+    )
     return (
         "---\n"
         "forge:\n"
@@ -78,14 +83,43 @@ def _frontmatter(artifact: str, change_id: str, status: str, title: str) -> str:
         f"change: {change_id}\n"
         f"status: {status}\n"
         "---\n\n"
-        f"# {artifact.replace('_', ' ').title()} — {change_id} {title}\n\n"
+        f"{heading}\n\n"
     )
 
 
-def _markdown(artifact: str, change_id: str, title: str) -> str:
+def _markdown(artifact: str, change_id: str, title: str, flow_id: str | None = None) -> str:
     content = _frontmatter(artifact, change_id, "active" if artifact == "intent" else "pending", title)
+    if artifact == "intent":
+        if flow_id is None:
+            raise ValueError("Intent scaffolds require the selected Flow.")
+        return content + (
+            "> **Change Intent**\n"
+            ">\n"
+            "> State the intended change in one or two sentences. Keep this as an executive summary, not a full Goal.\n"
+            "\n"
+            "## Overview\n"
+            "| | |\n"
+            "|---|---|\n"
+            f"| **Change** | {change_id} |\n"
+            f"| **Flow** | {flow_id.upper()} |\n"
+            "| **Status** | Active |\n"
+            "\n"
+            "## Problem\n\n"
+            "Describe the problematic domain or user behavior, who or what it affects, and why the current behavior is insufficient.\n"
+            "\n"
+            "## Goal\n\n"
+            "State the concrete objective of the Change without prescribing implementation. Add a short numbered list when multiple properties must hold.\n"
+            "\n"
+            "## Scope\n\n"
+            "Describe the business, operational, or conceptual areas this Change covers. Do not list files or functions.\n"
+            "\n"
+            "## Out of Scope\n\n"
+            "State what this Change explicitly does not cover. Use this boundary to prevent opportunistic expansion.\n"
+            "\n"
+            "## Success Criteria\n\n"
+            "Describe the high-level reality that must exist when the Change is complete. Do not turn this into a test plan.\n"
+        )
     sections = {
-        "intent": "## Summary\n\nDescribe the intended outcome.\n\n## Problem\n\nDescribe the problem.\n\n## Desired Outcome\n\nState the desired outcome.\n\n## Scope\n\nList the scope.\n\n## Out of Scope\n\nList exclusions.\n\n## Success Criteria\n\nList measurable criteria.\n",
         "inspection": "## Inspection\n\nRecord the relevant inspection findings.\n",
         "discovery": "## Executive Summary\n\nRecord the strongest discovery and implication.\n\n## Investigation\n\nRecord evidence.\n",
         "specification": "## Summary\n\nState the expected behavior.\n\n## Classification\n\nRecord the selected Flow and reason.\n\n## Functional Requirements\n\n## FR-001 — <requirement>\n\nDescribe a requirement.\n\n## Acceptance Criteria\n\n## AC-001 — <criterion>\n\nDescribe acceptance evidence.\n\n## Out of Scope\n\nList exclusions.\n",
@@ -173,7 +207,7 @@ def render_scaffold(
             else:
                 raise ValueError(f"Unsupported YAML scaffold artifact: {stage_id}")
         else:
-            files[path] = _markdown(artifact, change_id, title)
+            files[path] = _markdown(artifact, change_id, title, flow_id)
         statuses[artifact] = "active" if artifact == "intent" else (
             "active" if artifact == "tdd_evidence" else "pending"
         )

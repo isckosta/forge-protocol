@@ -123,9 +123,31 @@ does not carry it.
 
 ### Intent
 
-**Structural core:** Summary, Problem, Desired Outcome, Scope, Out of
-Scope, Success Criteria. This matches real, stable precedent closely —
-no material change is recommended.
+**Structural core:** a `# CHG-XXXX · <Change Title>` identity heading,
+a short `Change Intent` callout, an `Overview` metadata table containing
+only safely derivable fields, Problem, Goal, Scope, Out of Scope, and
+Success Criteria. Structural headings remain in English; surrounding prose
+uses the interaction language applicable to the project or user.
+
+**Conditional:** Business Impact, Current Behavior, Desired Behavior,
+Expected Outcome, Business Rules, and Operational Boundary appear only when
+they materially clarify the Change. Do not generate empty sections or invent
+context metadata such as Domain, Primary Module, or Business Risk. A compact
+Evidence/References subsection MAY separate technical provenance from the
+narrative when references would otherwise dominate it.
+
+Intent explains why the Change exists and what must be true when it ends. It
+is not a Specification, Implementation Plan, repository audit, or test plan;
+formal requirement and acceptance identifiers belong to Specification, and
+repository findings belong to Discovery. The scaffold emits the core layout
+with authoring prompts; agents decide conditional applicability from the
+Change content.
+
+The redesign is presentation-only: the existing `forge:` front matter and
+`schema: 1` remain unchanged, and historical artifacts are not rewritten.
+`Non-goals` remains a valid historical/legacy heading where existing tooling
+or prior Changes depend on it; new scaffolds use the reader-facing `Out of
+Scope` heading.
 
 ### Discovery
 

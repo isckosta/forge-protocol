@@ -17,6 +17,11 @@ Annotations are HTML comments (`<!-- ... -->`), invisible when the file
 renders as Markdown, each naming the `protocol/artifact-structure.md`
 principle or per-type recommendation the section beneath it demonstrates.
 
+`intent.md` is the representative business Change example. It demonstrates
+the structured Intent layout, including conditional sections, while
+`intent-technical.md` shows that the same layout also works for a technical
+reliability Change without inventing business metadata.
+
 - `verification.md` — `## Result` first, per §4 "Verification".
 - `review.md` — aggregate `## Verdict` first, existing per-iteration
   convention preserved beneath it, per §4 "Review".
