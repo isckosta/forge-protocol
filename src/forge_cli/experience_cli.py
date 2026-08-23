@@ -15,6 +15,7 @@ from forge_cli.experience.configuration import (
     write_experience_configuration,
 )
 from forge_cli.experience.context import collect_context
+from forge_cli.experience.markdown import render_markdown
 from forge_cli.experience.model import ExperienceInputError, parse_record_input
 from forge_cli.experience.storage import ExperienceStorage, ExperienceStorageError
 from forge_cli.git import NotGitRepositoryError, resolve_project_root
@@ -94,6 +95,65 @@ def record(
         typer.echo(f"E_FORGE_EXPERIENCE_RECORD: {error}")
         raise typer.Exit(code=2)
     typer.echo(f"Forge experience report recorded: {path.relative_to(root)}")
+
+
+@experience_app.command()
+def render(
+    report: str | None = typer.Argument(None, help="FER report ID, such as FER-0001."),
+    all_reports: bool = typer.Option(False, "--all", help="Render every canonical FER report."),
+) -> None:
+    """Regenerate human-readable Markdown from canonical FER YAML."""
+    if report is not None and all_reports:
+        typer.echo("E_FORGE_EXPERIENCE_RENDER: choose one report or --all, not both.")
+        raise typer.Exit(code=2)
+    root = _root()
+    reports_root = root / "dogfooding" / "reports"
+    if not reports_root.exists():
+        typer.echo("No Forge experience reports found.")
+        return
+    if reports_root.is_symlink() or not reports_root.is_dir():
+        typer.echo(f"E_FORGE_EXPERIENCE_RENDER: invalid FER report directory: {reports_root}")
+        raise typer.Exit(code=2)
+    if report is None and not all_reports:
+        typer.echo("E_FORGE_EXPERIENCE_RENDER: provide a report ID or --all.")
+        raise typer.Exit(code=2)
+    if report is not None:
+        try:
+            ExperienceStorage(root, context={}, report_id=report)
+        except ExperienceStorageError as error:
+            typer.echo(f"E_FORGE_EXPERIENCE_RENDER: invalid report ID: {error}")
+            raise typer.Exit(code=2)
+
+    paths = (
+        sorted(reports_root.glob("FER-*.yml"))
+        if all_reports
+        else [reports_root / f"{report}.yml"]
+    )
+    errors: list[str] = []
+    rendered = 0
+    for path in paths:
+        if path.is_symlink() or not path.is_file():
+            errors.append(f"{path}: canonical FER report is missing or symlinked")
+            continue
+        try:
+            storage = ExperienceStorage(root, context={}, report_id=path.stem)
+            with storage._file_lock(path):
+                document = yaml.safe_load(path.read_text(encoding="utf-8"))
+                if (
+                    not isinstance(document, dict)
+                    or document.get("report") != path.stem
+                    or not ExperienceStorage._valid_document(document)
+                ):
+                    raise ExperienceStorageError(f"{path}: invalid FER schema")
+                storage._atomic_write_markdown(path.with_suffix(".md"), render_markdown(document))
+            rendered += 1
+        except (OSError, yaml.YAMLError, ExperienceStorageError) as error:
+            errors.append(str(error))
+    if errors:
+        for error in errors:
+            typer.echo(error)
+        raise typer.Exit(code=2)
+    typer.echo(f"Rendered {rendered} Forge experience report Markdown file(s)")
 
 
 @experience_app.command(name="validate")

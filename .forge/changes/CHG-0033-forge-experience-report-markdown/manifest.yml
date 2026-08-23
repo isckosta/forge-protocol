@@ -1,0 +1,65 @@
+schema: forge/change@2
+protocol: 2
+change:
+  id: CHG-0033
+  title: Forge Experience Report Markdown
+  kind: feature
+flow:
+  initial: standard
+  current: full
+  escalations:
+    - from: standard
+      to: full
+      reason: >-
+        Discovery found a derived artifact, persistence/failure semantics,
+        CLI regeneration, historical migration, and cross-module testing
+        beyond the Standard Flow boundary.
+state:
+  current: verification
+artifacts:
+  intent: complete
+  discovery: complete
+  specification: complete
+  specification_review: pending
+  architecture: complete
+  test_strategy: complete
+  plan: approved
+  tasks: complete
+  tdd_evidence: complete
+  verification: complete
+  review: pending
+  documentation: complete
+  knowledge_capture: pending
+requirements:
+  total: 0
+  implemented: 0
+  verified: 0
+tdd:
+  status: compliant
+  cycles: 3
+verification:
+  status: passed
+review:
+  status: pending
+  iteration: 0
+  blockers: 0
+  majors: 0
+  minors: 0
+  observations: 0
+  iterations: []
+documentation:
+  impact_evaluated: true
+  update_required: true
+  reason: >-
+    Added the contributor-facing Markdown projection documentation and
+    generated historical fixture; no Protocol, Flow, Harness, or normal
+    validation semantics changed.
+decisions:
+  - id: DEC-001
+    class: technical
+    materiality: material
+    status: resolved
+    authority: human
+    owning_artifact: plan
+    discovered_in: plan
+    resolved_via: human_decision

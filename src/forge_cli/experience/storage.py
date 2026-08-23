@@ -14,6 +14,7 @@ from typing import Any
 import yaml
 
 from forge_cli.experience.model import ExperienceInputError, ObservationInput, PositiveEvidenceInput, ensure_safe_text
+from forge_cli.experience.markdown import render_markdown
 
 
 _REPORT_RE = re.compile(r"^FER-(?P<number>[0-9]{4,})\.yml$")
@@ -92,6 +93,14 @@ class ExperienceStorage:
                     self._atomic_write(self._report_path, document)
                 except OSError as error:
                     raise ExperienceStorageError(str(error)) from error
+                try:
+                    self._atomic_write_markdown(
+                        self._report_path.with_suffix(".md"), render_markdown(document)
+                    )
+                except OSError as error:
+                    raise ExperienceStorageError(
+                        f"canonical FER persisted but Markdown projection failed: {error}"
+                    ) from error
             return self._report_path
 
     @staticmethod
@@ -191,3 +200,20 @@ class ExperienceStorage:
             except UnboundLocalError:
                 pass
             raise ExperienceStorageError(str(error)) from error
+
+    @staticmethod
+    def _atomic_write_markdown(path: Path, content: str) -> None:
+        temporary: Path | None = None
+        try:
+            with tempfile.NamedTemporaryFile(
+                mode="w", encoding="utf-8", dir=path.parent, prefix=f".{path.name}.", delete=False
+            ) as handle:
+                temporary = Path(handle.name)
+                handle.write(content)
+                handle.flush()
+                os.fsync(handle.fileno())
+            os.replace(temporary, path)
+        except OSError:
+            if temporary is not None:
+                temporary.unlink(missing_ok=True)
+            raise

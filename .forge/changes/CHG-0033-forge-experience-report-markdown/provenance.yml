@@ -1,0 +1,22 @@
+schema: forge/execution-provenance@2
+change: CHG-0033
+records:
+  - id: plan-approval-001
+    role: implementation
+    execution:
+      id: implementation-exec-chg0033-20260823-01
+      context_id: implementation-context-chg0033-20260823-01
+    recorded_at: "2026-08-23T01:19:35-03:00"
+    revision:
+      id: chg-0033-plan-approved
+      immutable_ref: {type: git_commit, value: c776dbdd7d63cfa8e76422c7d1b62301e1030484}
+    source:
+      assurance: recorded
+      observed_by: operator
+      harness: codex
+      reference: plan.md#approval-record
+      statement: >-
+        Explicit human approval was received from the user in the active
+        session on 2026-08-23. This authorizes continuation past the
+        Plan/Implementation boundary and is not cryptographic or
+        provider-native attestation.
