@@ -23,4 +23,15 @@ Record verification results.
 ## Conclusion
 # Verification — Chat Cadence Guidance Revalidation
 
-Pending execution against the frozen subject.
+## Evidence
+
+- Both workflow templates have identical SHA-256:
+  `db3f48d245cb87ca3e7c62a91e94a783b88b9c1a98ea23300756aacb6dadc190`.
+- The focused Adapter projection and packaged-resource checks passed:
+  `33 passed`.
+- `forge validate` passed.
+- `git diff --check` passed.
+- No runtime, Protocol, Flow, Gate, schema, or Adapter projection content was
+  changed by this Change.
+
+TDD is not applicable because this is documentation-only revalidation.
