@@ -5,7 +5,7 @@ change:
   title: Delegated Agent Authority and Side-Effect Boundaries
   kind: feature
 flow: {initial: full, current: full, escalations: []}
-state: {current: complete}
+state: {current: strict_review}
 artifacts:
   intent: complete
   discovery: complete
@@ -19,16 +19,16 @@ artifacts:
   implementation: complete
   provenance: complete
   verification: complete
-  review: complete
+  review: pending
   documentation: complete
   knowledge_capture: complete
 tdd: {status: compliant, cycles: 17}
 verification: {status: passed}
 review:
-  status: passed
-  iteration: 3
-  blockers: 0
-  majors: 0
+  status: failed
+  iteration: 1
+  blockers: 1
+  majors: 1
   minors: 0
   observations: 0
   iterations:
@@ -40,30 +40,6 @@ review:
       status: failed
       new_material_findings: 1
       finding_classes: [unresolved_finding]
-    - id: review-002
-      revision: chg-0015-resolution-001
-      subject_provenance: resolution-001
-      reviewer_provenance: review-002
-      kind: resolution_verification
-      status: failed
-      full_review_required: false
-      new_material_findings: 1
-      finding_classes: [unresolved_finding]
-      evidence_gap: >-
-        The Resolution Delta is within the declared Resolution Scope and the
-        targeted implementation, deletion regression, TDD-017, schema,
-        consistency, and bounded-concurrency checks pass. The iteration is
-        blocked because the current resolution-001 provenance value rewrites
-        its first committed subject anchor.
-    - id: review-003
-      revision: chg-0015-resolution-002
-      subject_provenance: resolution-002
-      reviewer_provenance: review-003
-      kind: resolution_verification
-      status: passed
-      full_review_required: false
-      new_material_findings: 0
-      finding_classes: []
 documentation:
   impact_evaluated: true
   update_required: true

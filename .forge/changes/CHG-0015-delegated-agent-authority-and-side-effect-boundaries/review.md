@@ -10,49 +10,34 @@ status: complete
 
 ## Verdict
 
-**PASS** — Review 003 is a bounded Protocol 2 `resolution_verification` of
-immutable subject `7ed21e181edd3a86b2c42b9fce119c4a3bc9f914`, bound to
-`resolution-002`. No new material finding was found.
+**REQUEST CHANGES**
 
-## Immutable anchors
+## Resolution Verification — REQUEST CHANGES
 
-- `implementation-001` → `db814b7e946ac1616f634245173ca3bc29d2cda5`
-- `resolution-001` → `6f5436d73c7eaaa43d86d401450d24b1caaccc92`
-- `resolution-002` → `7ed21e181edd3a86b2c42b9fce119c4a3bc9f914`
+Reviewed only immutable subject `6f5436d73c7eaaa43d86d401450d24b1caaccc92`.
 
-All three are preserved as separate append-only provenance anchors. The
-current review-control metadata does not rewrite any prior anchor.
+### MAJOR-001 — resolution control artifacts disagree on TDD count and verification claim
 
-## Historical iterations
+- `.forge/changes/CHG-0015-delegated-agent-authority-and-side-effect-boundaries/tdd-evidence.yml`: `cycle_count: 17` and entries `TDD-001` through `TDD-017`.
+- The same Change's `manifest.yml`: `tdd.cycles: 16`.
+- The same Change's `verification.md`: says the full suite matched “the 16 new tests” and reports `424 passed`, while the subject's focused delegated-authority suite contains 17 tests and independently ran `17 passed`.
 
-- `review-001`: failed historical initial review of `resolution-001`.
-- `review-002`: failed historical resolution verification of `resolution-002`,
-  blocked by the then-unresolved provenance-anchor issue.
-- `review-003`: this independent resolution verification of `resolution-002`,
-  recorded as PASS.
+This leaves manifest, TDD ledger, and Verification inconsistent and prevents a trustworthy completion decision. Reconcile the review-control metadata and verification evidence, then perform a fresh resolution verification against the resulting immutable subject.
 
-## Bounded verification evidence
+### BLOCKER-001 — no prior committed Review Iteration permits Resolution Verification
 
-- `forge validate`: **Forge project is valid** (exit 0).
-- Focused delegated-authority tests: **17 passed, 0 failed**.
-- Contract/schema tests: **34 passed, 0 failed**.
-- TDD consistency: `tdd-evidence.yml` declares `cycle_count: 17` with
-  `TDD-001` through `TDD-017`; the manifest declares 17 cycles; Verification
-  reports 17 focused passes.
-- TDD-017 confirms tracked deletion is observed and reported as exactly
-  `C-061`.
-- Resolution Delta and scope: `resolution-002` is limited to the declared
-  CHG-0015 review-control/evidence paths; no production, implementation, test,
-  or unrelated repository mutation is present after the immutable subject.
-- Schema: the v2 provenance schema is catalogued and the focused contract
-  suite passes its schema/catalog conformance checks.
-- Bounded TOCTOU: baseline/close attribution remains explicitly bounded and
-  fail-closed for unavailable history or capture; the implementation makes no
-  claim to solve arbitrary concurrent mutation.
+The subject's committed `manifest.yml` has `review.iteration: 0` and
+`review.iterations: []`; its committed `provenance.yml` contains no review
+record. C-026 therefore rejects a `resolution_verification` as the first
+iteration because there is no prior reviewed subject from which to compute a
+Resolution Delta. This record is intentionally classified as a failed
+`initial_review` of the frozen resolution subject; a valid Resolution
+Verification must follow a recorded initial review after the metadata issue
+is resolved.
 
-## Reviewer provenance
+### Verified with no finding
 
-Reviewer provenance: `review-003`, with execution
-`review-exec-chg0015-resolution-verification-03` and context
-`review-context-chg0015-resolution-verification-03`; both differ from the
-`resolution-002` execution and context.
+- Historical subject preservation: committed subject provenance retains `implementation-001` at `db814b7e946ac1616f634245173ca3bc29d2cda5`; resolution is separately bound as `resolution-001` to `6f5436d73c7eaaa43d86d401450d24b1caaccc92`.
+- TDD-017: subject archive focused test run passed `17 passed`; tracked deletion is reported as exactly `C-061`.
+- Scope/TOCTOU: Architecture § “Execution Boundary capture” bounds the baseline/close comparison, excludes primary bookkeeping metadata, distinguishes pre-existing dirty work, and the Test Strategy states the concurrency limitation is not solved generally and tests fail-closed capture behavior. No concurrency defect was raised.
+- Schemas: direct Draft 2020-12 validation passed for the subject manifest, TDD ledger, and traceability ledger; the v2 provenance schema is well-formed. Subject focused tests passed `17/17`.
