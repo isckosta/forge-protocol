@@ -90,3 +90,54 @@ records:
       observed_by: self
       reference: implementation-subject
       statement: Frozen implementation subject after fail-closed Flow and revision fixes.
+  - id: verification-005
+    role: implementation
+    execution:
+      id: codex-verification-0036
+      context_id: codex-verification-context-0036
+    recorded_at: '2026-08-23T19:20:00Z'
+    revision:
+      id: chg-0036-implementation-005
+      immutable_ref:
+        type: git_commit
+        value: 584d84310be1c5de9702711b81c0e0d8dd29493b
+      commit: 584d84310be1c5de9702711b81c0e0d8dd29493b
+    source:
+      assurance: verified
+      observed_by: operator
+      reference: verification.md
+      statement: Verification evidence is bound to the frozen implementation subject.
+  - id: implementation-subject-006
+    role: implementation
+    execution:
+      id: codex-implementation-0036-subject-006
+      context_id: codex-session-2026-08-23-subject-006
+    recorded_at: '2026-08-23T19:35:00Z'
+    revision:
+      id: chg-0036-implementation-006
+      immutable_ref:
+        type: git_commit
+        value: 37fd7be4a6423fa4396eda6f59b9904852408340
+      commit: 37fd7be4a6423fa4396eda6f59b9904852408340
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: implementation-subject
+      statement: Frozen implementation subject after completion-gate and Verification-binding fixes.
+  - id: verification-006
+    role: implementation
+    execution:
+      id: codex-verification-0036-006
+      context_id: codex-verification-context-0036-006
+    recorded_at: '2026-08-23T19:35:00Z'
+    revision:
+      id: chg-0036-implementation-006
+      immutable_ref:
+        type: git_commit
+        value: 37fd7be4a6423fa4396eda6f59b9904852408340
+      commit: 37fd7be4a6423fa4396eda6f59b9904852408340
+    source:
+      assurance: verified
+      observed_by: operator
+      reference: verification.md
+      statement: Verification evidence is bound to the frozen implementation subject.
