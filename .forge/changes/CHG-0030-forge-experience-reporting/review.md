@@ -3,14 +3,14 @@ forge:
   artifact: review
   schema: 1
 change: CHG-0030
-status: active
+status: complete
 ---
 
 # Review — CHG-0030 Forge Experience Reporting
 
 ## Verdict
 
-**PENDING — Resolution Verification in progress.**
+**PASS — independent Strict Review passed against the final frozen subject.**
 
 ## Iteration 1 — FAIL
 
@@ -28,10 +28,18 @@ symlinked `dogfooding` ancestor containment, and deep follow-up candidate
 validation. These are addressed in `resolution-002` at frozen subject
 `358bf84`.
 
-## Iteration 3 — PENDING
+## Iteration 3 — PASS
 
 Review the exact `b5507b6e57523b1353f1072d078f174b80f0a3eb` subject independently.
 The reviewer must verify the
 resolution scope and re-run the focused/contract tests, with special attention
 to default-off configuration, symlink/path safety, deep report validation,
 sensitive-input rejection, TDD schema conformance, and Documentation Impact.
+
+The independent cold review passed against the exact frozen subject
+`b5507b6e57523b1353f1072d078f174b80f0a3eb`. It verified clean isolation,
+`forge validate`, `forge experience validate`, schema/contract/CLI,
+golden-path, Adapter, privacy, malformed-input, and symlink containment
+checks. No material finding remains.
+
+**PASS (final).**

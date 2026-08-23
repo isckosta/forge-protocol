@@ -84,6 +84,22 @@ records:
       statement: >-
         Final subject adds validation-time rejection of symlinked FER reports
         and its focused regression evidence; it is frozen at b5507b6.
+  - id: review-003
+    role: review
+    execution: {id: review-exec-chg0030-final-independent-01, context_id: review-context-chg0030-final-independent-01}
+    recorded_at: "2026-08-23T00:28:25-03:00"
+    revision:
+      id: chg-0030-final-001
+      immutable_ref: {type: git_commit, value: b5507b6e57523b1353f1072d078f174b80f0a3eb}
+    source:
+      assurance: recorded
+      observed_by: independent_subagent
+      harness: codex
+      statement: >-
+        Independent cold Strict Review passed against the exact b5507b6
+        subject. Focused FER, schema, CLI, golden-path, Adapter, validation,
+        privacy, malformed-input, and symlink containment checks passed. No
+        files were modified by the Reviewer.
   - id: plan-approval-001
     role: implementation
     execution: {id: implementation-exec-chg0030-20260822-01, context_id: implementation-context-chg0030-20260822-01}
