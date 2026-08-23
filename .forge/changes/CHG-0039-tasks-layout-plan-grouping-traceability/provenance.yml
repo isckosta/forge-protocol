@@ -1,0 +1,20 @@
+schema: forge/execution-provenance@2
+change: CHG-0039
+records:
+  - id: plan-approval-001
+    role: implementation
+    execution:
+      id: claude-code-implementation-0039
+      context_id: claude-code-session-2026-08-23
+    recorded_at: '2026-08-23T00:00:00Z'
+    revision:
+      id: chg-0039-plan-approval-001
+      immutable_ref:
+        type: git_commit
+        value: 3e130c20719e34ffb1b3340074e2877bc60a0f2a
+      commit: 3e130c20719e34ffb1b3340074e2877bc60a0f2a
+    source:
+      assurance: recorded
+      observed_by: operator
+      reference: plan.md#approval-record
+      statement: The user explicitly approved continuation of CHG-0039 to Implementation in the active session on 2026-08-23, confirming that the ERP domain example is not needed.

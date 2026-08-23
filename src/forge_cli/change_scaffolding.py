@@ -75,6 +75,8 @@ def _frontmatter(artifact: str, change_id: str, status: str, title: str) -> str:
         if artifact == "specification"
         else f"# {change_id} · Test Design"
         if artifact == "test_design"
+        else f"# {change_id} · Tasks"
+        if artifact == "tasks"
         else f"# {change_id} · {title}"
         if artifact == "intent"
         else f"# {artifact.replace('_', ' ').title()} — {change_id} {title}"
@@ -261,7 +263,26 @@ def _markdown(artifact: str, change_id: str, title: str, flow_id: str | None = N
         ),
         "test_strategy": "## Objective\n\nState the test strategy objective.\n\n## Strategy\n\n## TDD-001 — <behavior>\n\nDefine the test case.\n\n## Completion Criteria\n\nList completion criteria.\n",
         "plan": "1. Describe the first approved work item and files.\n\n## Implementation Boundary\n\nReaching `plan_complete` is not authorization to begin Implementation.\n",
-        "tasks": "- [ ] T-001 <work item>\n\n## Status\n\nNo task has started.\n",
+        "tasks": (
+            "> Execution Checklist\n"
+            "\n"
+            "## Overview\n"
+            "| | |\n"
+            "|---|---|\n"
+            f"| **Change** | {change_id} |\n"
+            f"| **Flow** | {(flow_id or 'full').upper()} |\n"
+            "| **Status** | Ready |\n"
+            "\n"
+            "## Execution\n\n"
+            "Group Tasks under the Plan item they execute. Reference `Requirements`, `Stories`, and `Test Design` only when that relationship actually exists — not every Task needs every reference.\n"
+            "\n"
+            "### Plan 1 · <Plan item title>\n\n"
+            "- [ ] T-001 <work item>\n"
+            "  `Plan: 1` · `Requirements: FR-001` · `Test Design: TDD-001`\n"
+            "\n"
+            "## Status\n\n"
+            "No task has started.\n"
+        ),
         "verification": "## Result\n\n**PENDING**\n\n## Summary\n\nRecord verification results.\n\n## Test Evidence\n\n## Forge Evidence\n\n## Conclusion\n\n",
         "review": "## Verdict\n\n**PENDING**\n\n## Iteration 1 — PENDING\n\nRecord Strict Review findings.\n",
         "knowledge_capture": "## What Changed\n\nRecord the durable change.\n\n## Durable Knowledge\n\n## Consequences for Future Changes\n\n## References\n\n",
