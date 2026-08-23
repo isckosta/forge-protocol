@@ -22,16 +22,24 @@ artifacts:
   review: pending
   documentation: complete
   knowledge_capture: complete
-tdd: {status: compliant, cycles: 16}
+tdd: {status: compliant, cycles: 17}
 verification: {status: passed}
 review:
-  status: pending
-  iteration: 0
-  blockers: 0
-  majors: 0
+  status: failed
+  iteration: 1
+  blockers: 1
+  majors: 1
   minors: 0
   observations: 0
-  iterations: []
+  iterations:
+    - id: review-001
+      revision: chg-0015-resolution-001
+      subject_provenance: resolution-001
+      reviewer_provenance: review-001
+      kind: initial_review
+      status: failed
+      new_material_findings: 1
+      finding_classes: [unresolved_finding]
 documentation:
   impact_evaluated: true
   update_required: true
