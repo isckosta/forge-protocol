@@ -1,0 +1,38 @@
+schema: forge/change@2
+protocol: 2
+change:
+  id: CHG-0029
+  title: Artifact Publication Suggestion
+  kind: documentation
+flow:
+  initial: fast
+  current: fast
+  escalations: []
+state:
+  current: inspection
+artifacts:
+  intent: complete
+  inspection: complete
+  tdd_evidence: complete
+  verification: pending
+  review: pending
+  documentation: pending
+requirements:
+  total: 2
+  implemented: 0
+  verified: 0
+tdd:
+  status: not_applicable
+  reason: This Change adds only non-binding Markdown guidance and no executable behavior.
+verification:
+  status: pending
+review:
+  status: pending
+  iteration: 0
+  blockers: 0
+  majors: 0
+  minors: 0
+  observations: 0
+  iterations: []
+documentation:
+  impact_evaluated: false
