@@ -22,3 +22,37 @@ records:
         path: plan.md
         value: c0a7ba0ee02c6aa897cd33bbd76215f95287bb308935a14f05044a9e4814edf2
       statement: The user explicitly approved the CHG-0043 Plan to proceed to Implementation in the active session on 2026-08-24, via an explicit approval choice ("Aprovar como está") over the Specification's 7 Functional Requirements and all 8 Plan work items.
+  - id: implementation-subject-001
+    role: implementation
+    execution:
+      id: claude-code-implementation-0043
+      context_id: claude-code-session-2026-08-24
+    recorded_at: '2026-08-24T00:00:00Z'
+    revision:
+      id: chg-0043-implementation-001
+      immutable_ref:
+        type: git_commit
+        value: ca4d50132e58c46c7fb85f8d13727bb7662d4a01
+      commit: ca4d50132e58c46c7fb85f8d13727bb7662d4a01
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: implementation-subject
+      statement: Frozen CHG-0043 implementation subject (immutable per C-026 once committed) -- includes change_scaffolding.py, tests/unit/test_change_scaffolding.py, protocol/artifact-structure.md, CHANGELOG.md, and all CHG-0043 planning/design/verification Artifacts. Reviewable Git workspace confirmed clean before freeze.
+  - id: verification-001
+    role: implementation
+    execution:
+      id: claude-code-implementation-0043-verification-001
+      context_id: claude-code-session-2026-08-24
+    recorded_at: '2026-08-24T00:00:00Z'
+    revision:
+      id: chg-0043-implementation-001
+      immutable_ref:
+        type: git_commit
+        value: ca4d50132e58c46c7fb85f8d13727bb7662d4a01
+      commit: ca4d50132e58c46c7fb85f8d13727bb7662d4a01
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: verification.md
+      statement: verification.md's PASS result (TDD-001 evidence, forge validate, full pytest suite -- 685 passed) is bound to this exact frozen implementation subject.
