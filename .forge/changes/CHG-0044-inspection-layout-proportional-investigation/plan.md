@@ -46,7 +46,7 @@ status: approved
    Report, nomeando o mecanismo real de escalada de Flow
    (`fast.yml`/`protocol/specification.md` §11) sem inventar um novo; (e)
    a correção da descrição de `CHG-0005/inspection.md` (não é "title
-   only" — duas frases de contexto reais).
+   only" — dois parágrafos de contexto real, três frases ao todo).
 4. Em `CHANGELOG.md`, adicionar entrada sob `## Unreleased` seguindo o
    formato das sete entradas anteriores desta mesma família, com a
    afirmação explícita de que os seis `inspection.md` reais permanecem

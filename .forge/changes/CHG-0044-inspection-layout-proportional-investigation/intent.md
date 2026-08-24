@@ -64,8 +64,8 @@ outras.
    `Conclusion`), explicitamente não obrigatório e explicitamente não
    exaustivo — a proporcionalidade continua sendo a primeira regra.
 2. Corrigir a caracterização imprecisa do exemplo `CHG-0005` ("a
-   four-line file (title only)") para refletir seu conteúdo real (duas
-   frases de contexto, sem headings).
+   four-line file (title only)") para refletir seu conteúdo real (dois
+   parágrafos de contexto real, três frases ao todo, sem headings).
 3. Atualizar o heading de identidade do scaffold para `# CHG-XXXX ·
    Inspection`, consistente com os demais artefatos já elaborados, e
    tornar o corpo mínimo do scaffold um comentário de orientação em vez

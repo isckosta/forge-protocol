@@ -45,8 +45,15 @@ Direct reading of the merged `protocol/artifact-structure.md` §4
 
 - **TD-003** — lists `Observation`, `Evidence`, `Root Cause`, `Impact`,
   `Fix Boundary`, `Open Question`, `Conclusion`; states "No section
-  below is expected, required, or validated"; cites `CHG-0024`,
-  `CHG-0028`, and `CHG-0012` as real precedent for individual terms.
+  below is expected, required, or validated"; cites real, verified
+  precedent per term: `CHG-0028` ("Current state") for Observation,
+  `CHG-0024`/`CHG-0029` (both literally `## Evidence`) for Evidence,
+  `CHG-0024`/`CHG-0012` (`## Root Cause`/`## Root cause`) for Root
+  Cause, and `CHG-0012` ("Scope verified not to include") for Fix
+  Boundary. An initial draft misattributed `CHG-0024`'s `## Root Cause`
+  section to the `Observation` term and omitted the real `## Evidence`
+  precedent entirely — corrected after independent Strict Review
+  (`R001`, see `review.md`).
 - **TD-004** — distinguishes `Observation` (symptom + reproducing
   condition, no cause conclusion) from confirmed `Root Cause`, and
   states explicitly: "When cause is not yet confirmed, say so explicitly
@@ -63,9 +70,12 @@ Direct reading of the merged `protocol/artifact-structure.md` §4
   mechanism (`fast.yml`'s `escalation.enabled`/`automatic_downgrade:
   false`; `protocol/specification.md` §11) without inventing a new one.
 - **TD-007** — the `CHG-0005` citation now reads "a title followed by
-  two sentences of real context... not a title-only file", correcting
-  the prior "four-line file (title only)" description while preserving
-  it as the real minimal-Inspection precedent.
+  two short paragraphs of real context, three sentences total... not a
+  title-only file", correcting the prior "four-line file (title only)"
+  description while preserving it as the real minimal-Inspection
+  precedent. The `CHG-0012` line count was also corrected in the same
+  pass, from an incorrectly introduced "87-line" back to the real
+  86-line count already used by this Change's own `intent.md`.
 
 ## Forge Evidence
 
@@ -86,6 +96,16 @@ scaffolds only. `intent.md`, `test-design.md`, `tdd-evidence.yml`,
 Plan/Verification/FER mechanics are unchanged; no new Markdown validator
 was introduced (C-067 preserved) — `merge_readiness/evaluator.py`
 continues to check only presence and status for the `inspection` key.
+
+Independent Strict Review Iteration 1 found two further defects in the
+first drafted prose, both corrected before this Verification: two
+internal section cross-references (`§39`, mistakenly carried over from
+the elaboration prompt's own numbering rather than this document's,
+and `§1`, which does not contain the interaction-language convention it
+was attached to) resolved to the wrong or nonexistent content (`R002`);
+these were replaced with an accurate, non-numbered reference to this
+document's own "Intent" entry. See `review.md` for the complete
+Iteration 1 record.
 
 Independent Strict Review remains pending.
 

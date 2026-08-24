@@ -568,12 +568,13 @@ NFR-001 of `CHG-0016`'s own Specification); this elaboration adds an
 optional vocabulary and a consistent identity heading around that
 property, it does not relax it. A short paragraph is a fully conforming
 example for a trivial fix — `CHG-0005/inspection.md` is a title followed
-by two sentences of real context (a lifecycle gap and a stray misleading
-test name), not a title-only file, but it is still the repository's real
-minimal-Inspection precedent. An 87-line file with a confirmed root
-cause, a precedent for the fix, and a documented Strict-Review correction
-is equally conforming for a genuinely more complex one (`CHG-0012`). No
-section below is expected, required, or validated (§39) — a real
+by two short paragraphs of real context, three sentences total (a
+lifecycle gap and a stray misleading test name), not a title-only file,
+but it is still the repository's real minimal-Inspection precedent. An
+86-line file with a confirmed root cause, a precedent for the fix, and a
+documented Strict-Review correction is equally conforming for a
+genuinely more complex one (`CHG-0012`). No section below is expected,
+required, or validated — a real
 `inspection.md` may use zero of them, one, or several, in any order,
 exactly as six real occurrences already do (`CHG-0005`, `CHG-0012`,
 `CHG-0024`, `CHG-0026`, `CHG-0028`, `CHG-0029`), each proportional to its
@@ -584,14 +585,21 @@ handful of underlying concepts.
 more structure than prose alone, a consistent (not mandatory) vocabulary
 is available — `Observation`, `Evidence`, `Root Cause`, `Impact`, `Fix
 Boundary`, `Open Question`, `Conclusion`, in English regardless of the
-surrounding prose's interaction language (§1). `Observation` separates
-the observed symptom and its reproducing condition from any conclusion
-about cause — the real precedent is organic (`CHG-0024`'s "Root Cause",
-`CHG-0028`'s "Current state"), this document simply names the concept
-consistently. `Root Cause` records the confirmed mechanism, not merely
-that something is wrong — "the validator is broken" is not a Root Cause,
-"the aggregator ignores the child status the validator already reports
-correctly" is. When cause is not yet confirmed, say so explicitly (a
+surrounding prose's interaction language — the same convention this
+document's own "Intent" entry already states ("Structural headings
+remain in English; surrounding prose uses the interaction language
+applicable to the project or user"). `Observation` separates the
+observed symptom and its reproducing condition from any conclusion about
+cause — `CHG-0028`'s "Current state" is real organic precedent for the
+same concept under a different name. `Evidence` is exact real precedent
+already (`CHG-0024/inspection.md:33`, `CHG-0029/inspection.md:10`, both
+literally `## Evidence`). `Root Cause` records the confirmed mechanism,
+not merely that something is wrong — `CHG-0024/inspection.md:11`
+(`## Root Cause`) and `CHG-0012/inspection.md:10` (`## Root cause`) are
+real precedent for the same exact concept; "the validator is broken" is
+not a Root Cause, "the aggregator ignores the child status the
+validator already reports correctly" is the shape a real one takes. When
+cause is not yet confirmed, say so explicitly (a
 plain "Likely cause" is sufficient) rather than presenting a hypothesis
 as certainty; no numeric or multi-level confidence scale is needed. `Fix
 Boundary` — particularly useful for FAST, where scope creep is the real
@@ -644,7 +652,7 @@ continuing to force STANDARD- or FULL-level content into `inspection.md`
 because the file already exists.
 
 No heading in this section is required, validated, or expected to appear
-in every occurrence (§2.5, §39) — the scaffold accordingly emits no
+in every occurrence (§2.5) — the scaffold accordingly emits no
 section heading at all beyond the document's own identity heading (§4's
 introduction), only a short authoring comment pointing back to this
 vocabulary.

@@ -20,7 +20,7 @@ better scaffold, without touching the one property (proportionality) that
 makes Inspection correct for FAST. One inaccuracy was found and must be
 fixed while elaborating: the existing text calls `CHG-0005/inspection.md`
 "a four-line file (title only)" — it is not title-only; it has two
-sentences of real context.
+short paragraphs of real context, three sentences total.
 
 ## Investigation
 
@@ -91,8 +91,8 @@ validator to avoid strengthening.
 
 | Change | Lines | Headings used |
 |---|---|---|
-| `CHG-0005` | 5 (2 sentences, no frontmatter, no heading beyond title) | none |
-| `CHG-0012` | 87 (frontmatter present) | Root cause, Precedent for the fix, Classification, Scope verified not to include, Correction after Strict Review Iteration 1... |
+| `CHG-0005` | 5 logical lines / `wc -l` reports 4 (no trailing newline); 2 short paragraphs, 3 sentences total, no frontmatter, no heading beyond title | none |
+| `CHG-0012` | 86 (frontmatter present) | Root cause, Precedent for the fix, Classification, Scope verified not to include, Correction after Strict Review Iteration 1... |
 | `CHG-0024` | 57 | Root Cause, Existing Pattern, Evidence, Classification, Documentation Impact |
 | `CHG-0026` | 62 | Finding, Flow Classification, Decision, Documentation Impact |
 | `CHG-0028` | 44 | Current state, Flow classification, Parallel-work check, Process decision |
@@ -110,13 +110,13 @@ organically.
 
 **Correction to existing guidance:** `artifact-structure.md`'s current
 text calls `CHG-0005/inspection.md` "a four-line file (title only)". Its
-real content is `# Inspection — CHG-0005` followed by two substantive
-sentences of context (a real lifecycle gap and a stray misleading test
-name) — not title-only. The file is five lines counting the blank
-separator, closer to four non-blank lines, but it is not devoid of
-content the way "title only" implies. This Change corrects the
-description without changing the citation's point (it remains the
-repository's real minimal-Inspection precedent).
+real content is `# Inspection — CHG-0005` followed by two short
+paragraphs of context (three sentences total: a real lifecycle gap and a
+stray misleading test name) — not title-only. The file has 5 logical
+lines (`wc -l` reports 4, since the last line has no trailing newline),
+but it is not devoid of content the way "title only" implies. This
+Change corrects the description without changing the citation's point
+(it remains the repository's real minimal-Inspection precedent).
 
 ### Distinction from adjacent artifacts
 

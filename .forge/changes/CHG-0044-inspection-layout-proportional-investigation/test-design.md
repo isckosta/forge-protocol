@@ -131,7 +131,7 @@ Requirements: FR-007
 Type: Manual Acceptance
 
 #### Scenario
-Given the elaborated section, When the citation to `CHG-0005/inspection.md` is read, Then it no longer states "title only" (or an equivalent overclaim) and instead accurately describes the file's real two-sentence content, while preserving it as the repository's real minimal-Inspection precedent.
+Given the elaborated section, When the citation to `CHG-0005/inspection.md` is read, Then it no longer states "title only" (or an equivalent overclaim) and instead accurately describes the file's real two-paragraph, three-sentence content, while preserving it as the repository's real minimal-Inspection precedent.
 
 #### Evidence
 Direct reading against `.forge/changes/CHG-0005-review-completion-gate/inspection.md`'s actual content.

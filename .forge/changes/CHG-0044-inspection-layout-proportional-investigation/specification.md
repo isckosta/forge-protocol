@@ -189,14 +189,15 @@ mecanismo de escalada de Flow já existente.
 
 ### FR-007 · Correction of the CHG-0005 characterization
 Origin: Discovery — o texto atual descreve `CHG-0005/inspection.md` como
-"a four-line file (title only)"; o conteúdo real tem duas frases
-substantivas
+"a four-line file (title only)"; o conteúdo real tem dois parágrafos
+substantivos, três frases ao todo
 
 #### Requirement
 A guidance elaborada SHALL corrigir a descrição de
 `CHG-0005/inspection.md` para refletir seu conteúdo real (um título
-seguido de duas frases de contexto, sem headings), preservando o ponto
-original da citação (o exemplo mínimo real de Inspection).
+seguido de dois parágrafos de contexto, três frases ao todo, sem
+headings), preservando o ponto original da citação (o exemplo mínimo
+real de Inspection).
 
 #### Acceptance
 AC-007 — Given a guidance elaborada, When a citação a `CHG-0005` é
