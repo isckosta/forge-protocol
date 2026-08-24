@@ -901,10 +901,42 @@ def test_render_scaffold_knowledge_capture_unaffected_templates_are_unchanged() 
         behavioral=True,
     )
 
+    # Full-equality (via endswith on the *entire* section content each
+    # renderer emits, not a tail fragment) for every one of the five
+    # unaffected templates — a tail-only or substring check would miss
+    # a regression in the untested middle/opening of the section, which
+    # is exactly what happened here in an earlier draft of this test
+    # for review.md (only its last two subsections were checked) and
+    # tasks.md (a single bare substring, no equality at all).
     assert plan.files["review.md"].endswith(
-        "## Iteration 1 — PENDING\n\nRecord Strict Review findings. Each finding needs a stable Rxxx id, "
-        "one of BLOCKER, MAJOR, MINOR, or OBSERVATION, evidence (required for BLOCKER and MAJOR), "
-        "and a Required Resolution stated as the property that must hold — not a prescribed implementation.\n\n"
+        "## Verdict\n\n"
+        "**PENDING**\n\n"
+        "## Review Summary\n\n"
+        "Use the values already recorded in manifest.yml: review (iteration, blockers, majors, minors) — do not hand-count separately.\n\n"
+        "| | |\n"
+        "|---|---|\n"
+        "| **Iterations** | <n> |\n"
+        "| **Current Subject** | <sha> |\n"
+        "| **Open Blockers** | <n> |\n"
+        "| **Open Majors** | <n> |\n"
+        "| **Open Minors** | <n> |\n"
+        "| **Final Iteration** | <n> |\n"
+        "| **Result** | PENDING |\n\n"
+        "## Current Subject\n\n"
+        "Reference the frozen subject recorded in provenance.yml by id; do not invent a new freeze concept.\n\n"
+        "| | |\n"
+        "|---|---|\n"
+        "| **Subject SHA** | <sha> |\n"
+        "| **Frozen** | <Yes/No> |\n"
+        "| **Iteration** | <n> |\n\n"
+        "## Reviewer Independence\n\n"
+        "Reference the reviewer's provenance.yml record by id as evidence of a distinct Execution and Execution Context from the Implementation or Resolution under review — not a bare declaration.\n\n"
+        "## Open Findings\n\n"
+        "List only findings still open, using the Rxxx id (no Change-id prefix). Use `No open findings.` instead of an empty table when there are none.\n\n"
+        "| Finding | Severity | Status | Iteration |\n"
+        "|---|---|---|---|\n\n"
+        "## Iteration 1 — PENDING\n\n"
+        "Record Strict Review findings. Each finding needs a stable Rxxx id, one of BLOCKER, MAJOR, MINOR, or OBSERVATION, evidence (required for BLOCKER and MAJOR), and a Required Resolution stated as the property that must hold — not a prescribed implementation.\n\n"
         "## Conclusion\n\n"
         "State the effect of the Verdict. Do not declare Completion while gates later in the Flow remain outstanding.\n"
     )
@@ -922,4 +954,23 @@ def test_render_scaffold_knowledge_capture_unaffected_templates_are_unchanged() 
         "## TDD-001 — <behavior>\n\nDefine the test case.\n\n"
         "## Completion Criteria\n\nList completion criteria.\n"
     )
-    assert "No task has started." in plan.files["tasks.md"]
+    assert plan.files["tasks.md"].endswith(
+        "> Execution Checklist\n"
+        "\n"
+        "## Overview\n"
+        "| | |\n"
+        "|---|---|\n"
+        "| **Change** | CHG-0043 |\n"
+        "| **Flow** | FULL |\n"
+        "| **Status** | Ready |\n"
+        "\n"
+        "## Execution\n\n"
+        "Group Tasks under the Plan item they execute. Reference `Requirements`, `Stories`, and `Test Design` only when that relationship actually exists — not every Task needs every reference.\n"
+        "\n"
+        "### Plan 1 · <Plan item title>\n\n"
+        "- [ ] T-001 <work item>\n"
+        "  `Plan: 1` · `Requirements: FR-001` · `Test Design: TDD-001`\n"
+        "\n"
+        "## Status\n\n"
+        "No task has started.\n"
+    )

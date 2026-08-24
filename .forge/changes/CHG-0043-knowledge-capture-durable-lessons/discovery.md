@@ -28,7 +28,7 @@ overriding that judgment lightly.
 
 Unchanged since `CHG-0042`: Protocol `2`; Change Schema
 `forge/change@2`; project default Flow `standard`.
-`protocol/specification.md`'s §? minimum-lifecycle list (line 55)
+`protocol/specification.md`'s §10 ("FULL") minimum-lifecycle list (line 55)
 names "Knowledge Capture" as part of the FULL Flow's minimum
 lifecycle, confirming it is FULL-only, not conditional the way the
 prompt's framing suggested — `protocol/flows/full.yml` lists it as

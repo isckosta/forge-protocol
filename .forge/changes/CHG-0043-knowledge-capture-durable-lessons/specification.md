@@ -81,23 +81,29 @@ Origin: Discovery — `CHG-0016` é o único precedente real de múltiplas
 lições independentes; nenhum `K-xxx` já existe no histórico
 
 #### Requirement
-A guidance de `Durable Knowledge` SHALL orientar o uso de itens `###
-K-xxx · <title>` quando existirem múltiplas lições genuinamente
-independentes (citando `CHG-0016` como precedente real do padrão,
-ainda que sem IDs formais), e SHALL declarar explicitamente que IDs
+O scaffold gerado (`knowledge-capture.md`) SHALL orientar o uso de
+itens `### K-xxx · <title>` quando existirem múltiplas lições
+genuinamente independentes, e SHALL declarar explicitamente que IDs
 não são obrigatórios — prosa curta permanece válida para uma única
-lição dominante (citando `CHG-0033`/`35`/`36` como precedente real
-desse modo).
+lição dominante. A guidance elaborada em
+`protocol/artifact-structure.md` (documentação normativa, não o
+scaffold em si) SHALL citar pelo menos um precedente real para cada um
+dos dois modos (`CHG-0016` para múltiplas lições independentes;
+`CHG-0033`/`35`/`36` para prosa curta de lição única).
 
 #### Boundary
 Esta Change não formaliza `K-xxx` como namespace normativo — nenhum
-consumidor real existe hoje.
+consumidor real existe hoje. O scaffold gerado permanece conciso; as
+citações de precedente pertencem à documentação normativa elaborada,
+não ao texto reutilizável do template.
 
 #### Acceptance
-AC-002 — Given a guidance gerada, When a seção `Durable Knowledge` é
+AC-002 — Given o scaffold gerado, When a seção `Durable Knowledge` é
 inspecionada, Then ela orienta o uso opcional de `### K-xxx` para
-múltiplas lições independentes, declara explicitamente que IDs não são
-obrigatórios, e cita pelo menos um precedente real para cada modo.
+múltiplas lições independentes e declara explicitamente que IDs não
+são obrigatórios; Given `protocol/artifact-structure.md`'s seção
+"Knowledge Capture", When inspecionada, Then ela cita pelo menos um
+precedente real para cada um dos dois modos.
 
 ### FR-003 · Distinction from Decision, Architecture, Specification, Review, and Specification Drift
 Origin: Discovery — a relação real entre esses artefatos precisa ser

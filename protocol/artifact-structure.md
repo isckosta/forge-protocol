@@ -541,10 +541,15 @@ scoped to this Change.
 `References` points at what already exists rather than duplicating it.
 When the work is materially architectural or Protocol-level, Contract
 F-008 already requires a `docs/adr/`/`docs/rfcs/` entry as part of the
-work itself (`CHG-0013`, `CHG-0015`, `CHG-0016`, `CHG-0036` all
-reference one this way) — `References` points at it; this document does
-not invent a separate "promotion" workflow for moving content into
-permanent documentation after the fact, since no such mechanism exists
+work itself — `CHG-0036`'s `## References` cites
+`docs/rfcs/0006-merge-readiness-gate.md` this way directly; `CHG-0013`,
+`CHG-0015`, and `CHG-0016` predate this structural section and mention
+the same real ADR practice in unstructured prose instead, not through a
+dedicated `References` heading — either form points at what F-008
+already produced, and `References` should do the same going forward.
+This document does not invent a separate "promotion" workflow for
+moving content into permanent documentation after the fact, since no
+such mechanism exists
 today.
 
 ### Inspection
