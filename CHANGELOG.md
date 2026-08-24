@@ -10,6 +10,26 @@ until then.
 
 ## Unreleased
 
+### Verification Layout, Coverage, and Traceability
+
+Updated newly generated `verification.md` (FAST/STANDARD/FULL) with an
+Acceptance Coverage table (`Acceptance | Requirement | Result |
+Evidence`), a conditional Requirement Coverage table, a distinct Manual
+Evidence section, guidance to reference `TDD-xxx` cycles by id instead
+of renarrating RED/GREEN, and Conclusion guidance against implying
+Completion under FAIL/SKIPPED. `Result` remains the first substantive
+section, restricted to `PASS`/`FAIL`/`SKIPPED`/`NOT APPLICABLE`.
+Historical `verification.md` files, Schemas, Protocol integers, and
+`forge validate` semantics remain unchanged.
+
+Also fixes two real defects found while remediating CHG-0036 through
+CHG-0039's stacked PRs: the Merge Readiness gate's review-subject
+staleness check (`MR-015`) diffed the entire repository instead of the
+Change's own directory, making it mechanically impossible for two
+sequentially stacked Changes to both stay non-stale; and Flow stages
+were loaded from the wrong YAML root, so the required-artifact-per-stage
+check (`MR-009`) never fired for any Change.
+
 ### Tasks Layout, Plan Grouping, and Traceability
 
 Updated newly generated `tasks.md` (FULL) with an Overview, an Execution

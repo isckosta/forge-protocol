@@ -77,6 +77,8 @@ def _frontmatter(artifact: str, change_id: str, status: str, title: str) -> str:
         if artifact == "test_design"
         else f"# {change_id} · Tasks"
         if artifact == "tasks"
+        else f"# {change_id} · Verification"
+        if artifact == "verification"
         else f"# {change_id} · {title}"
         if artifact == "intent"
         else f"# {artifact.replace('_', ' ').title()} — {change_id} {title}"
@@ -283,7 +285,29 @@ def _markdown(artifact: str, change_id: str, title: str, flow_id: str | None = N
             "## Status\n\n"
             "No task has started.\n"
         ),
-        "verification": "## Result\n\n**PENDING**\n\n## Summary\n\nRecord verification results.\n\n## Test Evidence\n\n## Forge Evidence\n\n## Conclusion\n\n",
+        "verification": (
+            "## Result\n\n"
+            "**PENDING**\n\n"
+            "## Summary\n\n"
+            "State how many Acceptance Criteria were verified, how many passed, how many failed, and whether Manual Evidence or Limitations apply. When Result is SKIPPED or NOT APPLICABLE, state the rationale here, proportional to the Change — a skipped or inapplicable Verification is itself a claim that needs a reason.\n\n"
+            "## Acceptance Coverage\n\n"
+            "Reference each AC-xxx by id; do not reproduce its full text here.\n\n"
+            "| Acceptance | Requirement | Result | Evidence |\n"
+            "|---|---|---|---|\n"
+            "| AC-001 | FR-001 | PENDING | <evidence> |\n\n"
+            "## Requirement Coverage\n\n"
+            "Omit this section when Acceptance Coverage already expresses per-Requirement coverage; include it only when it adds information Acceptance Coverage does not.\n\n"
+            "## Test Evidence\n\n"
+            "Record commands, exit status, and a short summary — not full logs. When `tdd-evidence.yml` already records RED and GREEN for a TDD-xxx cycle, reference it by id instead of renarrating the sequence.\n\n"
+            "## Forge Evidence\n\n"
+            "Record only what the command actually guarantees.\n\n"
+            "## Manual Evidence\n\n"
+            "Include this section only when a real manual verification occurred; keep it distinct from Test Evidence and Forge Evidence.\n\n"
+            "## Compatibility and Limitations\n\n"
+            "Record confirmed compatibility impact and any real limitation. Do not pad this section when neither applies.\n\n"
+            "## Conclusion\n\n"
+            "State the outcome for the implemented scope. Do not imply Completion when Result is FAIL or SKIPPED, or when Review remains pending.\n"
+        ),
         "review": "## Verdict\n\n**PENDING**\n\n## Iteration 1 — PENDING\n\nRecord Strict Review findings.\n",
         "knowledge_capture": "## What Changed\n\nRecord the durable change.\n\n## Durable Knowledge\n\n## Consequences for Future Changes\n\n## References\n\n",
     }

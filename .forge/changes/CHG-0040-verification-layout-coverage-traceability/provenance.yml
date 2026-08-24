@@ -1,0 +1,126 @@
+schema: forge/execution-provenance@2
+change: CHG-0040
+records:
+  - id: plan-approval-001
+    role: implementation
+    execution:
+      id: claude-code-implementation-0040
+      context_id: claude-code-session-2026-08-23
+    recorded_at: '2026-08-23T00:00:00Z'
+    revision:
+      id: chg-0040-plan-approval-001
+      immutable_ref:
+        type: git_commit
+        value: bc4575ab6e563989905154d6e513c1af04857509
+      commit: bc4575ab6e563989905154d6e513c1af04857509
+    source:
+      assurance: recorded
+      observed_by: operator
+      reference: plan.md#approval-record
+      content_digest:
+        algorithm: sha256
+        path: plan.md
+        value: 9b66e5eb77bb4409e85d91eeee5f4e21f719bf40091417cbe4dbdf2927ab3416
+      statement: The user explicitly approved the CHG-0040 Plan to proceed to Implementation in the active session on 2026-08-23, via an explicit approval choice ("Aprovar como está") over the Repository Truth Audit, the Specification's 8 Functional Requirements, and all 8 Plan work items, with the canonical example update (item 4) in scope.
+  - id: implementation-subject-001
+    role: implementation
+    execution:
+      id: claude-code-implementation-0040
+      context_id: claude-code-session-2026-08-23
+    recorded_at: '2026-08-24T00:00:00Z'
+    revision:
+      id: chg-0040-implementation-001
+      immutable_ref:
+        type: git_commit
+        value: 2de372749172ef775bbed49c0e6701fa7316439c
+      commit: 2de372749172ef775bbed49c0e6701fa7316439c
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: implementation-subject
+      statement: Frozen CHG-0040 implementation subject (immutable per C-026 once committed) -- includes change_scaffolding.py, tests/unit/test_change_scaffolding.py, protocol/artifact-structure.md, examples/canonical-artifacts/verification.md, CHANGELOG.md, and all CHG-0040 planning/design/verification Artifacts. Reviewable Git workspace confirmed clean before freeze.
+  - id: verification-001
+    role: implementation
+    execution:
+      id: claude-code-implementation-0040-verification-001
+      context_id: claude-code-session-2026-08-23
+    recorded_at: '2026-08-24T00:00:00Z'
+    revision:
+      id: chg-0040-implementation-001
+      immutable_ref:
+        type: git_commit
+        value: 2de372749172ef775bbed49c0e6701fa7316439c
+      commit: 2de372749172ef775bbed49c0e6701fa7316439c
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: verification.md
+      statement: verification.md's PASS result (TDD-001 evidence, forge validate, full pytest suite -- 668 passed) is bound to this exact frozen implementation subject.
+  - id: reviewer-001
+    role: review
+    execution:
+      id: a17e71184cab2b384
+      context_id: independent-review-context-a17e71184cab2b384
+    recorded_at: '2026-08-24T00:00:00Z'
+    revision:
+      id: chg-0040-implementation-001
+      immutable_ref:
+        type: git_commit
+        value: 2de372749172ef775bbed49c0e6701fa7316439c
+      commit: 2de372749172ef775bbed49c0e6701fa7316439c
+    source:
+      assurance: recorded
+      observed_by: operator
+      reference: review.md#iteration-1
+      statement: Independent Strict Review Iteration 1 (fresh execution, isolated worktree, no shared context with Implementation) returned PASS -- no BLOCKER, MAJOR, or MINOR findings; 1 non-blocking OBSERVATION. Tests, forge validate, rendered verification.md structure (via a direct render_scaffold call, not the test suite alone), template byte-equality for review/plan/test-strategy/tasks, CHANGELOG.md accuracy, and exact diff scope were all independently reproduced against this exact commit.
+  - id: implementation-subject-002
+    role: implementation
+    execution:
+      id: claude-code-implementation-0040-subject-002
+      context_id: claude-code-session-2026-08-24-subject-002
+    recorded_at: '2026-08-24T00:00:00Z'
+    revision:
+      id: chg-0040-implementation-002
+      immutable_ref:
+        type: git_commit
+        value: 4d5a0be9ea689b3163a8e47c4700543481b5db26
+      commit: 4d5a0be9ea689b3163a8e47c4700543481b5db26
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: implementation-subject
+      statement: Refrozen CHG-0040 implementation subject superseding implementation-subject-001, addressing three P2 findings from an automated review on PR #31 (SKIPPED/NOT APPLICABLE rationale prompt missing; dangling TDD-001 evidence reference on non-behavioral scaffolds; canonical example renarrating RED/GREEN despite its own adjacent guidance). Reviewable Git workspace confirmed clean before this freeze.
+  - id: verification-002
+    role: implementation
+    execution:
+      id: claude-code-implementation-0040-verification-002
+      context_id: claude-code-session-2026-08-24-subject-002
+    recorded_at: '2026-08-24T00:00:00Z'
+    revision:
+      id: chg-0040-implementation-002
+      immutable_ref:
+        type: git_commit
+        value: 4d5a0be9ea689b3163a8e47c4700543481b5db26
+      commit: 4d5a0be9ea689b3163a8e47c4700543481b5db26
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: verification.md
+      statement: Full pytest suite (670 passed) and forge validate confirmed against this refrozen subject; two new regression tests cover the SKIPPED/NOT APPLICABLE rationale prompt and the neutral evidence placeholder.
+  - id: reviewer-002
+    role: review
+    execution:
+      id: a2e7e8c0cd114b194
+      context_id: independent-review-context-a2e7e8c0cd114b194
+    recorded_at: '2026-08-24T00:00:00Z'
+    revision:
+      id: chg-0040-implementation-002
+      immutable_ref:
+        type: git_commit
+        value: 4d5a0be9ea689b3163a8e47c4700543481b5db26
+      commit: 4d5a0be9ea689b3163a8e47c4700543481b5db26
+    source:
+      assurance: recorded
+      observed_by: operator
+      reference: review.md#iteration-2
+      statement: Independent Strict Review Iteration 2 (fresh execution, isolated worktree, no shared context with Implementation or Iteration 1) returned PASS -- no BLOCKER, MAJOR, or MINOR findings; 1 non-blocking OBSERVATION. All three PR #31 review-finding fixes were independently verified via direct render_scaffold calls (not diff-reading), tests/forge validate reproduced at claimed counts, and diff scope confirmed unchanged.
