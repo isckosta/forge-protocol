@@ -1,0 +1,85 @@
+schema: forge/change@2
+protocol: 2
+change:
+  id: CHG-0045
+  title: Agent Adapter Architecture Skill Authority Consolidation
+  kind: feature
+flow:
+  initial: full
+  current: full
+  escalations: []
+state:
+  current: plan
+artifacts:
+  intent: complete
+  discovery: complete
+  specification: complete
+  specification_review: complete
+  architecture: complete
+  test_strategy: complete
+  plan: approved
+  tasks: ready
+  tdd_evidence: active
+  verification: pending
+  review: pending
+  documentation: pending
+  knowledge_capture: pending
+requirements:
+  total: 7
+  implemented: 0
+  verified: 0
+tdd:
+  status: pending
+verification:
+  status: pending
+review:
+  status: pending
+  iteration: 0
+  blockers: 0
+  majors: 0
+  minors: 0
+  observations: 0
+  iterations: []
+documentation:
+  impact_evaluated: false
+decisions:
+  - id: DEC-001
+    class: architectural
+    materiality: material
+    status: resolved
+    authority: agent_with_review
+    owning_artifact: architecture
+    discovered_in: architecture
+    resolved_via: autonomous_decision
+  - id: DEC-002
+    class: architectural
+    materiality: material
+    status: resolved
+    authority: agent_with_review
+    owning_artifact: architecture
+    discovered_in: architecture
+    resolved_via: autonomous_decision
+  - id: DEC-003
+    class: architectural
+    materiality: non_material
+    status: resolved
+    authority: agent_with_review
+    owning_artifact: architecture
+    discovered_in: architecture
+    resolved_via: autonomous_decision
+  - id: DEC-004
+    class: technical
+    materiality: material
+    status: resolved
+    authority: agent_with_review
+    owning_artifact: plan
+    discovered_in: architecture
+    resolved_via: autonomous_decision
+  - id: DEC-005
+    class: technical
+    materiality: material
+    status: resolved
+    authority: human
+    owning_artifact: plan
+    discovered_in: plan
+    resolved_via: human_decision
