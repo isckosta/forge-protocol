@@ -62,11 +62,10 @@ Limitations.
 ## Test Evidence
 
 - `pytest tests/unit/test_users.py -q` — 6 passed, 0 failed.
-- `TDD-001` (`test_create_username_rejects_short_names`): RED failed
-  before the fix for the expected reason (`ValueError` not raised);
-  GREEN passes after — see `tdd-evidence.yml`.
-- `TDD-002` (`test_create_username_accepts_minimum_length`): RED/GREEN
-  as above.
+- `TDD-001` (`test_create_username_rejects_short_names`) and `TDD-002`
+  (`test_create_username_accepts_minimum_length`) — RED and GREEN
+  recorded in `tdd-evidence.yml`; referenced here by id, not
+  renarrated.
 
 ## Forge Evidence
 

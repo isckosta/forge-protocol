@@ -584,6 +584,36 @@ def test_render_scaffold_verification_conclusion_does_not_imply_completion_under
     assert "Review remains pending" in verification
 
 
+def test_render_scaffold_verification_prompts_for_skipped_or_not_applicable_rationale() -> None:
+    plan = render_scaffold(
+        change_id="CHG-0040",
+        slug="verification-skipped-rationale",
+        flow_id="standard",
+        flow_data=_canonical_flow("standard"),
+        behavioral=True,
+    )
+
+    verification = plan.files["verification.md"]
+
+    assert "SKIPPED or NOT APPLICABLE" in verification
+    assert "rationale" in verification
+
+
+def test_render_scaffold_verification_acceptance_coverage_evidence_placeholder_is_neutral() -> None:
+    plan = render_scaffold(
+        change_id="CHG-0040",
+        slug="verification-evidence-placeholder",
+        flow_id="fast",
+        flow_data=_canonical_flow("fast"),
+        behavioral=False,
+    )
+
+    verification = plan.files["verification.md"]
+
+    assert "TDD-001" not in verification
+    assert "TD-001" not in verification
+
+
 def test_render_scaffold_review_plan_test_strategy_tasks_templates_are_unchanged() -> None:
     plan = render_scaffold(
         change_id="CHG-0040",
