@@ -1,0 +1,26 @@
+schema: forge/execution-provenance@2
+change: CHG-0045
+records:
+  - id: plan-approval-001
+    role: implementation
+    execution:
+      id: claude-code-implementation-0045
+      context_id: claude-code-session-2026-08-24
+    recorded_at: '2026-08-24T00:00:00Z'
+    revision:
+      id: chg-0045-plan-approval-001
+      immutable_ref:
+        type: git_commit
+        value: 381dfc621196c65c44b0636a8e2e9ff83b3ffb0d
+      commit: 381dfc621196c65c44b0636a8e2e9ff83b3ffb0d
+    source:
+      assurance: recorded
+      observed_by: operator
+      reference: plan.md#approval-record
+      statement: >-
+        Explicit human approval of the CHG-0045 Plan was received via a
+        direct AskUserQuestion Plan Decision prompt ("O Plan da CHG-0045
+        ... está pronto para Implementation?"), answered "Aprovar e
+        prosseguir", in the active session on 2026-08-24. This is
+        repository-native, self-recorded evidence (assurance: recorded),
+        not cryptographic or external attestation (C-077).
