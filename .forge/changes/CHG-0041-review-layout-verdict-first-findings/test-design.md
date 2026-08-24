@@ -131,7 +131,7 @@ Type: Unit
 Proves the one deliberately preserved element of the prior template — the real, stable `## Iteration N — <verdict>` convention — is untouched, and no `## Iteration History` wrapper was introduced.
 
 #### Scenario
-Given the rendered `review.md`, When the document is inspected, Then it contains the exact, verbatim substring `## Iteration 1 — PENDING\n\nRecord Strict Review findings.\n\n` (same heading level, same em dash separator as the prior template), positioned after `## Open Findings` and before `## Conclusion`, and `## Iteration History` does not appear anywhere in the document.
+Given the rendered `review.md`, When the document is inspected, Then it contains the exact, verbatim substring `## Iteration 1 — PENDING\n\nRecord Strict Review findings.` (same heading level, same em dash separator as the prior template, same opening sentence — the guidance paragraph is extended in place with additional finding-structure guidance, not replaced), positioned after `## Open Findings` and before `## Conclusion`, and `## Iteration History` does not appear anywhere in the document.
 
 #### Evidence
 Test result: exact-substring assertion for the verbatim iteration text, an ordering assertion (`Open Findings` index < `Iteration 1` index < `Conclusion` index), plus a negative assertion for the wrapper heading.

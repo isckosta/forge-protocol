@@ -17,9 +17,11 @@ derived Review Summary (sourced from `manifest.yml: review`, not
 hand-counted), a Current Subject section referencing `provenance.yml`
 by id, a Reviewer Independence section, and a conditional Open
 Findings index — all placed before the real, stable `## Iteration N —
-<verdict>` history convention, which is preserved byte-for-byte
-unchanged (no new `Iteration History` wrapper heading). Finding
-guidance keeps the `Rxxx` id convention and steers Required Resolution
+<verdict>` heading convention (same level, same em dash separator, same
+opening sentence), which is preserved unchanged with no new `Iteration
+History` wrapper heading; its guidance paragraph is extended in place
+with additional finding-structure guidance. Finding guidance keeps the
+`Rxxx` id convention and steers Required Resolution
 toward the property that must hold, not a prescribed implementation.
 Historical `review.md` files, `specification-review.md`/`SR-xxx`,
 Schemas, Protocol integer, reviewer/resolver independence semantics,
