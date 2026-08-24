@@ -124,3 +124,37 @@ records:
       observed_by: operator
       reference: review.md#iteration-2
       statement: Independent Strict Review Iteration 2 (fresh execution, isolated worktree, no shared context with Implementation or Iteration 1) returned PASS -- R001 confirmed resolved by an injected temporary regression proving the strengthened test actually catches a defect, not just by reading the diff; R002/R003/R004 confirmed resolved by direct inspection. Recorded two new non-blocking findings (R005 OBSERVATION, R006 MINOR) per C-050, left open per C-049.
+  - id: implementation-subject-003
+    role: implementation
+    execution:
+      id: claude-code-implementation-0043-subject-003
+      context_id: claude-code-session-2026-08-24-subject-003
+    recorded_at: '2026-08-24T00:00:00Z'
+    revision:
+      id: chg-0043-implementation-003
+      immutable_ref:
+        type: git_commit
+        value: 15a5b459ab7ff5b25a12c76f0bae5632ab028bcb
+      commit: 15a5b459ab7ff5b25a12c76f0bae5632ab028bcb
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: implementation-subject
+      statement: Refrozen CHG-0043 implementation subject superseding implementation-subject-002, resolving an automated PR review finding (P2, not one of R001-R006) -- protocol/artifact-structure.md overclaimed that all 25 real knowledge-capture.md files use the exact four-heading structured form; only 7 do (CHG-0021, CHG-0022, CHG-0023, CHG-0030, CHG-0033, CHG-0035, CHG-0036). Corrected to name the 7 precisely and describe the other 18 as broader content precedent. Prose-only change to protocol/artifact-structure.md; no renderer or test change. Reviewable Git workspace confirmed clean before this freeze.
+  - id: verification-003
+    role: implementation
+    execution:
+      id: claude-code-implementation-0043-verification-003
+      context_id: claude-code-session-2026-08-24-subject-003
+    recorded_at: '2026-08-24T00:00:00Z'
+    revision:
+      id: chg-0043-implementation-003
+      immutable_ref:
+        type: git_commit
+        value: 15a5b459ab7ff5b25a12c76f0bae5632ab028bcb
+      commit: 15a5b459ab7ff5b25a12c76f0bae5632ab028bcb
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: verification.md
+      statement: Full pytest suite (685 passed, unchanged count) and forge validate confirmed against this refrozen subject; the fix is prose-only in protocol/artifact-structure.md, no code or test behavior differs.
