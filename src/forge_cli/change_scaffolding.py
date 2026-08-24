@@ -79,6 +79,8 @@ def _frontmatter(artifact: str, change_id: str, status: str, title: str) -> str:
         if artifact == "tasks"
         else f"# {change_id} · Verification"
         if artifact == "verification"
+        else f"# {change_id} · Review"
+        if artifact == "review"
         else f"# {change_id} · {title}"
         if artifact == "intent"
         else f"# {artifact.replace('_', ' ').title()} — {change_id} {title}"
@@ -308,7 +310,38 @@ def _markdown(artifact: str, change_id: str, title: str, flow_id: str | None = N
             "## Conclusion\n\n"
             "State the outcome for the implemented scope. Do not imply Completion when Result is FAIL or SKIPPED, or when Review remains pending.\n"
         ),
-        "review": "## Verdict\n\n**PENDING**\n\n## Iteration 1 — PENDING\n\nRecord Strict Review findings.\n",
+        "review": (
+            "## Verdict\n\n"
+            "**PENDING**\n\n"
+            "## Review Summary\n\n"
+            "Use the values already recorded in manifest.yml: review (iteration, blockers, majors, minors) — do not hand-count separately.\n\n"
+            "| | |\n"
+            "|---|---|\n"
+            "| **Iterations** | <n> |\n"
+            "| **Current Subject** | <sha> |\n"
+            "| **Open Blockers** | <n> |\n"
+            "| **Open Majors** | <n> |\n"
+            "| **Open Minors** | <n> |\n"
+            "| **Final Iteration** | <n> |\n"
+            "| **Result** | PENDING |\n\n"
+            "## Current Subject\n\n"
+            "Reference the frozen subject recorded in provenance.yml by id; do not invent a new freeze concept.\n\n"
+            "| | |\n"
+            "|---|---|\n"
+            "| **Subject SHA** | <sha> |\n"
+            "| **Frozen** | <Yes/No> |\n"
+            "| **Iteration** | <n> |\n\n"
+            "## Reviewer Independence\n\n"
+            "Reference the reviewer's provenance.yml record by id as evidence of a distinct Execution and Execution Context from the Implementation or Resolution under review — not a bare declaration.\n\n"
+            "## Open Findings\n\n"
+            "List only findings still open, using the Rxxx id (no Change-id prefix). Use `No open findings.` instead of an empty table when there are none.\n\n"
+            "| Finding | Severity | Status | Iteration |\n"
+            "|---|---|---|---|\n\n"
+            "## Iteration 1 — PENDING\n\n"
+            "Record Strict Review findings. Each finding needs a stable Rxxx id, one of BLOCKER, MAJOR, MINOR, or OBSERVATION, evidence (required for BLOCKER and MAJOR), and a Required Resolution stated as the property that must hold — not a prescribed implementation.\n\n"
+            "## Conclusion\n\n"
+            "State the effect of the Verdict. Do not declare Completion while gates later in the Flow remain outstanding.\n"
+        ),
         "knowledge_capture": "## What Changed\n\nRecord the durable change.\n\n## Durable Knowledge\n\n## Consequences for Future Changes\n\n## References\n\n",
     }
     return content + sections[artifact]

@@ -1,5 +1,20 @@
 schema: forge/tdd-evidence@1
 change: CHG-0041
-status: active
-cycle_count: 0
-cycles: []
+status: complete
+cycle_count: 1
+cycles:
+  - id: TDD-001
+    title: Review scaffold Verdict-first layout, derived summary, and preserved iteration convention
+    requirements: [FR-001, FR-002, FR-003, FR-004, FR-005, FR-006, FR-007, FR-008, FR-009]
+    red:
+      command: .venv/bin/python -m pytest tests/unit/test_change_scaffolding.py -k review -q
+      result: "8 failed, 46 deselected"
+      reason: The unmodified `review` scaffold template lacked the new identity heading, Review Summary/Current Subject/Reviewer Independence/Open Findings sections, and finding guidance -- each new assertion failed for that specific, expected reason (heading mismatch, missing section, missing guidance sentence), not an import or fixture error. The Verdict-placeholder-distinctness assertion passed even before the change, since the prior placeholder was already just PENDING.
+    green:
+      command: .venv/bin/python -m pytest tests/unit/test_change_scaffolding.py -k review -q
+      result: "8 passed, 46 deselected"
+    notes:
+      - Full suite (.venv/bin/python -m pytest -q) and `tests/unit/test_change_scaffolding.py -q` (54 passed) both confirmed green after GREEN.
+      - test_render_scaffold_review_plan_test_strategy_tasks_templates_are_unchanged (renamed from test_render_scaffold_review_plan_test_strategy_tasks_templates_are_unchanged in CHG-0040, dropping the review.md assertion it can no longer make) confirms specification-review.md/plan.md/test-strategy.md/tasks.md are untouched.
+notes:
+  - TD-001 through TD-009 in test-design.md map 1:1 to FR-001 through FR-009; TD-001-008 were exercised together by the -k review filter above (all assert on the same rendered review.md string); TD-009 is the renamed protection test, which does not match -k review.
