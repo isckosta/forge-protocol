@@ -10,6 +10,27 @@ until then.
 
 ## Unreleased
 
+### Inspection Layout Proportional Investigation
+
+Elaborated `protocol/artifact-structure.md`'s "Inspection" guidance
+(FAST Flow only) with an optional, non-mandatory structural vocabulary
+(`Observation`, `Evidence`, `Root Cause`, `Impact`, `Fix Boundary`, `Open
+Question`, `Conclusion`), a `Symptom → Reproduction → Cause` evidence
+model, and an explicit `Likely cause` phrasing for unconfirmed causes —
+proportionality remains the first, undiluted rule, and no section is
+required, validated, or expected in every occurrence. Corrected an
+overclaim describing `CHG-0005/inspection.md` as "title only" when it
+has two sentences of real content. Updated the `inspection` scaffold's
+identity heading to `# CHG-XXXX · Inspection` (matching Specification,
+Test Design, Tasks, Verification, Review, and Knowledge Capture) and
+replaced its redundant `## Inspection` body heading with a non-heading
+authoring comment pointing at the elaborated guidance. Distinguishes
+Inspection from Discovery, Specification, Plan, Verification, and the
+Forge Experience Report, and names the existing Flow escalation
+mechanism (`fast.yml`) for the case where an Inspection reveals
+complexity incompatible with FAST. Historical `inspection.md` files,
+Schemas, Protocol integer, and Flow classification remain unchanged.
+
 ### Knowledge Capture Durable Lessons
 
 Updated newly generated `knowledge-capture.md` (FULL Flow only) with

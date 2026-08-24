@@ -561,13 +561,93 @@ today.
 
 ### Inspection
 
-**Structural core:** whatever the fix actually requires explaining —
-nothing more. A four-line file (title only) is a fully conforming
-example for a trivial fix (`CHG-0005`); an 86-line file is equally
-conforming for a genuinely more complex one (`CHG-0012`). This document
-introduces no new expected section for Inspection (§2.5, NFR-001 of
-`CHG-0016`'s own Specification) — FAST's proportionality is a property
-this document must preserve, not one it gets to relax.
+**Structural core (elaborated by `CHG-0044`):** proportionality first,
+still — whatever the fix actually requires explaining, nothing more, and
+nothing less. This is Inspection's one non-negotiable property (§2.5,
+NFR-001 of `CHG-0016`'s own Specification); this elaboration adds an
+optional vocabulary and a consistent identity heading around that
+property, it does not relax it. A short paragraph is a fully conforming
+example for a trivial fix — `CHG-0005/inspection.md` is a title followed
+by two sentences of real context (a lifecycle gap and a stray misleading
+test name), not a title-only file, but it is still the repository's real
+minimal-Inspection precedent. An 87-line file with a confirmed root
+cause, a precedent for the fix, and a documented Strict-Review correction
+is equally conforming for a genuinely more complex one (`CHG-0012`). No
+section below is expected, required, or validated (§39) — a real
+`inspection.md` may use zero of them, one, or several, in any order,
+exactly as six real occurrences already do (`CHG-0005`, `CHG-0012`,
+`CHG-0024`, `CHG-0026`, `CHG-0028`, `CHG-0029`), each proportional to its
+own fix and each using its own organic heading names for the same
+handful of underlying concepts.
+
+**Optional structural vocabulary:** when an Inspection genuinely needs
+more structure than prose alone, a consistent (not mandatory) vocabulary
+is available — `Observation`, `Evidence`, `Root Cause`, `Impact`, `Fix
+Boundary`, `Open Question`, `Conclusion`, in English regardless of the
+surrounding prose's interaction language (§1). `Observation` separates
+the observed symptom and its reproducing condition from any conclusion
+about cause — the real precedent is organic (`CHG-0024`'s "Root Cause",
+`CHG-0028`'s "Current state"), this document simply names the concept
+consistently. `Root Cause` records the confirmed mechanism, not merely
+that something is wrong — "the validator is broken" is not a Root Cause,
+"the aggregator ignores the child status the validator already reports
+correctly" is. When cause is not yet confirmed, say so explicitly (a
+plain "Likely cause" is sufficient) rather than presenting a hypothesis
+as certainty; no numeric or multi-level confidence scale is needed. `Fix
+Boundary` — particularly useful for FAST, where scope creep is the real
+risk this section exists to prevent — states the smallest safe boundary
+of the fix and what does not need to change; `CHG-0012`'s own "Scope
+verified not to include" is real precedent for the same concept under a
+different name. `Impact` and `Open Question` are used only when
+materially applicable (§2.5) — a trivial fix with no wider blast radius
+and no open question correctly omits both. `Conclusion` closes with the
+outcome in a sentence or two; it is not a Plan, and does not enumerate
+implementation steps.
+
+**Evidence quality:** a relevant claim is backed by something concrete —
+code, an existing test, a command and its output, a log, observed
+runtime behavior, or normative documentation — not unmarked conjecture.
+`Symptom → Reproduction → Cause` is a preferable shape to a vague
+narrative wherever it applies: what was observed, what reliably produces
+it, and (only once confirmed) the mechanism responsible —
+`CHG-0012/inspection.md:12` demonstrates this concretely (an exact file
+and line, the reproducing condition, and the confirmed effect) without
+naming the pattern; this document names it so future Inspections reach
+for it deliberately. Evidence stays compact — a short command, a small
+diff, a one-line log — never a large dump.
+
+**Inspection is not Discovery, Specification, Plan, Verification, or the
+Forge Experience Report**, and the distinction matters because Inspection
+and Discovery never coexist in the same Change (FAST has `inspection`;
+STANDARD and FULL have `discovery` + `specification` + `plan` instead;
+`protocol/flows/*.yml` confirms no Flow has both). Discovery is broad,
+pre-Specification understanding-building; Inspection is a narrow,
+fix-scoped investigation — it does not need to become a mini-Discovery
+merely because a Flow escalation is possible. Specification defines
+`FR-xxx` contract obligations; Inspection has no requirement-numbering
+convention of its own and does not need one. Plan records approved work
+items; Inspection's `Fix Boundary` states what must *not* change, it is
+not a list of approved work. Verification records what was checked
+*after* the fix, Result-first (§2.3); presenting post-fix verification
+evidence inside `inspection.md` would misattribute Verification's own
+responsibility (§2.2) — Inspection records what was found, not what was
+later confirmed. The Forge Experience Report
+(`docs/experience-reporting.md`, opt-in, local, stored outside any
+Change's own directory) records what happened during a real execution;
+Inspection records technical understanding of the defect itself. When an
+Inspection reveals complexity a Change was not classified for, the real
+escalation mechanism already exists (`protocol/flows/fast.yml`'s
+`escalation.enabled`, `automatic_downgrade: false`;
+`protocol/specification.md` §11: "FAST -> STANDARD, STANDARD -> FULL,
+FAST -> FULL... Automatic downgrade is forbidden") — use it, rather than
+continuing to force STANDARD- or FULL-level content into `inspection.md`
+because the file already exists.
+
+No heading in this section is required, validated, or expected to appear
+in every occurrence (§2.5, §39) — the scaffold accordingly emits no
+section heading at all beyond the document's own identity heading (§4's
+introduction), only a short authoring comment pointing back to this
+vocabulary.
 
 ## Plan approval boundary
 

@@ -73,6 +73,8 @@ def _frontmatter(artifact: str, change_id: str, status: str, title: str) -> str:
     heading = (
         f"# {change_id} · Specification"
         if artifact == "specification"
+        else f"# {change_id} · Inspection"
+        if artifact == "inspection"
         else f"# {change_id} · Test Design"
         if artifact == "test_design"
         else f"# {change_id} · Tasks"
@@ -132,7 +134,13 @@ def _markdown(artifact: str, change_id: str, title: str, flow_id: str | None = N
             "Describe the high-level reality that must exist when the Change is complete. Do not turn this into a test plan.\n"
         )
     sections = {
-        "inspection": "## Inspection\n\nRecord the relevant inspection findings.\n",
+        "inspection": (
+            "<!-- Describe only what the investigation materially requires -- nothing more. "
+            "A short paragraph is a fully conforming Inspection for a trivial fix. When the "
+            "investigation genuinely needs more, protocol/artifact-structure.md documents an "
+            "optional structural vocabulary (Observation, Evidence, Root Cause, Impact, Fix "
+            "Boundary, Open Question, Conclusion) -- none of it is required here. -->\n"
+        ),
         "discovery": "## Executive Summary\n\nRecord the strongest discovery and implication.\n\n## Investigation\n\nRecord evidence.\n",
         "specification": (
             "> **Change Contract**\n"
