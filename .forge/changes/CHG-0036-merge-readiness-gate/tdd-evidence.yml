@@ -1,0 +1,17 @@
+schema: forge/tdd-evidence@1
+change: CHG-0036
+status: active
+cycle_count: 1
+cycles:
+  - id: TDD-001
+    title: Readiness verdict and exit codes
+    requirements: [FR-001, FR-013]
+    behavior: A blocked material diff returns a distinct readiness verdict and exit code.
+    red:
+      command: .venv/bin/python -m pytest -q tests/cli/test_merge_check.py::test_merge_check_reports_blocked_readiness_with_distinct_exit_code
+      result: failed
+      reason: merge-check command was not registered and Typer returned exit code 2 instead of the specified blocked code 1.
+    green:
+      command: .venv/bin/python -m pytest -q tests/cli/test_merge_check.py::test_merge_check_reports_blocked_readiness_with_distinct_exit_code
+      result: passed
+      reason: merge-check returned MERGE BLOCKED with exit code 1 for material diff without governing Change.

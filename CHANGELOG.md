@@ -10,6 +10,42 @@ until then.
 
 ## Unreleased
 
+### Tasks Layout, Plan Grouping, and Traceability
+
+Updated newly generated `tasks.md` (FULL) with an Overview, an Execution
+section grouping the `T-xxx` checklist under the Plan item each group
+executes, and compact optional per-Task traceability metadata
+(`Plan`/`Requirements`/`Stories`/`Test Design`, using the `TDD-xxx`
+convention). Historical `tasks.md` files, `plan.md`, `test-strategy.md`,
+Schemas, Protocol integers, and `forge validate` semantics remain
+unchanged.
+
+### Test Design Verification Contract
+
+Updated newly generated `test-design.md` (FAST/STANDARD) with an Overview,
+Test Strategy, Coverage Map, self-contained `TD-xxx` scenarios (Purpose,
+Preconditions, Scenario, Evidence, Failure Condition, Boundary), a
+Requirement Coverage table, Coverage Gaps, and a Test Design Gate,
+distinguishing automated scenarios from Manual Acceptance and defining
+valid RED. `test-strategy.md` (FULL), historical `test-design.md` files,
+Schemas, Protocol integers, and `forge validate` semantics remain
+unchanged.
+
+### Specification Layout and User Story Traceability
+
+Updated newly generated Specifications with a clearer engineering-contract
+layout, optional User Stories, local Acceptance content, and traceability
+guidance. Historical Specifications, Schemas, Protocol integers, and
+`forge validate` semantics remain unchanged.
+
+### Merge Readiness Gate
+
+Added a separate `forge change merge-check` evaluation with deterministic
+revision/provenance diagnostics, material-change policy, Plan content-digest
+binding, and a GitHub Actions required-check workflow. `forge validate`
+retains its existing validity semantics, and release provenance remains
+independent.
+
 ## [0.1.0b1] - 2026-08-23
 
 ### Structured Intent Artifacts

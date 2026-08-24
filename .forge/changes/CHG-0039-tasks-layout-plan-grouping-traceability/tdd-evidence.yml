@@ -1,0 +1,19 @@
+schema: forge/tdd-evidence@1
+change: CHG-0039
+status: compliant
+cycle_count: 1
+cycles:
+  - id: TDD-001
+    title: Tasks grouped execution checklist layout
+    requirements: [FR-001, FR-002, FR-003, FR-004, FR-005]
+    behavior: Generated tasks.md (Flow FULL) exposes the Overview/Execution/Status contract, grouping the T-xxx checklist under a Plan-item heading and carrying compact optional Plan/Requirements/Stories/Test Design metadata, replacing the prior flat minimal template.
+    red:
+      command: .venv/bin/python -m pytest tests/unit/test_change_scaffolding.py -k 'tasks or plan_template' -q
+      result: 4 failed, 1 passed, 31 deselected
+      reason: The old renderer emitted the legacy flat "- [ ] T-001 <work item>\n\n## Status\n\nNo task has started." template and lacked the new headings, Plan grouping, and compact traceability metadata.
+    green:
+      command: .venv/bin/python -m pytest tests/unit/test_change_scaffolding.py -q
+      result: 36 passed
+    notes:
+      - No Markdown parser or semantic validator was introduced.
+      - test_render_scaffold_plan_template_is_unchanged and test_render_scaffold_test_strategy_template_is_unchanged (FR-006) are regression guards, not new TDD behavior; both passed before and after this cycle, confirming the plan and test_strategy templates are byte-identical.

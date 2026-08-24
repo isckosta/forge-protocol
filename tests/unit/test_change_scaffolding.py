@@ -201,3 +201,256 @@ def test_render_scaffold_manifest_matches_change_schema() -> None:
     assert manifest["review"]["iterations"] == []
     assert manifest["tdd"]["status"] == "pending"
     assert "decisions" not in manifest
+
+
+def test_render_scaffold_specification_uses_traceable_contract_layout() -> None:
+    plan = render_scaffold(
+        change_id="CHG-0037",
+        slug="specification-layout",
+        flow_id="standard",
+        flow_data=_canonical_flow("standard"),
+        behavioral=True,
+    )
+
+    specification = plan.files["specification.md"]
+
+    assert specification.startswith(
+        "---\nforge:\n  artifact: specification\n  schema: 1\n"
+        "change: CHG-0037\nstatus: pending\n---\n\n"
+        "# CHG-0037 · Specification\n\n"
+        "> **Change Contract**\n"
+    )
+    for heading in (
+        "Overview",
+        "User Stories",
+        "Functional Requirements",
+        "Non-functional Requirements",
+        "Constraints",
+        "Traceability Matrix",
+        "Compatibility Statement",
+        "Specification Gate",
+    ):
+        assert f"## {heading}" in specification
+    assert "### US-001" not in specification
+    assert "### FR-001" in specification
+    assert "#### Requirement" in specification
+    assert "#### Acceptance" in specification
+    assert "Acceptance Criteria" not in specification
+
+
+def test_render_scaffold_specification_explains_optional_user_stories() -> None:
+    plan = render_scaffold(
+        change_id="CHG-0037",
+        slug="technical-maintenance",
+        flow_id="standard",
+        flow_data=_canonical_flow("standard"),
+        behavioral=False,
+    )
+
+    specification = plan.files["specification.md"]
+
+    assert "User Stories are optional" in specification
+    assert "Requirement without a User Story is valid" in specification
+    assert "As a user" not in specification
+
+
+def test_render_scaffold_test_design_uses_verification_design_contract_layout() -> None:
+    plan = render_scaffold(
+        change_id="CHG-0038",
+        slug="test-design-layout",
+        flow_id="standard",
+        flow_data=_canonical_flow("standard"),
+        behavioral=True,
+    )
+
+    test_design = plan.files["test-design.md"]
+
+    assert test_design.startswith(
+        "---\nforge:\n  artifact: test_design\n  schema: 1\n"
+        "change: CHG-0038\nstatus: pending\n---\n\n"
+        "# CHG-0038 · Test Design\n\n"
+        "> Verification Design\n"
+    )
+    for heading in (
+        "Overview",
+        "Test Strategy",
+        "Coverage Map",
+        "Requirement Coverage",
+        "Coverage Gaps",
+        "Test Design Gate",
+    ):
+        assert f"## {heading}" in test_design
+    for legacy in ("## Objective", "## Strategy", "TDD-001 — <behavior>", "## Completion Criteria"):
+        assert legacy not in test_design
+
+
+def test_render_scaffold_test_design_scenario_is_self_contained_and_not_padded() -> None:
+    plan = render_scaffold(
+        change_id="CHG-0038",
+        slug="test-design-scenario",
+        flow_id="standard",
+        flow_data=_canonical_flow("standard"),
+        behavioral=True,
+    )
+
+    test_design = plan.files["test-design.md"]
+
+    assert "### TD-001 ·" in test_design
+    for subheading in ("Purpose", "Preconditions", "Scenario", "Evidence", "Failure Condition", "Boundary"):
+        assert f"#### {subheading}" in test_design
+    assert "N/A" not in test_design
+
+
+def test_render_scaffold_test_design_explains_optional_user_stories() -> None:
+    plan = render_scaffold(
+        change_id="CHG-0038",
+        slug="test-design-technical",
+        flow_id="fast",
+        flow_data=_canonical_flow("fast"),
+        behavioral=True,
+    )
+
+    test_design = plan.files["test-design.md"]
+
+    assert "Requirement without a User Story is valid" in test_design
+    assert "### US-001" not in test_design
+
+
+def test_render_scaffold_test_design_separates_manual_acceptance() -> None:
+    plan = render_scaffold(
+        change_id="CHG-0038",
+        slug="test-design-manual",
+        flow_id="standard",
+        flow_data=_canonical_flow("standard"),
+        behavioral=True,
+    )
+
+    test_design = plan.files["test-design.md"]
+
+    assert "Manual Acceptance" in test_design
+    assert "Preconditions" in test_design
+    assert "operator instructions" in test_design
+    assert "MUST NOT be presented as an automated guarantee" in test_design
+
+
+def test_render_scaffold_test_design_defines_valid_red() -> None:
+    plan = render_scaffold(
+        change_id="CHG-0038",
+        slug="test-design-red",
+        flow_id="standard",
+        flow_data=_canonical_flow("standard"),
+        behavioral=True,
+    )
+
+    test_design = plan.files["test-design.md"]
+
+    assert "fails for the expected behavioral reason" in test_design
+    for cause in ("syntax error", "broken import", "invalid fixture", "infrastructure unavailability"):
+        assert cause in test_design
+
+
+def test_render_scaffold_test_strategy_template_is_unchanged() -> None:
+    plan = render_scaffold(
+        change_id="CHG-0038",
+        slug="test-strategy-unaffected",
+        flow_id="full",
+        flow_data=_canonical_flow("full"),
+        behavioral=True,
+    )
+
+    test_strategy = plan.files["test-strategy.md"]
+
+    assert test_strategy.endswith(
+        "## Objective\n\nState the test strategy objective.\n\n## Strategy\n\n"
+        "## TDD-001 — <behavior>\n\nDefine the test case.\n\n"
+        "## Completion Criteria\n\nList completion criteria.\n"
+    )
+
+
+def test_render_scaffold_plan_template_is_unchanged() -> None:
+    plan = render_scaffold(
+        change_id="CHG-0039",
+        slug="plan-unaffected",
+        flow_id="full",
+        flow_data=_canonical_flow("full"),
+        behavioral=True,
+    )
+
+    assert plan.files["plan.md"].endswith(
+        "1. Describe the first approved work item and files.\n\n"
+        "## Implementation Boundary\n\n"
+        "Reaching `plan_complete` is not authorization to begin Implementation.\n"
+    )
+
+
+def test_render_scaffold_tasks_uses_grouped_execution_checklist_layout() -> None:
+    plan = render_scaffold(
+        change_id="CHG-0042",
+        slug="tasks-layout",
+        flow_id="full",
+        flow_data=_canonical_flow("full"),
+        behavioral=True,
+    )
+
+    tasks = plan.files["tasks.md"]
+
+    assert tasks.startswith(
+        "---\nforge:\n  artifact: tasks\n  schema: 1\n"
+        "change: CHG-0042\nstatus: pending\n---\n\n"
+        "# CHG-0042 · Tasks\n\n"
+        "> Execution Checklist\n"
+    )
+    for heading in ("Overview", "Execution", "Status"):
+        assert f"## {heading}" in tasks
+    assert "- [ ] T-001 <work item>\n\n## Status\n\nNo task has started.\n" not in tasks
+
+
+def test_render_scaffold_tasks_groups_by_plan_item() -> None:
+    plan = render_scaffold(
+        change_id="CHG-0042",
+        slug="tasks-plan-grouping",
+        flow_id="full",
+        flow_data=_canonical_flow("full"),
+        behavioral=True,
+    )
+
+    tasks = plan.files["tasks.md"]
+
+    assert "### Plan 1 ·" in tasks
+    plan_section = tasks.split("### Plan 1 ·", 1)[1]
+    assert "- [ ] T-001" in plan_section
+
+
+def test_render_scaffold_tasks_has_compact_optional_traceability() -> None:
+    plan = render_scaffold(
+        change_id="CHG-0042",
+        slug="tasks-traceability",
+        flow_id="full",
+        flow_data=_canonical_flow("full"),
+        behavioral=True,
+    )
+
+    tasks = plan.files["tasks.md"]
+
+    assert "`Plan: 1`" in tasks
+    assert "`Requirements: FR-001`" in tasks
+    assert "`Test Design: TDD-001`" in tasks
+    assert "not every Task needs every reference" in tasks
+
+
+def test_render_scaffold_tasks_overview_and_status_are_compact() -> None:
+    plan = render_scaffold(
+        change_id="CHG-0042",
+        slug="tasks-overview-status",
+        flow_id="full",
+        flow_data=_canonical_flow("full"),
+        behavioral=True,
+    )
+
+    tasks = plan.files["tasks.md"]
+
+    assert "## Overview\n| | |\n|---|---|\n| **Change** | CHG-0042 |" in tasks
+    assert "| **Flow** | FULL |" in tasks
+    assert tasks.rstrip().endswith("No task has started.")
+    last_heading = [line for line in tasks.splitlines() if line.startswith("## ")][-1]
+    assert last_heading == "## Status"

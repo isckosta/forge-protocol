@@ -1,6 +1,7 @@
 """Public CLI for creating repository-native Forge Change scaffolds."""
 
 from pathlib import Path
+import json
 from typing import Annotated
 
 import typer
@@ -25,6 +26,7 @@ from forge_cli.protocol_resolution import (
     UnknownCanonicalFlowError,
     resolve_effective_flow,
 )
+from forge_cli.merge_readiness import MergeReadinessRequest, evaluate_merge_readiness
 
 
 DOMAIN_ERROR_EXIT_CODE = 2
@@ -146,3 +148,39 @@ def new_change(
     except Exception as error:
         _fail("E_FORGE_INTERNAL_ERROR", str(error), INTERNAL_ERROR_EXIT_CODE)
     typer.echo(f"Created {change_id} at {relative_target}")
+
+
+@change_app.command("merge-check", help="Evaluate whether the current revision is ready to merge.")
+def merge_check(
+    base: Annotated[str, typer.Option("--base", help="Immutable base revision.")],
+    head: Annotated[str, typer.Option("--head", help="Immutable head revision.")],
+    json_output: Annotated[bool, typer.Option("--json", help="Render a machine-readable result.")] = False,
+) -> None:
+    """Run the repository-native Merge Readiness Gate."""
+    root = _root()
+    evaluation = evaluate_merge_readiness(root, MergeReadinessRequest(base, head))
+    if json_output:
+        typer.echo(json.dumps({
+            "base_revision": base,
+            "head_revision": head,
+            "affected_changes": evaluation.affected_changes,
+            "verdict": evaluation.verdict,
+            "checks": [check.__dict__ for check in evaluation.checks],
+            "diagnostics": [diagnostic.__dict__ for diagnostic in evaluation.diagnostics],
+        }, sort_keys=True))
+        if evaluation.verdict == "ready":
+            return
+        raise typer.Exit(code=1 if evaluation.verdict == "blocked" else 2)
+    typer.echo("Forge Merge Readiness")
+    typer.echo(f"Base: {base}")
+    typer.echo(f"Head: {head}")
+    for diagnostic in evaluation.diagnostics:
+        label = f" [{diagnostic.change_id}]" if diagnostic.change_id else ""
+        typer.echo(f"FAIL {diagnostic.code}{label}: {diagnostic.message}")
+    if evaluation.verdict == "ready":
+        typer.echo("MERGE READY")
+        return
+    if evaluation.verdict == "operational":
+        raise typer.Exit(code=2)
+    typer.echo("MERGE BLOCKED")
+    raise typer.Exit(code=1)

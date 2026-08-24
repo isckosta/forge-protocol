@@ -166,16 +166,32 @@ Questions section when a Decision is being escalated from this stage.
 
 ### Specification
 
-**Structural core:** Summary, Classification (for STANDARD/FULL),
-Functional Requirements (`FR-xxx`), Acceptance Criteria (`AC-xxx`,
-mapped to Requirements), Out of Scope. **Conditional, present only when
-non-empty:** Non-functional Requirements (`NFR-xxx`), Security
-Requirements (`SEC-xxx` — or an explicit one-line `None` with reason, not
-silent omission, §2.5), Invariants (`INV-xxx`), Constraints (`CON-xxx`),
-Unresolved Decisions (`DEC-xxx`, per `decision.yml`). **Do not add** a
-Markdown Traceability section restating what `traceability.yml` already
-carries — that would duplicate normative authority (§1; this document's
-own Specification omits one for this exact reason).
+**Structural core:** a clear Change Contract identity, Overview, Summary,
+Classification (for STANDARD/FULL), Functional Requirements (`FR-xxx`),
+Compatibility Statement, Specification Gate, and Out of Scope. Functional
+Requirements SHOULD be self-contained units with a visible normative
+`Requirement`, optional `Expected Behavior` and `Boundary`, and nearby
+`Acceptance` content. The historical `Acceptance Criteria` heading remains
+valid; new scaffolds use the more local `Acceptance` form without changing
+its contract meaning.
+
+**Conditional, present only when materially applicable:** User Stories
+(`US-xxx`), Acceptance Scenarios, Non-functional Requirements (`NFR-xxx`),
+Security Requirements (`SEC-xxx` — or an explicit one-line `None` with
+reason, not silent omission, §2.5), Invariants (`INV-xxx`), Constraints
+(`CON-xxx`), and Unresolved Decisions (`DEC-xxx`, per `decision.yml`). User
+Stories are behavioral context for a meaningful actor, capability, and
+outcome; they do not replace Requirements and must not be invented for
+technical Changes. Requirements, NFRs, and Constraints may exist without a
+User Story, and relationships are many-to-many where applicable.
+
+A Traceability Matrix MAY be included as an index connecting Discovery, User
+Stories, Requirements, and Acceptance. It MUST NOT become the only
+relationship representation or restate normative content already carried by
+Requirements, Acceptance, or `traceability.yml`. When no User Stories apply,
+the matrix SHOULD degrade to Discovery → Requirement → Acceptance.
+Acceptance Scenarios MAY use Given/When/Then prose, but are not executable
+BDD tests and do not require a parser or external framework.
 
 ### Specification Review
 
@@ -200,16 +216,40 @@ Mixing the two numbering spaces is a real risk this document exists partly
 to prevent — see this repository's own `CHG-0015/architecture.md:37`,
 which already keeps them separate in practice.
 
-### Test Design / Test Strategy
+### Test Design
 
-**Structural core:** Objective, Strategy, per-case entries as `## TDD-xxx`
-headings (this repository's real, stable, already-consistent convention
-— sixteen such cases in `CHG-0015/test-strategy.md` alone; do not
-redesign it), Non-mechanical Validation for content that TDD cannot
-reasonably cover (Protocol §19), Completion Criteria. Test Design and
-Test Strategy are not the same Artifact scaled differently — Test Design
-(FAST/STANDARD, when behavioral) and Test Strategy (FULL) have distinct
-Flow roles and both keep this same shape.
+**Structural core (redesigned by `CHG-0038`):** Overview, Test Strategy
+(a Layer/Scope/Method table when Layers add clarity), a Coverage Map
+indexing Requirement → Scenario → Method, per-scenario entries as stable
+`### TD-xxx ·` headings with `Requirements`/`Stories`/`Type`/`Priority`
+and `#### Purpose`/`#### Preconditions`/`#### Scenario`/`#### Evidence`/
+`#### Failure Condition`/`#### Boundary` subsections (present only when
+materially applicable — an empty subsection is omitted, not padded with
+`N/A`), a closing Requirement Coverage table, Coverage Gaps, and a Test
+Design Gate. `Type: Manual Acceptance` is a distinct category from
+automated types and MUST NOT be presented as an automated guarantee.
+
+This supersedes the prior guidance for this Artifact, which instructed
+"do not redesign" the bare `## TDD-xxx` shape below. That instruction is
+non-binding (C-067) and this document is itself expected to evolve when
+real practice does — the same way this document's own Specification
+entry was rewritten by `CHG-0037`. The reason for diverging here,
+specifically: Test Design (FAST/STANDARD, when behavioral) now needs
+explicit Requirement traceability, evidence typing, and manual/automated
+separation to serve as a pre-Implementation verification contract; Test
+Strategy (FULL) keeps its existing shape unchanged, so the two Artifacts
+no longer share one description (see below).
+
+### Test Strategy
+
+**Structural core (unchanged):** Objective, Strategy, per-case entries as
+`## TDD-xxx` headings (this repository's real, stable, already-consistent
+convention — sixteen such cases in `CHG-0015/test-strategy.md` alone; do
+not redesign it), Non-mechanical Validation for content that TDD cannot
+reasonably cover (Protocol §19), Completion Criteria. Test Strategy is
+the FULL-Flow Artifact; `CHG-0038` deliberately left it unredesigned so
+this shape, and its sixteen real precedent cases, remain valid without
+rewriting.
 
 ### Plan
 
@@ -233,10 +273,46 @@ boundary additionally requires the C-077 recorded human Decision; a Plan's
 
 ### Tasks
 
-**Structural core:** a checklist (`- [ ] T-xxx <work>`) referencing the
-Plan items it executes, and a closing `## Status` section stating
-plainly what has and has not started and why. Matches real, stable,
-minimal precedent (`CHG-0015/tasks.md`) closely.
+**Structural core (redesigned by `CHG-0039`):** an `Overview` (Change,
+Flow, Status), an `Execution` section grouping the checklist under the
+Plan item each group executes (`### Plan N · <Plan item title>`), and a
+closing `## Status` section stating plainly what has and has not
+started and why. `T-xxx` remains a stable checklist identifier
+(`- [ ] T-xxx <work>`) — never a Markdown list number — and the
+checklist itself remains the authoritative source of execution state;
+`Overview`/`Status` present that state, they do not introduce a second,
+manually-maintained one.
+
+This supersedes the prior guidance for this Artifact, which described
+only a flat checklist with no grouping (matching `CHG-0015/tasks.md`
+closely). That prior guidance is non-binding (C-067) and was not wrong
+for the Change it was written against; it stopped scaling once a Plan
+grows past a handful of items and the reader has to reconstruct, by
+hand, which Plan item produced which Task. The same pattern already
+applied to Specification (`CHG-0037`) and Test Design (`CHG-0038`)
+applies here: evolve the existing, stable shape rather than replace it
+with an incompatible one. `Tasks` only exists as a Flow stage in FULL
+(`protocol/flows/full.yml`); FAST and STANDARD have no `tasks.md`, so
+this guidance is scoped to FULL scaffolds only.
+
+**Conditional, present only when the relationship actually exists:** a
+compact inline metadata line beneath a Task —
+`` `Plan: N` · `Requirements: FR-xxx` · `Stories: US-xxx` · `Test Design: TDD-xxx` ``
+— referencing the Plan item, Requirement(s), User Story(ies), and/or
+Test Strategy case(s) it implements. `TDD-xxx` is the correct
+convention here (Test Strategy, FULL's own pre-Implementation
+verification Artifact); `TD-xxx` is Test Design's convention and only
+exists in FAST/STANDARD Changes, which never have a `tasks.md`. Not
+every Task carries every reference kind, and a Task with none of them
+is still valid — forcing a reference that does not exist would misstate
+the Change's real traceability rather than clarify it.
+
+Marking a Task complete (`- [x] T-xxx`) records that the work was
+executed; it does not mean the Requirement it references is verified —
+Verification remains the Artifact responsible for demonstrating that
+(§2.2). Material work discovered during Implementation that the Plan
+did not anticipate belongs to a Decision, a re-Plan, or Verification's
+own findings, not to a Task silently added to absorb new scope.
 
 ### Verification
 

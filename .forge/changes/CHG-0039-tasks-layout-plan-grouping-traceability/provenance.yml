@@ -1,0 +1,109 @@
+schema: forge/execution-provenance@2
+change: CHG-0039
+records:
+  - id: plan-approval-001
+    role: implementation
+    execution:
+      id: claude-code-implementation-0039
+      context_id: claude-code-session-2026-08-23
+    recorded_at: '2026-08-23T00:00:00Z'
+    revision:
+      id: chg-0039-plan-approval-001
+      immutable_ref:
+        type: git_commit
+        value: 3e130c20719e34ffb1b3340074e2877bc60a0f2a
+      commit: 3e130c20719e34ffb1b3340074e2877bc60a0f2a
+    source:
+      assurance: recorded
+      observed_by: operator
+      reference: plan.md#approval-record
+      content_digest:
+        algorithm: sha256
+        path: plan.md
+        value: e474d51a6e104503ac501e86ce33d90ff6caf202bc9d7c21e11a1ba5387a8843
+      statement: The user explicitly approved continuation of CHG-0039 to Implementation in the active session on 2026-08-23, confirming that the ERP domain example is not needed.
+  - id: implementation-subject-001
+    role: implementation
+    execution:
+      id: claude-code-implementation-0039-subject-001
+      context_id: claude-code-session-2026-08-23-subject-001
+    recorded_at: '2026-08-23T00:00:00Z'
+    revision:
+      id: chg-0039-implementation-001
+      immutable_ref:
+        type: git_commit
+        value: adec09805f0eb8732836078e7a853d5d52b448e8
+      commit: adec09805f0eb8732836078e7a853d5d52b448e8
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: implementation-subject
+      statement: Frozen CHG-0039 implementation subject (immutable per C-026 once committed) — includes change_scaffolding.py, tests/unit/test_change_scaffolding.py, protocol/artifact-structure.md, and all CHG-0039 planning/design/verification Artifacts. Reviewable Git workspace confirmed clean before freeze.
+  - id: reviewer-001
+    role: review
+    execution:
+      id: aa1cec3c2cf58c5b6
+      context_id: independent-review-context-aa1cec3c2cf58c5b6
+    recorded_at: '2026-08-23T00:00:00Z'
+    revision:
+      id: chg-0039-implementation-001
+      immutable_ref:
+        type: git_commit
+        value: adec09805f0eb8732836078e7a853d5d52b448e8
+      commit: adec09805f0eb8732836078e7a853d5d52b448e8
+    source:
+      assurance: recorded
+      observed_by: operator
+      reference: review.md#iteration-1
+      statement: Independent Strict Review Iteration 1 (fresh execution, isolated worktree, no shared context with Implementation) returned PASS — no BLOCKER or MAJOR findings; 2 non-blocking OBSERVATIONs. Every claim in verification.md and tdd-evidence.yml was independently reproduced against this exact commit.
+  - id: implementation-subject-002
+    role: implementation
+    execution:
+      id: claude-code-implementation-0039-subject-002
+      context_id: claude-code-session-2026-08-23-subject-002
+    recorded_at: '2026-08-23T00:00:00Z'
+    revision:
+      id: chg-0039-implementation-002
+      immutable_ref:
+        type: git_commit
+        value: fca1d4fc41f6722dc17f7769aeb7d43ba7514292
+      commit: fca1d4fc41f6722dc17f7769aeb7d43ba7514292
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: implementation-subject
+      statement: Refrozen CHG-0039 implementation subject superseding implementation-subject-001. The prior subject (adec098) was stale — commit bc4575a added a CHANGELOG.md entry after that freeze, which is not review-control metadata (manifest.yml/provenance.yml/review.md) and was therefore never covered by Iteration 1. This subject (fca1d4f) is identical in behavioral content to adec098 (change_scaffolding.py, tests/unit/test_change_scaffolding.py, protocol/artifact-structure.md, and all CHG-0039 planning/design/verification Artifacts unchanged) plus the CHANGELOG.md entry and this fix's own content_digest correction. Reviewable Git workspace confirmed clean before this freeze.
+  - id: verification-002
+    role: implementation
+    execution:
+      id: claude-code-implementation-0039-verification-002
+      context_id: claude-code-session-2026-08-23-subject-002
+    recorded_at: '2026-08-23T00:00:00Z'
+    revision:
+      id: chg-0039-implementation-002
+      immutable_ref:
+        type: git_commit
+        value: fca1d4fc41f6722dc17f7769aeb7d43ba7514292
+      commit: fca1d4fc41f6722dc17f7769aeb7d43ba7514292
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: verification.md
+      statement: verification.md's PASS result (TDD-001 evidence, forge validate, full pytest suite) remains accurate against implementation-subject-002 — the only content difference from the originally verified adec098 is the added CHANGELOG.md entry, which is documentation, not executable behavior, and does not invalidate any recorded Test/Forge Evidence.
+  - id: reviewer-002
+    role: review
+    execution:
+      id: ac17ef9e0f4fc30cf
+      context_id: independent-review-context-ac17ef9e0f4fc30cf
+    recorded_at: '2026-08-23T00:00:00Z'
+    revision:
+      id: chg-0039-implementation-002
+      immutable_ref:
+        type: git_commit
+        value: fca1d4fc41f6722dc17f7769aeb7d43ba7514292
+      commit: fca1d4fc41f6722dc17f7769aeb7d43ba7514292
+    source:
+      assurance: recorded
+      observed_by: operator
+      reference: review.md#iteration-2
+      statement: Independent Strict Review Iteration 2 (fresh execution, isolated worktree, no shared context with Implementation or with Iteration 1) returned PASS against the refrozen subject fca1d4f — no BLOCKER or MAJOR findings; 2 non-blocking OBSERVATIONs. Full suite, forge validate, the recomputed content_digest, plan/test-strategy unchanged, exact diff scope, rendered tasks.md structure, and the CHANGELOG.md entry's factual accuracy were all independently reproduced against this exact commit.

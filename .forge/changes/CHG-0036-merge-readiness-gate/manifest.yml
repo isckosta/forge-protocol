@@ -1,0 +1,74 @@
+schema: forge/change@2
+protocol: 2
+change:
+  id: CHG-0036
+  title: Merge Readiness Gate
+  kind: feature
+flow:
+  initial: full
+  current: full
+  escalations:
+    - from: standard
+      to: full
+      reason: >-
+        Discovery confirmed a new merge-authorization boundary spanning
+        Protocol semantics, CLI, CI, provenance, compatibility, and security.
+state:
+  current: complete
+artifacts:
+  intent: complete
+  discovery: complete
+  specification: complete
+  specification_review: complete
+  architecture: complete
+  test_strategy: complete
+  tasks: complete
+  test_design: pending
+  plan: approved
+  tdd_evidence: complete
+  implementation: complete
+  verification: complete
+  review: complete
+  documentation: complete
+  knowledge_capture: complete
+requirements:
+  total: 0
+  implemented: 0
+  verified: 0
+tdd:
+  status: compliant
+  cycles: 2
+verification:
+  status: passed
+review:
+  status: passed
+  iteration: 2
+  blockers: 0
+  majors: 0
+  minors: 0
+  observations: 0
+  iterations:
+    - id: review-001
+      revision: chg-0036-implementation-008
+      subject_provenance: implementation-subject-008
+      reviewer_provenance: reviewer-001
+      kind: initial_review
+      status: passed
+    - id: review-002
+      revision: chg-0036-implementation-009
+      subject_provenance: implementation-subject-009
+      reviewer_provenance: reviewer-002
+      kind: initial_review
+      status: passed
+documentation:
+  impact_evaluated: true
+  update_required: false
+decisions:
+  - id: DEC-001
+    class: technical
+    materiality: material
+    status: resolved
+    authority: human
+    owning_artifact: plan
+    discovered_in: plan
+    resolved_via: human_decision

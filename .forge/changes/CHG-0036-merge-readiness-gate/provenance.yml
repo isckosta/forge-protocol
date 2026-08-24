@@ -1,0 +1,279 @@
+schema: forge/execution-provenance@2
+change: CHG-0036
+records:
+  - id: plan-approval-001
+    role: implementation
+    execution:
+      id: codex-implementation-0036
+      context_id: codex-session-2026-08-23
+    recorded_at: '2026-08-23T17:55:39Z'
+    revision:
+      id: chg-0036-plan-approval-001
+      immutable_ref:
+        type: git_commit
+        value: f71a5541c2a3586d9777b342205c06fa784ed788
+      commit: f71a5541c2a3586d9777b342205c06fa784ed788
+    source:
+      assurance: recorded
+      observed_by: operator
+      reference: plan.md#approval-record
+      content_digest:
+        algorithm: sha256
+        path: plan.md
+        value: 638bb38d858e82f676496fc923de01fa4c351112a91ce68b0336680f0353e34f
+      statement: Explicit human approval of the CHG-0036 Plan was received.
+  - id: implementation-subject-002
+    role: implementation
+    execution:
+      id: codex-implementation-0036-subject-002
+      context_id: codex-session-2026-08-23-subject-002
+    recorded_at: '2026-08-23T18:10:00Z'
+    revision:
+      id: chg-0036-implementation-002
+      immutable_ref:
+        type: git_commit
+        value: 3bea840373f378577d6466d14f918fbf170f49eb
+      commit: 3bea840373f378577d6466d14f918fbf170f49eb
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: implementation-subject
+      statement: Frozen implementation subject for independent Strict Review.
+  - id: implementation-subject-003
+    role: implementation
+    execution:
+      id: codex-implementation-0036-subject-003
+      context_id: codex-session-2026-08-23-subject-003
+    recorded_at: '2026-08-23T18:30:00Z'
+    revision:
+      id: chg-0036-implementation-003
+      immutable_ref:
+        type: git_commit
+        value: 0659771145adeb737bb6d698ef4d59cf773d307b
+      commit: 0659771145adeb737bb6d698ef4d59cf773d307b
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: implementation-subject
+      statement: Frozen implementation subject after resolution of Strict Review findings.
+  - id: implementation-subject-004
+    role: implementation
+    execution:
+      id: codex-implementation-0036-subject-004
+      context_id: codex-session-2026-08-23-subject-004
+    recorded_at: '2026-08-23T18:45:00Z'
+    revision:
+      id: chg-0036-implementation-004
+      immutable_ref:
+        type: git_commit
+        value: d92a30a3cf9296cde9d4216c0081b9ca70233e06
+      commit: d92a30a3cf9296cde9d4216c0081b9ca70233e06
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: implementation-subject
+      statement: Frozen implementation subject after final evidence-binding fixes.
+  - id: implementation-subject-005
+    role: implementation
+    execution:
+      id: codex-implementation-0036-subject-005
+      context_id: codex-session-2026-08-23-subject-005
+    recorded_at: '2026-08-23T19:10:00Z'
+    revision:
+      id: chg-0036-implementation-005
+      immutable_ref:
+        type: git_commit
+        value: 584d84310be1c5de9702711b81c0e0d8dd29493b
+      commit: 584d84310be1c5de9702711b81c0e0d8dd29493b
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: implementation-subject
+      statement: Frozen implementation subject after fail-closed Flow and revision fixes.
+  - id: verification-005
+    role: implementation
+    execution:
+      id: codex-verification-0036
+      context_id: codex-verification-context-0036
+    recorded_at: '2026-08-23T19:20:00Z'
+    revision:
+      id: chg-0036-implementation-005
+      immutable_ref:
+        type: git_commit
+        value: 584d84310be1c5de9702711b81c0e0d8dd29493b
+      commit: 584d84310be1c5de9702711b81c0e0d8dd29493b
+    source:
+      assurance: verified
+      observed_by: operator
+      reference: verification.md
+      statement: Verification evidence is bound to the frozen implementation subject.
+  - id: implementation-subject-006
+    role: implementation
+    execution:
+      id: codex-implementation-0036-subject-006
+      context_id: codex-session-2026-08-23-subject-006
+    recorded_at: '2026-08-23T19:35:00Z'
+    revision:
+      id: chg-0036-implementation-006
+      immutable_ref:
+        type: git_commit
+        value: 37fd7be4a6423fa4396eda6f59b9904852408340
+      commit: 37fd7be4a6423fa4396eda6f59b9904852408340
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: implementation-subject
+      statement: Frozen implementation subject after completion-gate and Verification-binding fixes.
+  - id: verification-006
+    role: implementation
+    execution:
+      id: codex-verification-0036-006
+      context_id: codex-verification-context-0036-006
+    recorded_at: '2026-08-23T19:35:00Z'
+    revision:
+      id: chg-0036-implementation-006
+      immutable_ref:
+        type: git_commit
+        value: 37fd7be4a6423fa4396eda6f59b9904852408340
+      commit: 37fd7be4a6423fa4396eda6f59b9904852408340
+    source:
+      assurance: verified
+      observed_by: operator
+      reference: verification.md
+      statement: Verification evidence is bound to the frozen implementation subject.
+  - id: implementation-subject-007
+    role: implementation
+    execution:
+      id: codex-implementation-0036-subject-007
+      context_id: codex-session-2026-08-23-subject-007
+    recorded_at: '2026-08-23T19:50:00Z'
+    revision:
+      id: chg-0036-implementation-007
+      immutable_ref:
+        type: git_commit
+        value: 24c57bf18fddf5538c7c7660974ba71a6892994f
+      commit: 24c57bf18fddf5538c7c7660974ba71a6892994f
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: implementation-subject
+      statement: Frozen implementation subject with complete FULL Flow task evidence.
+  - id: verification-007
+    role: implementation
+    execution:
+      id: codex-verification-0036-007
+      context_id: codex-verification-context-0036-007
+    recorded_at: '2026-08-23T19:50:00Z'
+    revision:
+      id: chg-0036-implementation-007
+      immutable_ref:
+        type: git_commit
+        value: 24c57bf18fddf5538c7c7660974ba71a6892994f
+      commit: 24c57bf18fddf5538c7c7660974ba71a6892994f
+    source:
+      assurance: verified
+      observed_by: operator
+      reference: verification.md
+      statement: Verification evidence is bound to the frozen implementation subject.
+  - id: implementation-subject-008
+    role: implementation
+    execution:
+      id: codex-implementation-0036-subject-008
+      context_id: codex-session-2026-08-23-subject-008
+    recorded_at: '2026-08-23T20:05:00Z'
+    revision:
+      id: chg-0036-implementation-008
+      immutable_ref:
+        type: git_commit
+        value: 918723e5b3e3c5f6ae2c6aa5b7974edec3f334e3
+      commit: 918723e5b3e3c5f6ae2c6aa5b7974edec3f334e3
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: implementation-subject
+      statement: Frozen implementation subject with canonical Review thread gate semantics.
+  - id: verification-008
+    role: implementation
+    execution:
+      id: codex-verification-0036-008
+      context_id: codex-verification-context-0036-008
+    recorded_at: '2026-08-23T20:05:00Z'
+    revision:
+      id: chg-0036-implementation-008
+      immutable_ref:
+        type: git_commit
+        value: 918723e5b3e3c5f6ae2c6aa5b7974edec3f334e3
+      commit: 918723e5b3e3c5f6ae2c6aa5b7974edec3f334e3
+    source:
+      assurance: verified
+      observed_by: operator
+      reference: verification.md
+      statement: Verification evidence is bound to the frozen implementation subject.
+  - id: reviewer-001
+    role: review
+    execution:
+      id: 01a02ffc-37e8-7d10-8f77-d98ba618e2d5
+      context_id: strict-review-CHG-0036-008
+    recorded_at: '2026-08-23T20:20:00Z'
+    revision:
+      id: chg-0036-implementation-008
+      immutable_ref:
+        type: git_commit
+        value: 918723e5b3e3c5f6ae2c6aa5b7974edec3f334e3
+      commit: 918723e5b3e3c5f6ae2c6aa5b7974edec3f334e3
+    source:
+      assurance: verified
+      observed_by: harness
+      reference: review.md#iteration-2
+      statement: Independent Strict Review passed for the frozen implementation subject.
+  - id: reviewer-002
+    role: review
+    execution:
+      id: 01a03001-3908-78e0-83bc-c29615b9ff2d
+      context_id: strict-review-CHG-0036-009
+    recorded_at: '2026-08-23T21:00:00Z'
+    revision:
+      id: chg-0036-implementation-009
+      immutable_ref:
+        type: git_commit
+        value: f87f654b3a02d1ecceb3edd53f747de3f3871a05
+      commit: f87f654b3a02d1ecceb3edd53f747de3f3871a05
+    source:
+      assurance: verified
+      observed_by: harness
+      reference: review.md#iteration-3
+      statement: Independent Strict Review passed for the clean-checkout subject.
+  - id: implementation-subject-009
+    role: implementation
+    execution:
+      id: codex-implementation-0036-subject-009
+      context_id: codex-session-2026-08-23-subject-009
+    recorded_at: '2026-08-23T20:40:00Z'
+    revision:
+      id: chg-0036-implementation-009
+      immutable_ref:
+        type: git_commit
+        value: f87f654b3a02d1ecceb3edd53f747de3f3871a05
+      commit: f87f654b3a02d1ecceb3edd53f747de3f3871a05
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: implementation-subject
+      statement: Frozen implementation subject after clean-checkout policy and Verification binding fixes.
+  - id: verification-009
+    role: implementation
+    execution:
+      id: codex-verification-0036-009
+      context_id: codex-verification-context-0036-009
+    recorded_at: '2026-08-23T20:40:00Z'
+    revision:
+      id: chg-0036-implementation-009
+      immutable_ref:
+        type: git_commit
+        value: f87f654b3a02d1ecceb3edd53f747de3f3871a05
+      commit: f87f654b3a02d1ecceb3edd53f747de3f3871a05
+    source:
+      assurance: verified
+      observed_by: operator
+      reference: verification.md
+      statement: Verification evidence is bound to the frozen implementation subject.

@@ -1,0 +1,27 @@
+name: Forge Merge Readiness
+
+on:
+  pull_request:
+
+jobs:
+  forge-merge-readiness:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout full history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install Forge
+        run: python -m pip install -e .
+      - name: Validate Forge repository
+        run: forge validate
+      - name: Evaluate Forge Merge Readiness
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: forge change merge-check --base "$BASE_SHA" --head "$HEAD_SHA"

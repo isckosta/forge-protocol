@@ -42,13 +42,13 @@ Use ADRs for long-lived internal Architecture Decisions.
 
 ## Pull Requests
 
-`main` is branch-protected: direct pushes are rejected (including for administrators), and a Pull Request must merge with the `test` and `distribution` status checks passing before it can land.
+`main` is branch-protected: direct pushes are rejected (including for administrators), and a Pull Request must merge with the `test`, `distribution`, and `forge-merge-readiness` status checks passing before it can land.
 
 Mechanically:
 
 1. create a branch (`git checkout -b <descriptive-name>`);
 2. push it and open a PR against `main`;
-3. wait for `test` (`.github/workflows/tests.yml`) and `distribution` (`.github/workflows/verification.yml`) to pass — both are required checks;
+3. wait for `test` (`.github/workflows/tests.yml`), `distribution` (`.github/workflows/verification.yml`), and `forge-merge-readiness` (`.github/workflows/merge-readiness.yml`) to pass — all are required checks;
 4. merge once green. No second approval is required (there is no fixed reviewer roster today), but the PR itself is mandatory — it is the Change's own repository-native record of what merged and why, not a formality to skip.
 
 PRs should explain what changed, why, the related Forge Change or RFC, TDD evidence when applicable, Verification performed, and Documentation Impact.
@@ -59,6 +59,12 @@ Verification, and lifecycle evidence.
 Bug reports and Change proposals can use the structured templates under
 `.github/ISSUE_TEMPLATE/`. These templates guide the discussion; they do not
 create a Forge Change or replace the repository-native Change artifacts.
+
+The repository-owned workflow can prove the Merge Readiness result for the
+Pull Request revision, but GitHub branch protection is configured outside the
+repository. Maintainers must configure `forge-merge-readiness` as a required
+status check and disable bypass where supported; the workflow cannot claim
+that external configuration exists.
 
 ## Review
 

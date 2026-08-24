@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://forge.dev/schemas/policy-merge-readiness.schema.json",
+  "title": "Forge Merge Readiness Policy",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "merge_readiness"],
+  "properties": {
+    "schema": {"const": "forge/policy/merge-readiness@1"},
+    "merge_readiness": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["material_prefixes", "material_paths", "permitted_paths", "permitted_prefixes", "change_prefix"],
+      "properties": {
+        "material_prefixes": {"type": "array", "items": {"type": "string", "minLength": 1}},
+        "material_paths": {"type": "array", "items": {"type": "string", "minLength": 1}},
+        "permitted_paths": {"type": "array", "items": {"type": "string", "minLength": 1}},
+        "permitted_prefixes": {"type": "array", "items": {"type": "string", "minLength": 1}},
+        "change_prefix": {"type": "string", "minLength": 1}
+      }
+    }
+  }
+}

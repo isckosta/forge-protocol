@@ -35,7 +35,28 @@
             },
             "anyOf": [{"required": ["immutable_ref"]}, {"required": ["commit"]}]
           },
-          "source": {"type": "object", "additionalProperties": false, "required": ["assurance", "observed_by"], "properties": {"assurance": {"enum": ["claimed", "recorded", "verified"]}, "observed_by": {"enum": ["self", "operator", "adapter", "harness"]}, "harness": {"type": "string", "minLength": 1}, "reference": {"type": "string", "minLength": 1}, "statement": {"type": "string", "minLength": 1}}}
+          "source": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["assurance", "observed_by"],
+            "properties": {
+              "assurance": {"enum": ["claimed", "recorded", "verified"]},
+              "observed_by": {"enum": ["self", "operator", "adapter", "harness"]},
+              "harness": {"type": "string", "minLength": 1},
+              "reference": {"type": "string", "minLength": 1},
+              "statement": {"type": "string", "minLength": 1},
+              "content_digest": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["algorithm", "path", "value"],
+                "properties": {
+                  "algorithm": {"const": "sha256"},
+                  "path": {"const": "plan.md"},
+                  "value": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+                }
+              }
+            }
+          }
         },
         "allOf": [
           {"if": {"properties": {"role": {"const": "delegated_task"}}, "required": ["role"]}, "then": {"required": ["scope", "baseline"], "properties": {"execution": {"required": ["id", "context_id", "delegated_by"]}}}}

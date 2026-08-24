@@ -11,6 +11,9 @@ representations; do not redefine their lifecycle here.
   implement directly on `main`.
 - After the Change is ready for integration, open a Pull Request against
   `main` and use that PR as the repository-native integration record.
+- Before representing a Change as ready for merge, run `forge validate` and
+  `forge change merge-check` for the exact Pull Request base/head subject.
+  This is guidance; the required CI check is the technical enforcement.
 - Unresolved review comments or conversations block merge. The agent must not
   merge or claim the Change complete while unresolved review comments remain;
   resolve applicable feedback, rerun relevant checks, and then merge through
