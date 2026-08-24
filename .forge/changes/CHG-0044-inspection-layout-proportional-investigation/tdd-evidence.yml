@@ -1,5 +1,19 @@
 schema: forge/tdd-evidence@1
 change: CHG-0044
 status: active
-cycle_count: 0
-cycles: []
+cycle_count: 1
+cycles:
+  - id: TDD-001
+    title: Inspection scaffold identity heading and no-mandatory-section body
+    requirements: [FR-001, FR-002, FR-008]
+    red:
+      command: .venv/bin/python -m pytest tests/unit/test_change_scaffolding.py -k inspection -q
+      result: "2 failed, 1 passed, 61 deselected"
+      reason: The unmodified `inspection` scaffold template still emitted a redundant `## Inspection` mandatory-looking section heading and used the generic pre-elaboration fallback heading (`# Inspection — CHG-XXXX <Title>`) instead of the `# CHG-XXXX · Inspection` identity convention -- each new assertion failed for that specific, expected reason. The unaffected-templates protection test passed because no other template had been touched yet.
+    green:
+      command: .venv/bin/python -m pytest tests/unit/test_change_scaffolding.py -k inspection -q
+      result: "3 passed, 61 deselected"
+    notes:
+      - Full suite (.venv/bin/python -m pytest -q) and `tests/unit/test_change_scaffolding.py -q` (64 passed) both confirmed green after GREEN.
+notes:
+  - TD-001, TD-002, and TD-008 in test-design.md map to FR-001, FR-002, and FR-008 respectively; all three were exercised together by the -k inspection filter above since they assert on the same rendered inspection.md string and the unaffected FAST-flow templates. TD-003 through TD-007 (FR-003 through FR-007) are Manual Acceptance scenarios verified by direct reading of the elaborated protocol/artifact-structure.md prose, not by an automated TDD cycle.
