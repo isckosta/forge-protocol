@@ -107,3 +107,20 @@ records:
       observed_by: self
       reference: verification.md
       statement: Full pytest suite (678 passed) and forge validate confirmed against this refrozen subject; the change from implementation-subject-001 is documentation-only (test-design.md, CHANGELOG.md), no code or test behavior differs.
+  - id: reviewer-002
+    role: review
+    execution:
+      id: af8701474c1f9092c
+      context_id: independent-review-context-af8701474c1f9092c
+    recorded_at: '2026-08-24T00:00:00Z'
+    revision:
+      id: chg-0041-implementation-002
+      immutable_ref:
+        type: git_commit
+        value: 9ceed36405e1a2068ded2dcf87e19b764ebf7a24
+      commit: 9ceed36405e1a2068ded2dcf87e19b764ebf7a24
+    source:
+      assurance: recorded
+      observed_by: operator
+      reference: review.md#iteration-2
+      statement: Independent Strict Review Iteration 2 (fresh execution, isolated worktree, no shared context with Implementation or Iteration 1) confirmed R001 fully resolved, then returned REQUEST CHANGES on a new finding (R002, MAJOR) -- review.md/manifest.yml had never actually been populated with Iteration 1's PASS result despite provenance.yml's reviewer-001 record claiming it, independently confirmed via forge change merge-check reporting MERGE BLOCKED (MR-004, MR-005, MR-009 x2).
