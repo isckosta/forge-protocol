@@ -3,7 +3,7 @@ forge:
   artifact: plan
   schema: 1
 change: CHG-0044
-status: draft
+status: approved
 ---
 
 # Plan — CHG-0044 Inspection Layout Proportional Investigation
@@ -80,3 +80,16 @@ status: draft
 ## Implementation Boundary
 
 Reaching `plan_complete` is not authorization to begin Implementation.
+
+## Human Plan Authorization
+
+Este Plan é explicitamente autorizado pelo mantenedor humano para avançar
+à Implementation sob C-077.
+
+<!-- forge:plan-approval-confirmation -->
+
+O usuário aprovou a continuação na sessão ativa em 2026-08-24, escolhendo
+explicitamente "Aprovar como está" sobre a Specification's 8 Functional
+Requirements e os 8 itens deste Plan.
+
+<!-- forge:plan-approval-record -->
