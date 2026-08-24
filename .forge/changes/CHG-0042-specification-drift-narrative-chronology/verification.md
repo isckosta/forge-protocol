@@ -3,47 +3,87 @@ forge:
   artifact: verification
   schema: 1
 change: CHG-0042
-status: pending
+status: complete
 ---
 
 # CHG-0042 · Verification
 
 ## Result
 
-**PENDING**
+**PASS**
 
 ## Summary
 
-State how many Acceptance Criteria were verified, how many passed, how many failed, and whether Manual Evidence or Limitations apply. When Result is SKIPPED or NOT APPLICABLE, state the rationale here, proportional to the Change — a skipped or inapplicable Verification is itself a claim that needs a reason.
+7 Acceptance Criteria verified: 7 passed, 0 failed, via manual
+inspection of the elaborated guidance text (no executable behavior
+exists for this artifact to test — see Discovery). No Limitations to
+record.
 
 ## Acceptance Coverage
 
-Reference each AC-xxx by id; do not reproduce its full text here.
-
 | Acceptance | Requirement | Result | Evidence |
-|---|---|---|---|
-| AC-001 | FR-001 | PENDING | <evidence> |
-
-## Requirement Coverage
-
-Omit this section when Acceptance Coverage already expresses per-Requirement coverage; include it only when it adds information Acceptance Coverage does not.
-
-## Test Evidence
-
-Record commands, exit status, and a short summary — not full logs. When `tdd-evidence.yml` already records RED and GREEN for a TDD-xxx cycle, reference it by id instead of renarrating the sequence.
+| --- | --- | --- | --- |
+| AC-001 | FR-001 | PASS | Manual Evidence |
+| AC-002 | FR-002 | PASS | Manual Evidence |
+| AC-003 | FR-003 | PASS | Manual Evidence |
+| AC-004 | FR-004 | PASS | Manual Evidence |
+| AC-005 | FR-005 | PASS | Manual Evidence |
+| AC-006 | FR-006 | PASS | Manual Evidence |
+| AC-007 | FR-007 | PASS | Manual Evidence |
 
 ## Forge Evidence
 
-Record only what the command actually guarantees.
+- `forge validate`: **PASS** ("Forge project is valid").
+- `git diff --check`: **PASS**.
+- Full suite: `.venv/bin/python -m pytest -q`: **678 passed, 2 warnings**
+  (identical count to pre-Change — this is a regression check, not
+  evidence for the guidance content itself, since no code changed).
 
 ## Manual Evidence
 
-Include this section only when a real manual verification occurred; keep it distinct from Test Evidence and Forge Evidence.
+Each AC was checked by reading the elaborated
+`protocol/artifact-structure.md` §4 "Specification Drift" section
+directly against its Specification text:
+
+- **AC-001** — The eleven sections (`Context` through `Final decision`)
+  appear in the declared order, `## Final decision` last, with an
+  explicit sentence naming it a deliberate exception to
+  Result-Before-Evidence (C-068).
+- **AC-002** — The materiality boundary against Specification Review is
+  stated explicitly, citing Protocol §13 and `CHG-0013`'s real
+  precedent.
+- **AC-003** — Resolution, Decision, and Specification Drift are
+  distinguished in one sentence each, citing `CHG-0012`'s real
+  precedent.
+- **AC-004** — `Specification Correction`'s guidance states the change
+  must be applied to `specification.md`, not left to exist only in
+  this document.
+- **AC-005** — Impact areas (Plan, Tasks, Test Design/Test Strategy,
+  Verification, Review, Compatibility) are named; the guidance states a
+  prior Verification PASS may no longer be sufficient and that a
+  Specification correction does not itself satisfy independent
+  re-review.
+- **AC-006** — The guidance explicitly prohibits fabricating a `Final
+  decision` when the normative choice is still undecided, and
+  references the Decision mechanism for real trade-offs.
+- **AC-007** — `git diff --stat` against `main`'s merge-base shows,
+  outside this Change's own directory, exactly `CHANGELOG.md` and
+  `protocol/artifact-structure.md`; no `specification-drift.md`,
+  schema, or source file changed.
 
 ## Compatibility and Limitations
 
-Record confirmed compatibility impact and any real limitation. Do not pad this section when neither applies.
+The four real historical `specification-drift.md` files
+(`CHG-0008`, `CHG-0011`, `CHG-0012`, `CHG-0013`) are not rewritten and
+remain valid. `specification-review.md`/`SR-xxx`, Decision mechanics,
+Resolution semantics, and frozen subject semantics are unchanged. No
+Protocol integer, Change Schema, or `forge validate` semantics changed
+(C-067 preserved — this artifact still has no scaffold, schema, or
+validator, before or after this Change).
+
+Independent Strict Review remains pending.
 
 ## Conclusion
 
-State the outcome for the implemented scope. Do not imply Completion when Result is FAIL or SKIPPED, or when Review remains pending.
+Verification passes for the implemented scope; the Change is not
+marked complete until independent Strict Review is performed.

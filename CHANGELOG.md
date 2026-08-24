@@ -10,6 +10,21 @@ until then.
 
 ## Unreleased
 
+### Specification Drift Narrative Chronology
+
+Elaborated `protocol/artifact-structure.md`'s "Specification Drift"
+guidance from a terse 3-section note (Root Cause, Evidence, Final
+decision) into a full chronological narrative (Context, Trigger,
+Original Specification, Observed Conflict, Root Cause, Evidence,
+Specification Correction, Impact Assessment, Affected Artifacts,
+Re-verification, Final decision), preserving Final decision as the
+last section — a deliberate exception to Result-Before-Evidence.
+Clarifies the real materiality boundary against Specification Review
+and the distinction from Resolution and Decision. This artifact has no
+scaffold, Flow stage, or code representation anywhere in the
+repository; no source code, schema, or historical
+`specification-drift.md` was touched.
+
 ### Review Layout, Verdict First, and Findings
 
 Updated newly generated `review.md` (FAST/STANDARD/FULL) with a
