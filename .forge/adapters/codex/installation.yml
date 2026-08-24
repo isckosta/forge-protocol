@@ -1,0 +1,28 @@
+schema: forge/adapter-installation@2
+adapter:
+  id: codex
+  version: 0.1.0
+  harness: codex
+protocol:
+  min: 1
+  max_exclusive: 3
+publication:
+  root: .agents/skills/forge
+generated_artifacts:
+- path: .agents/skills/forge/SKILL.md
+  digest: f9134aca113353477bf703ae621b616e4771a7cf8ccb58da915c95b986cc266c
+- path: .agents/skills/forge/references/artifact-structure.md
+  digest: 4445311620b09d5aa89ffaa0d5ba742198818ee4abae67f4c95ae36a5b7e183d
+- path: .agents/skills/forge/references/decision-rules.md
+  digest: ad2c38015c9b9fe8a9042487083be8c1e5218b448ca05612fe8a1730e485dbeb
+- path: .agents/skills/forge/references/engineering-contract.md
+  digest: f40284bb2fe29e3cc0d959cd8b6587b70f83aa3784433a593009220344f2bb72
+- path: .agents/skills/forge/references/flows/fast.yml
+  digest: 09f8bb7d1ca5a4bebb770c8686b7f5b238ba6f505d868b046590a7aacae7cfcb
+- path: .agents/skills/forge/references/flows/full.yml
+  digest: ca26fa3b93026d4a6dbd59a644c5086666657e9adac37a991d6518d15b45a1d7
+- path: .agents/skills/forge/references/flows/standard.yml
+  digest: 6a65095d62ae62b71535e548bf773f1d1726c512f6f34b55a556cf0565b96c8e
+limitations:
+- 'strict-review: capability skills cannot be enforced (FR-009)'
+- 'tdd-red-before-behavior: capability skills cannot be enforced (FR-009)'
