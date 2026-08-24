@@ -1,0 +1,24 @@
+schema: forge/execution-provenance@2
+change: CHG-0042
+records:
+  - id: plan-approval-001
+    role: implementation
+    execution:
+      id: claude-code-implementation-0042
+      context_id: claude-code-session-2026-08-24
+    recorded_at: '2026-08-24T00:00:00Z'
+    revision:
+      id: chg-0042-plan-approval-001
+      immutable_ref:
+        type: git_commit
+        value: 25514892b021c5268dfcfba16459d8b2552f2d48
+      commit: 25514892b021c5268dfcfba16459d8b2552f2d48
+    source:
+      assurance: recorded
+      observed_by: operator
+      reference: plan.md#approval-record
+      content_digest:
+        algorithm: sha256
+        path: plan.md
+        value: 8446b8e7a8861385d6afd626308ecfbb4acc8c87590e11f1ec53f7ae2c3f9461
+      statement: The user explicitly approved the CHG-0042 Plan to proceed to Implementation in the active session on 2026-08-24, via an explicit approval choice ("Aprovar como está") over the Specification's 7 Functional Requirements and all 3 Plan work items.
