@@ -422,13 +422,73 @@ gates remain outstanding.
 
 ### Specification Drift
 
-**Structural core:** narrative — Root Cause, Evidence, and a `## Final
-decision` section placed **last**, not first. This is a deliberate
+**Structural core (elaborated by `CHG-0042`):** a chronological
+narrative — `Context`, `Trigger`, `Original Specification`, `Observed
+Conflict`, `Root Cause`, `Evidence`, `Specification Correction`,
+`Impact Assessment`, `Affected Artifacts`, `Re-verification`, and a
+`## Final decision` section placed **last**, not first (`CHG-0012`'s
+real casing — lowercase "decision" — preserved). This is a deliberate
 exception to Result-Before-Evidence (§2.3): this Artifact's
 responsibility (§2.2) is tracing *how* a drift was discovered and
 resolved, which is inherently sequential, not announcing a verdict a
 reader needs before anything else — `CHG-0012/specification-drift.md`
-already does this well.
+already does this well. Unlike every other Artifact in this document,
+Specification Drift has no scaffold, no Flow stage, and no code
+representation anywhere in the repository (confirmed by `CHG-0042`'s
+own Discovery) — it is created by hand, only when Protocol §13
+actually applies, and this elaboration changes nothing about that;
+this section remains guidance for hand-authoring it, not a template a
+tool renders.
+
+Not every occurrence needs every section (§2.5): a simple drift may use
+only `Context`, `Root Cause`, `Evidence`, `Specification Correction`,
+and `Final decision`; a complex one — `CHG-0012`'s four-attempt
+Resolution history is the real precedent — may need the full sequence.
+`Context` and `Trigger` establish what Change, stage, and Review/
+Resolution/finding revealed the problem, without repeating the
+Change's full history. `Original Specification` and `Observed
+Conflict` separate what the contract said from what behavior actually
+demonstrated, before concluding why — a premature Root Cause tends to
+misdiagnose. `Root Cause` explains *how* the ambiguity or gap entered
+the contract (missing case, contradictory Requirements, incorrect
+domain assumption), not merely that it existed. `Evidence` stays
+compact — findings, tests, diffs, Contract/Protocol rules — never full
+logs.
+
+**Specification Drift is not a second Specification** (C-067's
+non-duplication principle applies here too): `Specification Correction`
+records what changed and why, but the corrected `specification.md` —
+or the affected Requirement directly — remains the one authoritative
+contract;
+the correction MUST be applied there, not left to exist only in this
+document. Likewise, this Artifact does not substitute for **Resolution**
+(the `role: resolution` provenance-recorded work a Finding may require),
+**Decision** (`manifest.yml: decisions[]`, `DEC-xxx` — the escalation
+mechanism when a drift reveals more than one valid normative answer,
+per C-051–C-059), or **Review** (whose independent verdict a
+Specification correction does not itself satisfy — correcting the
+Specification is not the same as resolving the Finding that revealed
+it; a new subject still needs independent re-review). When the
+correct semantics are still undecided, `Final decision` MUST NOT be
+fabricated — the real, undecided state is recorded instead, and a
+material trade-off routes through the Decision mechanism rather than a
+silent choice.
+
+**Specification Drift is materially narrower than Specification
+Review** (`CHG-0013/specification-drift.md` states this real
+distinction plainly): Protocol §13 requires Drift only when
+*Implementation evidence* invalidates the Specification. A correction
+made during adversarial Specification Review, before Architecture,
+against no Implementation evidence, is ordinary
+`specification-review.md` iteration (`SR-xxx`), not Drift — and a
+typo fix, wording clarification, or formatting change with no semantic
+consequence is not Drift either, regardless of when it happens.
+`Impact Assessment`/`Affected Artifacts` name only the areas actually
+affected (Plan, Tasks, Test Design/Test Strategy, Verification,
+Review, Compatibility) — a Verification that already passed against
+the old contract may no longer be sufficient evidence once the
+Specification changes materially, and `Re-verification` records what
+new evidence closing that gap requires, without executing it here.
 
 ### Knowledge Capture
 
