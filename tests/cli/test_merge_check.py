@@ -211,6 +211,35 @@ def test_merge_check_scopes_review_subject_staleness_to_the_changes_own_director
     assert "MERGE READY" in result.stdout
 
 
+def test_merge_check_flags_missing_required_stage_artifact(tmp_path, monkeypatch) -> None:
+    monkeypatch.chdir(tmp_path)
+    subprocess.run(["git", "init", "-q"], cwd=tmp_path, check=True)
+    subprocess.run(["git", "config", "user.email", "test@example.com"], cwd=tmp_path, check=True)
+    subprocess.run(["git", "config", "user.name", "Test"], cwd=tmp_path, check=True)
+    (tmp_path / "README.md").write_text("base\n", encoding="utf-8")
+    (tmp_path / ".forge").mkdir()
+    (tmp_path / ".forge" / "forge.yml").write_text("schema: forge/project@1\nproject:\n  name: fixture\nforge:\n  protocol: 2\nflows:\n  default: standard\n  allow_fast: true\n  auto_escalation: true\ntesting:\n  approach: tdd_first\nreview:\n  strict: true\ndocumentation:\n  impact_evaluation: required\n", encoding="utf-8")
+    (tmp_path / ".forge" / "flows").mkdir()
+    (tmp_path / ".forge" / "flows" / "standard.yml").write_text("schema: forge/project-flow@1\nflow:\n  canonical: standard\n  enabled: true\n", encoding="utf-8")
+    base = _commit(tmp_path, "base")
+    change_dir = tmp_path / ".forge" / "changes" / "CHG-9004-fixture"
+    change_dir.mkdir(parents=True)
+    manifest = _manifest(status="plan")
+    manifest["change"]["id"] = "CHG-9004"
+    manifest["review"]["iterations"] = []
+    # The canonical STANDARD Flow requires a "specification" stage; this
+    # manifest never declares that artifact at all. review.status stays
+    # "passed" with zero blockers/majors so the unrelated
+    # blocking_review_threads_resolved check does not also fire MR-009,
+    # isolating this assertion to the required-stage-artifact check.
+    manifest["artifacts"] = {"intent": "complete", "discovery": "complete", "plan": "complete"}
+    (change_dir / "manifest.yml").write_text(yaml.safe_dump(manifest, sort_keys=False), encoding="utf-8")
+    head = _commit(tmp_path, "record Change missing a required Flow stage artifact")
+    result = runner.invoke(app, ["change", "merge-check", "--base", base, "--head", head])
+    assert result.exit_code == 1, result.stdout
+    assert "Required artifact is missing: specification" in result.stdout, result.stdout
+
+
 def test_merge_check_blocks_stale_plan_digest(tmp_path, monkeypatch) -> None:
     monkeypatch.chdir(tmp_path)
     subprocess.run(["git", "init", "-q"], cwd=tmp_path, check=True)

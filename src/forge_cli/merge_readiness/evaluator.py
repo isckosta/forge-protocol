@@ -216,13 +216,19 @@ def _check_change(root: Path, change_id: str, head_revision: str) -> tuple[list[
             protocol_id = int(project_config.get("forge", {}).get("protocol", 1))
             flow_id = flow or project_config.get("flows", {}).get("default")
             effective = resolve_effective_flow(resolve_protocol_root(), root, flow_id, protocol_id)
-            stages = effective["canonical"].get("flow", {}).get("stages", [])
+            stages = effective["canonical"].get("stages", [])
             aliases = {"tdd_implementation": "tdd_evidence", "strict_review": "review", "documentation_impact": "documentation"}
             for stage in stages:
                 if not isinstance(stage, dict) or stage.get("required") is not True:
                     continue
-                key = aliases.get(stage.get("id"), stage.get("id"))
-                if key in {"completion", "intent", "inspection", "discovery", "specification", "architecture", "test_design", "test_strategy", "plan", "tasks", "knowledge_capture"} and key not in artifacts:
+                stage_id = stage.get("id")
+                if stage_id == "completion":
+                    # Completion is a terminal lifecycle marker tracked via
+                    # manifest.state.current (checked separately via MR-016),
+                    # not a per-file Artifact with its own status entry.
+                    continue
+                key = aliases.get(stage_id, stage_id)
+                if key in {"intent", "inspection", "discovery", "specification", "architecture", "test_design", "test_strategy", "plan", "tasks", "knowledge_capture"} and key not in artifacts:
                     diagnostics.append(ReadinessDiagnostic("MR-009", f"Required artifact is missing: {key}", change_id, relative))
                 elif key in artifacts and artifacts.get(key) not in {"complete", "approved", "passed"}:
                     diagnostics.append(ReadinessDiagnostic("MR-009", f"Required artifact is not complete: {key}", change_id, relative, "complete", str(artifacts.get(key))))
