@@ -494,10 +494,17 @@ new evidence closing that gap requires, without executing it here.
 
 **Structural core (elaborated by `CHG-0043`):** `What Changed`,
 `Durable Knowledge`, `Consequences for Future Changes`, `References` —
-the same four headings, in the same order, that 25 real occurrences
-already use (`CHG-0001` onward; FULL Flow only, `required: true`,
-gating Completion via `required_knowledge_capture_complete`). Matches
-real, stable precedent; no section is added, removed, or reordered.
+the same four headings, in the same order, that seven of this
+repository's 25 real occurrences already use precisely
+(`CHG-0021`, `CHG-0022`, `CHG-0023`, `CHG-0030`, `CHG-0033`,
+`CHG-0035`, `CHG-0036`; FULL Flow only, `required: true`, gating
+Completion via `required_knowledge_capture_complete`). The other 18
+are broader real content precedent for what belongs in this Artifact
+without using this exact structured form — some predate it and use
+different or no headings (`CHG-0016`, discussed below, is a flat
+bullet list with none at all). This elaboration formalizes the
+already-dominant structured shape as the recommended one going
+forward; no section is added, removed, or reordered relative to it.
 Content SHOULD be knowledge that outlives this Change — it SHOULD NOT
 restate Specification, Architecture, Verification, Review, or
 Specification Drift content that already lives in those Artifacts
