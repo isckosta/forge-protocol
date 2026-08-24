@@ -66,10 +66,9 @@ regression tests in `tests/cli/test_merge_check.py` and are outside
 this Change's own Specification scope, but are recorded here for
 traceability since they landed in the same working session.
 
-Independent Strict Review (Iteration 1) passed — see `review.md`.
+Independent Strict Review remains pending.
 
 ## Conclusion
 
-All Acceptance Criteria verified PASS; no regressions found. Strict
-Review passed with no blocking findings. The Change is ready for
-Completion.
+Verification passes for the implemented scope; the Change is not marked
+complete until independent Strict Review is performed.
