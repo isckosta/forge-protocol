@@ -73,3 +73,37 @@ records:
       observed_by: operator
       reference: review.md#iteration-1
       statement: Independent Strict Review Iteration 1 (fresh execution, isolated worktree, no shared context with Implementation) returned PASS -- no BLOCKER, MAJOR, or MINOR findings; 1 non-blocking OBSERVATION. Tests, forge validate, rendered verification.md structure (via a direct render_scaffold call, not the test suite alone), template byte-equality for review/plan/test-strategy/tasks, CHANGELOG.md accuracy, and exact diff scope were all independently reproduced against this exact commit.
+  - id: implementation-subject-002
+    role: implementation
+    execution:
+      id: claude-code-implementation-0040-subject-002
+      context_id: claude-code-session-2026-08-24-subject-002
+    recorded_at: '2026-08-24T00:00:00Z'
+    revision:
+      id: chg-0040-implementation-002
+      immutable_ref:
+        type: git_commit
+        value: 4d5a0be9ea689b3163a8e47c4700543481b5db26
+      commit: 4d5a0be9ea689b3163a8e47c4700543481b5db26
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: implementation-subject
+      statement: Refrozen CHG-0040 implementation subject superseding implementation-subject-001, addressing three P2 findings from an automated review on PR #31 (SKIPPED/NOT APPLICABLE rationale prompt missing; dangling TDD-001 evidence reference on non-behavioral scaffolds; canonical example renarrating RED/GREEN despite its own adjacent guidance). Reviewable Git workspace confirmed clean before this freeze.
+  - id: verification-002
+    role: implementation
+    execution:
+      id: claude-code-implementation-0040-verification-002
+      context_id: claude-code-session-2026-08-24-subject-002
+    recorded_at: '2026-08-24T00:00:00Z'
+    revision:
+      id: chg-0040-implementation-002
+      immutable_ref:
+        type: git_commit
+        value: 4d5a0be9ea689b3163a8e47c4700543481b5db26
+      commit: 4d5a0be9ea689b3163a8e47c4700543481b5db26
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: verification.md
+      statement: Full pytest suite (670 passed) and forge validate confirmed against this refrozen subject; two new regression tests cover the SKIPPED/NOT APPLICABLE rationale prompt and the neutral evidence placeholder.
