@@ -18,7 +18,7 @@ artifacts:
   plan: approved
   tdd_evidence: complete
   verification: complete
-  review: pending
+  review: active
   documentation: pending
 decisions:
   - id: DEC-001
@@ -39,12 +39,18 @@ tdd:
 verification:
   status: passed
 review:
-  status: pending
-  iteration: 0
+  status: failed
+  iteration: 1
   blockers: 0
-  majors: 0
-  minors: 0
+  majors: 1
+  minors: 2
   observations: 0
-  iterations: []
+  iterations:
+    - id: review-001
+      revision: chg-0043-implementation-001
+      subject_provenance: implementation-subject-001
+      reviewer_provenance: reviewer-001
+      kind: initial_review
+      status: failed
 documentation:
   impact_evaluated: false

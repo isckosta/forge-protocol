@@ -56,3 +56,54 @@ records:
       observed_by: self
       reference: verification.md
       statement: verification.md's PASS result (TDD-001 evidence, forge validate, full pytest suite -- 685 passed) is bound to this exact frozen implementation subject.
+  - id: reviewer-001
+    role: review
+    execution:
+      id: a6956cf41e7b6fc3b
+      context_id: independent-review-context-a6956cf41e7b6fc3b
+    recorded_at: '2026-08-24T00:00:00Z'
+    revision:
+      id: chg-0043-implementation-001
+      immutable_ref:
+        type: git_commit
+        value: ca4d50132e58c46c7fb85f8d13727bb7662d4a01
+      commit: ca4d50132e58c46c7fb85f8d13727bb7662d4a01
+    source:
+      assurance: recorded
+      observed_by: operator
+      reference: review.md#iteration-1
+      statement: Independent Strict Review Iteration 1 (fresh execution, isolated worktree, no shared context with Implementation) returned REQUEST CHANGES -- R001 (MAJOR, protection test coverage gap), R002/R003 (MINOR, prose overclaim and unresolved placeholder). Rendered output, test counts, forge validate, precedent citations, FER characterization, and diff scope were all independently reproduced against this exact commit.
+  - id: implementation-subject-002
+    role: implementation
+    execution:
+      id: claude-code-implementation-0043-subject-002
+      context_id: claude-code-session-2026-08-24-subject-002
+    recorded_at: '2026-08-24T00:00:00Z'
+    revision:
+      id: chg-0043-implementation-002
+      immutable_ref:
+        type: git_commit
+        value: 3b1a553aa12931d74b2399ae3307f13fbb9cb8c7
+      commit: 3b1a553aa12931d74b2399ae3307f13fbb9cb8c7
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: implementation-subject
+      statement: Refrozen CHG-0043 implementation subject superseding implementation-subject-001, resolving R001 (strengthened the protection test to full-section equality for review.md and tasks.md), R002 (corrected the overclaimed precedent-citation uniformity in protocol/artifact-structure.md), R003 (filled in discovery.md's unresolved section-number placeholder), and R004 (clarified FR-002/AC-002's scaffold-vs-documentation split). Reviewable Git workspace confirmed clean before this freeze.
+  - id: verification-002
+    role: implementation
+    execution:
+      id: claude-code-implementation-0043-verification-002
+      context_id: claude-code-session-2026-08-24-subject-002
+    recorded_at: '2026-08-24T00:00:00Z'
+    revision:
+      id: chg-0043-implementation-002
+      immutable_ref:
+        type: git_commit
+        value: 3b1a553aa12931d74b2399ae3307f13fbb9cb8c7
+      commit: 3b1a553aa12931d74b2399ae3307f13fbb9cb8c7
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: verification.md
+      statement: Full pytest suite (685 passed, unchanged count) and forge validate confirmed against this refrozen subject; the strengthened protection test and prose fixes carry no functional renderer change.
