@@ -20,7 +20,8 @@ model, and an explicit `Likely cause` phrasing for unconfirmed causes —
 proportionality remains the first, undiluted rule, and no section is
 required, validated, or expected in every occurrence. Corrected an
 overclaim describing `CHG-0005/inspection.md` as "title only" when it
-has two sentences of real content. Updated the `inspection` scaffold's
+has two short paragraphs of real content, three sentences total.
+Updated the `inspection` scaffold's
 identity heading to `# CHG-XXXX · Inspection` (matching Specification,
 Test Design, Tasks, Verification, Review, and Knowledge Capture) and
 replaced its redundant `## Inspection` body heading with a non-heading
