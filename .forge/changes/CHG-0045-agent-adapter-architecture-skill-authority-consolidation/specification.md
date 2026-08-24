@@ -460,15 +460,30 @@ Evidence mapping and is populated once Tasks exist (Plan/Tasks stage).
 
 No Protocol identifier changes (CON-001). No Contract rule's meaning
 changes. No Flow gate's meaning changes. `.forge/adapters/*/installation.yml`
-schema (`forge/adapter-installation@2`) is unchanged; a `forge adapter
-update` after this Change's Implementation will show `UPDATE` (not
-`CONFLICT`) for the affected generated paths, resolving Discovery's live
-drift as an ordinary consequence of republishing, not a special-cased
-patch. Existing installed Adapters in any other Forge-governed repository
-require a normal `forge adapter update` to adopt this Change's projection
-shape; no forced/automatic regeneration is introduced (F-009 compatibility
-awareness; user customization is never silently overwritten — `planner.py`'s
-existing CONFLICT semantics already enforce this for `forge_owned` paths).
+schema (`forge/adapter-installation@2`) is unchanged; no forced/automatic
+regeneration is introduced (F-009 compatibility awareness; user
+customization is never silently overwritten — `planner.py`'s existing
+CONFLICT semantics already enforce this for `forge_owned` paths).
+
+**Corrected by Specification Drift after Strict Review Iteration 1 (R004
+— see `specification-drift.md`):** this section originally asserted that
+"a `forge adapter update` after this Change's Implementation will show
+`UPDATE` (not `CONFLICT`)... resolving Discovery's live drift as an
+ordinary consequence of republishing, not a special-cased patch." This
+Change's own dogfooded Implementation directly contradicted that claim:
+`forge adapter update`/`forge adapter install` refused to run for *both*
+Adapters via `AdapterService`'s own `_reject_drift`/`_reject_conflicts`
+guards, and required a one-time, human-authorized bypass of that
+production code to republish (see `verification.md`'s "Adapter Republish"
+section). Any other Forge-governed repository with this Adapter already
+installed and a similarly stale, never-committed `installation.yml` (the
+condition DEC-004 found is not unique to this repository) will hit the
+identical refusal, with no supported CLI recovery path short of the same
+kind of manual bypass this Change required. That gap is real, currently
+undocumented for such adopters, and is Out of Scope for this Change to
+build a fix for (a `forge adapter update --acknowledge-stale-baseline`-
+shaped command, or an equivalent, is follow-up work — see
+`knowledge-capture.md`).
 
 ## Specification Gate
 

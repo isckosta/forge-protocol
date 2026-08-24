@@ -35,6 +35,20 @@ status: complete
 unchanged). Every new test named in `tdd-evidence.yml` and `traceability.yml` was
 run individually and as part of the full suite; both confirmed green.
 
+**Addendum after Strict Review Iteration 1 (R001, BLOCKER):** the frozen
+subject `23d763b` in fact had 700 passed, 1 failed at freeze time — this
+"701 passed, 0 failed" claim was written from a suite run captured before
+`traceability.yml` was finalized, and the suite was not re-run after that
+file's last edit before the freeze commit. The independent Reviewer
+reproduced the failure (a `protocol/schemas/traceability.schema.json`
+violation this Change's own `traceability.yml` introduced) independently,
+twice, in two separate environments. Fixed in the Resolution revision
+(see `review.md` R001, `tasks.md` T-020); re-run and reconfirmed 701
+passed, 0 failed against the Resolution revision before this addendum was
+written. Durable lesson recorded in `knowledge-capture.md`: re-run the
+full suite after the *last* content edit before freezing, not after the
+last code edit.
+
 ## Forge Evidence
 
 - `forge validate` — before Implementation: `Forge project is valid`. After: `Forge project is valid`.

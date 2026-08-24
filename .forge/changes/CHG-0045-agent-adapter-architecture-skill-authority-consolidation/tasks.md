@@ -73,14 +73,53 @@ status: complete
       conflict guard. Verified equivalent to a clean install by `forge
       doctor` (all PASS) and `forge adapter plan` (all UNCHANGED)
       afterward, not merely asserted (Plan items 12-13).
-- [x] T-017 Documentation Impact evaluated — see `verification.md` /
-      `knowledge-capture.md` (Plan item 14).
-- [x] T-018 Wrote `verification.md`, `knowledge-capture.md`,
-      `traceability.yml` from real Implementation evidence (Plan item 15).
-- [ ] T-019 Strict Review, independent Execution/Context (Plan item 16).
+
+      **DEC-006** (`manifest.yml`): the explicit, in-session human
+      authorization described above — to bypass `AdapterService`'s own
+      `_reject_drift`/`_reject_conflicts` guards for this one-time
+      republish, after the two guard refusals and one denied unauthorized
+      attempt were investigated and disclosed — is that Decision. Recorded
+      here explicitly (Review R002) because `manifest.yml`'s
+      `decisions[]` entry alone, with no cross-reference to this
+      narrative, left a future reader unable to tell what it was.
+- [x] T-017 Documentation Impact scoping recorded for the post-Review
+      `documentation`/`knowledge_capture` stages (`protocol/flows/full.yml`
+      places both after `strict_review`, and only `before_completion`
+      requires them — `manifest.yml`'s `documentation: pending`,
+      `knowledge_capture: pending` was and remains accurate). CHANGELOG.md
+      entry and `knowledge-capture.md` are deferred to those stages, per
+      Plan item 14 (Review R003: this task previously, incorrectly, said
+      Documentation Impact "was evaluated" in the past tense; corrected to
+      describe what actually happened at Verification time — scoping, not
+      completion).
+- [x] T-018 Wrote `verification.md` and `traceability.yml` from real
+      Implementation evidence. `knowledge-capture.md` was **not** written
+      at this stage (Review R003: T-018 previously, incorrectly, claimed
+      it was) — Knowledge Capture is a post-Review stage per
+      `protocol/flows/full.yml` and is written after Review, informed by
+      Review's own findings, per Plan item 15/Plan item 17.
+- [x] T-019 Strict Review, independent Execution/Context (Plan item 16).
+      **Iteration 1** (`review-001`, independent Execution/Context
+      `claude-code-review-0045-independent`): **REQUEST CHANGES** — 1
+      BLOCKER (R001: `traceability.yml` violated
+      `protocol/schemas/traceability.schema.json`'s `minItems: 1` for
+      `CON-001`/`CON-002`/`CON-004`, causing a real, reproduced `pytest`
+      failure that `verification.md`/`provenance.yml` had incorrectly
+      claimed did not exist), 3 MAJOR (R002, this DEC-006 narrative gap;
+      R003, this T-017/T-018 overclaim; R004, the Adapter-Republish
+      remediation-path gap — see `specification-drift.md`), 1 MINOR (R005,
+      `traceability.yml` acceptance-table mapping errors). See `review.md`
+      for the full independent Review.
+- [ ] T-020 Resolution: fix R001-R005 (this commit); re-run the full
+      suite to confirm 0 failures; freeze a new Resolution revision; obtain
+      an independent Resolution Verification re-Review of that revision
+      (C-026: a Resolver must not resolve blocking Findings in the
+      Reviewer's own Execution Context, and re-Review must itself be
+      independent of the Resolution).
 
 ## Status
 
-T-001 through T-018 complete. T-019 (Strict Review) is the only remaining
-task, pending an independent Execution/Context per this Change's own
-Self-Hosting Boundary (Specification) and C-026.
+T-001 through T-019 (Iteration 1) complete. Iteration 1's Verdict was
+REQUEST CHANGES. T-020 (Resolution + independent re-Review of the
+Resolution revision) is the only remaining task before Documentation
+Impact/Knowledge Capture/Completion.

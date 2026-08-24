@@ -11,14 +11,14 @@ requirements:
   NFR-001: {tasks: [T-001], tests: [test_shared_independence_text_agrees_with_the_effective_c026_paragraph], evidence: review_independence_py_docstring_and_test}
   NFR-002: {tasks: [T-012], tests: [], evidence: full_pre_existing_codex_suite_unchanged}
   NFR-003: {tasks: [T-011], tests: [test_generated_skill_does_not_grow_relative_to_the_pre_chg_0045_baseline], evidence: measured_180_to_175_lines}
-  CON-001: {tasks: [], evidence: no_new_protocol_integer}
-  CON-002: {tasks: [], evidence: no_contract_or_flow_text_paraphrased}
+  CON-001: {tasks: [T-002], evidence: no_new_protocol_integer}
+  CON-002: {tasks: [T-002], evidence: no_contract_or_flow_text_paraphrased}
   CON-003: {tasks: [T-002], evidence: review_independence_py_in_shared_adapters_package}
-  CON-004: {tasks: [], evidence: no_plugin_system_introduced}
+  CON-004: {tasks: [T-002], evidence: no_plugin_system_introduced}
   US-006: {tasks: [T-014], tests: [test_resolve_project_root_resolves_the_secondary_worktrees_own_root, test_resolve_project_root_from_a_nested_path_inside_the_secondary_worktree], evidence: worktree_resolution_confirmed_correct}
 acceptance:
-  AC-001: [test_projection_renders_reviewer_resolver_independence_exactly_once_across_flows]
-  AC-002: []
+  AC-001: []
+  AC-002: [test_workflow_template_instructs_boundary_reporting_format]
   AC-003: [test_projection_renders_the_plan_decision_sentence_exactly_once_across_flows]
   AC-004: [test_projection_renders_reviewer_resolver_independence_exactly_once_across_flows, test_projection_points_every_applicable_flow_at_the_shared_independence_section]
   AC-005: [test_claude_code_and_codex_import_the_same_shared_independence_source]
