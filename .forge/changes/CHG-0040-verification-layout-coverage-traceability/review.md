@@ -32,4 +32,21 @@ The elaborated `examples/canonical-artifacts/verification.md` adds an `AC-004`/`
 - Diff scope is exactly the 6 non-Change-directory files this Change claims — no schema, no Protocol integer, no unrelated file.
 - `merge_readiness/evaluator.py` confirmed absent from this Change's own diff.
 
-**Strict Review for CHG-0040 is closed with a PASS verdict.**
+## Iteration 2 — PASS
+
+An automated review on the PR (`github.com/isckosta/forge-protocol/pull/31`) raised 3 P2 findings against Iteration 1's subject (`2de3727`): the Summary guidance never prompted for a rationale when `Result` is `SKIPPED`/`NOT APPLICABLE` (a real gap against this Change's own `FR-007`); the Acceptance Coverage example row hardcoded a `TDD-001` reference even for `--non-behavioral` scaffolds, which never produce `tdd-evidence.yml`; and the canonical example narrated the RED/GREEN sequence in prose immediately below a comment claiming it is referenced by id, not renarrated. All three were fixed in `4d5a0be`.
+
+An independent Reviewer (fresh execution, isolated Git worktree, no shared context with Implementation or with Iteration 1) evaluated the refrozen subject `4d5a0be9ea689b3163a8e47c4700543481b5db26`. No BLOCKER, MAJOR, or MINOR findings. Each of the three fixes was independently verified by calling `render_scaffold` directly (behavioral and non-behavioral, both flows) rather than trusting the diff or the test suite: the SKIPPED/NOT APPLICABLE rationale prompt appears in both renders and traces correctly to `FR-007`/`AC-007`; the Acceptance Coverage placeholder is `<evidence>` with no `TDD-001`/`TD-001` in either render; the canonical example's Test Evidence section references `TDD-001`/`TDD-002` by id only, with a full diff-wide grep confirming no remaining RED/GREEN renarration anywhere in the subject. Tests reproduced at the claimed counts (`test_change_scaffolding.py`: 46 passed; full suite: 670 passed, 2 warnings, confirmed as the pre-existing unrelated `test_experience_capture.py` behavior). `forge validate` and `git diff --check` confirmed clean. The fix commit's scope was confirmed as exactly the 3 claimed files, and the overall diff from `main` remains exactly the 6 claimed items.
+
+### OBSERVATION 2 — Change-local verification.md revert is a sound correction
+
+`afae7ca` (reverting `verification.md`'s wording back to its frozen, Iteration-1-reviewed text after an earlier self-inflicted MR-015 violation) is outside the 3-file fix scope but was checked and found to be a correct, necessary correction, not a defect.
+
+### Checked and found sound (Iteration 2)
+
+- All three fixes independently verified via direct `render_scaffold` calls, not diff-reading alone.
+- Full suite and `test_change_scaffolding.py` reproduce exactly at `4d5a0be`.
+- `forge validate` and `git diff --check` clean.
+- Fix commit scope confirmed exactly 3 files; overall diff scope from `main` confirmed unchanged (still exactly 6 items, no schema/Protocol/Adapter/merge_readiness touch).
+
+**Strict Review for CHG-0040 is closed with a PASS verdict (Iteration 2, superseding Iteration 1's now-stale subject binding).**
