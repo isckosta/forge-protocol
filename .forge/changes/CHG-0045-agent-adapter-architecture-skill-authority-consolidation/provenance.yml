@@ -52,3 +52,101 @@ records:
         remain in the working tree but predate this Change, are unrelated
         to its scope (Discovery's "Non-authorities excluded" section), and
         do not affect this Change's reviewable material.
+  - id: review-001
+    role: review
+    execution:
+      id: claude-code-review-0045-independent
+      context_id: claude-code-review-session-2026-08-24
+    recorded_at: '2026-08-24T22:24:04Z'
+    revision:
+      id: chg-0045-implementation-001
+      immutable_ref:
+        type: git_commit
+        value: 23d763b5b076bd1fd3df75743e9df90fcc4b0423
+      commit: 23d763b5b076bd1fd3df75743e9df90fcc4b0423
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: review.md
+      statement: >-
+        Independent Strict Review of CHG-0045, Iteration 1, performed in an
+        Execution and Execution Context distinct from
+        claude-code-implementation-0045 / claude-code-session-2026-08-24,
+        with no access to the Implementation conversation. Verdict: REQUEST
+        CHANGES (1 BLOCKER, 3 MAJOR, 1 MINOR, 0 OBSERVATION; see review.md).
+        Confirmed the frozen reviewable workspace was clean (git diff
+        --stat 23d763b..HEAD touches only provenance.yml; only three
+        pre-existing, disclosed, unrelated untracked files present).
+        Independently reproduced, against actual repository state rather
+        than accepted from any artifact's prose: pytest -q run twice (a
+        fresh scratch venv and this repository's own committed .venv),
+        both yielding 700 passed, 1 failed -- contradicting
+        verification.md's and this record's own prior "701 passed, 0
+        failed" claim (R001, BLOCKER), traced to a genuine
+        protocol/schemas/traceability.schema.json violation in this
+        Change's own traceability.yml (CON-001/CON-002/CON-004 tasks: []);
+        forge validate ("Forge project is valid"), forge doctor (all PASS
+        except the two pre-existing disclosed WARNs), and forge adapter
+        plan claude-code/codex (all UNCHANGED) all matched verification.md
+        exactly; sha256sum of .claude/skills/forge/SKILL.md,
+        .claude/skills/forge/hooks/check-manifest-edit.sh, and
+        .agents/skills/forge/SKILL.md all matched their recorded
+        installation.yml digests exactly; grep -c of "### Reviewer/Resolver
+        independence" in the installed SKILL.md returned exactly 1, with a
+        working pointer line present in all three Flow sections; codex/
+        projection.py and claude_code/projection.py both confirmed, by
+        direct grep, to import the shared review_independence.py module
+        rather than defining local copies; nine hand-constructed
+        PreToolUse JSON payloads were piped directly into the actual
+        generated check-manifest-edit.sh via sh, covering Edit/Write deny
+        cases (including nested/absolute path-prefix variants), false-
+        positive-avoidance allow cases (suffix and substring variants),
+        and the disclosed-as-uncovered NotebookEdit case, all matching
+        SKILL.md's own disclosure exactly. Also found: DEC-006 in
+        manifest.yml is recorded with no narrative anywhere explaining it
+        (R002, MAJOR); tasks.md T-017/T-018 claim knowledge-capture.md was
+        written and Documentation Impact was evaluated, but no such file
+        exists and manifest.yml itself correctly records both as pending
+        (R003, MAJOR); the Adapter Republish (T-016) required a hand-
+        authorized bypass of AdapterService's own guards that neither
+        Architecture's Risks nor the Specification's Compatibility
+        Statement anticipated or now account for (R004, MAJOR); and
+        traceability.yml's acceptance table misattributes AC-001 and
+        leaves AC-002 empty despite a real, correctly-linked test existing
+        (R005, MINOR).
+  - id: resolution-001
+    role: resolution
+    execution:
+      id: claude-code-implementation-0045
+      context_id: claude-code-session-2026-08-24
+    recorded_at: '2026-08-24T23:00:00Z'
+    revision:
+      id: chg-0045-resolution-001
+      immutable_ref:
+        type: git_commit
+        value: b43cb761d08433ae8a0b7dbc3be82d1e57f09221
+      commit: b43cb761d08433ae8a0b7dbc3be82d1e57f09221
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: review.md
+      statement: >-
+        Resolution of Strict Review Iteration 1 (review-001) findings
+        R001-R005. R001 (BLOCKER) fixed by adding non-empty tasks arrays
+        to traceability.yml's CON-001/CON-002/CON-004 (previously
+        violating protocol/schemas/traceability.schema.json's minItems:1,
+        the real cause of the reproduced 1-test failure); re-ran
+        pytest -q after this fix and confirmed 701 passed, 0 failed.
+        R002 fixed by adding an explicit DEC-006 narrative to tasks.md
+        T-016. R003 fixed by correcting tasks.md T-017/T-018 to
+        accurately describe the legitimate deferral of documentation/
+        knowledge_capture to their post-Review Flow stages. R004 fixed
+        via specification-drift.md and a correction to specification.md's
+        Compatibility Statement, recording the supported-recovery-command
+        gap as explicit follow-up work rather than silently building or
+        silently dropping it. R005 fixed by correcting traceability.yml's
+        AC-001/AC-002 acceptance mapping. Resolution Delta (git diff
+        23d763b..b43cb76): exactly specification.md,
+        specification-drift.md (new), tasks.md, traceability.yml,
+        verification.md -- no file outside this Change's own directory
+        touched, no Out-of-Scope Mutation.
