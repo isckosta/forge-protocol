@@ -1,0 +1,177 @@
+schema: forge/execution-provenance@2
+change: CHG-0043
+records:
+  - id: plan-approval-001
+    role: implementation
+    execution:
+      id: claude-code-implementation-0043
+      context_id: claude-code-session-2026-08-24
+    recorded_at: '2026-08-24T00:00:00Z'
+    revision:
+      id: chg-0043-plan-approval-001
+      immutable_ref:
+        type: git_commit
+        value: 81c33d95c4597b1822d519166ad3ca2c7afb6454
+      commit: 81c33d95c4597b1822d519166ad3ca2c7afb6454
+    source:
+      assurance: recorded
+      observed_by: operator
+      reference: plan.md#approval-record
+      content_digest:
+        algorithm: sha256
+        path: plan.md
+        value: c0a7ba0ee02c6aa897cd33bbd76215f95287bb308935a14f05044a9e4814edf2
+      statement: The user explicitly approved the CHG-0043 Plan to proceed to Implementation in the active session on 2026-08-24, via an explicit approval choice ("Aprovar como está") over the Specification's 7 Functional Requirements and all 8 Plan work items.
+  - id: implementation-subject-001
+    role: implementation
+    execution:
+      id: claude-code-implementation-0043
+      context_id: claude-code-session-2026-08-24
+    recorded_at: '2026-08-24T00:00:00Z'
+    revision:
+      id: chg-0043-implementation-001
+      immutable_ref:
+        type: git_commit
+        value: ca4d50132e58c46c7fb85f8d13727bb7662d4a01
+      commit: ca4d50132e58c46c7fb85f8d13727bb7662d4a01
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: implementation-subject
+      statement: Frozen CHG-0043 implementation subject (immutable per C-026 once committed) -- includes change_scaffolding.py, tests/unit/test_change_scaffolding.py, protocol/artifact-structure.md, CHANGELOG.md, and all CHG-0043 planning/design/verification Artifacts. Reviewable Git workspace confirmed clean before freeze.
+  - id: verification-001
+    role: implementation
+    execution:
+      id: claude-code-implementation-0043-verification-001
+      context_id: claude-code-session-2026-08-24
+    recorded_at: '2026-08-24T00:00:00Z'
+    revision:
+      id: chg-0043-implementation-001
+      immutable_ref:
+        type: git_commit
+        value: ca4d50132e58c46c7fb85f8d13727bb7662d4a01
+      commit: ca4d50132e58c46c7fb85f8d13727bb7662d4a01
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: verification.md
+      statement: verification.md's PASS result (TDD-001 evidence, forge validate, full pytest suite -- 685 passed) is bound to this exact frozen implementation subject.
+  - id: reviewer-001
+    role: review
+    execution:
+      id: a6956cf41e7b6fc3b
+      context_id: independent-review-context-a6956cf41e7b6fc3b
+    recorded_at: '2026-08-24T00:00:00Z'
+    revision:
+      id: chg-0043-implementation-001
+      immutable_ref:
+        type: git_commit
+        value: ca4d50132e58c46c7fb85f8d13727bb7662d4a01
+      commit: ca4d50132e58c46c7fb85f8d13727bb7662d4a01
+    source:
+      assurance: recorded
+      observed_by: operator
+      reference: review.md#iteration-1
+      statement: Independent Strict Review Iteration 1 (fresh execution, isolated worktree, no shared context with Implementation) returned REQUEST CHANGES -- R001 (MAJOR, protection test coverage gap), R002/R003 (MINOR, prose overclaim and unresolved placeholder). Rendered output, test counts, forge validate, precedent citations, FER characterization, and diff scope were all independently reproduced against this exact commit.
+  - id: implementation-subject-002
+    role: implementation
+    execution:
+      id: claude-code-implementation-0043-subject-002
+      context_id: claude-code-session-2026-08-24-subject-002
+    recorded_at: '2026-08-24T00:00:00Z'
+    revision:
+      id: chg-0043-implementation-002
+      immutable_ref:
+        type: git_commit
+        value: 3b1a553aa12931d74b2399ae3307f13fbb9cb8c7
+      commit: 3b1a553aa12931d74b2399ae3307f13fbb9cb8c7
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: implementation-subject
+      statement: Refrozen CHG-0043 implementation subject superseding implementation-subject-001, resolving R001 (strengthened the protection test to full-section equality for review.md and tasks.md), R002 (corrected the overclaimed precedent-citation uniformity in protocol/artifact-structure.md), R003 (filled in discovery.md's unresolved section-number placeholder), and R004 (clarified FR-002/AC-002's scaffold-vs-documentation split). Reviewable Git workspace confirmed clean before this freeze.
+  - id: verification-002
+    role: implementation
+    execution:
+      id: claude-code-implementation-0043-verification-002
+      context_id: claude-code-session-2026-08-24-subject-002
+    recorded_at: '2026-08-24T00:00:00Z'
+    revision:
+      id: chg-0043-implementation-002
+      immutable_ref:
+        type: git_commit
+        value: 3b1a553aa12931d74b2399ae3307f13fbb9cb8c7
+      commit: 3b1a553aa12931d74b2399ae3307f13fbb9cb8c7
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: verification.md
+      statement: Full pytest suite (685 passed, unchanged count) and forge validate confirmed against this refrozen subject; the strengthened protection test and prose fixes carry no functional renderer change.
+  - id: reviewer-002
+    role: review
+    execution:
+      id: ad88c904db8c9ddbc
+      context_id: independent-review-context-ad88c904db8c9ddbc
+    recorded_at: '2026-08-24T00:00:00Z'
+    revision:
+      id: chg-0043-implementation-002
+      immutable_ref:
+        type: git_commit
+        value: 3b1a553aa12931d74b2399ae3307f13fbb9cb8c7
+      commit: 3b1a553aa12931d74b2399ae3307f13fbb9cb8c7
+    source:
+      assurance: recorded
+      observed_by: operator
+      reference: review.md#iteration-2
+      statement: Independent Strict Review Iteration 2 (fresh execution, isolated worktree, no shared context with Implementation or Iteration 1) returned PASS -- R001 confirmed resolved by an injected temporary regression proving the strengthened test actually catches a defect, not just by reading the diff; R002/R003/R004 confirmed resolved by direct inspection. Recorded two new non-blocking findings (R005 OBSERVATION, R006 MINOR) per C-050, left open per C-049.
+  - id: implementation-subject-003
+    role: implementation
+    execution:
+      id: claude-code-implementation-0043-subject-003
+      context_id: claude-code-session-2026-08-24-subject-003
+    recorded_at: '2026-08-24T00:00:00Z'
+    revision:
+      id: chg-0043-implementation-003
+      immutable_ref:
+        type: git_commit
+        value: 15a5b459ab7ff5b25a12c76f0bae5632ab028bcb
+      commit: 15a5b459ab7ff5b25a12c76f0bae5632ab028bcb
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: implementation-subject
+      statement: Refrozen CHG-0043 implementation subject superseding implementation-subject-002, resolving an automated PR review finding (P2, not one of R001-R006) -- protocol/artifact-structure.md overclaimed that all 25 real knowledge-capture.md files use the exact four-heading structured form; only 7 do (CHG-0021, CHG-0022, CHG-0023, CHG-0030, CHG-0033, CHG-0035, CHG-0036). Corrected to name the 7 precisely and describe the other 18 as broader content precedent. Prose-only change to protocol/artifact-structure.md; no renderer or test change. Reviewable Git workspace confirmed clean before this freeze.
+  - id: verification-003
+    role: implementation
+    execution:
+      id: claude-code-implementation-0043-verification-003
+      context_id: claude-code-session-2026-08-24-subject-003
+    recorded_at: '2026-08-24T00:00:00Z'
+    revision:
+      id: chg-0043-implementation-003
+      immutable_ref:
+        type: git_commit
+        value: 15a5b459ab7ff5b25a12c76f0bae5632ab028bcb
+      commit: 15a5b459ab7ff5b25a12c76f0bae5632ab028bcb
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: verification.md
+      statement: Full pytest suite (685 passed, unchanged count) and forge validate confirmed against this refrozen subject; the fix is prose-only in protocol/artifact-structure.md, no code or test behavior differs.
+  - id: reviewer-003
+    role: review
+    execution:
+      id: a0978c9cae0d31bf6
+      context_id: independent-review-context-a0978c9cae0d31bf6
+    recorded_at: '2026-08-24T00:00:00Z'
+    revision:
+      id: chg-0043-implementation-003
+      immutable_ref:
+        type: git_commit
+        value: 15a5b459ab7ff5b25a12c76f0bae5632ab028bcb
+      commit: 15a5b459ab7ff5b25a12c76f0bae5632ab028bcb
+    source:
+      assurance: recorded
+      observed_by: operator
+      reference: review.md#iteration-3
+      statement: Independent Strict Review Iteration 3 (fresh execution, isolated worktree, no shared context with Implementation or Iterations 1-2) returned PASS -- independently re-counted the "exactly 7 of 25" claim via a fresh script and confirmed it exactly, spot-checked 3 non-matching files, confirmed fix commit scope, tests, and forge validate. Recorded one new non-blocking finding (R007 MINOR, a pre-existing lesson-count inaccuracy discovered during the full-subject read, unrelated to the fix under review) per C-050, left open per C-049.

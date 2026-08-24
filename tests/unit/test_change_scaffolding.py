@@ -1,6 +1,7 @@
 """CHG-0022 TDD-001..003: Change scaffold planning and rendering."""
 
 from pathlib import Path
+import re
 
 import pytest
 import yaml
@@ -786,3 +787,190 @@ def test_render_scaffold_review_reviewer_independence_references_provenance() ->
     assert "## Reviewer Independence" in review
     assert "provenance.yml" in review
     assert "distinct Execution and Execution Context" in review
+
+
+def test_render_scaffold_knowledge_capture_uses_structured_layout() -> None:
+    plan = render_scaffold(
+        change_id="CHG-0043",
+        slug="knowledge-capture-layout",
+        flow_id="full",
+        flow_data=_canonical_flow("full"),
+        behavioral=True,
+    )
+
+    knowledge_capture = plan.files["knowledge-capture.md"]
+
+    assert knowledge_capture.startswith(
+        "---\nforge:\n  artifact: knowledge_capture\n  schema: 1\n"
+        "change: CHG-0043\nstatus: pending\n---\n\n"
+        "# CHG-0043 · Knowledge Capture\n\n"
+    )
+    headings = [line for line in knowledge_capture.splitlines() if line.startswith("## ")]
+    assert headings == [
+        "## What Changed",
+        "## Durable Knowledge",
+        "## Consequences for Future Changes",
+        "## References",
+    ]
+    sections = re.split(r"(?m)^## ", knowledge_capture)[1:]
+    for section in sections:
+        body = section.split("\n\n", 1)[1] if "\n\n" in section else ""
+        assert body.strip(), section
+
+
+def test_render_scaffold_knowledge_capture_guides_optional_k_items() -> None:
+    plan = render_scaffold(
+        change_id="CHG-0043",
+        slug="knowledge-capture-k-items",
+        flow_id="full",
+        flow_data=_canonical_flow("full"),
+        behavioral=True,
+    )
+
+    knowledge_capture = plan.files["knowledge-capture.md"]
+
+    assert "### K-xxx" in knowledge_capture
+    assert "not required" in knowledge_capture
+
+
+def test_render_scaffold_knowledge_capture_distinguishes_adjacent_artifacts() -> None:
+    plan = render_scaffold(
+        change_id="CHG-0043",
+        slug="knowledge-capture-distinction",
+        flow_id="full",
+        flow_data=_canonical_flow("full"),
+        behavioral=True,
+    )
+
+    knowledge_capture = plan.files["knowledge-capture.md"]
+
+    for artifact in ("Decision", "Architecture", "Specification", "Review", "Specification Drift"):
+        assert artifact in knowledge_capture
+
+
+def test_render_scaffold_knowledge_capture_distinguishes_experience_report() -> None:
+    plan = render_scaffold(
+        change_id="CHG-0043",
+        slug="knowledge-capture-fer",
+        flow_id="full",
+        flow_data=_canonical_flow("full"),
+        behavioral=True,
+    )
+
+    knowledge_capture = plan.files["knowledge-capture.md"]
+
+    assert "Forge Experience Report" in knowledge_capture
+    assert "docs/experience-reporting.md" in knowledge_capture
+
+
+def test_render_scaffold_knowledge_capture_references_adr_for_material_work() -> None:
+    plan = render_scaffold(
+        change_id="CHG-0043",
+        slug="knowledge-capture-adr",
+        flow_id="full",
+        flow_data=_canonical_flow("full"),
+        behavioral=True,
+    )
+
+    knowledge_capture = plan.files["knowledge-capture.md"]
+
+    assert "docs/adr/" in knowledge_capture
+
+
+def test_render_scaffold_knowledge_capture_allows_empty_result() -> None:
+    plan = render_scaffold(
+        change_id="CHG-0043",
+        slug="knowledge-capture-empty",
+        flow_id="full",
+        flow_data=_canonical_flow("full"),
+        behavioral=True,
+    )
+
+    knowledge_capture = plan.files["knowledge-capture.md"]
+
+    assert "valid" in knowledge_capture
+    assert "no additional knowledge" in knowledge_capture.lower()
+
+
+def test_render_scaffold_knowledge_capture_unaffected_templates_are_unchanged() -> None:
+    plan = render_scaffold(
+        change_id="CHG-0043",
+        slug="knowledge-capture-unaffected-templates",
+        flow_id="full",
+        flow_data=_canonical_flow("full"),
+        behavioral=True,
+    )
+
+    # Full-equality (via endswith on the *entire* section content each
+    # renderer emits, not a tail fragment) for every one of the five
+    # unaffected templates — a tail-only or substring check would miss
+    # a regression in the untested middle/opening of the section, which
+    # is exactly what happened here in an earlier draft of this test
+    # for review.md (only its last two subsections were checked) and
+    # tasks.md (a single bare substring, no equality at all).
+    assert plan.files["review.md"].endswith(
+        "## Verdict\n\n"
+        "**PENDING**\n\n"
+        "## Review Summary\n\n"
+        "Use the values already recorded in manifest.yml: review (iteration, blockers, majors, minors) — do not hand-count separately.\n\n"
+        "| | |\n"
+        "|---|---|\n"
+        "| **Iterations** | <n> |\n"
+        "| **Current Subject** | <sha> |\n"
+        "| **Open Blockers** | <n> |\n"
+        "| **Open Majors** | <n> |\n"
+        "| **Open Minors** | <n> |\n"
+        "| **Final Iteration** | <n> |\n"
+        "| **Result** | PENDING |\n\n"
+        "## Current Subject\n\n"
+        "Reference the frozen subject recorded in provenance.yml by id; do not invent a new freeze concept.\n\n"
+        "| | |\n"
+        "|---|---|\n"
+        "| **Subject SHA** | <sha> |\n"
+        "| **Frozen** | <Yes/No> |\n"
+        "| **Iteration** | <n> |\n\n"
+        "## Reviewer Independence\n\n"
+        "Reference the reviewer's provenance.yml record by id as evidence of a distinct Execution and Execution Context from the Implementation or Resolution under review — not a bare declaration.\n\n"
+        "## Open Findings\n\n"
+        "List only findings still open, using the Rxxx id (no Change-id prefix). Use `No open findings.` instead of an empty table when there are none.\n\n"
+        "| Finding | Severity | Status | Iteration |\n"
+        "|---|---|---|---|\n\n"
+        "## Iteration 1 — PENDING\n\n"
+        "Record Strict Review findings. Each finding needs a stable Rxxx id, one of BLOCKER, MAJOR, MINOR, or OBSERVATION, evidence (required for BLOCKER and MAJOR), and a Required Resolution stated as the property that must hold — not a prescribed implementation.\n\n"
+        "## Conclusion\n\n"
+        "State the effect of the Verdict. Do not declare Completion while gates later in the Flow remain outstanding.\n"
+    )
+    assert plan.files["specification-review.md"].endswith(
+        "## Verdict\n\n**PENDING**\n\n## Findings\n\nRecord findings.\n\n"
+        "## Checked and found sound\n\nRecord sound claims.\n\n## Conclusion\n\nRecord the conclusion.\n"
+    )
+    assert plan.files["plan.md"].endswith(
+        "1. Describe the first approved work item and files.\n\n"
+        "## Implementation Boundary\n\n"
+        "Reaching `plan_complete` is not authorization to begin Implementation.\n"
+    )
+    assert plan.files["test-strategy.md"].endswith(
+        "## Objective\n\nState the test strategy objective.\n\n## Strategy\n\n"
+        "## TDD-001 — <behavior>\n\nDefine the test case.\n\n"
+        "## Completion Criteria\n\nList completion criteria.\n"
+    )
+    assert plan.files["tasks.md"].endswith(
+        "> Execution Checklist\n"
+        "\n"
+        "## Overview\n"
+        "| | |\n"
+        "|---|---|\n"
+        "| **Change** | CHG-0043 |\n"
+        "| **Flow** | FULL |\n"
+        "| **Status** | Ready |\n"
+        "\n"
+        "## Execution\n\n"
+        "Group Tasks under the Plan item they execute. Reference `Requirements`, `Stories`, and `Test Design` only when that relationship actually exists — not every Task needs every reference.\n"
+        "\n"
+        "### Plan 1 · <Plan item title>\n\n"
+        "- [ ] T-001 <work item>\n"
+        "  `Plan: 1` · `Requirements: FR-001` · `Test Design: TDD-001`\n"
+        "\n"
+        "## Status\n\n"
+        "No task has started.\n"
+    )

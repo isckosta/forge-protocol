@@ -81,6 +81,8 @@ def _frontmatter(artifact: str, change_id: str, status: str, title: str) -> str:
         if artifact == "verification"
         else f"# {change_id} · Review"
         if artifact == "review"
+        else f"# {change_id} · Knowledge Capture"
+        if artifact == "knowledge_capture"
         else f"# {change_id} · {title}"
         if artifact == "intent"
         else f"# {artifact.replace('_', ' ').title()} — {change_id} {title}"
@@ -342,7 +344,20 @@ def _markdown(artifact: str, change_id: str, title: str, flow_id: str | None = N
             "## Conclusion\n\n"
             "State the effect of the Verdict. Do not declare Completion while gates later in the Flow remain outstanding.\n"
         ),
-        "knowledge_capture": "## What Changed\n\nRecord the durable change.\n\n## Durable Knowledge\n\n## Consequences for Future Changes\n\n## References\n\n",
+        "knowledge_capture": (
+            "> **Durable Knowledge**\n"
+            ">\n"
+            "> Records knowledge produced by this Change that should remain useful for future development, maintenance, and decisions — not a summary of the Change itself.\n"
+            "\n"
+            "## What Changed\n\n"
+            "State the durable change in a few sentences — context for the knowledge below, not a file-by-file account. That belongs to Plan, Tasks, or the diff.\n\n"
+            "## Durable Knowledge\n\n"
+            "Record only what will still be true and useful after this Change is forgotten. Ask: will this still be valid, and could another Change decide better by knowing it? Do not duplicate Decision, Architecture, Specification, Review, or Specification Drift — reference them, extract the reusable lesson they revealed. Use short prose for a single dominant lesson. Use `### K-xxx · <title>` items when there are several genuinely independent lessons — ids are optional structure, not required, since no consumer depends on them today. If no additional knowledge beyond this Change was identified, say so plainly — that is a valid, complete answer, not a gap to fill.\n\n"
+            "## Consequences for Future Changes\n\n"
+            "State concrete implications for future work, only when they exist. Give each conclusion a scope (Forge Core, Harness Adapter, CLI, review workflow, …) rather than implying it applies to the whole system.\n\n"
+            "## References\n\n"
+            "Reference Specification, Architecture, Decision, Review, or Specification Drift by id — do not duplicate their content. When this work is materially architectural or Protocol-level, reference the `docs/adr/`/`docs/rfcs/` entry already produced for it, rather than restating it here. This is distinct from the Forge Experience Report (`docs/experience-reporting.md`): FER is opt-in and records what happened during a real execution; this document records what should remain known afterward.\n"
+        ),
     }
     return content + sections[artifact]
 

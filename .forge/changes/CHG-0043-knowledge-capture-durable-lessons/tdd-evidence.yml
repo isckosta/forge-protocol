@@ -1,0 +1,19 @@
+schema: forge/tdd-evidence@1
+change: CHG-0043
+status: complete
+cycle_count: 1
+cycles:
+  - id: TDD-001
+    title: Knowledge Capture scaffold structural core, K-xxx guidance, and adjacent-artifact distinctions
+    requirements: [FR-001, FR-002, FR-003, FR-004, FR-005, FR-006, FR-007]
+    red:
+      command: .venv/bin/python -m pytest tests/unit/test_change_scaffolding.py -k knowledge -q
+      result: "6 failed, 1 passed, 54 deselected"
+      reason: The unmodified `knowledge_capture` scaffold template lacked the new identity heading, per-section guidance, K-xxx guidance, adjacent-artifact distinctions, FER distinction, docs/adr/ reference guidance, and empty-result guidance -- each new assertion failed for that specific, expected reason. The protection test (unaffected templates) passed because no other template had been touched yet.
+    green:
+      command: .venv/bin/python -m pytest tests/unit/test_change_scaffolding.py -k knowledge -q
+      result: "7 passed, 54 deselected"
+    notes:
+      - Full suite (.venv/bin/python -m pytest -q) and `tests/unit/test_change_scaffolding.py -q` (61 passed) both confirmed green after GREEN.
+notes:
+  - TD-001 through TD-007 in test-design.md map 1:1 to FR-001 through FR-007; all were exercised together by the -k knowledge filter above since they assert on the same rendered knowledge-capture.md string.

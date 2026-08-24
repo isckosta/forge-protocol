@@ -10,6 +10,22 @@ until then.
 
 ## Unreleased
 
+### Knowledge Capture Durable Lessons
+
+Updated newly generated `knowledge-capture.md` (FULL Flow only) with
+guidance inline in each of its four already-stable sections (`What
+Changed`, `Durable Knowledge`, `Consequences for Future Changes`,
+`References` — unchanged in order) and a `# CHG-XXXX · Knowledge
+Capture` identity heading. `Durable Knowledge` now guides optional
+`### K-xxx` items for multiple independent lessons (no mandatory
+namespace) and states that an honest "no additional knowledge" is a
+valid answer. Distinguishes Knowledge Capture from Decision,
+Architecture, Specification, Review, Specification Drift, and the
+Forge Experience Report, and points `References` at `docs/adr/`/
+`docs/rfcs/` (Contract F-008) instead of inventing a promotion
+workflow. Historical `knowledge-capture.md` files, Schemas, Protocol
+integer, and Decision/Architecture/FER mechanics remain unchanged.
+
 ### Specification Drift Narrative Chronology
 
 Elaborated `protocol/artifact-structure.md`'s "Specification Drift"
