@@ -371,17 +371,54 @@ Design/Tasks.
 
 ### Review
 
-**Structural core:** a `## Verdict` aggregate summary at the very top of
-the file, stating the final outcome across every iteration a reader would
-otherwise have to scroll through to find (a Change with several
-iterations, most negative and one final PASS, currently gives a
-top-to-bottom reader every negative verdict before the one that matters
-for Completion — e.g. `CHG-0008`, six iterations). The existing,
-already-working `## Iteration N — <verdict>` convention per iteration is
-preserved unchanged beneath it, not replaced. Render the aggregate
-verdict as bold or plain text, not a nested heading, for the same reason
-as Verification above. Findings use `Rxxx` (Strict Review's real, stable
-prefix — distinct from Specification Review's `SR-xxx`).
+**Structural core (elaborated by `CHG-0041`):** a `## Verdict` aggregate
+summary at the very top of the file, stating the final outcome across
+every iteration a reader would otherwise have to scroll through to find
+(a Change with several iterations, most negative and one final PASS,
+currently gives a top-to-bottom reader every negative verdict before the
+one that matters for Completion — e.g. `CHG-0008`, six iterations).
+Render the aggregate verdict as bold or plain text, not a nested
+heading, for the same reason as Verification above — one of `PASS` or
+`REQUEST CHANGES`; no third state has real precedent or Contract
+authority.
+
+After Verdict: a `## Review Summary` giving a derived aggregate read
+(iteration count, current subject, open Blocker/Major/Minor counts,
+final iteration, result) — derived from `manifest.yml: review`
+(`iteration`, `blockers`, `majors`, `minors`, `observations`), never a
+hand-maintained count that can drift from it; then `##
+Current Subject`, making the frozen revision explicit by referencing
+the relevant `provenance.yml` record by id rather than inventing a new
+freeze concept — the mechanism is `protocol/policies/review.yml`'s
+`reviewer_resolver_separation` (`review_subject_freeze_required`,
+`post_freeze_subject_mutation_invalidates_binding`), already real and
+already enforced independently of this document; then `## Reviewer
+Independence`, similarly referencing the reviewing Execution's
+`provenance.yml` record (`role: review`) as evidence of a distinct
+Execution and Execution Context from the Implementation or Resolution
+under review, not a bare declaration; then `## Open Findings`, a
+compact index (`Finding | Severity | Status | Iteration`) of findings
+still open — present only when findings remain open (§2.5); when none
+do, a short `No open findings.` line replaces the table, never an empty
+one.
+
+The existing, already-working `## Iteration N — <verdict>` convention
+per iteration is preserved **exactly unchanged** beneath these new
+sections, not replaced, not renamed, not renumbered, and not wrapped
+under a new parent heading — every real `review.md` from `CHG-0016`
+onward uses this flat form, and no real precedent for a nested
+`Iteration History` grouping exists anywhere in this repository's
+history. Findings use `Rxxx` (Strict Review's real, stable prefix since
+`CHG-0016` — distinct from Specification Review's `SR-xxx`; the older
+`CHG-XXXX-Rxxx` change-scoped form from `CHG-0008`–`CHG-0014` is
+historical and not reproduced in new scaffolds). A finding's Required
+Resolution states the property that must hold, not a prescribed
+implementation — Reviewer identifies and classifies the problem;
+Resolver chooses the fix within the Contract (C-026). BLOCKER and MAJOR
+findings carry evidence (C-025); MINOR and OBSERVATION findings are not
+required to. A closing `## Conclusion` states the effect of the Verdict
+in one or two sentences and MUST NOT imply Completion when later Flow
+gates remain outstanding.
 
 ### Specification Drift
 

@@ -1,0 +1,143 @@
+schema: forge/execution-provenance@2
+change: CHG-0041
+records:
+  - id: plan-approval-001
+    role: implementation
+    execution:
+      id: claude-code-implementation-0041
+      context_id: claude-code-session-2026-08-24
+    recorded_at: '2026-08-24T00:00:00Z'
+    revision:
+      id: chg-0041-plan-approval-001
+      immutable_ref:
+        type: git_commit
+        value: d5c103af59b705ef3feb28928fa4c0dbc0ed3df7
+      commit: d5c103af59b705ef3feb28928fa4c0dbc0ed3df7
+    source:
+      assurance: recorded
+      observed_by: operator
+      reference: plan.md#approval-record
+      content_digest:
+        algorithm: sha256
+        path: plan.md
+        value: def6043b52f30b0c7580c9fc1d15446a2e88561dd3a54b8c653483e17b88b953
+      statement: The user explicitly approved the CHG-0041 Plan to proceed to Implementation in the active session on 2026-08-24, via an explicit approval choice ("Aprovar como está") over the Specification's 9 Functional Requirements and all 8 Plan work items, including FR-007's decision to preserve the real "## Iteration N — <verdict>" convention unchanged instead of introducing the prompt's illustrative "## Iteration History" wrapper.
+  - id: implementation-subject-001
+    role: implementation
+    execution:
+      id: claude-code-implementation-0041
+      context_id: claude-code-session-2026-08-24
+    recorded_at: '2026-08-24T00:00:00Z'
+    revision:
+      id: chg-0041-implementation-001
+      immutable_ref:
+        type: git_commit
+        value: d662cfa3bae49de139366657d4d8b856f09f1ec3
+      commit: d662cfa3bae49de139366657d4d8b856f09f1ec3
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: implementation-subject
+      statement: Frozen CHG-0041 implementation subject (immutable per C-026 once committed) -- includes change_scaffolding.py, tests/unit/test_change_scaffolding.py, protocol/artifact-structure.md, CHANGELOG.md, and all CHG-0041 planning/design/verification Artifacts. Reviewable Git workspace confirmed clean before freeze.
+  - id: verification-001
+    role: implementation
+    execution:
+      id: claude-code-implementation-0041-verification-001
+      context_id: claude-code-session-2026-08-24
+    recorded_at: '2026-08-24T00:00:00Z'
+    revision:
+      id: chg-0041-implementation-001
+      immutable_ref:
+        type: git_commit
+        value: d662cfa3bae49de139366657d4d8b856f09f1ec3
+      commit: d662cfa3bae49de139366657d4d8b856f09f1ec3
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: verification.md
+      statement: verification.md's PASS result (TDD-001 evidence, forge validate, full pytest suite -- 678 passed) is bound to this exact frozen implementation subject.
+  - id: reviewer-001
+    role: review
+    execution:
+      id: adc0f6ae7c6a94b55
+      context_id: independent-review-context-adc0f6ae7c6a94b55
+    recorded_at: '2026-08-24T00:00:00Z'
+    revision:
+      id: chg-0041-implementation-001
+      immutable_ref:
+        type: git_commit
+        value: d662cfa3bae49de139366657d4d8b856f09f1ec3
+      commit: d662cfa3bae49de139366657d4d8b856f09f1ec3
+    source:
+      assurance: recorded
+      observed_by: operator
+      reference: review.md#iteration-1
+      statement: Independent Strict Review Iteration 1 (fresh execution, isolated worktree, no shared context with Implementation) returned PASS -- no BLOCKER or MAJOR findings; 1 non-blocking MINOR (R001, a "byte-for-byte" overclaim in test-design.md/CHANGELOG.md). Tests, forge validate, rendered review.md structure (via a direct render_scaffold call, not the test suite alone), template byte-equality for specification-review/plan/test-strategy/tasks, the real Iteration-heading precedent claim, and exact diff scope were all independently reproduced against this exact commit.
+  - id: implementation-subject-002
+    role: implementation
+    execution:
+      id: claude-code-implementation-0041-subject-002
+      context_id: claude-code-session-2026-08-24-subject-002
+    recorded_at: '2026-08-24T00:00:00Z'
+    revision:
+      id: chg-0041-implementation-002
+      immutable_ref:
+        type: git_commit
+        value: 9ceed36405e1a2068ded2dcf87e19b764ebf7a24
+      commit: 9ceed36405e1a2068ded2dcf87e19b764ebf7a24
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: implementation-subject
+      statement: Refrozen CHG-0041 implementation subject superseding implementation-subject-001, resolving R001 (MINOR) -- corrected test-design.md's TD-007 and the CHANGELOG.md entry's overclaim that the Iteration-1 paragraph is preserved "byte-for-byte"/verbatim; the actual test and real behavior only preserve the heading line and opening sentence, with the guidance paragraph extended in place. No code or test behavior changed. Reviewable Git workspace confirmed clean before this freeze.
+  - id: verification-002
+    role: implementation
+    execution:
+      id: claude-code-implementation-0041-verification-002
+      context_id: claude-code-session-2026-08-24-subject-002
+    recorded_at: '2026-08-24T00:00:00Z'
+    revision:
+      id: chg-0041-implementation-002
+      immutable_ref:
+        type: git_commit
+        value: 9ceed36405e1a2068ded2dcf87e19b764ebf7a24
+      commit: 9ceed36405e1a2068ded2dcf87e19b764ebf7a24
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: verification.md
+      statement: Full pytest suite (678 passed) and forge validate confirmed against this refrozen subject; the change from implementation-subject-001 is documentation-only (test-design.md, CHANGELOG.md), no code or test behavior differs.
+  - id: reviewer-002
+    role: review
+    execution:
+      id: af8701474c1f9092c
+      context_id: independent-review-context-af8701474c1f9092c
+    recorded_at: '2026-08-24T00:00:00Z'
+    revision:
+      id: chg-0041-implementation-002
+      immutable_ref:
+        type: git_commit
+        value: 9ceed36405e1a2068ded2dcf87e19b764ebf7a24
+      commit: 9ceed36405e1a2068ded2dcf87e19b764ebf7a24
+    source:
+      assurance: recorded
+      observed_by: operator
+      reference: review.md#iteration-2
+      statement: Independent Strict Review Iteration 2 (fresh execution, isolated worktree, no shared context with Implementation or Iteration 1) confirmed R001 fully resolved, then returned REQUEST CHANGES on a new finding (R002, MAJOR) -- review.md/manifest.yml had never actually been populated with Iteration 1's PASS result despite provenance.yml's reviewer-001 record claiming it, independently confirmed via forge change merge-check reporting MERGE BLOCKED (MR-004, MR-005, MR-009 x2).
+  - id: reviewer-003
+    role: review
+    execution:
+      id: a67be365c2300a9d9
+      context_id: independent-review-context-a67be365c2300a9d9
+    recorded_at: '2026-08-24T00:00:00Z'
+    revision:
+      id: chg-0041-implementation-002
+      immutable_ref:
+        type: git_commit
+        value: 9ceed36405e1a2068ded2dcf87e19b764ebf7a24
+      commit: 9ceed36405e1a2068ded2dcf87e19b764ebf7a24
+    source:
+      assurance: recorded
+      observed_by: operator
+      reference: review.md#iteration-3
+      statement: Independent scoped Resolution Verification Iteration 3 (fresh execution, isolated worktree, no shared context with Implementation or Iterations 1-2; C-047-scoped to R002 only) confirmed R002 resolved -- review.md/manifest.yml/provenance.yml are mutually consistent and the Resolution Delta is scoped to exactly the 3 review-control files, no Out-of-Scope Mutation. Recorded one new non-blocking MINOR (R003, an evidence-count imprecision in Iteration 2's own finding text) per C-050.

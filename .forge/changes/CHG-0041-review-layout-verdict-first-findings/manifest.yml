@@ -1,0 +1,69 @@
+schema: forge/change@2
+protocol: 2
+change:
+  id: CHG-0041
+  title: Review Layout Verdict First Findings
+  kind: feature
+flow:
+  initial: standard
+  current: standard
+  escalations: []
+state:
+  current: complete
+artifacts:
+  intent: complete
+  discovery: complete
+  specification: complete
+  test_design: complete
+  plan: approved
+  tdd_evidence: complete
+  verification: complete
+  review: complete
+  documentation: complete
+decisions:
+  - id: DEC-001
+    class: technical
+    materiality: material
+    status: resolved
+    authority: human
+    owning_artifact: plan
+    discovered_in: plan
+    resolved_via: human_decision
+requirements:
+  total: 9
+  implemented: 9
+  verified: 9
+tdd:
+  status: compliant
+  cycles: 1
+verification:
+  status: passed
+review:
+  status: passed
+  iteration: 3
+  blockers: 0
+  majors: 0
+  minors: 1
+  observations: 0
+  iterations:
+    - id: review-001
+      revision: chg-0041-implementation-001
+      subject_provenance: implementation-subject-001
+      reviewer_provenance: reviewer-001
+      kind: initial_review
+      status: passed
+    - id: review-002
+      revision: chg-0041-implementation-002
+      subject_provenance: implementation-subject-002
+      reviewer_provenance: reviewer-002
+      kind: initial_review
+      status: failed
+    - id: review-003
+      revision: chg-0041-implementation-002
+      subject_provenance: implementation-subject-002
+      reviewer_provenance: reviewer-003
+      kind: initial_review
+      status: passed
+documentation:
+  impact_evaluated: true
+  update_required: true

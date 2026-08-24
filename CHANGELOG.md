@@ -10,6 +10,23 @@ until then.
 
 ## Unreleased
 
+### Review Layout, Verdict First, and Findings
+
+Updated newly generated `review.md` (FAST/STANDARD/FULL) with a
+derived Review Summary (sourced from `manifest.yml: review`, not
+hand-counted), a Current Subject section referencing `provenance.yml`
+by id, a Reviewer Independence section, and a conditional Open
+Findings index — all placed before the real, stable `## Iteration N —
+<verdict>` heading convention (same level, same em dash separator, same
+opening sentence), which is preserved unchanged with no new `Iteration
+History` wrapper heading; its guidance paragraph is extended in place
+with additional finding-structure guidance. Finding guidance keeps the
+`Rxxx` id convention and steers Required Resolution
+toward the property that must hold, not a prescribed implementation.
+Historical `review.md` files, `specification-review.md`/`SR-xxx`,
+Schemas, Protocol integer, reviewer/resolver independence semantics,
+and `forge validate` semantics remain unchanged.
+
 ### Verification Layout, Coverage, and Traceability
 
 Updated newly generated `verification.md` (FAST/STANDARD/FULL) with an

@@ -614,7 +614,7 @@ def test_render_scaffold_verification_acceptance_coverage_evidence_placeholder_i
     assert "TD-001" not in verification
 
 
-def test_render_scaffold_review_plan_test_strategy_tasks_templates_are_unchanged() -> None:
+def test_render_scaffold_plan_test_strategy_tasks_templates_are_unchanged() -> None:
     plan = render_scaffold(
         change_id="CHG-0040",
         slug="verification-unaffected-templates",
@@ -623,9 +623,6 @@ def test_render_scaffold_review_plan_test_strategy_tasks_templates_are_unchanged
         behavioral=True,
     )
 
-    assert plan.files["review.md"].endswith(
-        "## Verdict\n\n**PENDING**\n\n## Iteration 1 — PENDING\n\nRecord Strict Review findings.\n"
-    )
     assert plan.files["plan.md"].endswith(
         "1. Describe the first approved work item and files.\n\n"
         "## Implementation Boundary\n\n"
@@ -637,3 +634,155 @@ def test_render_scaffold_review_plan_test_strategy_tasks_templates_are_unchanged
         "## Completion Criteria\n\nList completion criteria.\n"
     )
     assert "No task has started." in plan.files["tasks.md"]
+    assert plan.files["specification-review.md"].endswith(
+        "## Verdict\n\n**PENDING**\n\n## Findings\n\nRecord findings.\n\n"
+        "## Checked and found sound\n\nRecord sound claims.\n\n## Conclusion\n\nRecord the conclusion.\n"
+    )
+
+
+def test_render_scaffold_review_uses_verdict_first_findings_layout() -> None:
+    plan = render_scaffold(
+        change_id="CHG-0041",
+        slug="review-layout",
+        flow_id="standard",
+        flow_data=_canonical_flow("standard"),
+        behavioral=True,
+    )
+
+    review = plan.files["review.md"]
+
+    assert review.startswith(
+        "---\nforge:\n  artifact: review\n  schema: 1\n"
+        "change: CHG-0041\nstatus: pending\n---\n\n"
+        "# CHG-0041 · Review\n\n"
+    )
+    headings = [line for line in review.splitlines() if line.startswith("## ")]
+    assert headings == [
+        "## Verdict",
+        "## Review Summary",
+        "## Current Subject",
+        "## Reviewer Independence",
+        "## Open Findings",
+        "## Iteration 1 — PENDING",
+        "## Conclusion",
+    ]
+
+
+def test_render_scaffold_review_verdict_placeholder_is_distinct_from_recognized_states() -> None:
+    plan = render_scaffold(
+        change_id="CHG-0041",
+        slug="review-verdict",
+        flow_id="standard",
+        flow_data=_canonical_flow("standard"),
+        behavioral=True,
+    )
+
+    review = plan.files["review.md"]
+    verdict_section = review.split("## Verdict", 1)[1].split("## Review Summary", 1)[0]
+
+    assert "**PENDING**" in verdict_section
+    assert "#" not in verdict_section
+    for state in ("PASS", "REQUEST CHANGES"):
+        assert state not in verdict_section
+
+
+def test_render_scaffold_review_summary_points_at_manifest_as_authority() -> None:
+    plan = render_scaffold(
+        change_id="CHG-0041",
+        slug="review-summary",
+        flow_id="standard",
+        flow_data=_canonical_flow("standard"),
+        behavioral=True,
+    )
+
+    review = plan.files["review.md"]
+
+    assert "manifest.yml" in review
+    assert "do not hand-count separately" in review
+    assert "| **Open Blockers** |" in review
+    assert "| **Open Majors** |" in review
+
+
+def test_render_scaffold_review_current_subject_references_provenance() -> None:
+    plan = render_scaffold(
+        change_id="CHG-0041",
+        slug="review-current-subject",
+        flow_id="standard",
+        flow_data=_canonical_flow("standard"),
+        behavioral=True,
+    )
+
+    review = plan.files["review.md"]
+
+    assert "| **Subject SHA** |" in review
+    assert "| **Frozen** |" in review
+    assert "provenance.yml" in review
+    assert "do not invent a new freeze concept" in review
+
+
+def test_render_scaffold_review_open_findings_covers_populated_and_empty_case() -> None:
+    plan = render_scaffold(
+        change_id="CHG-0041",
+        slug="review-open-findings",
+        flow_id="standard",
+        flow_data=_canonical_flow("standard"),
+        behavioral=True,
+    )
+
+    review = plan.files["review.md"]
+
+    assert "| Finding | Severity | Status | Iteration |" in review
+    assert "No open findings." in review
+
+
+def test_render_scaffold_review_finding_guidance_uses_rxxx_and_states_property() -> None:
+    plan = render_scaffold(
+        change_id="CHG-0041",
+        slug="review-finding-guidance",
+        flow_id="standard",
+        flow_data=_canonical_flow("standard"),
+        behavioral=True,
+    )
+
+    review = plan.files["review.md"]
+
+    assert "Rxxx id" in review
+    assert "CHG-" not in review.split("Rxxx id", 1)[1].split("\n\n", 1)[0]
+    for severity in ("BLOCKER", "MAJOR", "MINOR", "OBSERVATION"):
+        assert severity in review
+    assert "not a prescribed implementation" in review
+
+
+def test_render_scaffold_review_iteration_convention_is_unchanged_and_unwrapped() -> None:
+    plan = render_scaffold(
+        change_id="CHG-0041",
+        slug="review-iteration-convention",
+        flow_id="standard",
+        flow_data=_canonical_flow("standard"),
+        behavioral=True,
+    )
+
+    review = plan.files["review.md"]
+
+    assert "## Iteration 1 — PENDING\n\nRecord Strict Review findings." in review
+    assert "## Iteration History" not in review
+    open_findings_index = review.index("## Open Findings")
+    iteration_index = review.index("## Iteration 1 — PENDING")
+    conclusion_index = review.index("## Conclusion")
+    assert open_findings_index < iteration_index < conclusion_index
+
+
+def test_render_scaffold_review_reviewer_independence_references_provenance() -> None:
+    plan = render_scaffold(
+        change_id="CHG-0041",
+        slug="review-independence",
+        flow_id="standard",
+        flow_data=_canonical_flow("standard"),
+        behavioral=True,
+    )
+
+    review = plan.files["review.md"]
+
+    assert "## Reviewer Independence" in review
+    assert "provenance.yml" in review
+    assert "distinct Execution and Execution Context" in review
