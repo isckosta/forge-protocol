@@ -1,0 +1,24 @@
+schema: forge/execution-provenance@2
+change: CHG-0044
+records:
+  - id: plan-approval-001
+    role: implementation
+    execution:
+      id: claude-code-implementation-0044
+      context_id: claude-code-session-2026-08-24
+    recorded_at: '2026-08-24T00:00:00Z'
+    revision:
+      id: chg-0044-plan-approval-001
+      immutable_ref:
+        type: git_commit
+        value: 6d5e0e777f0e818152aa41987b6d7ab3d9ea7c02
+      commit: 6d5e0e777f0e818152aa41987b6d7ab3d9ea7c02
+    source:
+      assurance: recorded
+      observed_by: operator
+      reference: plan.md#approval-record
+      content_digest:
+        algorithm: sha256
+        path: plan.md
+        value: 6ffca3b1ff1bccbb790384eb1ecc3d6898e6e4c3a815c808f2854d87b1471b32
+      statement: The user explicitly approved the CHG-0044 Plan to proceed to Implementation in the active session on 2026-08-24, via an explicit approval choice ("Aprovar como está") over the Specification's 8 Functional Requirements and all 8 Plan work items.
