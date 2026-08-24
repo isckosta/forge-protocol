@@ -124,3 +124,20 @@ records:
       observed_by: operator
       reference: review.md#iteration-2
       statement: Independent Strict Review Iteration 2 (fresh execution, isolated worktree, no shared context with Implementation or Iteration 1) confirmed R001 fully resolved, then returned REQUEST CHANGES on a new finding (R002, MAJOR) -- review.md/manifest.yml had never actually been populated with Iteration 1's PASS result despite provenance.yml's reviewer-001 record claiming it, independently confirmed via forge change merge-check reporting MERGE BLOCKED (MR-004, MR-005, MR-009 x2).
+  - id: reviewer-003
+    role: review
+    execution:
+      id: a67be365c2300a9d9
+      context_id: independent-review-context-a67be365c2300a9d9
+    recorded_at: '2026-08-24T00:00:00Z'
+    revision:
+      id: chg-0041-implementation-002
+      immutable_ref:
+        type: git_commit
+        value: 9ceed36405e1a2068ded2dcf87e19b764ebf7a24
+      commit: 9ceed36405e1a2068ded2dcf87e19b764ebf7a24
+    source:
+      assurance: recorded
+      observed_by: operator
+      reference: review.md#iteration-3
+      statement: Independent scoped Resolution Verification Iteration 3 (fresh execution, isolated worktree, no shared context with Implementation or Iterations 1-2; C-047-scoped to R002 only) confirmed R002 resolved -- review.md/manifest.yml/provenance.yml are mutually consistent and the Resolution Delta is scoped to exactly the 3 review-control files, no Out-of-Scope Mutation. Recorded one new non-blocking MINOR (R003, an evidence-count imprecision in Iteration 2's own finding text) per C-050.

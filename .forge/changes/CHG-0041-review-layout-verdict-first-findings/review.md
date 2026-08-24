@@ -3,26 +3,26 @@ forge:
   artifact: review
   schema: 1
 change: CHG-0041
-status: active
+status: complete
 ---
 
 # CHG-0041 · Review
 
 ## Verdict
 
-**REQUEST CHANGES**
+**PASS**
 
 ## Review Summary
 
 | | |
 |---|---|
-| **Iterations** | 2 |
+| **Iterations** | 3 |
 | **Current Subject** | `9ceed364` |
 | **Open Blockers** | 0 |
-| **Open Majors** | 1 |
-| **Open Minors** | 0 |
-| **Final Iteration** | 2 |
-| **Result** | REQUEST CHANGES |
+| **Open Majors** | 0 |
+| **Open Minors** | 1 |
+| **Final Iteration** | 3 |
+| **Result** | PASS |
 
 ## Current Subject
 
@@ -30,17 +30,17 @@ status: active
 |---|---|
 | **Subject SHA** | `9ceed36405e1a2068ded2dcf87e19b764ebf7a24` |
 | **Frozen** | Yes |
-| **Iteration** | 2 |
+| **Iteration** | 3 |
 
 ## Reviewer Independence
 
-Each Iteration was performed by an independent Execution and Execution Context (isolated Git worktree, fresh agent, no shared context with the Implementation session or with each other) — see `provenance.yml` records `reviewer-001` (Iteration 1) and `reviewer-002` (Iteration 2).
+Each Iteration was performed by an independent Execution and Execution Context (isolated Git worktree, fresh agent, no shared context with the Implementation session or with each other) — see `provenance.yml` records `reviewer-001` (Iteration 1), `reviewer-002` (Iteration 2), and `reviewer-003` (Iteration 3).
 
 ## Open Findings
 
 | Finding | Severity | Status | Iteration |
 | --- | --- | --- | --- |
-| R002 | MAJOR | Open | 2 |
+| R003 | MINOR | Open | 3 |
 
 ## Iteration 1 — PASS
 
@@ -82,6 +82,26 @@ R001 confirmed fully and accurately resolved, independently re-verified against 
 - Fix commit (`9ceed36`) confirmed to touch only `test-design.md` and `CHANGELOG.md` — no `src/` or `tests/` file.
 - Overall diff scope from `main` confirmed unchanged from Iteration 1's review.
 
+## Iteration 3 — PASS
+
+Reviewed subject `9ceed36405e1a2068ded2dcf87e19b764ebf7a24` (unchanged; `implementation-subject-002` — R002's fix was confined to `review.md`/`manifest.yml`/`provenance.yml`, review-control metadata explicitly exempt from invalidating a frozen subject). Recorded as `kind: initial_review` (not `resolution_verification`) since the referenced subject provenance is `role: implementation`, not `role: resolution` — C-047's scoped classification was not opted into; this Iteration still verified the R002 fix specifically, in addition to reconfirming nothing else regressed. Independent Execution, isolated worktree, no shared context with Implementation or with Iterations 1–2.
+
+R002 confirmed resolved: `review.md`/`manifest.yml`/`provenance.yml` are mutually consistent — `manifest.yml: review.iterations[]`'s two entries match `provenance.yml`'s `implementation-subject-001/002` and `reviewer-001/002` records field-for-field. The fix was confirmed scoped to exactly the three review-control files across commits `e95e5f6`, `8d4c962`, `88587b1` — nothing outside `review.md`/`manifest.yml`/`provenance.yml` changed.
+
+### R003 — MINOR — Iteration 2's finding text undercounts the `merge-check` diagnostics it cites as evidence
+
+**Problem:** Iteration 2's R002 evidence states "two `MR-009` diagnostics"; independently reproducing `forge change merge-check` against the exact frozen subject `9ceed364` shows **four** separate `MR-009` diagnostics (review incomplete, documentation incomplete, blocking review threads unresolved, documentation impact not evaluated). Discovered incidentally while verifying R002 (C-050) — unrelated to R002's substantive validity, which holds regardless (`MERGE BLOCKED` and `MR-004`/`MR-005` both independently reproduced).
+
+**Evidence:** `forge change merge-check --base d5c103a --head 9ceed36405e1a2068ded2dcf87e19b764ebf7a24` (full SHAs).
+
+**Required Resolution:** A future pass over this Review's own historical evidence text should state the accurate count. Left open, non-blocking (MINOR) — per C-049, this Review does not chase a non-blocking finding into a further iteration cycle; Iteration 2's original text is left as the historical record it is (append-oriented history), not silently edited.
+
+### Checked and found sound
+
+- `review.md`/`manifest.yml`/`provenance.yml` confirmed mutually consistent by independent field-by-field comparison.
+- `forge change merge-check` reproduced independently against the exact frozen subject and full SHAs (abbreviated SHAs were confirmed to trip an unrelated operational diagnostic, not a defect in this Change).
+- Fix scope confirmed exactly the 3 review-control files across all 3 commits since the last reviewed code/test content.
+
 ## Conclusion
 
-R002 remains open. `review.md` and `manifest.yml` are being brought into agreement with `provenance.yml` in the same commit that adds this content; a scoped Resolution Verification (Iteration 3, targeting R002 only, per C-047 — the underlying implementation subject is unchanged) is required before this Change can advance.
+The subject reviewed satisfies the Acceptance Criteria applicable to this Review and has no open BLOCKER or MAJOR findings; one non-blocking MINOR (R003) remains open, consistent with C-049's deterministic termination — a MINOR does not require a further iteration. The Change is ready for the next gate defined by its Flow.
