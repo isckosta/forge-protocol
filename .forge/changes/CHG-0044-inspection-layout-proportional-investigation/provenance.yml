@@ -164,3 +164,49 @@ records:
         complete. This is a review-bookkeeping defect, not a content
         defect in protocol/artifact-structure.md, change_scaffolding.py,
         or the tests, all of which Iteration 3 re-confirmed sound.
+  - id: verification-002
+    role: implementation
+    execution:
+      id: claude-code-implementation-0044-verification-002
+      context_id: claude-code-session-2026-08-24
+    recorded_at: '2026-08-24T00:00:00Z'
+    revision:
+      id: chg-0044-implementation-003
+      immutable_ref:
+        type: git_commit
+        value: 447bd9515d80df267df8c916584c40963f698195
+      commit: 447bd9515d80df267df8c916584c40963f698195
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: verification.md
+      statement: verification.md's PASS result (TDD-001 evidence, forge validate, full pytest suite -- 688 passed) is bound to this exact final subject (447bd95), the subject referenced by the final passed Review Iteration (review-004).
+  - id: reviewer-004
+    role: review
+    execution:
+      id: claude-agent-general-purpose-a45d8092a9d6e0b3d
+      context_id: claude-code-subagent-review-0044-004
+    recorded_at: '2026-08-24T00:00:00Z'
+    revision:
+      id: chg-0044-implementation-003
+      immutable_ref:
+        type: git_commit
+        value: 447bd9515d80df267df8c916584c40963f698195
+      commit: 447bd9515d80df267df8c916584c40963f698195
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: review.md#iteration-4
+      statement: >-
+        Independent adversarial Strict Review Iteration 4 performed by a
+        fourth, freshly spawned general-purpose Agent (agent id
+        a45d8092a9d6e0b3d), no shared context with Implementation or with
+        reviewer-001/002/003, against final subject 447bd95. Confirmed
+        R005 genuinely resolved: every review-00N manifest status now
+        matches its own provenance-recorded verdict, state.current and
+        review.status no longer claim Completion without a genuinely
+        passed iteration bound to the final subject, and the R005 fix
+        commit (8ccd497) touches only manifest.yml/provenance.yml/
+        review.md. Spot-checked protocol/artifact-structure.md's
+        Inspection section for regression: none found. Verdict PASS, no
+        findings.

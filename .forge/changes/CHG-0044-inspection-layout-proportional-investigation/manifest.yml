@@ -9,7 +9,7 @@ flow:
   current: standard
   escalations: []
 state:
-  current: review
+  current: complete
 artifacts:
   intent: complete
   discovery: complete
@@ -18,7 +18,7 @@ artifacts:
   plan: approved
   tdd_evidence: complete
   verification: complete
-  review: active
+  review: complete
   documentation: complete
 decisions:
   - id: DEC-001
@@ -39,10 +39,10 @@ tdd:
 verification:
   status: passed
 review:
-  status: pending
-  iteration: 3
+  status: passed
+  iteration: 4
   blockers: 0
-  majors: 1
+  majors: 0
   minors: 0
   observations: 0
   iterations:
@@ -64,6 +64,12 @@ review:
       reviewer_provenance: reviewer-003
       kind: initial_review
       status: failed
+    - id: review-004
+      revision: chg-0044-implementation-003
+      subject_provenance: implementation-subject-003
+      reviewer_provenance: reviewer-004
+      kind: initial_review
+      status: passed
 documentation:
   impact_evaluated: true
   update_required: true
