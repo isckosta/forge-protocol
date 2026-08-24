@@ -3,47 +3,93 @@ forge:
   artifact: verification
   schema: 1
 change: CHG-0044
-status: pending
+status: complete
 ---
 
 # CHG-0044 · Verification
 
 ## Result
 
-**PENDING**
+**PASS**
 
 ## Summary
 
-State how many Acceptance Criteria were verified, how many passed, how many failed, and whether Manual Evidence or Limitations apply. When Result is SKIPPED or NOT APPLICABLE, state the rationale here, proportional to the Change — a skipped or inapplicable Verification is itself a claim that needs a reason.
+8 Acceptance Criteria verified: 8 passed, 0 failed. Automated checks
+(TD-001, TD-002, TD-008) and Manual Acceptance checks (TD-003–TD-007,
+direct reading of the elaborated `protocol/artifact-structure.md` prose)
+both passed. No Limitations to record.
 
 ## Acceptance Coverage
 
-Reference each AC-xxx by id; do not reproduce its full text here.
-
 | Acceptance | Requirement | Result | Evidence |
-|---|---|---|---|
-| AC-001 | FR-001 | PENDING | <evidence> |
-
-## Requirement Coverage
-
-Omit this section when Acceptance Coverage already expresses per-Requirement coverage; include it only when it adds information Acceptance Coverage does not.
+| --- | --- | --- | --- |
+| AC-001 | FR-001 | PASS | TDD-001 |
+| AC-002 | FR-002 | PASS | TDD-001 |
+| AC-003 | FR-003 | PASS | Manual Evidence |
+| AC-004 | FR-004 | PASS | Manual Evidence |
+| AC-005 | FR-005 | PASS | Manual Evidence |
+| AC-006 | FR-006 | PASS | Manual Evidence |
+| AC-007 | FR-007 | PASS | Manual Evidence |
+| AC-008 | FR-008 | PASS | TDD-001 |
 
 ## Test Evidence
 
-Record commands, exit status, and a short summary — not full logs. When `tdd-evidence.yml` already records RED and GREEN for a TDD-xxx cycle, reference it by id instead of renarrating the sequence.
-
-## Forge Evidence
-
-Record only what the command actually guarantees.
+- `.venv/bin/python -m pytest tests/unit/test_change_scaffolding.py -q`: **64 passed**.
+- Full suite: `.venv/bin/python -m pytest -q`: **688 passed, 2 warnings** (warnings are from tests that deliberately inject failures into the experience-capture recorder; not product failures).
+- `TDD-001` (RED, `tests/unit/test_change_scaffolding.py -k inspection`): failed before the change (2 failed, 1 passed, 61 deselected) for the expected reason — the old `inspection` template emitted a redundant `## Inspection` heading and used the generic pre-elaboration fallback identity heading; passes after (3 passed, 61 deselected).
 
 ## Manual Evidence
 
-Include this section only when a real manual verification occurred; keep it distinct from Test Evidence and Forge Evidence.
+Direct reading of the merged `protocol/artifact-structure.md` §4
+"Inspection" section (lines 562–end of section) against TD-003–TD-007:
+
+- **TD-003** — lists `Observation`, `Evidence`, `Root Cause`, `Impact`,
+  `Fix Boundary`, `Open Question`, `Conclusion`; states "No section
+  below is expected, required, or validated"; cites `CHG-0024`,
+  `CHG-0028`, and `CHG-0012` as real precedent for individual terms.
+- **TD-004** — distinguishes `Observation` (symptom + reproducing
+  condition, no cause conclusion) from confirmed `Root Cause`, and
+  states explicitly: "When cause is not yet confirmed, say so explicitly
+  (a plain 'Likely cause' is sufficient)... no numeric or multi-level
+  confidence scale is needed."
+- **TD-005** — names the `Symptom → Reproduction → Cause` model,
+  references the compact `CHG-0012/inspection.md:12` example, and
+  instructs that a claim be "backed by something concrete... not
+  unmarked conjecture."
+- **TD-006** — distinguishes Inspection from Discovery, Specification,
+  Plan, Verification, and the Forge Experience Report in the "Inspection
+  is not Discovery, Specification, Plan, Verification, or the Forge
+  Experience Report" paragraph, and names the existing Flow escalation
+  mechanism (`fast.yml`'s `escalation.enabled`/`automatic_downgrade:
+  false`; `protocol/specification.md` §11) without inventing a new one.
+- **TD-007** — the `CHG-0005` citation now reads "a title followed by
+  two sentences of real context... not a title-only file", correcting
+  the prior "four-line file (title only)" description while preserving
+  it as the real minimal-Inspection precedent.
+
+## Forge Evidence
+
+- `forge validate`: **PASS** ("Forge project is valid").
+- `git diff --check`: **PASS**.
 
 ## Compatibility and Limitations
 
-Record confirmed compatibility impact and any real limitation. Do not pad this section when neither applies.
+Historical `inspection.md` files (six real examples: `CHG-0005`,
+`CHG-0012`, `CHG-0024`, `CHG-0026`, `CHG-0028`, `CHG-0029`) are not
+rewritten and remain valid — the redesign applies to newly generated
+scaffolds only. `intent.md`, `test-design.md`, `tdd-evidence.yml`,
+`verification.md`, and `review.md` templates in `_markdown()`/
+`_manifest()` were confirmed unchanged
+(`test_render_scaffold_inspection_unaffected_templates_are_unchanged`).
+`manifest.yml` schema, Protocol integer, Flow classification
+(`fast.yml`/`standard.yml`/`full.yml`), and Discovery/Specification/
+Plan/Verification/FER mechanics are unchanged; no new Markdown validator
+was introduced (C-067 preserved) — `merge_readiness/evaluator.py`
+continues to check only presence and status for the `inspection` key.
+
+Independent Strict Review remains pending.
 
 ## Conclusion
 
-State the outcome for the implemented scope. Do not imply Completion when Result is FAIL or SKIPPED, or when Review remains pending.
+Verification passes for the implemented scope; the Change is not marked
+complete until independent Strict Review is performed.
