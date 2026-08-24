@@ -10,39 +10,38 @@ status: active
 
 ## Verdict
 
-**REQUEST CHANGES**
+**PASS**
 
 ## Review Summary
 
 | | |
 |---|---|
-| **Iterations** | 1 |
-| **Current Subject** | `ca4d5013` |
+| **Iterations** | 2 |
+| **Current Subject** | `3b1a553a` |
 | **Open Blockers** | 0 |
-| **Open Majors** | 1 |
-| **Open Minors** | 2 |
-| **Final Iteration** | 1 |
-| **Result** | REQUEST CHANGES |
+| **Open Majors** | 0 |
+| **Open Minors** | 1 |
+| **Final Iteration** | 2 |
+| **Result** | PASS |
 
 ## Current Subject
 
 | | |
 |---|---|
-| **Subject SHA** | `ca4d50132e58c46c7fb85f8d13727bb7662d4a01` |
+| **Subject SHA** | `3b1a553aa12931d74b2399ae3307f13fbb9cb8c7` |
 | **Frozen** | Yes |
-| **Iteration** | 1 |
+| **Iteration** | 2 |
 
 ## Reviewer Independence
 
-Independent Execution and Execution Context (isolated Git worktree, fresh agent, no shared context with the Implementation session) — see `provenance.yml` record `reviewer-001`.
+Each Iteration was performed by an independent Execution and Execution Context (isolated Git worktree, fresh agent, no shared context with the Implementation session or with each other) — see `provenance.yml` records `reviewer-001` (Iteration 1) and `reviewer-002` (Iteration 2).
 
 ## Open Findings
 
 | Finding | Severity | Status | Iteration |
 | --- | --- | --- | --- |
-| R001 | MAJOR | Open | 1 |
-| R002 | MINOR | Open | 1 |
-| R003 | MINOR | Open | 1 |
+| R005 | OBSERVATION | Open | 2 |
+| R006 | MINOR | Open | 2 |
 
 ## Iteration 1 — REQUEST CHANGES
 
@@ -87,6 +86,36 @@ Reviewed subject `ca4d50132e58c46c7fb85f8d13727bb7662d4a01` (`implementation-sub
 
 `specification.md`'s AC-002 required the "generated guidance" to cite a real precedent for each `Durable Knowledge` mode, without specifying whether that meant the rendered scaffold template or the elaborated `protocol/artifact-structure.md` documentation; `test-design.md`'s TD-002 silently narrowed this to the scaffold only, which never literally cites `CHG-0016`/`CHG-0033`/`35`/`36`. Not blocking (the citations do exist within the Change's scope, in the documentation), but addressed alongside R001-R003 by splitting FR-002/AC-002 explicitly between the two surfaces.
 
+## Iteration 2 — PASS
+
+Reviewed refrozen subject `3b1a553aa12931d74b2399ae3307f13fbb9cb8c7` (`implementation-subject-002`; independent Execution, isolated worktree, no shared context with Implementation or with Iteration 1).
+
+R001 confirmed fully resolved — not merely by reading the diff, but by an injected temporary regression (one word changed deep inside `review.md`'s `## Current Subject` guidance sentence in `change_scaffolding.py`), confirming the strengthened protection test actually fails when it should, then confirming it passes again after reverting. R002, R003, and R004 confirmed fully resolved by direct source inspection. No Out-of-Scope Mutation: the fix commit `3b1a553` touches exactly the four files claimed (`discovery.md`, `specification.md`, `protocol/artifact-structure.md`, `tests/unit/test_change_scaffolding.py`) — no renderer behavior change.
+
+### R005 — OBSERVATION — `verification.md`/`test-design.md` were not updated for the AC-002 split
+
+**Problem:** When FR-002/AC-002 was split between scaffold-content and documentation-content claims (resolving R004), `verification.md`'s Acceptance Coverage still cites only `TDD-001` for AC-002, which does not distinguish the two clauses the split introduced.
+
+**Evidence:** `verification.md`'s Acceptance Coverage table, AC-002 row.
+
+**Required Resolution:** Not required to unblock this Change (OBSERVATION, non-blocking) — a future pass over `verification.md` could cite the documentation-inspection evidence for AC-002's second clause distinctly from `TDD-001`.
+
+### R006 — MINOR — Same overclaim pattern left uncorrected in `discovery.md`
+
+**Problem:** `discovery.md` (lines ~147-149, untouched by the R002 fix) still states real References sections "already point to these (`CHG-0013`, `CHG-0015`, `CHG-0016` all reference...)" — the same structural-uniformity overclaim R002 corrected in `protocol/artifact-structure.md`, left uncorrected in the non-normative Discovery artifact.
+
+**Evidence:** `discovery.md`, "Promotion to permanent documentation" subsection.
+
+**Required Resolution:** Not required to unblock this Change (MINOR, non-blocking, confined to a non-normative artifact) — left open per C-049's deterministic termination, matching this repository's own established precedent (`CHG-0041`'s Iteration 3) of not chasing a non-blocking finding into a further iteration cycle.
+
+### Checked and found sound (Iteration 2)
+
+- R001's fix independently proven via injected regression, not just diff-reading.
+- R002, R003, R004 fixes independently confirmed via direct source inspection.
+- Full suite (685 passed, 2 warnings) and `forge validate` reproduced against the refrozen subject.
+- Fix commit scope confirmed exactly the 4 claimed files, no renderer change.
+- Overall diff scope from `main` confirmed unchanged: `CHANGELOG.md`, `protocol/artifact-structure.md`, `src/forge_cli/change_scaffolding.py`, `tests/unit/test_change_scaffolding.py`, outside the Change's own directory.
+
 ## Conclusion
 
-R001 (MAJOR) blocks advance. R002/R003 (MINOR) are non-blocking but were addressed in the same Resolution. A Resolution has corrected all three plus the related R004 observation; independent re-review of the refrozen subject is required before this Change can advance.
+The subject reviewed satisfies the Acceptance Criteria applicable to this Review and has no open BLOCKER or MAJOR findings; one non-blocking OBSERVATION (R005) and one non-blocking MINOR (R006) remain open, consistent with C-049's deterministic termination. The Change is ready for the next gate defined by its Flow.
