@@ -46,7 +46,7 @@ records:
       context_id: claude-code-subagent-review-0044-001
     recorded_at: '2026-08-24T00:00:00Z'
     revision:
-      id: chg-0044-review-001
+      id: chg-0044-implementation-001
       immutable_ref:
         type: git_commit
         value: ce265bfe92b6e8fb05a526aae7099d8ec1016916
@@ -73,3 +73,37 @@ records:
       observed_by: self
       reference: implementation-subject
       statement: Resolution subject refrozen at 80d72e5 after addressing R001-R003, full suite reproduced, `forge validate` PASS, `git diff --check` PASS.
+  - id: reviewer-002
+    role: review
+    execution:
+      id: claude-agent-general-purpose-adf7b45dfafab5df0
+      context_id: claude-code-subagent-review-0044-002
+    recorded_at: '2026-08-24T00:00:00Z'
+    revision:
+      id: chg-0044-implementation-002
+      immutable_ref:
+        type: git_commit
+        value: 80d72e5d0a5997ced518dc21318d7ee4d71885f4
+      commit: 80d72e5d0a5997ced518dc21318d7ee4d71885f4
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: review.md#iteration-2
+      statement: Independent adversarial Strict Review Iteration 2 performed by a second, freshly spawned general-purpose Agent (agent id adf7b45dfafab5df0), no shared context with Implementation or with reviewer-001, against refrozen subject 80d72e5. R001/R002 confirmed independently resolved; R003 confirmed resolved in the six enumerated files but flagged one residual instance in CHANGELOG.md as new finding R004 (MINOR). Verdict REQUEST CHANGES (blocking on R004 pending fix confirmation).
+  - id: implementation-subject-003
+    role: resolution
+    execution:
+      id: claude-code-implementation-0044
+      context_id: claude-code-session-2026-08-24
+    recorded_at: '2026-08-24T00:00:00Z'
+    revision:
+      id: chg-0044-implementation-003
+      immutable_ref:
+        type: git_commit
+        value: 447bd9515d80df267df8c916584c40963f698195
+      commit: 447bd9515d80df267df8c916584c40963f698195
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: implementation-subject
+      statement: Final subject refrozen at 447bd95 after addressing R004 (self-fixed, not independently re-reviewed — MINOR, one-line CHANGELOG text correction, mechanically verifiable by direct diff), full suite reproduced (688 passed), `forge validate` PASS, `git diff --check` PASS.

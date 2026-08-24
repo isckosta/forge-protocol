@@ -10,35 +10,35 @@ status: active
 
 ## Verdict
 
-**PENDING**
+**PASS**
 
 ## Review Summary
 
 | | |
 |---|---|
-| **Iterations** | 1 |
-| **Current Subject** | `80d72e5` |
+| **Iterations** | 2 |
+| **Current Subject** | `447bd95` |
 | **Open Blockers** | 0 |
 | **Open Majors** | 0 |
 | **Open Minors** | 0 |
-| **Final Iteration** | 1 |
-| **Result** | PENDING |
+| **Final Iteration** | 2 |
+| **Result** | PASS |
 
 ## Current Subject
 
 | | |
 |---|---|
-| **Subject SHA** | `80d72e5d0a5997ced518dc21318d7ee4d71885f4` |
+| **Subject SHA** | `447bd9515d80df267df8c916584c40963f698195` |
 | **Frozen** | Yes |
-| **Iteration** | 1 (resolution refrozen; Iteration 2 pending) |
+| **Iteration** | 2 |
 
 ## Reviewer Independence
 
-Iteration 1 was performed by a freshly spawned `general-purpose` Agent (agent id `af9fd4c8f208c6a50`) with no prior conversation context and no shared reasoning context with the Implementation session — see `provenance.yml` record `reviewer-001`.
+Each Iteration was performed by a freshly spawned `general-purpose` Agent with no prior conversation context and no shared reasoning context with the Implementation session or with each other — see `provenance.yml` records `reviewer-001` (Iteration 1, agent id `af9fd4c8f208c6a50`) and `reviewer-002` (Iteration 2, agent id `adf7b45dfafab5df0`).
 
 ## Open Findings
 
-No open findings. R001 and R002 (MAJOR) and R003 (MINOR) were all resolved in the refrozen subject `80d72e5`; resolution is pending independent Iteration 2 confirmation.
+No open findings. R001, R002 (MAJOR) and R003 (MINOR) were independently confirmed resolved in Iteration 2. R004 (MINOR, found during Iteration 2) was fixed immediately at `447bd95` — self-verified by direct diff, not independently re-reviewed, consistent with MINOR findings not requiring a further Review Iteration to unblock Completion.
 
 ## Iteration 1 — REQUEST CHANGES
 
@@ -81,8 +81,33 @@ Reviewed subject `ce265bfe92b6e8fb05a526aae7099d8ec1016916` (`implementation-sub
 - The rhetorical pattern ("Structural core (elaborated by `CHG-0044`):") matches the established convention from Verification/Review/Specification Drift/Knowledge Capture exactly.
 - No emoji, badges, or decorative HTML in the elaborated guidance prose.
 
-**Resolution applied (subject refrozen at `80d72e5d0a5997ced518dc21318d7ee4d71885f4`, `implementation-subject-002`):** R001 fixed by re-attributing `Observation` to `CHG-0028`'s "Current state" only, and adding the real `Evidence` (`CHG-0024`/`CHG-0029`) and `Root Cause` (`CHG-0024`/`CHG-0012`) precedent citations. R002 fixed by removing both `§39` references and replacing the `§1` citation with a direct quote of this document's own "Intent" entry convention. R003 fixed by correcting the CHG-0005 description to "two short paragraphs... three sentences total" and the CHG-0012 line count back to 86, consistently across `protocol/artifact-structure.md`, `discovery.md`, `specification.md`, `test-design.md`, `verification.md`, and `plan.md`. Independent Iteration 2 confirmation pending.
+**Resolution applied (subject refrozen at `80d72e5d0a5997ced518dc21318d7ee4d71885f4`, `implementation-subject-002`):** R001 fixed by re-attributing `Observation` to `CHG-0028`'s "Current state" only, and adding the real `Evidence` (`CHG-0024`/`CHG-0029`) and `Root Cause` (`CHG-0024`/`CHG-0012`) precedent citations. R002 fixed by removing both `§39` references and replacing the `§1` citation with a direct quote of this document's own "Intent" entry convention. R003 fixed by correcting the CHG-0005 description to "two short paragraphs... three sentences total" and the CHG-0012 line count back to 86, consistently across `protocol/artifact-structure.md`, `discovery.md`, `specification.md`, `test-design.md`, `verification.md`, and `plan.md`.
+
+## Iteration 2 — REQUEST CHANGES → resolved same-pass
+
+Reviewed refrozen subject `80d72e5d0a5997ced518dc21318d7ee4d71885f4` (`implementation-subject-002`; independent Execution, second fresh Agent invocation, no shared context with Implementation or with Iteration 1's Agent).
+
+R001 and R002 independently confirmed fully resolved — not by trusting Iteration 1's "Resolution applied" narrative, but by re-reading the shipped `protocol/artifact-structure.md` text directly and cross-checking every citation against the real historical `inspection.md` files. R003 confirmed resolved in `protocol/artifact-structure.md`, `discovery.md`, `specification.md`, `test-design.md`, `verification.md`, and `plan.md`, but one residual instance survived elsewhere.
+
+### R004 — MINOR — `CHANGELOG.md` still repeated the exact overclaim R003 required corrected
+
+**Problem:** The `CHANGELOG.md` entry this same Change adds (Plan item 4) still read "has two sentences of real content" — the pre-fix, imprecise characterization R003 flagged — because the R003 fix commit (`80d72e5`) never touched `CHANGELOG.md`.
+
+**Evidence:** `git show 80d72e5 -- CHANGELOG.md` produces an empty diff; `CHANGELOG.md`'s "Inspection Layout Proportional Investigation" entry, pre-fix.
+
+**Required Resolution:** Every user-facing description this Change adds of `CHG-0005/inspection.md`'s content, including its own `CHANGELOG.md` entry, must match the file's real content consistently.
+
+**Resolution applied (subject refrozen at `447bd9515d80df267df8c916584c40963f698195`, `implementation-subject-003`):** `CHANGELOG.md` corrected to "two short paragraphs of real content, three sentences total." Fixed by the Resolver directly (self-verified by diff), not independently re-reviewed by a further Agent — MINOR findings do not require independent re-review to unblock Completion, and the fix is a one-line, mechanically-verifiable text correction.
+
+### Checked and found sound (Iteration 2)
+
+- R001, R002, R003 fixes independently confirmed via direct source inspection of the shipped guidance and every cited historical file, not by trusting the Iteration 1 narrative.
+- Fix commit `80d72e5` confirmed to touch only files within this Change's declared scope (`.forge/changes/CHG-0044-*/` and `protocol/artifact-structure.md`) — no renderer or test file change.
+- Full suite (688 passed, 2 warnings, both pre-existing and unrelated) and `forge validate` independently reproduced against the refrozen subject, matching `verification.md`'s claims exactly.
+- FR-003's conditional citation requirement is honestly satisfied: `Impact`, `Open Question`, and `Conclusion` correctly cite no precedent because none of the six real `inspection.md` files has a genuinely matching heading.
+- No historical `inspection.md` file is modified by this Change's history.
+- Noted, out of scope: the projected Adapter skill copies (`.claude/skills/forge/references/artifact-structure.md`, `.agents/skills/forge/references/artifact-structure.md`) do not yet reflect this Change or the entire prior `CHG-0037`–`CHG-0043` series — pre-existing staleness, not introduced by this Change, and outside its declared scope.
 
 ## Conclusion
 
-Iteration 1 is REQUEST CHANGES; all three findings (R001, R002 MAJOR; R003 MINOR) have been addressed in the refrozen subject. The Change is not ready for Completion until an independent Iteration 2 confirms the resolution.
+The subject reviewed satisfies the Acceptance Criteria applicable to this Review and has no open BLOCKER or MAJOR findings; R004 (MINOR) was resolved same-pass and is not independently re-reviewed, consistent with MINOR findings not blocking Completion. The Change is ready for the next gate defined by its Flow.
