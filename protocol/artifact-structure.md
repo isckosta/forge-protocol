@@ -492,11 +492,60 @@ new evidence closing that gap requires, without executing it here.
 
 ### Knowledge Capture
 
-**Structural core:** What Changed, Durable Knowledge, Consequences for
-Future Changes, References. Matches real, stable precedent; no material
-change is recommended. Content SHOULD be knowledge that outlives this
-Change — it SHOULD NOT restate Specification, Architecture, or
-Verification content that already lives in those Artifacts (§2.2).
+**Structural core (elaborated by `CHG-0043`):** `What Changed`,
+`Durable Knowledge`, `Consequences for Future Changes`, `References` —
+the same four headings, in the same order, that 25 real occurrences
+already use (`CHG-0001` onward; FULL Flow only, `required: true`,
+gating Completion via `required_knowledge_capture_complete`). Matches
+real, stable precedent; no section is added, removed, or reordered.
+Content SHOULD be knowledge that outlives this Change — it SHOULD NOT
+restate Specification, Architecture, Verification, Review, or
+Specification Drift content that already lives in those Artifacts
+(§2.2); reference them instead of duplicating them. `What Changed`
+stays short — context for the knowledge below, not a file-by-file
+account (that belongs to Plan, Tasks, or the diff).
+
+`Durable Knowledge` is the central section. The real precedent shows
+two legitimate shapes: short prose for a single dominant lesson
+(`CHG-0033`, `CHG-0035`, `CHG-0036`, most occurrences), or a flat list
+of independent lessons when several exist (`CHG-0016`, seven distinct
+lessons). `### K-xxx · <title>` items are available for the latter
+case, but ids are optional structure, not a required namespace — no
+`K-xxx` id has ever appeared in this repository's history before this
+elaboration, and no tooling consumes it; a Change with one lesson
+correctly uses plain prose. The test that decides whether something
+belongs here: will it still be true and useful once no one is working
+on this Change anymore, and could another Change decide better by
+knowing it? An honest "no additional knowledge beyond this Change was
+identified" is itself a valid, complete answer — proportionality
+(§2.5) applies here exactly as it does to `## Checked and found sound`
+sections and to Specification Drift's own real "No Drift to record"
+precedent; nothing here requires fabricated content merely because the
+Flow requires the file. `Consequences for Future Changes` gives each
+conclusion a scope (Forge Core, Harness Adapter, CLI, review workflow,
+…) rather than a system-wide claim the evidence does not support.
+
+**Distinct from adjacent Artifacts:** Decision (`DEC-xxx`) records
+which option was chosen; Architecture records the design; Specification
+records this Change's own obligation; Review records a problem found in
+the reviewed subject; Specification Drift records how a contract had to
+change. Knowledge Capture may preserve the durable, reusable lesson any
+of those reveals — it does not restate the source. It is also distinct
+from the **Forge Experience Report** (`docs/experience-reporting.md`):
+FER is opt-in, local, and records what happened during a real
+execution (expected/observed/evidence/impact/workaround), stored
+outside any Change's own directory; Knowledge Capture is always present
+when the Flow requires it and records distilled, durable knowledge
+scoped to this Change.
+
+`References` points at what already exists rather than duplicating it.
+When the work is materially architectural or Protocol-level, Contract
+F-008 already requires a `docs/adr/`/`docs/rfcs/` entry as part of the
+work itself (`CHG-0013`, `CHG-0015`, `CHG-0016`, `CHG-0036` all
+reference one this way) — `References` points at it; this document does
+not invent a separate "promotion" workflow for moving content into
+permanent documentation after the fact, since no such mechanism exists
+today.
 
 ### Inspection
 
