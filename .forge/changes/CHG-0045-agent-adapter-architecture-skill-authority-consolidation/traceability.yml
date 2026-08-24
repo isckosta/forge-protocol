@@ -1,0 +1,29 @@
+schema: forge/traceability@1
+change: CHG-0045
+requirements:
+  FR-001: {tasks: [T-001, T-002, T-003, T-004], tests: [test_projection_renders_reviewer_resolver_independence_exactly_once_across_flows, test_projection_points_every_applicable_flow_at_the_shared_independence_section], evidence: claude_code_projection_py_gate_instructions_rework}
+  FR-002: {tasks: [T-001, T-002], tests: [test_claude_code_and_codex_import_the_same_shared_independence_source, test_shared_independence_text_agrees_with_the_effective_c026_paragraph], evidence: review_independence_py_shared_module}
+  FR-003: {tasks: [T-005], tests: [test_projection_renders_the_plan_decision_sentence_exactly_once_across_flows], evidence: workflow_md_single_source_confirmed}
+  FR-004: {tasks: [T-006, T-007], tests: [test_workflow_template_instructs_checking_adapter_drift_before_trusting_references], evidence: workflow_md_bootstrap_section}
+  FR-005: {tasks: [T-007, T-011], tests: [], evidence: skill_md_bootstrap_heading_and_existing_section_structure}
+  FR-006: {tasks: [T-008, T-009, T-010], tests: [test_projection_bundle_hook_frontmatter_also_matches_edit_and_write, test_hook_script_denies_edit_and_write_mutation_of_review_control_paths, test_hook_script_denies_in_place_mutation_of_review_control_paths], evidence: hook_frontmatter_and_script_edit_write_matchers}
+  FR-007: {tasks: [T-006, T-007], tests: [test_workflow_template_instructs_boundary_reporting_format], evidence: workflow_md_boundary_reporting_paragraph}
+  NFR-001: {tasks: [T-001], tests: [test_shared_independence_text_agrees_with_the_effective_c026_paragraph], evidence: review_independence_py_docstring_and_test}
+  NFR-002: {tasks: [T-012], tests: [], evidence: full_pre_existing_codex_suite_unchanged}
+  NFR-003: {tasks: [T-011], tests: [test_generated_skill_does_not_grow_relative_to_the_pre_chg_0045_baseline], evidence: measured_180_to_175_lines}
+  CON-001: {tasks: [], evidence: no_new_protocol_integer}
+  CON-002: {tasks: [], evidence: no_contract_or_flow_text_paraphrased}
+  CON-003: {tasks: [T-002], evidence: review_independence_py_in_shared_adapters_package}
+  CON-004: {tasks: [], evidence: no_plugin_system_introduced}
+  US-006: {tasks: [T-014], tests: [test_resolve_project_root_resolves_the_secondary_worktrees_own_root, test_resolve_project_root_from_a_nested_path_inside_the_secondary_worktree], evidence: worktree_resolution_confirmed_correct}
+acceptance:
+  AC-001: [test_projection_renders_reviewer_resolver_independence_exactly_once_across_flows]
+  AC-002: []
+  AC-003: [test_projection_renders_the_plan_decision_sentence_exactly_once_across_flows]
+  AC-004: [test_projection_renders_reviewer_resolver_independence_exactly_once_across_flows, test_projection_points_every_applicable_flow_at_the_shared_independence_section]
+  AC-005: [test_claude_code_and_codex_import_the_same_shared_independence_source]
+  AC-006: [test_workflow_template_instructs_checking_adapter_drift_before_trusting_references]
+  AC-007: [test_workflow_template_instructs_checking_adapter_drift_before_trusting_references]
+  AC-008: [test_hook_script_denies_edit_and_write_mutation_of_review_control_paths]
+  AC-009: [test_hook_script_denies_edit_and_write_mutation_of_review_control_paths]
+  AC-010: [test_resolve_project_root_resolves_the_secondary_worktrees_own_root]

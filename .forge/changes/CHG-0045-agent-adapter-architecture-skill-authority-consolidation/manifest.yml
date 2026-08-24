@@ -9,7 +9,7 @@ flow:
   current: full
   escalations: []
 state:
-  current: plan
+  current: strict_review
 artifacts:
   intent: complete
   discovery: complete
@@ -18,20 +18,21 @@ artifacts:
   architecture: complete
   test_strategy: complete
   plan: approved
-  tasks: ready
-  tdd_evidence: active
-  verification: pending
+  tasks: complete
+  tdd_evidence: complete
+  verification: complete
   review: pending
   documentation: pending
   knowledge_capture: pending
 requirements:
   total: 7
-  implemented: 0
-  verified: 0
+  implemented: 7
+  verified: 7
 tdd:
-  status: pending
+  status: compliant
+  cycles: 6
 verification:
-  status: pending
+  status: passed
 review:
   status: pending
   iteration: 0
@@ -82,4 +83,12 @@ decisions:
     authority: human
     owning_artifact: plan
     discovered_in: plan
+    resolved_via: human_decision
+  - id: DEC-006
+    class: technical
+    materiality: material
+    status: resolved
+    authority: human
+    owning_artifact: tasks
+    discovered_in: tasks
     resolved_via: human_decision

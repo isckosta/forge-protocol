@@ -1,5 +1,46 @@
 schema: forge/tdd-evidence@1
 change: CHG-0045
-status: active
-cycle_count: 0
-cycles: []
+status: compliant
+cycle_count: 6
+cycles:
+  - id: TDD-001
+    title: Reviewer/Resolver-independence text has one shared source, rendered once per SKILL.md (FR-001/FR-002)
+    requirements: [FR-001, FR-002, NFR-001]
+    red: {observed: true, failure_reason: "ModuleNotFoundError: No module named 'forge_cli.adapters.review_independence' -- pytest tests/unit/test_adapter_review_independence.py, before the module existed. Separately, test_projection_renders_reviewer_resolver_independence_exactly_once_across_flows first failed 'assert 3 == 1' (three per-Flow copies), and after a first fix attempt failed again 'assert 4 == 1' (the pointer text's own quoted heading was itself matching the count) -- both genuine RED, both traced to their exact cause before the next edit."}
+    green: {observed: true, evidence: "tests/unit/test_adapter_review_independence.py (2 tests, including agreement with the real protocol/versions/2/contract/engineering.md C-026 paragraph via resolve_effective_contract), tests/unit/test_claude_code_projection_gates.py::test_projection_renders_reviewer_resolver_independence_exactly_once_across_flows, ..._points_every_applicable_flow_at_the_shared_independence_section, ..._renders_the_plan_decision_sentence_exactly_once_across_flows -- all pass."}
+    notes:
+      - "A real defect was caught by RED itself, not by inspection: my own first draft of the pointer text embedded the full '### Reviewer/Resolver independence' heading (with its markdown prefix) inside the pointer sentence, so each of the 3 pointers plus the 1 real section counted to 4, not 1. Fixed by introducing a separate label constant without the '###' prefix for the pointer, keeping the heading constant only for the actual rendered section."
+      - "TDD-004's fixture initially read the wrong Contract file (protocol/contract/engineering.md, the Protocol 1 baseline) and failed asserting 'claimed' was missing from C-026 -- this was RED for a real, useful reason: it caught that Protocol 2's actual effective C-026 text lives under protocol/versions/2/contract/engineering.md via resolve_effective_contract()'s _versioned_protocol_root override, not the top-level file. Fixed by calling the real resolve_effective_contract(protocol_id=2) instead of hardcoding a path."
+
+  - id: TDD-002
+    title: Bootstrap drift-check and boundary-reporting instructions are present in workflow.md (FR-004/FR-007)
+    requirements: [FR-004, FR-007]
+    red: {observed: true, failure_reason: "AssertionError: 'forge doctor' not in template (drift-check test) and AssertionError: 'Current Change' not in template (boundary-report test) -- tests/unit/test_claude_code_workflow_resource_authority.py, against the unmodified workflow.md, 2026-08-24."}
+    green: {observed: true, evidence: "Same two tests pass after the '### Bootstrap' section was added to workflow.md. A regression was caught immediately after: two pre-existing tests (test_branch_and_pr_guidance.py, test_first_change_baseline_guidance.py) asserted the Codex and Claude Code workflow.md files are byte-identical -- I had only edited the Claude Code copy. Fixed by applying the identical edit to codex/resources/skills/workflow.md; full suite green afterward."}
+
+  - id: TDD-003
+    title: PreToolUse guard matches Edit and Write, denying/allowing the same as the existing Bash case (FR-006)
+    requirements: [FR-006]
+    red: {observed: true, failure_reason: "test_projection_bundle_hook_frontmatter_also_matches_edit_and_write: AssertionError, matchers == {'Bash'} not {'Bash','Edit','Write'}. test_hook_script_denies_edit_and_write_mutation_of_review_control_paths: AssertionError, stdout == '' (no deny) for an Edit-shaped payload targeting manifest.yml -- both run against the unmodified _hook_frontmatter_lines()/_hook_script_content(), 2026-08-24."}
+    green: {observed: true, evidence: "Both tests pass after extending _hook_frontmatter_lines() (3 matchers, same command) and _hook_script_content() (tool_name branch, case-match on tool_input.file_path for the 3 protected paths). The pre-existing test_hook_script_denies_in_place_mutation_of_review_control_paths (Bash case, 6 denied + 8 allowed real shell-subprocess commands) continues passing unchanged, confirming no regression to the existing guard behavior."}
+
+  - id: TDD-004
+    title: Generated SKILL.md does not grow relative to the pre-CHG-0045 baseline (NFR-003)
+    requirements: [NFR-003]
+    red: {observed: false, failure_reason: "Compatibility/regression guard, not new-behavior assertion -- baseline was measured directly by loading main's pre-Change projection.py via importlib against the same 3-Flow Protocol-2 fixture."}
+    green: {observed: true, evidence: "Measured baseline (git show main:.../projection.py, same fixture): 180 lines. Post-Change: 157 lines for the synthetic minimal fixture; 175 lines for this repository's real installed 3-Flow configuration. test_generated_skill_does_not_grow_relative_to_the_pre_chg_0045_baseline asserts <= 180 using the measured fixture, both pass."}
+
+  - id: TDD-005
+    title: Codex Adapter suite regresses nothing beyond the intended shared-source change (NFR-002)
+    requirements: [NFR-002]
+    red: {observed: false, failure_reason: "Pure regression guard -- Codex behavior is not new behavior this Change introduces."}
+    green: {observed: true, evidence: "Full pre-existing Codex unit suite (test_codex_projection_gates.py, test_codex_projection_bundle.py, test_codex_skill_projection.py, etc.) passes unchanged. test_claude_code_and_codex_import_the_same_shared_independence_source (TDD-003 of Specification's numbering) additionally proves both adapters now resolve the identical object, not just equal strings."}
+
+  - id: TDD-006
+    title: Worktree root resolution is correct; committed installation.yml is visible in a fresh worktree (US-006/DEC-004)
+    requirements: [US-006]
+    red: {observed: false, failure_reason: "Verification requirement, not a presumed defect (Specification Out of Scope explicitly anticipated this): both tests passed on first run against unmodified src/forge_cli/git/__init__.py, confirming Architecture's Q10/Q11 analysis was correct rather than aspirational."}
+    green: {observed: true, evidence: "tests/unit/test_worktree_resolution.py (2 tests, real `git worktree add` fixtures) and tests/unit/test_worktree_installation_record_visibility.py (1 test) all pass. Real repository-wide confirmation: `.forge/adapters/*/installation.yml` committed at 68dd5fa; any future `git worktree add` from a commit at or after that SHA inherits the record via Git itself, with no Forge-specific code required."}
+notes:
+  - "Repository-wide baseline: pre-Implementation `pytest -q` was 692 passed (post Plan-approval commits, pre-code-edits); post-Implementation full suite is 701 passed, 0 failed, 2 pre-existing unrelated warnings (FER capture tests) unchanged. `forge validate` and `forge doctor` both clean after the real Adapter republish -- see verification.md."
+  - "T-016's Adapter republish required an explicit, in-session human authorization to bypass AdapterService's own ownership/drift guard after both false-positive causes were independently verified (stale, never-committed installation.yml; pre-existing canonical protocol/ drift). This is disclosed in full in tasks.md T-016 and verification.md -- not represented as an ordinary `forge adapter update` run, because it was not one."
