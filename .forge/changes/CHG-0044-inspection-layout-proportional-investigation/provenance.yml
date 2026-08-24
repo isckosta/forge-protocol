@@ -22,3 +22,20 @@ records:
         path: plan.md
         value: 6ffca3b1ff1bccbb790384eb1ecc3d6898e6e4c3a815c808f2854d87b1471b32
       statement: The user explicitly approved the CHG-0044 Plan to proceed to Implementation in the active session on 2026-08-24, via an explicit approval choice ("Aprovar como está") over the Specification's 8 Functional Requirements and all 8 Plan work items.
+  - id: implementation-subject-001
+    role: implementation
+    execution:
+      id: claude-code-implementation-0044
+      context_id: claude-code-session-2026-08-24
+    recorded_at: '2026-08-24T00:00:00Z'
+    revision:
+      id: chg-0044-implementation-001
+      immutable_ref:
+        type: git_commit
+        value: ce265bfe92b6e8fb05a526aae7099d8ec1016916
+      commit: ce265bfe92b6e8fb05a526aae7099d8ec1016916
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: implementation-subject
+      statement: Implementation subject frozen at ce265bf after TDD-001 GREEN, full suite (688 passed), `forge validate` PASS, and `git diff --check` PASS. Reviewable workspace clean at freeze time (git status confirmed no staged/unstaged/untracked reviewable delta).
