@@ -1,0 +1,24 @@
+schema: forge/execution-provenance@2
+change: CHG-0041
+records:
+  - id: plan-approval-001
+    role: implementation
+    execution:
+      id: claude-code-implementation-0041
+      context_id: claude-code-session-2026-08-24
+    recorded_at: '2026-08-24T00:00:00Z'
+    revision:
+      id: chg-0041-plan-approval-001
+      immutable_ref:
+        type: git_commit
+        value: d5c103af59b705ef3feb28928fa4c0dbc0ed3df7
+      commit: d5c103af59b705ef3feb28928fa4c0dbc0ed3df7
+    source:
+      assurance: recorded
+      observed_by: operator
+      reference: plan.md#approval-record
+      content_digest:
+        algorithm: sha256
+        path: plan.md
+        value: def6043b52f30b0c7580c9fc1d15446a2e88561dd3a54b8c653483e17b88b953
+      statement: The user explicitly approved the CHG-0041 Plan to proceed to Implementation in the active session on 2026-08-24, via an explicit approval choice ("Aprovar como está") over the Specification's 9 Functional Requirements and all 8 Plan work items, including FR-007's decision to preserve the real "## Iteration N — <verdict>" convention unchanged instead of introducing the prompt's illustrative "## Iteration History" wrapper.

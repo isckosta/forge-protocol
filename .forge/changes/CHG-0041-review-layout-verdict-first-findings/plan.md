@@ -1,0 +1,32 @@
+---
+forge:
+  artifact: plan
+  schema: 1
+change: CHG-0041
+status: approved
+---
+
+# Plan — CHG-0041 Review Layout Verdict First Findings
+
+1. Em `src/forge_cli/change_scaffolding.py`, reescrever a entrada `"review"` do dicionário `sections` dentro de `_markdown()` para o novo layout: `## Verdict` (`**PENDING**`, placeholder distinto dos dois estados reais); `## Review Summary` (guidance instruindo que os valores — Iterations/Current Subject/Open Blockers/Open Majors/Open Minors/Final Iteration/Result — vêm de `manifest.yml: review`, não de contagem manual); `## Current Subject` (tabela `Subject SHA`/`Frozen`/`Iteration` com guidance para referenciar `provenance.yml` por id); `## Reviewer Independence` (guidance para referenciar o registro `role: review` de `provenance.yml` por id como evidência de Execution/Execution Context distintos); `## Open Findings` (tabela `Finding | Severity | Status | Iteration` com guidance de usar `No open findings.` em vez de tabela vazia, e de usar o id `Rxxx` — sem prefixo de Change — com as quatro severidades reconhecidas); em seguida, **inalterada**, a convenção real `## Iteration 1 — PENDING\n\nRecord Strict Review findings.\n`, com guidance adicional (na mesma seção) sobre cada finding precisar de id `Rxxx`, severidade, evidência (obrigatória para BLOCKER/MAJOR), e Required Resolution declarando a propriedade a corrigir, não a implementação; por fim `## Conclusion` (guidance para registrar o efeito do Verdict sem declarar Completion prematuramente). Adicionar caso especial em `_frontmatter()` para `artifact == "review"` produzindo `# {change_id} · Review`. Não alterar as entradas `"specification_review"`, `"plan"`, `"test_strategy"`, `"tasks"`.
+2. Em `tests/unit/test_change_scaffolding.py`, adicionar testes focados espelhando o padrão de `CHG-0038`/`39`/`40` (TD-001 a TD-009): heading/frontmatter novo (`# CHG-XXXX · Review`) e ordem das headings estruturais antes da primeira `## Iteration`; placeholder `**PENDING**` distinto de `PASS`/`REQUEST CHANGES`; guidance de `Review Summary` referenciando `manifest.yml`; tabela e guidance de `Current Subject` referenciando `provenance.yml`; guidance de `Open Findings` cobrindo tabela e o fallback `No open findings.`; guidance de finding usando `Rxxx` (não `CHG-XXXX-Rxxx`), as quatro severidades, e a orientação contra prescrever implementação; presença verbatim de `## Iteration 1 — PENDING\n\nRecord Strict Review findings.\n\n` na posição correta (entre `Open Findings` e `Conclusion`) e ausência de `## Iteration History`; guidance de `Reviewer Independence` referenciando `provenance.yml`; e atualizar `test_render_scaffold_review_plan_test_strategy_tasks_templates_are_unchanged` (de `CHG-0040`) removendo a asserção sobre `review.md` (que deixa de ser "unchanged" — passa a ter seu próprio teste de conteúdo) e mantendo as asserções de `specification-review.md`/`plan.md`/`test-strategy.md`/`tasks.md` intactas.
+3. Em `protocol/artifact-structure.md` §4, reescrever a entrada "Review" (mantendo `**Structural core (elaborated by `CHG-0041`):**` como abertura, no mesmo padrão retórico de Verification/Test Design/Tasks) para descrever: Verdict como primeira seção substantiva com os dois estados reconhecidos; Review Summary derivado; Current Subject referenciando provenance; Reviewer Independence referenciando provenance; Open Findings condicional; a convenção real `## Iteration N — <verdict>` preservada explicitamente inalterada (registrando a decisão de não introduzir um wrapper `## Iteration History`, e por quê — nenhuma Review real usa essa forma); estrutura de finding (`Rxxx`, severidade, evidência para BLOCKER/MAJOR, Required Resolution como propriedade); Conclusion. Deixar explícito que: (a) isto elabora, não substitui, C-068 e a guidance existente desde `CHG-0016`; (b) não é nova obrigação de Gate (C-067); (c) `review.md` históricos permanecem válidos sem exigência retroativa de seções novas; (d) `specification-review.md`/`SR-xxx` permanecem um artefato e namespace distintos, fora de escopo.
+4. Em `CHANGELOG.md`, adicionar entrada sob `## Unreleased` seguindo o formato das quatro entradas anteriores desta mesma família, com a afirmação explícita de que `review.md` históricos, `specification-review.md`, Schemas, Protocol integer, reviewer/resolver independence semantics, e `forge validate` semantics permanecem inalterados.
+5. Capturar RED em `tdd-evidence.yml` desta própria Change (`TDD-001`, agrupando TD-001–TD-009 como fez `CHG-0040`) rodando `pytest tests/unit/test_change_scaffolding.py -k review -q` contra o renderer ainda não alterado, confirmando falha pela razão esperada (ausência das novas headings/guidance), antes de aplicar o item 1.
+6. Após GREEN, executar `pytest tests/unit/test_change_scaffolding.py -q`, a suíte completa (`pytest -q`), `forge validate`, e `git diff --check`; inspecionar o diff final confirmando que nenhum arquivo sob `protocol/schemas/`, nenhum Protocol integer, e nenhum `review.md`/`specification-review.md`/`plan.md`/`test-strategy.md`/`tasks.md` histórico foi alterado.
+7. Preencher `verification.md` desta própria Change (dogfooding, mesmo padrão de `CHG-0038`–`40`) usando o layout já redesenhado por `CHG-0040`, com `Result`, `Acceptance Coverage` referenciando AC-001–AC-009, `Test Evidence` referenciando o `TDD-xxx` capturado no item 5, `Forge Evidence`, `Compatibility and Limitations`, e `Conclusion` — sujeito a Strict Review independente antes de Completion.
+8. Abrir a PR diretamente contra `main` (não empilhar sobre outra branch de Change, conforme feedback já registrado nesta sessão), aguardar checks, endereçar qualquer finding de review automatizado (Codex) antes de mergear, e obter uma iteração de Strict Review independente (agente fresco, isolado, sem contexto compartilhado) antes de fechar a Change.
+
+## Implementation Boundary
+
+Reaching `plan_complete` is not authorization to begin Implementation.
+
+## Human Plan Authorization
+
+Este Plan é explicitamente autorizado pelo mantenedor humano para avançar à Implementation sob C-077.
+
+<!-- forge:plan-approval-confirmation -->
+
+O usuário aprovou a continuação na sessão ativa em 2026-08-24, escolhendo explicitamente "Aprovar como está" sobre a Specification's 9 Functional Requirements e os 8 itens deste Plan — incluindo a decisão de FR-007 de preservar a convenção real `## Iteration N — <verdict>` inalterada em vez de introduzir o wrapper `## Iteration History` sugerido ilustrativamente pelo prompt original.
+
+<!-- forge:plan-approval-record -->
