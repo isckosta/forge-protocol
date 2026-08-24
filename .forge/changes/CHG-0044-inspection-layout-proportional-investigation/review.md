@@ -10,19 +10,19 @@ status: active
 
 ## Verdict
 
-**PASS**
+**PENDING**
 
 ## Review Summary
 
 | | |
 |---|---|
-| **Iterations** | 2 |
+| **Iterations** | 3 |
 | **Current Subject** | `447bd95` |
 | **Open Blockers** | 0 |
-| **Open Majors** | 0 |
+| **Open Majors** | 1 |
 | **Open Minors** | 0 |
-| **Final Iteration** | 2 |
-| **Result** | PASS |
+| **Final Iteration** | 3 |
+| **Result** | PENDING |
 
 ## Current Subject
 
@@ -30,15 +30,17 @@ status: active
 |---|---|
 | **Subject SHA** | `447bd9515d80df267df8c916584c40963f698195` |
 | **Frozen** | Yes |
-| **Iteration** | 2 |
+| **Iteration** | 3 |
 
 ## Reviewer Independence
 
-Each Iteration was performed by a freshly spawned `general-purpose` Agent with no prior conversation context and no shared reasoning context with the Implementation session or with each other — see `provenance.yml` records `reviewer-001` (Iteration 1, agent id `af9fd4c8f208c6a50`) and `reviewer-002` (Iteration 2, agent id `adf7b45dfafab5df0`).
+Each Iteration was performed by a freshly spawned `general-purpose` Agent with no prior conversation context and no shared reasoning context with the Implementation session or with each other — see `provenance.yml` records `reviewer-001` (Iteration 1, agent id `af9fd4c8f208c6a50`), `reviewer-002` (Iteration 2, agent id `adf7b45dfafab5df0`), and `reviewer-003` (Iteration 3, agent id `abb99b02fcf2fb365`).
 
 ## Open Findings
 
-No open findings. R001, R002 (MAJOR) and R003 (MINOR) were independently confirmed resolved in Iteration 2. R004 (MINOR, found during Iteration 2) was fixed immediately at `447bd95` — self-verified by direct diff, not independently re-reviewed, consistent with MINOR findings not requiring a further Review Iteration to unblock Completion.
+| Finding | Severity | Status | Iteration |
+|---|---|---|---|
+| R005 | MAJOR | Open | 3 |
 
 ## Iteration 1 — REQUEST CHANGES
 
@@ -97,7 +99,7 @@ R001 and R002 independently confirmed fully resolved — not by trusting Iterati
 
 **Required Resolution:** Every user-facing description this Change adds of `CHG-0005/inspection.md`'s content, including its own `CHANGELOG.md` entry, must match the file's real content consistently.
 
-**Resolution applied (subject refrozen at `447bd9515d80df267df8c916584c40963f698195`, `implementation-subject-003`):** `CHANGELOG.md` corrected to "two short paragraphs of real content, three sentences total." Fixed by the Resolver directly (self-verified by diff), not independently re-reviewed by a further Agent — MINOR findings do not require independent re-review to unblock Completion, and the fix is a one-line, mechanically-verifiable text correction.
+**Resolution applied (subject refrozen at `447bd9515d80df267df8c916584c40963f698195`, `implementation-subject-003`):** `CHANGELOG.md` corrected to "two short paragraphs of real content, three sentences total." R004's fix was subsequently confirmed by independent Iteration 3 (below), not merely self-verified.
 
 ### Checked and found sound (Iteration 2)
 
@@ -108,6 +110,29 @@ R001 and R002 independently confirmed fully resolved — not by trusting Iterati
 - No historical `inspection.md` file is modified by this Change's history.
 - Noted, out of scope: the projected Adapter skill copies (`.claude/skills/forge/references/artifact-structure.md`, `.agents/skills/forge/references/artifact-structure.md`) do not yet reflect this Change or the entire prior `CHG-0037`–`CHG-0043` series — pre-existing staleness, not introduced by this Change, and outside its declared scope.
 
+## Iteration 3 — REQUEST CHANGES
+
+Reviewed final subject `447bd9515d80df267df8c916584c40963f698195` (`implementation-subject-003`; independent Execution, third fresh Agent invocation, no shared context with Implementation or with Iterations 1-2's Agents). Triggered in part by an automated Codex review comment on the GitHub PR flagging the same underlying defect this Iteration confirms below.
+
+R001-R004 independently re-confirmed fully resolved — not by trusting the prior Iterations' write-ups, but by re-reading `protocol/artifact-structure.md`'s shipped "Inspection" section directly and cross-checking every citation against the real historical `inspection.md` files a third time, and by independently reproducing the full test suite (688 passed) and `forge validate` against the actual final subject `447bd95` for the first time (Iterations 1 and 2 reviewed `ce265bf` and `80d72e5` respectively, never `447bd95` itself).
+
+### R005 — MAJOR — Review bookkeeping recorded a "passed" iteration whose own provenance says REQUEST CHANGES, and no iteration was ever bound to the actual final subject
+
+**Problem:** `manifest.yml`'s `review-002` iteration was recorded with `status: passed`, but `provenance.yml`'s own `reviewer-002` record states the Iteration 2 verdict was "REQUEST CHANGES (blocking on R004 pending fix confirmation)" — a direct self-contradiction. `state.current: complete` and `review.status: passed` were then recorded (commit `c542e68`) without any Review Iteration ever being bound to `implementation-subject-003` (`447bd95`), the subject where R004 was actually fixed. A GitHub-hosted Codex review bot correctly identified this as a P1 finding on the open PR.
+
+**Evidence:** `manifest.yml` at commit `c542e68`/`15a9502`: `review-002` iteration `status: passed`; `provenance.yml`'s `reviewer-002.source.statement`: "Verdict REQUEST CHANGES (blocking on R004 pending fix confirmation)."
+
+**Required Resolution:** A review iteration's recorded `status` must match its own provenance-recorded verdict; `state.current: complete` and `review.status: passed` must not be recorded until a Review Iteration bound to the actual final subject has genuinely returned PASS.
+
+### Checked and found sound (Iteration 3)
+
+- R001-R004 all re-confirmed resolved by independent re-verification of every citation, cross-reference, and test claim against the real final subject `447bd95` — no content defect found; the entirety of R005 is a review-bookkeeping defect, not a defect in `protocol/artifact-structure.md`, `change_scaffolding.py`, or the tests.
+- Full suite (688 passed, 2 warnings, pre-existing and unrelated) and `forge validate` independently reproduced against `447bd95` for the first time.
+- `git diff --stat` from `main` to `447bd95` confirmed scoped to exactly this Change's declared files.
+- No historical `inspection.md` modified anywhere in this Change's commit history.
+
+**Resolution applied:** `manifest.yml` corrected — `review-002`'s `status` changed to `failed` (matching its real verdict), a `review-003` iteration added bound to `implementation-subject-003` (`447bd95`) with `status: failed` recording this Iteration's own R005 finding, `state.current` reverted from `complete` to `review`, and `review.status` reverted from `passed` to `pending` until a Review Iteration genuinely bound to the final subject returns PASS. See Iteration 4 below.
+
 ## Conclusion
 
-The subject reviewed satisfies the Acceptance Criteria applicable to this Review and has no open BLOCKER or MAJOR findings; R004 (MINOR) was resolved same-pass and is not independently re-reviewed, consistent with MINOR findings not blocking Completion. The Change is ready for the next gate defined by its Flow.
+The subject reviewed satisfies the Acceptance Criteria applicable to this Review and has no open BLOCKER findings; R005 (MAJOR) is addressed by Iteration 4 below. The Change is not ready for Completion until Iteration 4's independent PASS is recorded.

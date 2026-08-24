@@ -133,3 +133,34 @@ records:
       observed_by: self
       reference: implementation-subject
       statement: Final subject refrozen at 447bd95 after addressing R004 (self-fixed, not independently re-reviewed — MINOR, one-line CHANGELOG text correction, mechanically verifiable by direct diff), full suite reproduced (688 passed), `forge validate` PASS, `git diff --check` PASS.
+  - id: reviewer-003
+    role: review
+    execution:
+      id: claude-agent-general-purpose-abb99b02fcf2fb365
+      context_id: claude-code-subagent-review-0044-003
+    recorded_at: '2026-08-24T00:00:00Z'
+    revision:
+      id: chg-0044-implementation-003
+      immutable_ref:
+        type: git_commit
+        value: 447bd9515d80df267df8c916584c40963f698195
+      commit: 447bd9515d80df267df8c916584c40963f698195
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: review.md#iteration-3
+      statement: >-
+        Independent adversarial Strict Review Iteration 3 performed by a
+        third, freshly spawned general-purpose Agent (agent id
+        abb99b02fcf2fb365), no shared context with Implementation or with
+        reviewer-001/reviewer-002, against final subject 447bd95. R001-R004
+        independently re-confirmed resolved by direct re-verification of
+        every citation and the full test suite. Verdict REQUEST CHANGES:
+        new finding R005 (MAJOR) -- a triggering GitHub Codex bot comment
+        on the PR correctly identified that review-002's manifest status
+        was recorded as "passed" while its own provenance statement said
+        REQUEST CHANGES, and that no review iteration had ever been bound
+        to this actual final subject before state.current was set to
+        complete. This is a review-bookkeeping defect, not a content
+        defect in protocol/artifact-structure.md, change_scaffolding.py,
+        or the tests, all of which Iteration 3 re-confirmed sound.
