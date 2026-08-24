@@ -974,3 +974,130 @@ def test_render_scaffold_knowledge_capture_unaffected_templates_are_unchanged() 
         "## Status\n\n"
         "No task has started.\n"
     )
+
+
+def test_render_scaffold_inspection_emits_no_mandatory_section_heading() -> None:
+    plan = render_scaffold(
+        change_id="CHG-0044",
+        slug="inspection-no-mandatory-heading",
+        flow_id="fast",
+        flow_data=_canonical_flow("fast"),
+        behavioral=True,
+    )
+
+    inspection = plan.files["inspection.md"]
+
+    assert [line for line in inspection.splitlines() if line.startswith("## ")] == []
+
+
+def test_render_scaffold_inspection_uses_identity_heading_convention() -> None:
+    plan = render_scaffold(
+        change_id="CHG-0044",
+        slug="inspection-identity-heading",
+        flow_id="fast",
+        flow_data=_canonical_flow("fast"),
+        behavioral=True,
+    )
+
+    inspection = plan.files["inspection.md"]
+
+    assert inspection.startswith(
+        "---\nforge:\n  artifact: inspection\n  schema: 1\n"
+        "change: CHG-0044\nstatus: pending\n---\n\n"
+        "# CHG-0044 · Inspection\n\n"
+    )
+
+
+def test_render_scaffold_inspection_unaffected_templates_are_unchanged() -> None:
+    plan = render_scaffold(
+        change_id="CHG-0044",
+        slug="inspection-unaffected-templates",
+        flow_id="fast",
+        flow_data=_canonical_flow("fast"),
+        behavioral=True,
+    )
+
+    # Full-equality (not a tail/substring check — see the comment on the
+    # CHG-0043 equivalent test above) for every template this Change does
+    # not touch, rendered from the same FAST-flow scaffold as inspection.md.
+    assert plan.files["verification.md"].endswith(
+        "## Result\n\n"
+        "**PENDING**\n\n"
+        "## Summary\n\n"
+        "State how many Acceptance Criteria were verified, how many passed, how many failed, and whether Manual Evidence or Limitations apply. When Result is SKIPPED or NOT APPLICABLE, state the rationale here, proportional to the Change — a skipped or inapplicable Verification is itself a claim that needs a reason.\n\n"
+        "## Acceptance Coverage\n\n"
+        "Reference each AC-xxx by id; do not reproduce its full text here.\n\n"
+        "| Acceptance | Requirement | Result | Evidence |\n"
+        "|---|---|---|---|\n"
+        "| AC-001 | FR-001 | PENDING | <evidence> |\n\n"
+        "## Requirement Coverage\n\n"
+        "Omit this section when Acceptance Coverage already expresses per-Requirement coverage; include it only when it adds information Acceptance Coverage does not.\n\n"
+        "## Test Evidence\n\n"
+        "Record commands, exit status, and a short summary — not full logs. When `tdd-evidence.yml` already records RED and GREEN for a TDD-xxx cycle, reference it by id instead of renarrating the sequence.\n\n"
+        "## Forge Evidence\n\n"
+        "Record only what the command actually guarantees.\n\n"
+        "## Manual Evidence\n\n"
+        "Include this section only when a real manual verification occurred; keep it distinct from Test Evidence and Forge Evidence.\n\n"
+        "## Compatibility and Limitations\n\n"
+        "Record confirmed compatibility impact and any real limitation. Do not pad this section when neither applies.\n\n"
+        "## Conclusion\n\n"
+        "State the outcome for the implemented scope. Do not imply Completion when Result is FAIL or SKIPPED, or when Review remains pending.\n"
+    )
+    assert plan.files["review.md"].endswith(
+        "## Verdict\n\n"
+        "**PENDING**\n\n"
+        "## Review Summary\n\n"
+        "Use the values already recorded in manifest.yml: review (iteration, blockers, majors, minors) — do not hand-count separately.\n\n"
+        "| | |\n"
+        "|---|---|\n"
+        "| **Iterations** | <n> |\n"
+        "| **Current Subject** | <sha> |\n"
+        "| **Open Blockers** | <n> |\n"
+        "| **Open Majors** | <n> |\n"
+        "| **Open Minors** | <n> |\n"
+        "| **Final Iteration** | <n> |\n"
+        "| **Result** | PENDING |\n\n"
+        "## Current Subject\n\n"
+        "Reference the frozen subject recorded in provenance.yml by id; do not invent a new freeze concept.\n\n"
+        "| | |\n"
+        "|---|---|\n"
+        "| **Subject SHA** | <sha> |\n"
+        "| **Frozen** | <Yes/No> |\n"
+        "| **Iteration** | <n> |\n\n"
+        "## Reviewer Independence\n\n"
+        "Reference the reviewer's provenance.yml record by id as evidence of a distinct Execution and Execution Context from the Implementation or Resolution under review — not a bare declaration.\n\n"
+        "## Open Findings\n\n"
+        "List only findings still open, using the Rxxx id (no Change-id prefix). Use `No open findings.` instead of an empty table when there are none.\n\n"
+        "| Finding | Severity | Status | Iteration |\n"
+        "|---|---|---|---|\n\n"
+        "## Iteration 1 — PENDING\n\n"
+        "Record Strict Review findings. Each finding needs a stable Rxxx id, one of BLOCKER, MAJOR, MINOR, or OBSERVATION, evidence (required for BLOCKER and MAJOR), and a Required Resolution stated as the property that must hold — not a prescribed implementation.\n\n"
+        "## Conclusion\n\n"
+        "State the effect of the Verdict. Do not declare Completion while gates later in the Flow remain outstanding.\n"
+    )
+    assert plan.files["intent.md"].startswith(
+        "---\nforge:\n  artifact: intent\n  schema: 1\n"
+        "change: CHG-0044\nstatus: active\n---\n\n"
+        "# CHG-0044 · Inspection Unaffected Templates\n\n"
+    )
+    assert "| **Flow** | FAST |" in plan.files["intent.md"]
+    assert plan.files["test-design.md"].startswith(
+        "---\nforge:\n  artifact: test_design\n  schema: 1\n"
+        "change: CHG-0044\nstatus: pending\n---\n\n"
+        "# CHG-0044 · Test Design\n\n"
+        "> Verification Design\n"
+        "\n"
+        "## Overview\n\n"
+        "| | |\n"
+        "|---|---|\n"
+        "| **Change** | CHG-0044 |\n"
+        "| **Flow** | FAST |\n"
+    )
+    tdd_evidence = yaml.safe_load(plan.files["tdd-evidence.yml"])
+    assert tdd_evidence == {
+        "schema": "forge/tdd-evidence@1",
+        "change": "CHG-0044",
+        "status": "active",
+        "cycle_count": 0,
+        "cycles": [],
+    }

@@ -1,0 +1,212 @@
+schema: forge/execution-provenance@2
+change: CHG-0044
+records:
+  - id: plan-approval-001
+    role: implementation
+    execution:
+      id: claude-code-implementation-0044
+      context_id: claude-code-session-2026-08-24
+    recorded_at: '2026-08-24T00:00:00Z'
+    revision:
+      id: chg-0044-plan-approval-001
+      immutable_ref:
+        type: git_commit
+        value: 6d5e0e777f0e818152aa41987b6d7ab3d9ea7c02
+      commit: 6d5e0e777f0e818152aa41987b6d7ab3d9ea7c02
+    source:
+      assurance: recorded
+      observed_by: operator
+      reference: plan.md#approval-record
+      content_digest:
+        algorithm: sha256
+        path: plan.md
+        value: 2a0ec865828ebfca0b301e56b02192c18490f24607fb0a1bbd12769daeb895bf
+      statement: >-
+        The user explicitly approved the CHG-0044 Plan to proceed to
+        Implementation in the active session on 2026-08-24, via an explicit
+        approval choice ("Aprovar como está") over the Specification's 8
+        Functional Requirements and all 8 Plan work items. The recorded
+        digest reflects plan.md as committed from implementation-subject-001
+        (ce265bf) onward -- item 3(e)'s wording of the CHG-0005 citation was
+        corrected for factual accuracy during the R003 resolution (commit
+        80d72e5), a non-material editorial fix to a citation's prose, not a
+        change to the approved scope or work items themselves.
+  - id: implementation-subject-001
+    role: implementation
+    execution:
+      id: claude-code-implementation-0044
+      context_id: claude-code-session-2026-08-24
+    recorded_at: '2026-08-24T00:00:00Z'
+    revision:
+      id: chg-0044-implementation-001
+      immutable_ref:
+        type: git_commit
+        value: ce265bfe92b6e8fb05a526aae7099d8ec1016916
+      commit: ce265bfe92b6e8fb05a526aae7099d8ec1016916
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: implementation-subject
+      statement: Implementation subject frozen at ce265bf after TDD-001 GREEN, full suite (688 passed), `forge validate` PASS, and `git diff --check` PASS. Reviewable workspace clean at freeze time (git status confirmed no staged/unstaged/untracked reviewable delta).
+  - id: reviewer-001
+    role: review
+    execution:
+      id: claude-agent-general-purpose-af9fd4c8f208c6a50
+      context_id: claude-code-subagent-review-0044-001
+    recorded_at: '2026-08-24T00:00:00Z'
+    revision:
+      id: chg-0044-implementation-001
+      immutable_ref:
+        type: git_commit
+        value: ce265bfe92b6e8fb05a526aae7099d8ec1016916
+      commit: ce265bfe92b6e8fb05a526aae7099d8ec1016916
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: review.md#iteration-1
+      statement: Independent adversarial Strict Review performed by a freshly spawned general-purpose Agent (agent id af9fd4c8f208c6a50) with no prior conversation context, against frozen subject ce265bf. Verdict REQUEST CHANGES; findings R001 (MAJOR), R002 (MAJOR), R003 (MINOR) recorded in review.md Iteration 1.
+  - id: implementation-subject-002
+    role: resolution
+    execution:
+      id: claude-code-implementation-0044
+      context_id: claude-code-session-2026-08-24
+    recorded_at: '2026-08-24T00:00:00Z'
+    revision:
+      id: chg-0044-implementation-002
+      immutable_ref:
+        type: git_commit
+        value: 80d72e5d0a5997ced518dc21318d7ee4d71885f4
+      commit: 80d72e5d0a5997ced518dc21318d7ee4d71885f4
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: implementation-subject
+      statement: Resolution subject refrozen at 80d72e5 after addressing R001-R003, full suite reproduced, `forge validate` PASS, `git diff --check` PASS.
+  - id: verification-001
+    role: implementation
+    execution:
+      id: claude-code-implementation-0044-verification-001
+      context_id: claude-code-session-2026-08-24
+    recorded_at: '2026-08-24T00:00:00Z'
+    revision:
+      id: chg-0044-implementation-002
+      immutable_ref:
+        type: git_commit
+        value: 80d72e5d0a5997ced518dc21318d7ee4d71885f4
+      commit: 80d72e5d0a5997ced518dc21318d7ee4d71885f4
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: verification.md
+      statement: verification.md's PASS result (TDD-001 evidence, forge validate, full pytest suite -- 688 passed) is bound to this exact frozen subject (80d72e5), the subject referenced by the final passed Review Iteration (review-002).
+  - id: reviewer-002
+    role: review
+    execution:
+      id: claude-agent-general-purpose-adf7b45dfafab5df0
+      context_id: claude-code-subagent-review-0044-002
+    recorded_at: '2026-08-24T00:00:00Z'
+    revision:
+      id: chg-0044-implementation-002
+      immutable_ref:
+        type: git_commit
+        value: 80d72e5d0a5997ced518dc21318d7ee4d71885f4
+      commit: 80d72e5d0a5997ced518dc21318d7ee4d71885f4
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: review.md#iteration-2
+      statement: Independent adversarial Strict Review Iteration 2 performed by a second, freshly spawned general-purpose Agent (agent id adf7b45dfafab5df0), no shared context with Implementation or with reviewer-001, against refrozen subject 80d72e5. R001/R002 confirmed independently resolved; R003 confirmed resolved in the six enumerated files but flagged one residual instance in CHANGELOG.md as new finding R004 (MINOR). Verdict REQUEST CHANGES (blocking on R004 pending fix confirmation).
+  - id: implementation-subject-003
+    role: resolution
+    execution:
+      id: claude-code-implementation-0044
+      context_id: claude-code-session-2026-08-24
+    recorded_at: '2026-08-24T00:00:00Z'
+    revision:
+      id: chg-0044-implementation-003
+      immutable_ref:
+        type: git_commit
+        value: 447bd9515d80df267df8c916584c40963f698195
+      commit: 447bd9515d80df267df8c916584c40963f698195
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: implementation-subject
+      statement: Final subject refrozen at 447bd95 after addressing R004 (self-fixed, not independently re-reviewed — MINOR, one-line CHANGELOG text correction, mechanically verifiable by direct diff), full suite reproduced (688 passed), `forge validate` PASS, `git diff --check` PASS.
+  - id: reviewer-003
+    role: review
+    execution:
+      id: claude-agent-general-purpose-abb99b02fcf2fb365
+      context_id: claude-code-subagent-review-0044-003
+    recorded_at: '2026-08-24T00:00:00Z'
+    revision:
+      id: chg-0044-implementation-003
+      immutable_ref:
+        type: git_commit
+        value: 447bd9515d80df267df8c916584c40963f698195
+      commit: 447bd9515d80df267df8c916584c40963f698195
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: review.md#iteration-3
+      statement: >-
+        Independent adversarial Strict Review Iteration 3 performed by a
+        third, freshly spawned general-purpose Agent (agent id
+        abb99b02fcf2fb365), no shared context with Implementation or with
+        reviewer-001/reviewer-002, against final subject 447bd95. R001-R004
+        independently re-confirmed resolved by direct re-verification of
+        every citation and the full test suite. Verdict REQUEST CHANGES:
+        new finding R005 (MAJOR) -- a triggering GitHub Codex bot comment
+        on the PR correctly identified that review-002's manifest status
+        was recorded as "passed" while its own provenance statement said
+        REQUEST CHANGES, and that no review iteration had ever been bound
+        to this actual final subject before state.current was set to
+        complete. This is a review-bookkeeping defect, not a content
+        defect in protocol/artifact-structure.md, change_scaffolding.py,
+        or the tests, all of which Iteration 3 re-confirmed sound.
+  - id: verification-002
+    role: implementation
+    execution:
+      id: claude-code-implementation-0044-verification-002
+      context_id: claude-code-session-2026-08-24
+    recorded_at: '2026-08-24T00:00:00Z'
+    revision:
+      id: chg-0044-implementation-003
+      immutable_ref:
+        type: git_commit
+        value: 447bd9515d80df267df8c916584c40963f698195
+      commit: 447bd9515d80df267df8c916584c40963f698195
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: verification.md
+      statement: verification.md's PASS result (TDD-001 evidence, forge validate, full pytest suite -- 688 passed) is bound to this exact final subject (447bd95), the subject referenced by the final passed Review Iteration (review-004).
+  - id: reviewer-004
+    role: review
+    execution:
+      id: claude-agent-general-purpose-a45d8092a9d6e0b3d
+      context_id: claude-code-subagent-review-0044-004
+    recorded_at: '2026-08-24T00:00:00Z'
+    revision:
+      id: chg-0044-implementation-003
+      immutable_ref:
+        type: git_commit
+        value: 447bd9515d80df267df8c916584c40963f698195
+      commit: 447bd9515d80df267df8c916584c40963f698195
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: review.md#iteration-4
+      statement: >-
+        Independent adversarial Strict Review Iteration 4 performed by a
+        fourth, freshly spawned general-purpose Agent (agent id
+        a45d8092a9d6e0b3d), no shared context with Implementation or with
+        reviewer-001/002/003, against final subject 447bd95. Confirmed
+        R005 genuinely resolved: every review-00N manifest status now
+        matches its own provenance-recorded verdict, state.current and
+        review.status no longer claim Completion without a genuinely
+        passed iteration bound to the final subject, and the R005 fix
+        commit (8ccd497) touches only manifest.yml/provenance.yml/
+        review.md. Spot-checked protocol/artifact-structure.md's
+        Inspection section for regression: none found. Verdict PASS, no
+        findings.
