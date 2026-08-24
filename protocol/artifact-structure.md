@@ -316,19 +316,58 @@ own findings, not to a Task silently added to absorb new scope.
 
 ### Verification
 
-**Structural core:** `## Result` as the first substantive section —
-one of `PASS`, `FAIL`, `SKIPPED`, or `NOT APPLICABLE` — before any
-evidence. `INCONCLUSIVE` is deliberately not offered: it has no
-precedent anywhere in this repository's Protocol or Contract and does
-not exist in the current model. Render the value as bold or plain text
-(`**PASS**`), not as a nested heading — every real Artifact in this
-repository uses exactly one `#` heading, its title; a second `#` under
-`## Result` breaks document outline semantics. After Result: a Summary (a
-short table mapping `AC-xxx` to its individual result reads well here —
-§2.4), then Test Evidence and Forge Evidence, then
-Compatibility/Limitations, then a short Conclusion. This is the direct,
-concrete fix for this document's own motivating finding (§2.1) —
-`CHG-0001` already did this; `CHG-0015` did not.
+**Structural core (elaborated by `CHG-0040`):** `## Result` as the
+first substantive section — one of `PASS`, `FAIL`, `SKIPPED`, or `NOT
+APPLICABLE` — before any evidence. `INCONCLUSIVE` is deliberately not
+offered: it has no precedent anywhere in this repository's Protocol or
+Contract and does not exist in the current model. Render the value as
+bold or plain text (`**PASS**`), not as a nested heading — every real
+Artifact in this repository uses exactly one `#` heading, its title; a
+second `#` under `## Result` breaks document outline semantics. This is
+the direct, concrete fix for this document's own motivating finding
+(§2.1) — `CHG-0001` already did this; `CHG-0015` did not.
+
+After Result: a short `## Summary` giving an aggregate read (how many
+Acceptance Criteria were checked, how many passed/failed, whether
+Manual Evidence or Limitations apply) without reproducing individual
+detail; then `## Acceptance Coverage`, a compact table mapping
+`Acceptance | Requirement | Result | Evidence` by id (`AC-xxx`,
+`FR-xxx`/`NFR-xxx`, `TDD-xxx`/`TD-xxx`, or an evidence reference) —
+never the full text of an Acceptance Criterion, which already lives in
+Specification (§2.2); then `## Test Evidence` and `## Forge Evidence`;
+then `## Compatibility and Limitations`; then a short `## Conclusion`.
+`## Manual Evidence` and `## Requirement Coverage` are **conditional**
+(§2.5): Manual Evidence exists only when a real manual verification
+occurred, kept distinct from Test/Forge Evidence so a reader never
+mistakes a human observation for an automated guarantee; Requirement
+Coverage exists only when it adds information Acceptance Coverage does
+not already express (e.g. one Requirement covered by several Acceptance
+Criteria, or by a static check with no `AC-xxx` of its own) — a Change
+with a 1:1 Acceptance-to-Requirement relationship correctly omits it.
+
+Test Evidence SHOULD reference a `TDD-xxx` cycle by id when
+`tdd-evidence.yml` already records `red`/`green` for it, instead of
+renarrating the RED→GREEN sequence by hand — the structured record is
+the authority (§34 below); the Markdown presents it, it does not
+duplicate it. Forge Evidence records only what the cited command
+actually guarantees — `forge validate` passing is not itself evidence
+that every semantic aspect of the Change was checked.
+
+Result-Before-Evidence (§2.3) is only honest if it survives a `FAIL`:
+when `Result` is `FAIL`, `Acceptance Coverage` still identifies which
+criteria failed, and `Conclusion` MUST NOT imply the Change is ready
+for its next gate. When `Result` is `SKIPPED` or `NOT APPLICABLE`, a
+rationale proportional to the Change accompanies it — Verification
+being skipped or inapplicable is itself a claim that needs a reason, not
+a silent absence.
+
+This elaborates, not replaces, the direction already normatively
+required by C-068 and demonstrated by this document's own canonical
+`examples/canonical-artifacts/verification.md` since `CHG-0016`; it is
+not a new Gate obligation (C-067) and does not require any historical
+`verification.md` to be rewritten — the same evolve-in-place pattern
+`CHG-0037`/`CHG-0038`/`CHG-0039` already used for Specification/Test
+Design/Tasks.
 
 ### Review
 

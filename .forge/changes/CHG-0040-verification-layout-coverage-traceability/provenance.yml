@@ -1,0 +1,20 @@
+schema: forge/execution-provenance@2
+change: CHG-0040
+records:
+  - id: plan-approval-001
+    role: implementation
+    execution:
+      id: claude-code-implementation-0040
+      context_id: claude-code-session-2026-08-23
+    recorded_at: '2026-08-23T00:00:00Z'
+    revision:
+      id: chg-0040-plan-approval-001
+      immutable_ref:
+        type: git_commit
+        value: bc4575ab6e563989905154d6e513c1af04857509
+      commit: bc4575ab6e563989905154d6e513c1af04857509
+    source:
+      assurance: recorded
+      observed_by: operator
+      reference: plan.md#approval-record
+      statement: The user explicitly approved the CHG-0040 Plan to proceed to Implementation in the active session on 2026-08-23, via an explicit approval choice ("Aprovar como está") over the Repository Truth Audit, the Specification's 8 Functional Requirements, and all 8 Plan work items, with the canonical example update (item 4) in scope.

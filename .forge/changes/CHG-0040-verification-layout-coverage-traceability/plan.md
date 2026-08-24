@@ -1,0 +1,32 @@
+---
+forge:
+  artifact: plan
+  schema: 1
+change: CHG-0040
+status: approved
+---
+
+# Plan — CHG-0040 Verification Layout Coverage Traceability
+
+1. Em `src/forge_cli/change_scaffolding.py`, reescrever a entrada `"verification"` do dicionário `sections` dentro de `_markdown()` para o novo layout: `## Result` (`**PENDING**`, placeholder distinto dos quatro estados reais), `## Summary` (guidance para contagem agregada de Acceptance Criteria/Manual Evidence/Limitations), `## Acceptance Coverage` (tabela `Acceptance | Requirement | Result | Evidence` com guidance de não reproduzir o texto integral do AC), `## Requirement Coverage` (guidance explícita de que é omissível quando redundante com Acceptance Coverage), `## Test Evidence` (guidance para referenciar `TDD-xxx` por id em vez de renarrar RED→GREEN), `## Forge Evidence` (guidance para registrar só o que o comando garante), `## Manual Evidence` (guidance de que só existe quando há verificação manual real, distinta de Test/Forge Evidence), `## Compatibility and Limitations` (seção combinada, guidance para não preencher artificialmente quando nenhum dos dois se aplica), `## Conclusion` (guidance explícita para não implicar Completion quando Result for FAIL/SKIPPED ou Review estiver pendente). Adicionar caso especial em `_frontmatter()` para `artifact == "verification"` produzindo `# {change_id} · Verification`. Não alterar as entradas `"review"`, `"plan"`, `"test_strategy"`, `"tasks"`.
+2. Em `tests/unit/test_change_scaffolding.py`, adicionar testes focados espelhando o padrão de `CHG-0038`/`CHG-0039` (`test_render_scaffold_test_design_uses_verification_design_contract_layout`, `test_render_scaffold_tasks_...`), cobrindo TD-001 a TD-008: heading/frontmatter novo (`# CHG-XXXX · Verification`) e ordem das headings estruturais; placeholder `**PENDING**` distinto dos quatro estados reais (nenhum de `PASS`/`FAIL`/`SKIPPED`/`NOT APPLICABLE`/`INCONCLUSIVE` aparece como valor do placeholder); tabela `Acceptance Coverage` com as quatro colunas e a guidance de não duplicar texto de AC; guidance de omissão condicional de `Requirement Coverage`; heading `Manual Evidence` distinta com guidance de condicionalidade; guidance de referência a `TDD-xxx` em `Test Evidence`; guidance de não implicar Completion em `Conclusion`; e uma asserção de igualdade de string completa (não substring) protegendo `review`/`plan`/`test_strategy`/`tasks` como byte-idênticos ao template atual (TD-008).
+3. Em `protocol/artifact-structure.md` §4, reescrever a entrada "Verification" (mantendo `**Structural core (redesigned by `CHG-0040`):**` como abertura, no mesmo padrão retórico de Test Design/Tasks) para descrever: Result como primeira seção substantiva com os quatro estados reconhecidos; Summary agregado; Acceptance Coverage compacta e id-referenciada; Requirement Coverage condicional (evitando duplicação); Test Evidence referenciando `TDD-xxx` em vez de renarrar; Forge Evidence limitada ao que o comando garante; Manual Evidence distinta; Compatibility and Limitations combinável quando proporcional; representação de FAIL que não mascara o resultado agregado e rationale para SKIPPED/NOT APPLICABLE; Conclusion que não implica Completion. Deixar explícito que: (a) isto elabora, não substitui, C-068 e a guidance existente desde `CHG-0016`; (b) não é nova obrigação de Gate (C-067); (c) `verification.md` históricos permanecem válidos sem exigência retroativa de tabelas ou seções novas.
+4. Em `examples/canonical-artifacts/verification.md`, elaborar o exemplo ilustrativo existente para demonstrar a estrutura completa: renomear `## Summary` atual (que hoje já é a tabela AC-xxx) para `## Acceptance Coverage` com a coluna `Requirement`/`Evidence` adicionada, introduzir um `## Summary` agregado curto antes dela, adicionar uma linha de `## Manual Evidence` ilustrativa, e manter `## Compatibility` como `## Compatibility and Limitations` (com uma frase de Limitations ilustrativa). Preservar os comentários HTML de anotação já existentes, atualizando as referências de seção (`§2.1/§2.3/§4`) apenas onde o texto mudar de posição. Atualizar `examples/README.md` apenas se a descrição da pasta `canonical-artifacts/` deixar de refletir o conteúdo (checar antes de editar; não editar se já está correta).
+5. Adicionar uma entrada em `CHANGELOG.md` sob `## Unreleased`, seguindo o formato das três entradas anteriores desta mesma família (`Tasks Layout...`, `Test Design Verification Contract`, `Specification Layout...`): título curto, o que mudou em `verification.md`, e a afirmação explícita de que `verification.md` históricos, Schemas, Protocol integer, e `forge validate` semantics permanecem inalterados.
+6. Capturar RED em `tdd-evidence.yml` desta própria Change (`TDD-001` a `TDD-008`, um por `TD-xxx`, ou agrupados quando o mesmo comando cobre múltiplos) rodando `pytest tests/unit/test_change_scaffolding.py -k verification -q` contra o renderer ainda não alterado, confirmando falha pela razão esperada (ausência das novas headings/guidance), antes de aplicar o item 1.
+7. Após GREEN, executar `pytest tests/unit/test_change_scaffolding.py -q`, a suíte completa (`pytest -q`), `forge validate`, e `git diff --check`; inspecionar o diff final confirmando que nenhum arquivo sob `protocol/schemas/`, nenhum Protocol integer, e nenhum `verification.md`/`review.md`/`plan.md`/`test-strategy.md`/`tasks.md` histórico foi alterado.
+8. Preencher `verification.md` desta própria Change (dogfooding, mesmo padrão de `CHG-0038`/`CHG-0039`) usando o próprio layout redesenhado, com `Result`, `Acceptance Coverage` referenciando AC-001–AC-008, `Test Evidence` referenciando os `TDD-xxx` capturados no item 6, `Forge Evidence`, `Compatibility and Limitations`, e `Conclusion` — sujeito a Strict Review independente antes de Completion.
+
+## Implementation Boundary
+
+Reaching `plan_complete` is not authorization to begin Implementation.
+
+## Human Plan Authorization
+
+Este Plan é explicitamente autorizado pelo mantenedor humano para avançar à Implementation sob C-077.
+
+<!-- forge:plan-approval-confirmation -->
+
+O usuário aprovou a continuação na sessão ativa em 2026-08-23, escolhendo explicitamente "Aprovar como está" sobre o Repository Truth Audit, os 8 Functional Requirements da Specification e os 8 itens deste Plan — incluindo o item 4 (elaboração de `examples/canonical-artifacts/verification.md`) no escopo.
+
+<!-- forge:plan-approval-record -->

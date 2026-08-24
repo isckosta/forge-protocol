@@ -454,3 +454,156 @@ def test_render_scaffold_tasks_overview_and_status_are_compact() -> None:
     assert tasks.rstrip().endswith("No task has started.")
     last_heading = [line for line in tasks.splitlines() if line.startswith("## ")][-1]
     assert last_heading == "## Status"
+
+
+def test_render_scaffold_verification_uses_result_first_coverage_layout() -> None:
+    plan = render_scaffold(
+        change_id="CHG-0040",
+        slug="verification-layout",
+        flow_id="standard",
+        flow_data=_canonical_flow("standard"),
+        behavioral=True,
+    )
+
+    verification = plan.files["verification.md"]
+
+    assert verification.startswith(
+        "---\nforge:\n  artifact: verification\n  schema: 1\n"
+        "change: CHG-0040\nstatus: pending\n---\n\n"
+        "# CHG-0040 · Verification\n\n"
+    )
+    expected_order = [
+        "## Result",
+        "## Summary",
+        "## Acceptance Coverage",
+        "## Requirement Coverage",
+        "## Test Evidence",
+        "## Forge Evidence",
+        "## Manual Evidence",
+        "## Compatibility and Limitations",
+        "## Conclusion",
+    ]
+    headings = [line for line in verification.splitlines() if line.startswith("## ")]
+    assert headings == expected_order
+    assert "Record verification results." not in verification
+
+
+def test_render_scaffold_verification_result_placeholder_is_distinct_from_recognized_states() -> None:
+    plan = render_scaffold(
+        change_id="CHG-0040",
+        slug="verification-result",
+        flow_id="standard",
+        flow_data=_canonical_flow("standard"),
+        behavioral=True,
+    )
+
+    verification = plan.files["verification.md"]
+    result_section = verification.split("## Result", 1)[1].split("## Summary", 1)[0]
+
+    assert "**PENDING**" in result_section
+    assert "#" not in result_section
+    for state in ("PASS", "FAIL", "SKIPPED", "NOT APPLICABLE", "INCONCLUSIVE"):
+        assert state not in result_section
+
+
+def test_render_scaffold_verification_acceptance_coverage_is_compact_and_id_referencing() -> None:
+    plan = render_scaffold(
+        change_id="CHG-0040",
+        slug="verification-acceptance-coverage",
+        flow_id="standard",
+        flow_data=_canonical_flow("standard"),
+        behavioral=True,
+    )
+
+    verification = plan.files["verification.md"]
+
+    assert "| Acceptance | Requirement | Result | Evidence |" in verification
+    assert "do not reproduce its full text here" in verification
+
+
+def test_render_scaffold_verification_requirement_coverage_is_conditional() -> None:
+    plan = render_scaffold(
+        change_id="CHG-0040",
+        slug="verification-requirement-coverage",
+        flow_id="standard",
+        flow_data=_canonical_flow("standard"),
+        behavioral=True,
+    )
+
+    verification = plan.files["verification.md"]
+
+    assert "Omit this section when Acceptance Coverage already expresses per-Requirement coverage" in verification
+
+
+def test_render_scaffold_verification_manual_evidence_is_distinct() -> None:
+    plan = render_scaffold(
+        change_id="CHG-0040",
+        slug="verification-manual-evidence",
+        flow_id="standard",
+        flow_data=_canonical_flow("standard"),
+        behavioral=True,
+    )
+
+    verification = plan.files["verification.md"]
+
+    assert "## Manual Evidence" in verification
+    assert "only when a real manual verification occurred" in verification
+    manual_index = verification.index("## Manual Evidence")
+    test_evidence_index = verification.index("## Test Evidence")
+    forge_evidence_index = verification.index("## Forge Evidence")
+    assert test_evidence_index < forge_evidence_index < manual_index
+
+
+def test_render_scaffold_verification_test_evidence_references_tdd_by_id() -> None:
+    plan = render_scaffold(
+        change_id="CHG-0040",
+        slug="verification-tdd-reference",
+        flow_id="standard",
+        flow_data=_canonical_flow("standard"),
+        behavioral=True,
+    )
+
+    verification = plan.files["verification.md"]
+
+    assert "TDD-xxx" in verification
+    assert "instead of renarrating the sequence" in verification
+
+
+def test_render_scaffold_verification_conclusion_does_not_imply_completion_under_fail() -> None:
+    plan = render_scaffold(
+        change_id="CHG-0040",
+        slug="verification-conclusion",
+        flow_id="standard",
+        flow_data=_canonical_flow("standard"),
+        behavioral=True,
+    )
+
+    verification = plan.files["verification.md"]
+
+    assert "Do not imply Completion when Result is FAIL or SKIPPED" in verification
+    assert "Review remains pending" in verification
+
+
+def test_render_scaffold_review_plan_test_strategy_tasks_templates_are_unchanged() -> None:
+    plan = render_scaffold(
+        change_id="CHG-0040",
+        slug="verification-unaffected-templates",
+        flow_id="full",
+        flow_data=_canonical_flow("full"),
+        behavioral=True,
+    )
+
+    assert plan.files["review.md"].endswith(
+        "## Verdict\n\n**PENDING**\n\n## Iteration 1 — PENDING\n\nRecord Strict Review findings.\n"
+    )
+    assert plan.files["plan.md"].endswith(
+        "1. Describe the first approved work item and files.\n\n"
+        "## Implementation Boundary\n\n"
+        "Reaching `plan_complete` is not authorization to begin Implementation.\n"
+    )
+    assert plan.files["test-strategy.md"].endswith(
+        "## Objective\n\nState the test strategy objective.\n\n## Strategy\n\n"
+        "## TDD-001 — <behavior>\n\nDefine the test case.\n\n"
+        "## Completion Criteria\n\nList completion criteria.\n"
+    )
+    assert "No task has started." in plan.files["tasks.md"]
