@@ -24,3 +24,31 @@ records:
         prosseguir", in the active session on 2026-08-24. This is
         repository-native, self-recorded evidence (assurance: recorded),
         not cryptographic or external attestation (C-077).
+  - id: implementation-subject-001
+    role: implementation
+    execution:
+      id: claude-code-implementation-0045
+      context_id: claude-code-session-2026-08-24
+    recorded_at: '2026-08-24T00:00:00Z'
+    revision:
+      id: chg-0045-implementation-001
+      immutable_ref:
+        type: git_commit
+        value: 23d763b5b076bd1fd3df75743e9df90fcc4b0423
+      commit: 23d763b5b076bd1fd3df75743e9df90fcc4b0423
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: verification.md
+      statement: >-
+        Frozen Implementation subject for CHG-0045: FR-001 through FR-007
+        implemented and verified (verification.md Result: PASS), full
+        pytest suite 701 passed, forge validate/doctor/adapter plan clean
+        against this repository's own real installation. Effective
+        reviewable Git workspace at freeze time: no committed post-subject
+        delta, no staged/unstaged reviewable changes, no Git-visible
+        untracked reviewable files. Three pre-existing untracked files
+        (.claude/CLAUDE.md, .playwright-mcp/, RELATORIO-SESSAO-2026-08-22.md)
+        remain in the working tree but predate this Change, are unrelated
+        to its scope (Discovery's "Non-authorities excluded" section), and
+        do not affect this Change's reviewable material.
