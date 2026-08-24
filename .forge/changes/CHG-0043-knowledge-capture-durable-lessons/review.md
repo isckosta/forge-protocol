@@ -16,25 +16,25 @@ status: active
 
 | | |
 |---|---|
-| **Iterations** | 2 |
-| **Current Subject** | `3b1a553a` |
+| **Iterations** | 3 |
+| **Current Subject** | `15a5b459` |
 | **Open Blockers** | 0 |
 | **Open Majors** | 0 |
-| **Open Minors** | 1 |
-| **Final Iteration** | 2 |
+| **Open Minors** | 2 |
+| **Final Iteration** | 3 |
 | **Result** | PASS |
 
 ## Current Subject
 
 | | |
 |---|---|
-| **Subject SHA** | `3b1a553aa12931d74b2399ae3307f13fbb9cb8c7` |
+| **Subject SHA** | `15a5b459ab7ff5b25a12c76f0bae5632ab028bcb` |
 | **Frozen** | Yes |
-| **Iteration** | 2 |
+| **Iteration** | 3 |
 
 ## Reviewer Independence
 
-Each Iteration was performed by an independent Execution and Execution Context (isolated Git worktree, fresh agent, no shared context with the Implementation session or with each other) — see `provenance.yml` records `reviewer-001` (Iteration 1) and `reviewer-002` (Iteration 2).
+Each Iteration was performed by an independent Execution and Execution Context (isolated Git worktree, fresh agent, no shared context with the Implementation session or with each other) — see `provenance.yml` records `reviewer-001` (Iteration 1), `reviewer-002` (Iteration 2), and `reviewer-003` (Iteration 3).
 
 ## Open Findings
 
@@ -42,6 +42,7 @@ Each Iteration was performed by an independent Execution and Execution Context (
 | --- | --- | --- | --- |
 | R005 | OBSERVATION | Open | 2 |
 | R006 | MINOR | Open | 2 |
+| R007 | MINOR | Open | 3 |
 
 ## Iteration 1 — REQUEST CHANGES
 
@@ -116,6 +117,27 @@ R001 confirmed fully resolved — not merely by reading the diff, but by an inje
 - Fix commit scope confirmed exactly the 4 claimed files, no renderer change.
 - Overall diff scope from `main` confirmed unchanged: `CHANGELOG.md`, `protocol/artifact-structure.md`, `src/forge_cli/change_scaffolding.py`, `tests/unit/test_change_scaffolding.py`, outside the Change's own directory.
 
+## Iteration 3 — PASS
+
+Reviewed refrozen subject `15a5b459ab7ff5b25a12c76f0bae5632ab028bcb` (`implementation-subject-003`; independent Execution, isolated worktree, no shared context with Implementation or with Iterations 1-2). Triggered by an automated Codex review on the GitHub PR (not one of R001-R006): `protocol/artifact-structure.md` claimed all 25 real `knowledge-capture.md` files "already use" the exact four-heading structured form; only 7 actually do.
+
+Independently re-counted: a script scanning `##` headings across all 25 real `knowledge-capture.md` files confirmed exactly 7 match precisely (`CHG-0021`, `CHG-0022`, `CHG-0023`, `CHG-0030`, `CHG-0033`, `CHG-0035`, `CHG-0036`), matching the fix's claim exactly; spot-checked 3 of the other 18 (`CHG-0016`: zero headings; `CHG-0007`: 6 different headings; `CHG-0001`: one different heading with `###` sub-headings) and confirmed all genuinely non-matching. Fix commit `15a5b45` confirmed to touch only `protocol/artifact-structure.md`. Full suite (685 passed, 2 warnings) and `forge validate` reproduced against the refrozen subject.
+
+### R007 — MINOR — Pre-existing miscount of `CHG-0016`'s lesson count
+
+**Problem:** `protocol/artifact-structure.md`'s Knowledge Capture section states `CHG-0016`'s `knowledge-capture.md` has "seven distinct lessons"; the actual top-level bullet count is 9. Discovered during the full-section read this Iteration required, not introduced by the `15a5b45` fix itself (present verbatim in the parent commit too).
+
+**Evidence:** Direct count of `CHG-0016/knowledge-capture.md`'s top-level bullets.
+
+**Required Resolution:** Not required to unblock this Change (MINOR, non-blocking) — left open per C-049's deterministic termination, matching the same pattern already applied to R005/R006.
+
+### Checked and found sound (Iteration 3)
+
+- The "exactly 7 of 25" claim independently re-verified true via an independent script, not by trusting the commit message.
+- Corrected guidance text confirmed accurate and internally consistent with the surrounding `CHG-0016`/`CHG-0033`/`35`/`36` precedent discussion.
+- Fix commit scope confirmed exactly 1 file; overall diff scope from `main` confirmed unchanged.
+- `CHANGELOG.md` checked and confirmed it does not repeat the "all 25" overclaim — no update needed there.
+
 ## Conclusion
 
-The subject reviewed satisfies the Acceptance Criteria applicable to this Review and has no open BLOCKER or MAJOR findings; one non-blocking OBSERVATION (R005) and one non-blocking MINOR (R006) remain open, consistent with C-049's deterministic termination. The Change is ready for the next gate defined by its Flow.
+The subject reviewed satisfies the Acceptance Criteria applicable to this Review and has no open BLOCKER or MAJOR findings; one non-blocking OBSERVATION (R005) and two non-blocking MINORs (R006, R007) remain open, consistent with C-049's deterministic termination. The Change is ready for the next gate defined by its Flow.

@@ -40,10 +40,10 @@ verification:
   status: passed
 review:
   status: passed
-  iteration: 2
+  iteration: 3
   blockers: 0
   majors: 0
-  minors: 1
+  minors: 2
   observations: 1
   iterations:
     - id: review-001
@@ -56,6 +56,12 @@ review:
       revision: chg-0043-implementation-002
       subject_provenance: implementation-subject-002
       reviewer_provenance: reviewer-002
+      kind: initial_review
+      status: passed
+    - id: review-003
+      revision: chg-0043-implementation-003
+      subject_provenance: implementation-subject-003
+      reviewer_provenance: reviewer-003
       kind: initial_review
       status: passed
 documentation:
