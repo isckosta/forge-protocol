@@ -232,6 +232,23 @@ def test_projection_bundle_includes_hook_script_and_frontmatter() -> None:
     assert "check-manifest-edit.sh" in frontmatter["hooks"]["PreToolUse"][0]["hooks"][0]["command"]
 
 
+def test_projection_bundle_hook_frontmatter_also_matches_edit_and_write() -> None:
+    """CHG-0045 FR-006/TDD-009: the same guard must not be trivially
+    bypassed by switching tools -- Edit/Write must be matched alongside
+    Bash, pointed at the same generated script."""
+    projection = _projection_module()
+    bundle = projection.generate_claude_code_projection_bundle(_canonical_input())
+    by_name = {resource.name: resource for resource in bundle.resources}
+    skill = by_name["skills/forge/SKILL.md"].content
+    import yaml
+
+    frontmatter = yaml.safe_load(skill.split("---", 2)[1])
+    matchers = {entry["matcher"] for entry in frontmatter["hooks"]["PreToolUse"]}
+    assert matchers == {"Bash", "Edit", "Write"}
+    for entry in frontmatter["hooks"]["PreToolUse"]:
+        assert "check-manifest-edit.sh" in entry["hooks"][0]["command"]
+
+
 def test_hook_script_denies_in_place_mutation_of_review_control_paths() -> None:
     """Specification Review SR-001: the hook must deny in-place shell
     mutation of manifest.yml/provenance.yml/review.md but must not deny
@@ -296,3 +313,68 @@ def test_hook_script_denies_in_place_mutation_of_review_control_paths() -> None:
         code, stdout = run(command)
         assert code == 0
         assert stdout == "", command
+
+
+def test_generated_skill_does_not_grow_relative_to_the_pre_chg_0045_baseline() -> None:
+    """CHG-0045 NFR-003/TDD-014: removing the per-Flow-duplicated
+    independence block and stale Plan-Decision sentence must not be offset
+    by new bulk. Baseline (180 lines) captured from `main` (pre-CHG-0045)
+    for this exact three-Flow, Protocol-2 fixture before this Change's
+    projection.py edits landed."""
+    projection = _projection_module()
+    flow = (
+        "gates:\n  before_implementation:\n    require: [plan_complete]\n"
+        "  before_completion:\n    require: [verification_passed, review_passed]\n"
+    )
+    bundle = projection.generate_claude_code_skill_bundle(
+        contract_content="contract",
+        flows=(("fast", flow), ("standard", flow), ("full", flow)),
+        protocol_id=2,
+    )
+    skill = next(resource.content for resource in bundle.resources if resource.name == "skills/forge/SKILL.md")
+    PRE_CHG_0045_BASELINE_LINE_COUNT = 180
+    assert len(skill.splitlines()) <= PRE_CHG_0045_BASELINE_LINE_COUNT
+
+
+def test_hook_script_denies_edit_and_write_mutation_of_review_control_paths() -> None:
+    """CHG-0045 FR-006/TDD-010/TDD-011: the same three protected paths must
+    be denied when mutated through Edit/Write, and unrelated Edit/Write
+    calls must still be allowed (no false positive)."""
+    import subprocess
+    import json
+
+    projection = _projection_module()
+    bundle = projection.generate_claude_code_skill_bundle(
+        contract_content="contract",
+        flows=(("full", "stages:\n  - id: verification\n"),),
+    )
+    script = next(
+        resource.content
+        for resource in bundle.resources
+        if resource.name == "skills/forge/hooks/check-manifest-edit.sh"
+    )
+
+    def run(tool_name: str, file_path: str) -> tuple[int, str]:
+        payload = json.dumps({"tool_name": tool_name, "tool_input": {"file_path": file_path}})
+        result = subprocess.run(
+            ["sh", "-c", script],
+            input=payload,
+            capture_output=True,
+            text=True,
+            timeout=5,
+        )
+        return result.returncode, result.stdout
+
+    for tool_name in ("Edit", "Write"):
+        for path in (
+            ".forge/changes/CHG-0018-x/manifest.yml",
+            ".forge/changes/CHG-0018-x/provenance.yml",
+            ".forge/changes/CHG-0018-x/review.md",
+        ):
+            code, stdout = run(tool_name, path)
+            assert code == 0
+            assert '"permissionDecision":"deny"' in stdout, (tool_name, path)
+
+        code, stdout = run(tool_name, "src/forge_cli/adapters/claude_code/projection.py")
+        assert code == 0
+        assert stdout == "", tool_name

@@ -10,13 +10,13 @@ publication:
   root: .agents/skills/forge
 generated_artifacts:
 - path: .agents/skills/forge/SKILL.md
-  digest: f9134aca113353477bf703ae621b616e4771a7cf8ccb58da915c95b986cc266c
+  digest: d6b76461ef27c335ec329076c3deba3b02fcfff84a9539a9c1ebf8f952f37ad5
 - path: .agents/skills/forge/references/artifact-structure.md
-  digest: 4445311620b09d5aa89ffaa0d5ba742198818ee4abae67f4c95ae36a5b7e183d
+  digest: 1ffa101eb46ba6f46793b423489dbbe940c3f7ce36a2ccbf3c46947b8f192c10
 - path: .agents/skills/forge/references/decision-rules.md
   digest: ad2c38015c9b9fe8a9042487083be8c1e5218b448ca05612fe8a1730e485dbeb
 - path: .agents/skills/forge/references/engineering-contract.md
-  digest: f40284bb2fe29e3cc0d959cd8b6587b70f83aa3784433a593009220344f2bb72
+  digest: a55d6ca9e5157d99c6041a8883ad1718f7a05bfbe633a73128933775b2f13f94
 - path: .agents/skills/forge/references/flows/fast.yml
   digest: 09f8bb7d1ca5a4bebb770c8686b7f5b238ba6f505d868b046590a7aacae7cfcb
 - path: .agents/skills/forge/references/flows/full.yml

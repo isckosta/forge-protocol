@@ -171,3 +171,53 @@ def test_projection_does_not_invent_pre_implementation_boundary_for_flow_without
     """FAST has no Plan stage and legitimately declares no `before_implementation` gate."""
     content = _content()
     assert "Implementation MUST NOT begin until" not in content
+
+
+_MINIMAL_GATE_FLOW = "gates:\n  before_completion:\n    require: [verification_passed]\n"
+
+
+def _protocol_2_skill_content(flows) -> str:
+    bundle = generate_claude_code_skill_bundle(
+        contract_content="contract", flows=flows, protocol_id=2
+    )
+    return next(resource.content for resource in bundle.resources if resource.name == "skills/forge/SKILL.md")
+
+
+def test_projection_renders_reviewer_resolver_independence_exactly_once_across_flows() -> None:
+    """CHG-0045 TDD-001: the independence block must not be re-emitted per Flow."""
+    skill = _protocol_2_skill_content((
+        ("fast", _MINIMAL_GATE_FLOW),
+        ("standard", _MINIMAL_GATE_FLOW),
+        ("full", _MINIMAL_GATE_FLOW),
+    ))
+    assert skill.count("### Reviewer/Resolver independence") == 1
+
+
+def test_projection_renders_the_plan_decision_sentence_exactly_once_across_flows() -> None:
+    """CHG-0045 TDD-005: the CHG-0025/C-077 Plan Decision sentence must not be
+    re-embedded per Flow inside gate-obligation rendering; it is sourced once
+    from workflow.md."""
+    skill = _protocol_2_skill_content((
+        ("standard", _MINIMAL_GATE_FLOW),
+        ("full", _MINIMAL_GATE_FLOW),
+    ))
+    assert skill.count("CHG-0025") == 1
+
+
+def test_projection_points_every_applicable_flow_at_the_shared_independence_section() -> None:
+    """CHG-0045 TDD-002: a Flow-scoped reader must still be told the requirement applies."""
+    skill = _protocol_2_skill_content((
+        ("fast", _MINIMAL_GATE_FLOW),
+        ("standard", _MINIMAL_GATE_FLOW),
+        ("full", _MINIMAL_GATE_FLOW),
+    ))
+    heading = "### Flow `{flow}` gate obligations"
+    positions = {flow: skill.index(heading.format(flow=flow)) for flow in ("fast", "standard", "full")}
+    ordered = sorted(positions.items(), key=lambda item: item[1])
+    bounds = [start for _, start in ordered] + [len(skill)]
+    for index, (flow, start) in enumerate(ordered):
+        section = skill[start:bounds[index + 1]]
+        assert "Reviewer/Resolver independence" in section, (
+            f"Flow `{flow}` gate-obligations section has no pointer to the shared "
+            "independence section"
+        )

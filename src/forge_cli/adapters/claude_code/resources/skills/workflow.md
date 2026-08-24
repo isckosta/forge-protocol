@@ -4,9 +4,24 @@ Repository-native Forge state remains authoritative. Use the effective Flow and
 Engineering Contract references in this skill as derived, repository-local
 representations; do not redefine their lifecycle here.
 
+### Bootstrap
+
 - Classify the work and resolve the applicable effective Flow before acting.
 - Preserve every applicable Flow gate, including TDD RED-before-behavior and
   Strict Review requirements.
+- Before relying on this skill's own `references/*` for a state-changing
+  decision, check the Adapter's own recorded drift state (`forge doctor` or
+  `forge adapter doctor`) — these references are generated content that can
+  fall behind the canonical Forge state they project. If drift is reported,
+  stop advancing on the affected reference and report it to the operator;
+  do not run `forge adapter update` to self-heal without the operator's
+  explicit go-ahead, since that modifies persistent repository
+  configuration. A clean drift state requires no extra step.
+- At a human-authority Gate, a blocked state, or a missing-evidence
+  condition, report briefly: Current Change, Effective Flow, Current State,
+  the Boundary reached, the Required Decision or Evidence, and the
+  Next Permitted Action — not a dump of internal protocol detail beyond
+  what the decision requires.
 - Before modifying repository files, create or use a working branch; do not
   implement directly on `main`.
 - After the Change is ready for integration, open a Pull Request against

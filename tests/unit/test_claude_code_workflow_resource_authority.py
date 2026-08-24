@@ -25,3 +25,28 @@ def test_projection_uses_packaged_workflow_template() -> None:
     assert template in skill.content
     assert "may not refresh its skill catalog in the current session" in skill.content
     assert "Harness runtime behavior, not technically controlled by Forge" in skill.content
+
+
+def test_workflow_template_instructs_checking_adapter_drift_before_trusting_references() -> None:
+    """CHG-0045 FR-004/TDD-007: an agent must check the existing digest-based
+    drift signal (forge doctor / forge adapter doctor) before relying on
+    references/*, and must stop and report rather than silently self-heal."""
+    template = projection.load_workflow_skill_template()
+    assert "forge doctor" in template or "forge adapter doctor" in template
+    assert "drift" in template.lower()
+    assert "stop" in template.lower() or "report" in template.lower()
+
+
+def test_workflow_template_instructs_boundary_reporting_format() -> None:
+    """CHG-0045 FR-007/TDD-013: a human-authority/blocked/missing-evidence
+    boundary report must name Change, Flow, State, Boundary, Required
+    Decision/Evidence, and Next Permitted Action."""
+    template = projection.load_workflow_skill_template()
+    for term in (
+        "Current Change",
+        "Effective Flow",
+        "Current State",
+        "Boundary",
+        "Next Permitted Action",
+    ):
+        assert term in template, f"workflow.md is missing boundary-report element {term!r}"
