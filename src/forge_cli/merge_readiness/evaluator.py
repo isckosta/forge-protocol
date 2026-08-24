@@ -129,14 +129,14 @@ def _check_change(root: Path, change_id: str, head_revision: str) -> tuple[list[
                 if ancestor.returncode != 0:
                     diagnostics.append(ReadinessDiagnostic("MR-015", "REVIEW SUBJECT STALE", change_id, relative, head_revision, subject_commit))
                 else:
+                    change_root = path.parent.relative_to(root).as_posix()
                     delta = subprocess.run(
-                        ["git", "diff", "--name-only", subject_commit, head_revision, "--"],
+                        ["git", "diff", "--name-only", subject_commit, head_revision, "--", change_root],
                         cwd=root,
                         capture_output=True,
                         text=True,
                         check=False,
                     )
-                    change_root = path.parent.relative_to(root).as_posix()
                     allowed = {
                         f"{change_root}/manifest.yml",
                         f"{change_root}/provenance.yml",
