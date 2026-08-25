@@ -73,3 +73,74 @@ records:
         Verification evidence for CHG-0046, bound to the same frozen
         Implementation subject (chg-0046-implementation-001) per CHG-0043's
         established re-verification-per-subject pattern.
+  - id: review-001
+    role: review
+    execution:
+      id: claude-code-review-0046-independent
+      context_id: claude-code-review-session-2026-08-24
+    recorded_at: '2026-08-24T00:00:00Z'
+    revision:
+      id: chg-0046-implementation-001
+      immutable_ref:
+        type: git_commit
+        value: 60b699bb69c06ed0b078572dd705191e73441c68
+      commit: 60b699bb69c06ed0b078572dd705191e73441c68
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: review.md
+      statement: >-
+        Independent Strict Review Iteration 1 (kind: initial_review) of
+        CHG-0046's frozen Implementation subject
+        (implementation-subject-001, 60b699bb69c06ed0b078572dd705191e73441c68),
+        conducted in an Execution and Execution Context distinct from the
+        Implementation's (claude-code-implementation-0046 /
+        claude-code-session-2026-08-25). Verdict: REQUEST CHANGES -- 0
+        BLOCKER, 2 MAJOR (R001: unguarded manifest.state read in the new
+        MR-015 is_complete check crashes on a malformed state field; R002:
+        the .forge/adapters/ material_prefixes entry is broader than
+        Specification AC-005 and Architecture's own stated design), 0
+        MINOR, 1 OBSERVATION (R003). Full findings and evidence recorded in
+        review.md.
+  - id: resolution-001
+    role: resolution
+    execution:
+      id: claude-code-implementation-0046
+      context_id: claude-code-session-2026-08-25
+    recorded_at: '2026-08-25T00:00:00Z'
+    revision:
+      id: chg-0046-resolution-001
+      immutable_ref:
+        type: git_commit
+        value: ff8fe51cc3dd237252c579f9775d8122254bf189
+      commit: ff8fe51cc3dd237252c579f9775d8122254bf189
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: review.md
+      statement: >-
+        Resolution of Strict Review Iteration 1 (review-001) findings
+        R001-R002. R001 (MAJOR) fixed by hoisting the file's existing
+        isinstance-guarded `state` read (previously computed later in
+        _check_change(), reused unchanged for MR-005) to the top of the
+        function and reusing that single guarded variable for
+        is_complete, removing the second unguarded inline read entirely.
+        TDD-006 added; RED confirmed against the reviewed subject
+        (60b699b) before re-applying the fix -- AttributeError: 'str'
+        object has no attribute 'get', matching the Reviewer's own
+        reproduction exactly. R002 (MAJOR) fixed by replacing the bare
+        .forge/adapters/ material_prefixes entry with two exact
+        material_paths entries (.forge/adapters/claude-code/installation.yml,
+        .forge/adapters/codex/installation.yml), matching Architecture's
+        own stated .forge/adapters/*/installation.yml design exactly.
+        TDD-007 added; RED confirmed against the reviewed policy before
+        the fix. R003 (OBSERVATION) required no fix. Resolution Delta
+        (git diff 60b699b..ff8fe51, excluding manifest.yml/provenance.yml/
+        review.md): discovery.md (addendum), tasks.md, tdd-evidence.yml,
+        verification.md, protocol/policies/merge-readiness.yml,
+        src/forge_cli/merge_readiness/evaluator.py,
+        tests/cli/test_merge_check.py,
+        tests/unit/test_merge_readiness_policy.py -- no file outside
+        this Change's own directory, the two files Scope names, and their
+        tests touched; no Out-of-Scope Mutation. Full pytest suite: 704
+        passed (was 702 pre-Resolution); forge validate/doctor clean.
