@@ -22,3 +22,20 @@ records:
         path: plan.md
         value: 0124254a52023f83e2649ee2fdc8ce9284893416090c81c2bfd7f11414e153e8
       statement: The user explicitly approved continuation of CHG-0047 to Implementation in the active session on 2026-08-25, via AskUserQuestion, after reviewing the Discovery Repository Truth Audit, the Specification (FR-001-FR-005, NFR-001), the Test Design (TD-001-TD-007), and the 8-item Plan summary, selecting "Aprovar e prosseguir".
+  - id: implementation-subject-001
+    role: implementation
+    execution:
+      id: claude-code-implementation-0047-subject-001
+      context_id: claude-code-session-2026-08-25-subject-001
+    recorded_at: '2026-08-25T00:00:00Z'
+    revision:
+      id: chg-0047-implementation-001
+      immutable_ref:
+        type: git_commit
+        value: c5418daeb5a3dd0aa9bf21d166cb8d57bfc4fa68
+      commit: c5418daeb5a3dd0aa9bf21d166cb8d57bfc4fa68
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: implementation-subject
+      statement: Frozen CHG-0047 implementation subject (immutable per C-026 once committed) — includes capabilities/README.md, capabilities/capability.md, src/forge_cli/capabilities/{__init__.py,model.py,loader.py}, tests/capabilities/{test_model.py,test_loader.py}, and all CHG-0047 planning/design/verification Artifacts. Reviewable Git workspace confirmed clean before freeze (only this Change's own review.md, review-control metadata, is untracked).
