@@ -10,6 +10,31 @@ until then.
 
 ## Unreleased
 
+### Capability Architecture Foundation
+
+Introduced the Forge Capability abstraction: a specialized, reusable
+agentic competency, defined canonically in a Harness-independent
+`CAPABILITY.md`, distinct from any Harness Skill a future Adapter
+derives from it. `capabilities/README.md` documents the concept, its
+architectural boundaries (a Capability cannot own or redefine Protocol
+lifecycle, Flow selection, Change lifecycle, Gates, approval semantics,
+or human authority), and its relation to Core/Flow/Harness
+Adapters/repository-native evidence — including an explicit
+disambiguation from the pre-existing, unrelated
+`src/forge_cli/adapters/capabilities.py` (Harness capability
+requirements). `capabilities/capability.md` defines the minimal human
+contract (Identity, Purpose, Applicability, Inputs, Behavior, Outputs,
+Evidence Expectations — no JSON Schema). `src/forge_cli/capabilities/`
+adds a frozen `Capability` model and a deterministic
+`load_capability(path)` loader (locate → read → parse → normalize →
+return), with CommonMark-correct fenced-code-block handling so a
+Capability's own illustrative examples are never mistaken for real
+section boundaries. This Change is the foundation only — no concrete
+Capability (`investigate` or otherwise), registry, executor, or new
+Gate was introduced. See
+`docs/adr/0019-capability-architecture-foundation.md` and
+`.forge/changes/CHG-0047-capability-architecture-foundation/`.
+
 ### Agent Adapter Skill Authority Consolidation
 
 Collapsed the Reviewer/Resolver-independence (C-026) text the Claude Code

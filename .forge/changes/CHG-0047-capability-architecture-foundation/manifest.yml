@@ -92,7 +92,16 @@ review:
       new_material_findings: 0
       finding_classes: []
 documentation:
-  impact_evaluated: false
+  impact_evaluated: true
+  update_required: true
+  reason: >-
+    Updated: CHANGELOG.md (Unreleased entry) and
+    docs/adr/0019-capability-architecture-foundation.md (F-008: a new
+    architectural layer -- the Forge Capability concept, its boundary
+    with Core/Flow/Harness Adapters, and the deliberate F-010 foundation-
+    simplicity constraint -- is a material Architecture Change). No RFC
+    (no Protocol integer, Schema, or Gate semantics changed). No
+    Knowledge Capture Artifact (STANDARD Flow does not include one).
 decisions:
   - id: DEC-001
     class: technical
