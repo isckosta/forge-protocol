@@ -27,6 +27,7 @@ REQUIRED_SECTIONS: tuple[str, ...] = (
 
 _FRONTMATTER_PATTERN = re.compile(r"\A---\n(.*?)\n---\n", re.DOTALL)
 _SECTION_HEADING_PATTERN = re.compile(r"^##[ \t]+(.+?)[ \t]*$", re.MULTILINE)
+_FENCE_PATTERN = re.compile(r"^(```|~~~)")
 
 
 class CapabilityDefinitionError(ValueError):
@@ -82,13 +83,22 @@ def load_capability(path: Path) -> Capability:
 
 
 def _parse_sections(body: str, path: Path) -> dict[str, str]:
-    headings = list(_SECTION_HEADING_PATTERN.finditer(body))
+    headings: list[tuple[str, int, int]] = []
+    in_fence = False
+    offset = 0
+    for line in body.splitlines(keepends=True):
+        if _FENCE_PATTERN.match(line):
+            in_fence = not in_fence
+        elif not in_fence:
+            match = _SECTION_HEADING_PATTERN.match(line.rstrip("\n"))
+            if match is not None:
+                headings.append((match.group(1).strip(), offset, offset + len(line)))
+        offset += len(line)
+
     sections: dict[str, str] = {}
-    for index, match in enumerate(headings):
-        name = match.group(1).strip()
-        start = match.end()
-        end = headings[index + 1].start() if index + 1 < len(headings) else len(body)
-        sections[name] = body[start:end].strip()
+    for index, (name, _, heading_end) in enumerate(headings):
+        section_end = headings[index + 1][1] if index + 1 < len(headings) else len(body)
+        sections[name] = body[heading_end:section_end].strip()
 
     for required in REQUIRED_SECTIONS:
         if not sections.get(required):

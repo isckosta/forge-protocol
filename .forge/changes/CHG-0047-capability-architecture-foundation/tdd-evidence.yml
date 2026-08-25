@@ -1,7 +1,7 @@
 schema: forge/tdd-evidence@1
 change: CHG-0047
 status: compliant
-cycle_count: 2
+cycle_count: 3
 cycles:
   - id: TDD-001
     title: Minimal, immutable, Harness-neutral Capability model
@@ -30,6 +30,18 @@ cycles:
     notes:
       - No package/fallback resolution logic was introduced (unlike protocol_resources.resolve_protocol_root) — the loader takes an explicit Path, matching NFR-001 and the Discovery finding that repository-native capability definitions do not need packaged-resource fallback.
       - No discovery/enumeration, registry, cache, composition, or execution was introduced.
-full_suite:
-  command: .venv/bin/python -m pytest -q
-  result: 746 passed, 2 warnings (warnings pre-exist this Change; unrelated experience-capture tests deliberately inject failures)
+  - id: TDD-003
+    title: Section parser does not mistake a heading-shaped line inside a fenced code block for a new section
+    requirements: [FR-004]
+    origin: Independent Strict Review Iteration 1, Finding R-002
+    behavior: A required section's body may contain a fenced code block (```` ``` ````/`~~~`) illustrating markdown structure — including a line that looks like a `##` heading — without that inner line being mistaken for the start of a new section. capability.md's own "Example skeleton" section demonstrates exactly this pattern, so the loader must not silently truncate a section at a heading-shaped line inside a fence.
+    red:
+      command: .venv/bin/python -m pytest tests/capabilities/test_loader.py -k fenced -q
+      result: 1 failed
+      reason: The prior regex-based section scan (re.MULTILINE over the whole body) matched any line starting with "## ", including one nested inside a fenced code block, and silently truncated the enclosing section's content there instead of raising an error or including it verbatim.
+    green:
+      command: .venv/bin/python -m pytest tests/capabilities/ -q
+      result: 26 passed
+    notes:
+      - Fix: _parse_sections now scans body line-by-line, toggling fence state on lines starting with ``` or ~~~, and only recognizes a "## " line as a section heading when not inside an open fence.
+      - Full suite re-verified after this fix: 747 passed, 2 warnings (see verification.md).

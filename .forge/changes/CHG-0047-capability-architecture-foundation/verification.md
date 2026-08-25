@@ -25,8 +25,8 @@ was introduced.
 
 ## Test Evidence
 
-- `.venv/bin/python -m pytest tests/capabilities/ -q`: **25 passed**.
-- Full suite: `.venv/bin/python -m pytest -q`: **746 passed, 2 warnings**
+- `.venv/bin/python -m pytest tests/capabilities/ -q`: **26 passed**.
+- Full suite: `.venv/bin/python -m pytest -q`: **747 passed, 2 warnings**
   (warnings pre-exist this Change — deliberate failure injection in
   `tests/unit/test_experience_capture.py`, unrelated to this Change).
 - `TDD-001` (RED, `tests/capabilities/test_model.py`): failed collection
@@ -36,7 +36,13 @@ was introduced.
 - `TDD-002` (RED, `tests/capabilities/test_loader.py`): failed collection
   before the change (`ModuleNotFoundError: No module named
   'forge_cli.capabilities.loader'`) for the expected reason; passes after
-  (22 passed).
+  (22 passed at the time; 23 after TDD-003 added one more test).
+- `TDD-003` (RED, `tests/capabilities/test_loader.py -k fenced`): added in
+  response to independent Strict Review Iteration 1, Finding R-002 —
+  failed for the expected reason (a heading-shaped line inside a fenced
+  code block inside a section body was silently treated as the start of
+  a new section, truncating the enclosing section); passes after fixing
+  `_parse_sections` to track fence state.
 
 ## Forge Evidence
 
@@ -83,9 +89,25 @@ capability contract, per the original request; `capability.md` is prose
 with a two-field frontmatter (`capability`, `schema`) and seven `##`
 sections, matching the minimal, human contract FR-002 requires.
 
-Independent Strict Review remains pending.
+Independent Strict Review Iteration 1 (`review.md`) found two defects in
+the revision it evaluated, both fixed in this revision before Iteration
+2: `tdd-evidence.yml` carried a `full_suite:` key not permitted by
+`forge/tdd-evidence@1`'s schema (`additionalProperties: false`), which
+made `tests/contract/test_protocol_contract.py::test_canonical_yaml_instances_satisfy_their_declared_schemas`
+fail (R-001, BLOCKER) — removed; and the section parser mistook a
+heading-shaped line inside a fenced code block for a new section,
+silently truncating the enclosing section (R-002, MAJOR) — fixed by
+tracking fence state in `_parse_sections`, with a regression test
+(TDD-003). Two non-blocking observations from Iteration 1 (a
+non-`re.escape`d path in one `pytest.raises(match=...)` call; duplicate
+`##` headings silently overwrite rather than error) were left as
+documented, accepted limitations — neither affects any Acceptance
+Criterion, and manufacturing a fix for a non-blocking, low-likelihood
+edge case was judged disproportionate for a foundation Change (C-039).
 
 ## Conclusion
 
-Verification passes for the implemented scope; the Change is not marked
-complete until independent Strict Review is performed.
+Verification passes for the implemented scope, including the fixes made
+in response to independent Strict Review Iteration 1's findings. The
+Change is not marked complete until independent Strict Review Iteration
+2 passes against this revision.

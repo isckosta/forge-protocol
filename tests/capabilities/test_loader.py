@@ -110,3 +110,23 @@ def test_empty_required_section_raises_capability_definition_error(
 
     with pytest.raises(CapabilityDefinitionError, match=empty_section):
         load_capability(path)
+
+
+def test_heading_shaped_line_inside_a_fenced_code_block_is_not_a_new_section(
+    tmp_path: Path,
+) -> None:
+    sections = {name: f"{name} body text." for name in _ALL_SECTIONS}
+    sections["Behavior"] = (
+        "Behavior text before the example.\n"
+        "```\n"
+        "## Fake Heading Inside Code Block\n"
+        "```\n"
+        "Behavior text after the example."
+    )
+    body = "\n".join(f"## {name}\n{text}\n" for name, text in sections.items())
+    path = _write(tmp_path, f"---\ncapability: sample\nschema: 1\n---\n\n{body}")
+
+    capability = load_capability(path)
+
+    assert capability.behavior == sections["Behavior"]
+    assert "Fake Heading" not in capability.outputs
