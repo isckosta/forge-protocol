@@ -448,3 +448,46 @@ records:
         Iteration 4 starts a new run) -- below the Convergence Limit of 2,
         no Non-Convergence. Verdict: FAILED. Full findings in review.md,
         "## Iteration 4 -- Resolution Verification".
+  - id: resolution-003
+    role: resolution
+    execution:
+      id: claude-code-implementation-0046
+      context_id: claude-code-session-2026-08-25
+    recorded_at: '2026-08-25T05:00:00Z'
+    scope:
+      - .forge/changes/CHG-0046-merge-readiness-post-review-artifact-scope/architecture.md
+      - .forge/changes/CHG-0046-merge-readiness-post-review-artifact-scope/specification.md
+      - .forge/changes/CHG-0046-merge-readiness-post-review-artifact-scope/tasks.md
+      - .forge/changes/CHG-0046-merge-readiness-post-review-artifact-scope/tdd-evidence.yml
+      - .forge/changes/CHG-0046-merge-readiness-post-review-artifact-scope/verification.md
+      - src/forge_cli/merge_readiness/evaluator.py
+      - tests/cli/test_merge_check.py
+    targets: [R005]
+    revision:
+      id: chg-0046-resolution-003
+      immutable_ref:
+        type: git_commit
+        value: e4832add69e85a87f50e86f20a8b1edca58a7299
+      commit: e4832add69e85a87f50e86f20a8b1edca58a7299
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: review.md
+      statement: >-
+        Resolution of Resolution Verification Iteration 4 (review-004)
+        finding R005 (BLOCKER): added the missing lower-bound ancestor
+        check (subject_commit an ancestor of, or equal to, the renewal
+        record's own commit) alongside the existing upper bound, in
+        evaluator.py's MR-015 renewal lookup. TDD-012 added; RED confirmed
+        against the reviewed subject (6c6cdab) before re-applying the fix,
+        matching the Reviewer's own end-to-end fixture reproduction
+        exactly. Also corrected specification.md's FR-001/AC-001 text
+        (previously required exact commit equality, contradicting the
+        actual, intentional ancestor-based implementation Architecture
+        already described) and added AC-008. Resolution Delta (git diff
+        6c6cdab..e4832ad, excluding manifest.yml/provenance.yml/review.md):
+        exactly the paths in scope above -- no file outside this Change's
+        own directory and the evaluator.py/tests Scope already named
+        touched; no Out-of-Scope Mutation. Full suite: 707 passed (was
+        706 before this Resolution's TDD-012 net-addition). forge
+        validate/doctor clean once refrozen.
