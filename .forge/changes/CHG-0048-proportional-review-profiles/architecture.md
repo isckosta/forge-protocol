@@ -71,7 +71,7 @@ Ganha `profile: <...>` ao lado dos `strict`/`adversarial` de topo, espelhando o 
 
 ### 4. Schemas
 
-- `protocol/schemas/change-v2.schema.json`: `review` object ganha `"profile": {"enum": ["focused", "standard", "strict"]}` opcional.
+- `protocol/schemas/change-v2.schema.json`: `review.iterations[]`'s item schema ganha `"profile": {"enum": ["focused", "standard", "strict"]}` opcional — registrado **por Iteration**, não como um campo `review.profile` de topo. Isto é deliberado, não um esquecimento: um campo de topo seria exatamente o tipo de valor cacheado/potencialmente obsoleto que FR-012 proíbe (o profile efetivo deriva sempre de `manifest.flow.current`, nunca de um valor persistido); registrar por Iteration preserva evidência histórica precisa de qual profile se aplicava quando aquele Iteration específico ocorreu, coerente com FR-012's regra de não-invalidação retroativa.
 - `protocol/schemas/policy-review-v2.schema.json`: idem (já `additionalProperties: true`, mas o campo é declarado explicitamente por clareza e para F-011).
 - `protocol/schemas/project-flow.schema.json`: `review` object ganha `"profile": {"enum": [...]}` opcional, ao lado do `blocking` já existente.
 - `protocol/schemas/flow.schema.json`: `review` sub-schema — `required`/`strict`/`adversarial` continuam presentes (compatibilidade com consumidores existentes), mas `strict`/`adversarial` deixam de ser `const: true` fixo e passam a `{"type": "boolean"}`; adiciona-se `"profile": {"enum": [...]}`, `"required": ["required", "profile"]` (strict/adversarial tornam-se deriváveis do profile, não mais obrigatórios como consts — DEC-001-adjacent, já coberto por FR-008's Boundary).

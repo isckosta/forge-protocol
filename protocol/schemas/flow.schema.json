@@ -122,11 +122,12 @@
     "review": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["required", "strict", "adversarial"],
+      "required": ["required", "profile", "strict", "adversarial"],
       "properties": {
         "required": {"const": true},
-        "strict": {"const": true},
-        "adversarial": {"const": true}
+        "profile": {"enum": ["focused", "standard", "strict"]},
+        "strict": {"type": "boolean"},
+        "adversarial": {"type": "boolean"}
       }
     }
   },

@@ -8,7 +8,7 @@
   "properties": {
     "schema": {"const": "forge/project-flow@1"},
     "flow": {"type": "object", "additionalProperties": false, "required": ["canonical", "enabled"], "properties": {"canonical": {"enum": ["fast", "standard", "full"]}, "enabled": {"type": "boolean"}}},
-    "review": {"type": "object", "additionalProperties": false, "properties": {"blocking": {"type": "array", "uniqueItems": true, "items": {"enum": ["blocker", "major", "minor", "observation"]}}}},
+    "review": {"type": "object", "additionalProperties": false, "properties": {"blocking": {"type": "array", "uniqueItems": true, "items": {"enum": ["blocker", "major", "minor", "observation"]}}, "profile": {"enum": ["focused", "standard", "strict"]}}},
     "testing": {"type": "object", "additionalProperties": false, "properties": {"approach": {"const": "tdd_first"}}}
   }
 }

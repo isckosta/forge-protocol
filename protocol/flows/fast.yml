@@ -67,5 +67,6 @@ escalation:
 
 review:
   required: true
-  strict: true
-  adversarial: true
+  profile: focused
+  strict: false
+  adversarial: false

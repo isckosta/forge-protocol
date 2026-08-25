@@ -770,6 +770,20 @@ def _validate_all_delegated_authority(r:Path)->list[ValidationFinding]:
     for mpath in sorted(changes.glob("*/manifest.yml")):
         out.extend(_validate_delegated_authority(r,mpath))
     return out
+_PROFILE_RANK={"focused":0,"standard":1,"strict":2}
+def _validate_review_profile_floor(root:Path,path:Path,effective:dict)->list[ValidationFinding]:
+    canonical=effective.get("canonical")if isinstance(effective,dict)else None
+    canonical_flow=canonical.get("flow")if isinstance(canonical,dict)else None
+    canonical_review=canonical_flow.get("review")if isinstance(canonical_flow,dict)else None
+    canonical_profile=canonical_review.get("profile","strict")if isinstance(canonical_review,dict)else"strict"
+    project=effective.get("project")if isinstance(effective,dict)else None
+    project_review=project.get("review")if isinstance(project,dict)else None
+    if not isinstance(project_review,dict)or"profile"not in project_review:return[]
+    project_profile=project_review["profile"]
+    if _PROFILE_RANK.get(project_profile,-1)<_PROFILE_RANK.get(canonical_profile,0):
+        return[ValidationFinding("E_FORGE_REVIEW_PROFILE_BELOW_FLOOR",str(path.relative_to(root)),
+            f"Project Flow declares review.profile={project_profile!r}, weaker than the canonical floor {canonical_profile!r} for this Flow.",path)]
+    return[]
 def validate_project(project_root:Path,protocol_root:Path)->ValidationResult:
     f=project_root/".forge"
     if not f.is_dir():return ValidationResult((ValidationFinding("E_FORGE_NOT_INITIALIZED",".forge/","Forge is not initialized. Run `forge init` from this Git repository.",f),))
@@ -778,9 +792,10 @@ def validate_project(project_root:Path,protocol_root:Path)->ValidationResult:
     pid=cfg["forge"]["protocol"];out=[];fd=f/"flows"
     if fd.is_dir():
         for p in sorted(fd.glob("*.yml")):
-            try:resolve_effective_flow(protocol_root,project_root,p.stem,pid)
-            except UnknownCanonicalFlowError as e:out.append(ValidationFinding("E_FORGE_UNKNOWN_CANONICAL_FLOW",str(p.relative_to(project_root)),str(e),p))
-            except InvalidProjectFlowConfigurationError as e:out.append(ValidationFinding("E_FORGE_INVALID_PROJECT_FLOW",str(p.relative_to(project_root)),str(e),p))
+            try:effective=resolve_effective_flow(protocol_root,project_root,p.stem,pid)
+            except UnknownCanonicalFlowError as e:out.append(ValidationFinding("E_FORGE_UNKNOWN_CANONICAL_FLOW",str(p.relative_to(project_root)),str(e),p));continue
+            except InvalidProjectFlowConfigurationError as e:out.append(ValidationFinding("E_FORGE_INVALID_PROJECT_FLOW",str(p.relative_to(project_root)),str(e),p));continue
+            out.extend(_validate_review_profile_floor(project_root,p,effective))
     try:resolve_effective_contract(protocol_root,project_root,pid)
     except CanonicalContractUnavailableError as e:out.append(ValidationFinding("E_FORGE_CANONICAL_CONTRACT_UNAVAILABLE",f"protocol/{pid}/contract/engineering.md",str(e),protocol_root))
     if pid==2:out.extend(_validate_protocol2_review_provenance(project_root))

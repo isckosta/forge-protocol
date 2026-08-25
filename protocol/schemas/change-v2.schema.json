@@ -38,6 +38,7 @@
               "subject_provenance": {"type": "string", "minLength": 1},
               "reviewer_provenance": {"type": "string", "minLength": 1},
               "status": {"enum": ["pending", "active", "passed", "failed"]},
+              "profile": {"enum": ["focused", "standard", "strict"]},
               "evidence_gap": {"type": "string", "minLength": 1},
               "kind": {"enum": ["initial_review", "resolution_verification"]},
               "full_review_required": {"type": "boolean"},
