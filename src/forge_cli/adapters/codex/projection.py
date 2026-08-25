@@ -9,6 +9,12 @@ from typing import Iterable
 
 import yaml
 
+from forge_cli.adapters.review_independence import (
+    REVIEWER_RESOLVER_INDEPENDENCE_LINES,
+    REVIEWER_RESOLVER_INDEPENDENCE_POINTER,
+    render_reviewer_resolver_independence_section,
+)
+
 
 @dataclass(frozen=True)
 class CodexProjectionInput:
@@ -55,45 +61,9 @@ def _resource(name: str, content: str) -> CodexProjectionResource:
     )
 
 
-_REVIEWER_RESOLVER_INDEPENDENCE_LINES: tuple[str, ...] = (
-    "",
-    "### Reviewer/Resolver independence",
-    "",
-    "- Under Protocol 2, Strict Review must run in an Execution and Execution Context "
-    "independent from the implementation or resolution that produced the revision under review.",
-    "- Merely changing Role inside the same conversation, thread, session, or reasoning "
-    "context is self-review and cannot satisfy Strict Review.",
-    "- Finish the Implementation/Resolution and all reviewable evidence before freezing the "
-    "review subject.",
-    "- Before freezing, ensure the effective reviewable Git workspace is clean: no committed "
-    "post-subject delta, staged reviewable changes, unstaged reviewable changes, or "
-    "Git-visible untracked reviewable files.",
-    "- Identify the concrete immutable subject revision. In Git, use the subject commit SHA; "
-    "`revision.id` alone is not sufficient.",
-    "- Record the frozen subject in `provenance.yml`; the Review Iteration references it "
-    "through `subject_provenance`.",
-    "- Only the exact Change-local `manifest.yml`, `provenance.yml`, and `review.md` paths are "
-    "review-control metadata that may differ after the freeze; do not generalize that "
-    "exception to the Change directory, matching basenames, symlinks, or rename targets.",
-    "- Git-ignored cache/editor/temp files do not count as reviewable workspace mutations for "
-    "the freeze invariant.",
-    "- Re-check committed, staged, unstaged, and untracked reviewable deltas after recording "
-    "review-control metadata.",
-    "- Start Strict Review against the frozen subject, not an ambiguous later HEAD or dirty "
-    "checkout.",
-    "- Record the independent Reviewer execution through `reviewer_provenance`; it must bind "
-    "to the exact same logical revision and immutable reference.",
-    "- Reviewer Execution and Context must both differ from the subject. Distinct invented IDs "
-    "are not evidence.",
-    "- `claimed` is insufficient; `recorded` is repository-native self-recorded evidence and "
-    "`verified` is stronger observer-backed evidence.",
-    "- After blocking findings are resolved, freeze the new Resolution revision and re-review "
-    "that concrete revision independently.",
-)
-
-
 def _gate_instructions(flows: Iterable[tuple[str, str]], protocol_id: int) -> str:
     sections: list[str] = []
+    independence_applies = False
     for flow_id, content in sorted(flows, key=lambda item: item[0]):
         data = yaml.safe_load(content) or {}
         gates = data.get("gates") or {}
@@ -139,9 +109,12 @@ def _gate_instructions(flows: Iterable[tuple[str, str]], protocol_id: int) -> st
                 "- Completion requires TDD compliance or an explicit, recorded exception."
             )
         if protocol_id >= 2 and flow_id in {"fast", "standard", "full"}:
-            lines.extend(_REVIEWER_RESOLVER_INDEPENDENCE_LINES)
+            independence_applies = True
+            lines.append(REVIEWER_RESOLVER_INDEPENDENCE_POINTER)
         if lines:
             sections.append("\n".join((f"### Flow `{flow_id}` gate obligations", "", *lines)))
+    if independence_applies:
+        sections.append(render_reviewer_resolver_independence_section().lstrip("\n"))
     return "\n\n".join(sections)
 
 

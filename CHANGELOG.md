@@ -10,6 +10,36 @@ until then.
 
 ## Unreleased
 
+### Agent Adapter Skill Authority Consolidation
+
+Collapsed the Reviewer/Resolver-independence (C-026) text the Claude Code
+and Codex Adapters project into a single shared source,
+`src/forge_cli/adapters/review_independence.py` — previously two
+independently hand-maintained copies, with the Claude Code Adapter
+additionally re-emitting the full block once per effective Flow (three
+times in a Protocol 2 project with FAST/STANDARD/FULL all enabled). The
+generated `SKILL.md` now renders the block exactly once, with a one-line
+pointer from each applicable Flow's gate-obligation section. Widened the
+generated `PreToolUse` guard's tool coverage from `Bash`-only to
+`Bash`+`Edit`+`Write` against the same three review-control paths, with
+an updated, honest disclosure of what remains uncovered (MCP filesystem
+tools, `NotebookEdit`, unverified subagent-issued calls). Added a
+Bootstrap-section instruction directing an operating agent to check the
+Adapter's existing digest-based drift record (`forge doctor`/`forge
+adapter doctor`) before trusting `references/*`, and a structured
+boundary-reporting format for human-authority/blocked/missing-evidence
+Gates. Committed `.forge/adapters/*/installation.yml` to this repository
+for the first time (previously untracked in this repository's entire
+history), so a fresh Git worktree inherits the correct Adapter drift
+baseline. See `docs/adr/0018-agent-adapter-skill-authority-consolidation.md`
+and `.forge/changes/CHG-0045-agent-adapter-architecture-skill-authority-consolidation/`
+(`specification-drift.md` in particular: republishing an Adapter whose
+installation record predates real canonical `protocol/` drift required a
+one-time, human-authorized bypass of `AdapterService`'s own guards, not
+an "ordinary `forge adapter update`" — a supported recovery path for
+other adopters in the same position is recorded follow-up work, not
+built by this Change).
+
 ### Merge Readiness Post-Review Artifact Scope
 
 Fixed two real defects in the `forge-merge-readiness` gate

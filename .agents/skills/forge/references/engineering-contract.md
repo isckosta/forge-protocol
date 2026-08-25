@@ -92,7 +92,13 @@ The review-control metadata exception MUST NOT allow that metadata to redefine i
 
 After blocking Findings are resolved, acceptance MUST use a new Review Iteration referencing the Resolution provenance for the resolved revision and Reviewer provenance independent from that Resolution Execution and Context. A Resolver MUST NOT resolve blocking Findings in the Reviewer's Execution Context.
 
-The same Harness, provider, model, or agent implementation MAY perform multiple Roles when real execution/context boundaries exist. Core MUST remain provider-independent and MUST NOT require remote infrastructure to establish the repository-native provenance ledger.
+The guarantee above is execution/context independence, not vendor, model, or
+provider diversity. The same Harness, provider, model, or agent implementation
+MAY perform multiple Roles when the required execution/context boundaries are
+real. This is a disclosed limitation of the guarantee, not a substitute for
+the independent Execution and Execution Context required by this rule. Core
+MUST remain provider-independent and MUST NOT require remote infrastructure to
+establish the repository-native provenance ledger.
 
 ## C-027 — Blocking review evidence blocks Completion
 Unresolved BLOCKER Findings MUST prevent Completion. When an active external review surface exists, unresolved threads containing findings classified as blocking MUST also prevent Completion. Without an external review surface, the thread condition is satisfied trivially.
@@ -226,12 +232,15 @@ Verification SHOULD present its Result before supporting evidence. Review SHOULD
 An approved Plan SHOULD NOT be edited to silently absorb an Implementation-time discovery. Such a discovery SHOULD be recorded in Verification, a Decision record, or a documented re-Plan, per `protocol/artifact-structure.md`.
 
 ## C-077 — Plan Implementation requires recorded human authorization
-A Change MUST NOT cross its Plan/Implementation boundary while its Plan is declared `approved` unless its manifest records a material technical Decision owned by `plan` with `authority: human`, `status: resolved`, and `resolved_via: human_decision`, and the Plan and provenance record the explicit human confirmation observed by the operator. An agent MUST NOT silently infer or claim that confirmation. This is recorded repository evidence, not cryptographic or external attestation. This rule applies from CHG-0025 onward; `specification_gate_passed` remains a technical Gate.
+A Change MUST NOT cross its Plan/Implementation boundary while its Plan is declared `approved` unless its manifest records a material technical Decision owned by `plan` with `authority: human`, `status: resolved`, and `resolved_via: human_decision`, and the Plan and provenance record the explicit human confirmation. An agent MUST NOT silently infer or claim that confirmation. `forge validate` MUST report a finding when the required Decision is absent or unresolved. This is recorded repository evidence, not cryptographic or external attestation; a provenance record observed only by `self` does not satisfy the rule, and the recorded confirmation MUST identify the operator as observer. This rule applies prospectively from CHG-0025 onward; lower-numbered historical Changes remain valid under C-045/C-046. `specification_gate_passed` remains a technical lifecycle Gate and is not human approval evidence under this rule.
 
-For C-077, `forge validate` MUST fail closed when the Plan or provenance is
-malformed, foreign to the Change, self-observed, or missing the canonical
-language-invariant approval markers. Historical Changes allocated before
-CHG-0025 remain valid.
+## C-078 — Merge Readiness is distinct from validity
+A Merge Readiness evaluation, when provided, MUST remain distinct from
+`forge validate` and MUST derive authorization from the effective revision,
+applicable Flow requirements, and admissible repository-native evidence.
+Manifest claims alone MUST NOT authorize merge. Material changes without
+governing Change provenance and materially ambiguous evidence MUST fail
+closed.
 
 ## C-070 — Interaction language governs prose only
 Canonical identifiers — schema keys, Change and requirement identifiers, Gate names, and Contract rule identifiers — MUST remain invariant regardless of the configured interaction language. Interaction language MAY vary generated and human-authored prose; it MUST NOT vary any machine-readable identifier.
@@ -252,6 +261,20 @@ A Change introducing a new Harness Adapter MUST pass the shared, Harness-agnosti
 
 ## C-075 — Migration MUST be truth-preserving
 A migration MUST NOT fabricate, infer, or reconstruct data that does not already exist in the instance being migrated. A transformation that cannot be performed without inventing information MUST be refused, not approximated.
+
+## C-076 — Complete baseline for a first-commit Change
+A Change conducted in a repository with no prior Git commit MUST first
+declare its intended repository scope and commit the complete state that
+existed before the Change began as one baseline, with no in-scope file
+excluded, before Implementation begins. Change artifacts created after that
+point are not pre-existing state. The baseline commit represents the
+before-state, not Implementation. Subsequent Change commits MUST therefore
+be reviewable as the delta from that complete baseline.
+This rule applies only to Changes begun after C-076 adoption; it does not
+retroactively invalidate a previously valid Change or require a historical
+Change to acquire a baseline it did not have.
+This prospective boundary preserves existing instance meaning under C-045
+and C-046 while requiring the complete baseline for newly begun Changes.
 
 # Forge Project Engineering Contract
 

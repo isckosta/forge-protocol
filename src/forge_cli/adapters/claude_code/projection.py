@@ -10,6 +10,12 @@ from typing import Iterable
 
 import yaml
 
+from forge_cli.adapters.review_independence import (
+    REVIEWER_RESOLVER_INDEPENDENCE_LINES,
+    REVIEWER_RESOLVER_INDEPENDENCE_POINTER,
+    render_reviewer_resolver_independence_section,
+)
+
 
 @dataclass(frozen=True)
 class ClaudeCodeProjectionInput:
@@ -72,45 +78,9 @@ def _interaction_language_line(interaction_language: str) -> str:
     )
 
 
-_REVIEWER_RESOLVER_INDEPENDENCE_LINES: tuple[str, ...] = (
-    "",
-    "### Reviewer/Resolver independence",
-    "",
-    "- Under Protocol 2, Strict Review must run in an Execution and Execution Context "
-    "independent from the implementation or resolution that produced the revision under review.",
-    "- Merely changing Role inside the same conversation, thread, session, or reasoning "
-    "context is self-review and cannot satisfy Strict Review.",
-    "- Finish the Implementation/Resolution and all reviewable evidence before freezing the "
-    "review subject.",
-    "- Before freezing, ensure the effective reviewable Git workspace is clean: no committed "
-    "post-subject delta, staged reviewable changes, unstaged reviewable changes, or "
-    "Git-visible untracked reviewable files.",
-    "- Identify the concrete immutable subject revision. In Git, use the subject commit SHA; "
-    "`revision.id` alone is not sufficient.",
-    "- Record the frozen subject in `provenance.yml`; the Review Iteration references it "
-    "through `subject_provenance`.",
-    "- Only the exact Change-local `manifest.yml`, `provenance.yml`, and `review.md` paths are "
-    "review-control metadata that may differ after the freeze; do not generalize that "
-    "exception to the Change directory, matching basenames, symlinks, or rename targets.",
-    "- Git-ignored cache/editor/temp files do not count as reviewable workspace mutations for "
-    "the freeze invariant.",
-    "- Re-check committed, staged, unstaged, and untracked reviewable deltas after recording "
-    "review-control metadata.",
-    "- Start Strict Review against the frozen subject, not an ambiguous later HEAD or dirty "
-    "checkout.",
-    "- Record the independent Reviewer execution through `reviewer_provenance`; it must bind "
-    "to the exact same logical revision and immutable reference.",
-    "- Reviewer Execution and Context must both differ from the subject. Distinct invented IDs "
-    "are not evidence.",
-    "- `claimed` is insufficient; `recorded` is repository-native self-recorded evidence and "
-    "`verified` is stronger observer-backed evidence.",
-    "- After blocking findings are resolved, freeze the new Resolution revision and re-review "
-    "that concrete revision independently.",
-)
-
-
 def _gate_instructions(flows: Iterable[tuple[str, str]], protocol_id: int) -> str:
     sections: list[str] = []
+    independence_applies = False
     for flow_id, content in sorted(flows, key=lambda item: item[0]):
         data = yaml.safe_load(content) or {}
         gates = data.get("gates") or {}
@@ -156,9 +126,12 @@ def _gate_instructions(flows: Iterable[tuple[str, str]], protocol_id: int) -> st
                 "- Completion requires TDD compliance or an explicit, recorded exception."
             )
         if protocol_id >= 2 and flow_id in {"fast", "standard", "full"}:
-            lines.extend(_REVIEWER_RESOLVER_INDEPENDENCE_LINES)
+            independence_applies = True
+            lines.append(REVIEWER_RESOLVER_INDEPENDENCE_POINTER)
         if lines:
             sections.append("\n".join((f"### Flow `{flow_id}` gate obligations", "", *lines)))
+    if independence_applies:
+        sections.append(render_reviewer_resolver_independence_section().lstrip("\n"))
     return "\n\n".join(sections)
 
 
@@ -180,14 +153,15 @@ def _reference_links(
 
 
 def _hook_frontmatter_lines() -> tuple[str, ...]:
-    return (
-        "hooks:",
-        "  PreToolUse:",
-        '    - matcher: "Bash"',
-        "      hooks:",
-        "        - type: command",
-        f'          command: "${{CLAUDE_PROJECT_DIR}}/.claude/{_HOOK_RELATIVE_PATH}"',
-    )
+    lines: list[str] = ["hooks:", "  PreToolUse:"]
+    for matcher in ("Bash", "Edit", "Write"):
+        lines.extend((
+            f'    - matcher: "{matcher}"',
+            "      hooks:",
+            "        - type: command",
+            f'          command: "${{CLAUDE_PROJECT_DIR}}/.claude/{_HOOK_RELATIVE_PATH}"',
+        ))
+    return tuple(lines)
 
 
 def _skill_content(
@@ -220,16 +194,20 @@ def _skill_content(
         "## Illustrative enforcement hook",
         "",
         "This skill registers a `PreToolUse` hook (active once this skill has "
-        "been invoked in a session, not from session start) that denies a "
+        "been invoked in a session, not from session start) that denies: a "
         "`Bash` command matching an in-place-mutation shape "
-        "(`sed -i`/`perl -i`/`truncate`/output redirection) targeting "
-        "`.forge/changes/*/manifest.yml`, `provenance.yml`, or `review.md`. "
-        "It does not match read-only or version-control commands "
-        "(`cat`/`ls`/`git add`/`git commit`/`git status`/`git diff`/`git "
-        "show`/`grep`) against the same paths. This is Core's honest "
-        "boundary (C-073): the hook enforces this one narrow, "
-        "mechanically-checkable pattern; it is not a general security "
-        "boundary and is not represented as one.",
+        "(`sed -i`/`perl -i`/`truncate`/output redirection); and a direct "
+        "`Edit` or `Write` call whose target file is one of "
+        "`.forge/changes/*/manifest.yml`, `provenance.yml`, or `review.md` "
+        "(CHG-0045). It does not match read-only or version-control "
+        "commands (`cat`/`ls`/`git add`/`git commit`/`git status`/`git "
+        "diff`/`git show`/`grep`) against the same paths. This remains a "
+        "partial, illustrative guard, not a general security boundary "
+        "(C-073): it does not see MCP filesystem tools, `NotebookEdit`, "
+        "or a mutation of these paths issued by a subagent's own tool "
+        "calls -- whether Claude Code applies this session's `PreToolUse` "
+        "hooks to subagent-issued calls is unverified by this Adapter, and "
+        "is not claimed here.",
         "",
         gate_instructions,
     ))
@@ -255,9 +233,14 @@ def _hook_script_content() -> str:
         "#!/bin/sh",
         "set -eu",
         "",
-        "# Forge CHG-0018 FR-006: illustrative PreToolUse enforcement hook.",
-        "# Denies in-place shell mutation of Forge review-control metadata;",
-        "# never matches read-only or version-control commands (see SKILL.md).",
+        "# Forge CHG-0018 FR-006 / CHG-0045 FR-006: illustrative PreToolUse",
+        "# enforcement hook. Denies mutation of Forge review-control metadata",
+        "# via Bash shell redirection/in-place editing, or via a direct",
+        "# Edit/Write tool call targeting the same three paths; never matches",
+        "# read-only or version-control commands (see SKILL.md). This remains",
+        "# a partial, illustrative guard, not a general security boundary:",
+        "# it does not see MCP filesystem tools, NotebookEdit, or (unverified)",
+        "# subagent-issued tool calls.",
         "#",
         "# Strict Review R001 (CHG-0018 Iteration 1): a naive whole-string",
         "# substring match denied a plain git add/commit whenever an unrelated",
@@ -268,6 +251,19 @@ def _hook_script_content() -> str:
         "# separator such as && / || / ; / | between them), via a single grep -E",
         "# check, instead of two independent whole-string case patterns.",
         "input=\"$(cat)\"",
+        "tool_name=\"$(printf '%s' \"$input\" | jq -r '.tool_name // empty')\"",
+        "",
+        "if [ \"$tool_name\" = \"Edit\" ] || [ \"$tool_name\" = \"Write\" ]; then",
+        "  file_path=\"$(printf '%s' \"$input\" | jq -r '.tool_input.file_path // empty')\"",
+        "  case \"$file_path\" in",
+        "    .forge/changes/*/manifest.yml|.forge/changes/*/provenance.yml|.forge/changes/*/review.md|*/.forge/changes/*/manifest.yml|*/.forge/changes/*/provenance.yml|*/.forge/changes/*/review.md)",
+        "      printf '%s\\n' '{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"permissionDecision\":\"deny\",\"permissionDecisionReason\":\"Forge review-control metadata (manifest.yml/provenance.yml/review.md) must not be mutated directly via Edit/Write; use the normal repository-native path so changes stay auditable (CHG-0018 FR-006, CHG-0045 FR-006).\"}}'",
+        "      exit 0",
+        "      ;;",
+        "  esac",
+        "  exit 0",
+        "fi",
+        "",
         "command=\"$(printf '%s' \"$input\" | jq -r '.tool_input.command // empty')\"",
         "",
         "if printf '%s' \"$command\" | grep -Eq "
