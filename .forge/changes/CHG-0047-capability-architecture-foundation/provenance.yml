@@ -1,0 +1,286 @@
+schema: forge/execution-provenance@2
+change: CHG-0047
+records:
+  - id: plan-approval-001
+    role: implementation
+    execution:
+      id: claude-code-implementation-0047
+      context_id: claude-code-session-2026-08-25
+    recorded_at: '2026-08-25T00:00:00Z'
+    revision:
+      id: chg-0047-plan-approval-001
+      immutable_ref:
+        type: git_commit
+        value: 9e6fe0ec1d33154ba9cfec0a035425b015da83b4
+      commit: 9e6fe0ec1d33154ba9cfec0a035425b015da83b4
+    source:
+      assurance: recorded
+      observed_by: operator
+      reference: plan.md#approval-record
+      content_digest:
+        algorithm: sha256
+        path: plan.md
+        value: 95738f45d293d02e7354ade0f1ab7f66edc16c1a9e02e24991c4634ee68151e3
+      statement: "The user explicitly approved continuation of CHG-0047 to Implementation in the active session on 2026-08-25, via AskUserQuestion, after reviewing the Discovery Repository Truth Audit, the Specification (FR-001-FR-005, NFR-001), the Test Design (TD-001-TD-007), and the 8-item Plan summary, selecting \"Aprovar e prosseguir\". content_digest recomputed after the R-008 fix (removal of unfilled template text and a duplicate Implementation Boundary section from plan.md, per review.md's Iteration 4/Resolution-of-R-008) -- the approved substance (the 8-item Plan and the Human Plan Authorization prose) is unchanged; only trailing template cruft was removed."
+  - id: implementation-subject-001
+    role: implementation
+    execution:
+      id: claude-code-implementation-0047-subject-001
+      context_id: claude-code-session-2026-08-25-subject-001
+    recorded_at: '2026-08-25T00:00:00Z'
+    revision:
+      id: chg-0047-implementation-001
+      immutable_ref:
+        type: git_commit
+        value: c5418daeb5a3dd0aa9bf21d166cb8d57bfc4fa68
+      commit: c5418daeb5a3dd0aa9bf21d166cb8d57bfc4fa68
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: implementation-subject
+      statement: Frozen CHG-0047 implementation subject (immutable per C-026 once committed) — includes capabilities/README.md, capabilities/capability.md, src/forge_cli/capabilities/{__init__.py,model.py,loader.py}, tests/capabilities/{test_model.py,test_loader.py}, and all CHG-0047 planning/design/verification Artifacts. Reviewable Git workspace confirmed clean before freeze (only this Change's own review.md, review-control metadata, is untracked).
+  - id: reviewer-001
+    role: review
+    execution:
+      id: ac1fb130508c0e7cc
+      context_id: independent-review-context-ac1fb130508c0e7cc
+    recorded_at: '2026-08-25T00:00:00Z'
+    revision:
+      id: chg-0047-implementation-001
+      immutable_ref:
+        type: git_commit
+        value: c5418daeb5a3dd0aa9bf21d166cb8d57bfc4fa68
+      commit: c5418daeb5a3dd0aa9bf21d166cb8d57bfc4fa68
+    source:
+      assurance: recorded
+      observed_by: operator
+      reference: review.md#iteration-1
+      statement: Independent Strict Review Iteration 1 (fresh execution, isolated Git worktree at .claude/worktrees/agent-ac1fb130508c0e7cc, no shared context with Implementation) returned REQUEST CHANGES against c5418da — R-001 (BLOCKER, tdd-evidence.yml violated its own schema and verification.md's full-suite claim was false) and R-002 (MAJOR, section parser silently truncated a section at a heading-shaped line inside a fenced code block), plus 2 non-blocking OBSERVATIONs. Both findings were independently reproduced with concrete evidence before being reported.
+  - id: resolution-001
+    role: resolution
+    execution:
+      id: claude-code-implementation-0047-resolution-001
+      context_id: claude-code-session-2026-08-25-resolution-001
+    recorded_at: '2026-08-25T01:00:00Z'
+    scope:
+      - .forge/changes/CHG-0047-capability-architecture-foundation/tdd-evidence.yml
+      - .forge/changes/CHG-0047-capability-architecture-foundation/verification.md
+      - .forge/changes/CHG-0047-capability-architecture-foundation/review.md
+      - src/forge_cli/capabilities/loader.py
+      - tests/capabilities/test_loader.py
+    targets: [R-001, R-002]
+    revision:
+      id: chg-0047-resolution-001
+      immutable_ref:
+        type: git_commit
+        value: fbb1a8bd8768774a3b6df8bb583eb42d4219ec54
+      commit: fbb1a8bd8768774a3b6df8bb583eb42d4219ec54
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: review.md#resolution
+      statement: Resolution of Strict Review Iteration 1 (reviewer-001) findings R-001 and R-002. R-001 fixed by removing the schema-violating full_suite key from tdd-evidence.yml and correcting verification.md's full-suite count to the independently reproduced 747 passed. R-002 fixed by making loader.py's _parse_sections track fenced-code-block state and ignore heading-shaped lines inside an open fence, with a RED-before-GREEN regression test (TDD-003, tests/capabilities/test_loader.py::test_heading_shaped_line_inside_a_fenced_code_block_is_not_a_new_section). Re-ran full suite (747 passed, 2 warnings) and forge validate (PASS) after the fix. Reviewable Git workspace confirmed clean before this freeze (only this Change's own review.md differs from the reviewed subject by review-control content).
+  - id: reviewer-002
+    role: review
+    execution:
+      id: a23a2996c846c3c01
+      context_id: independent-review-context-a23a2996c846c3c01
+    recorded_at: '2026-08-25T02:00:00Z'
+    revision:
+      id: chg-0047-resolution-001
+      immutable_ref:
+        type: git_commit
+        value: fbb1a8bd8768774a3b6df8bb583eb42d4219ec54
+      commit: fbb1a8bd8768774a3b6df8bb583eb42d4219ec54
+    source:
+      assurance: recorded
+      observed_by: operator
+      reference: review.md#iteration-2
+      statement: Independent Strict Review Iteration 2 (Resolution Verification, fresh execution, isolated Git worktree at .claude/worktrees/agent-a23a2996c846c3c01, no shared context with the Resolution Execution or with Iteration 1's Reviewer) returned REQUEST CHANGES against fbb1a8b — R-003 (BLOCKER, the R-001 fix reintroduced a different schema violation in the same file via unquoted YAML notes strings, making the "747 passed" claim false again) and R-004 (MAJOR, the R-002 fence-tracking fix did not recognize an indented fence per CommonMark, reproducing R-002's original symptom), plus R-005 (MINOR, informational — mismatched fence delimiter type/unterminated fence produce a misleading diagnostic). All findings independently reproduced with concrete adversarial evidence, including cases beyond the Resolution's own shipped tests.
+  - id: resolution-002
+    role: resolution
+    execution:
+      id: claude-code-implementation-0047-resolution-002
+      context_id: claude-code-session-2026-08-25-resolution-002
+    recorded_at: '2026-08-25T03:00:00Z'
+    scope:
+      - .forge/changes/CHG-0047-capability-architecture-foundation/tdd-evidence.yml
+      - .forge/changes/CHG-0047-capability-architecture-foundation/verification.md
+      - .forge/changes/CHG-0047-capability-architecture-foundation/review.md
+      - src/forge_cli/capabilities/loader.py
+      - tests/capabilities/test_loader.py
+    targets: [R-003, R-004, R-005]
+    revision:
+      id: chg-0047-resolution-002
+      immutable_ref:
+        type: git_commit
+        value: ea433b64bda9e5a92977cdb05dd5efd7d10810a6
+      commit: ea433b64bda9e5a92977cdb05dd5efd7d10810a6
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: review.md#resolution-of-iteration-2
+      statement: Resolution of Strict Review Iteration 2 (reviewer-002) findings R-003, R-004, and R-005. R-003 fixed by quoting the two tdd-evidence.yml notes strings that YAML had parsed as single-key mappings. R-004 and R-005 (delimiter-type half) fixed by making loader.py's _FENCE_PATTERN tolerate up to 3 leading spaces/tabs and tracking which delimiter character opened the current fence, with a RED-before-GREEN regression test (TDD-004). R-005's remaining lower-severity half (unterminated fence / mismatched delimiter length producing a generic rather than fence-specific error) is a documented, accepted, non-silent limitation, not fixed (C-039 proportionality). Re-ran full suite (749 passed, 2 warnings) and forge validate (PASS) after the fix. Reviewable Git workspace confirmed clean before this freeze.
+  - id: reviewer-003
+    role: review
+    execution:
+      id: a853c531d6133a76b
+      context_id: independent-review-context-a853c531d6133a76b
+    recorded_at: '2026-08-25T04:00:00Z'
+    revision:
+      id: chg-0047-resolution-002
+      immutable_ref:
+        type: git_commit
+        value: ea433b64bda9e5a92977cdb05dd5efd7d10810a6
+      commit: ea433b64bda9e5a92977cdb05dd5efd7d10810a6
+    source:
+      assurance: recorded
+      observed_by: operator
+      reference: review.md#iteration-3
+      statement: Independent Strict Review Iteration 3 (Resolution Verification, fresh execution, isolated Git worktree at .claude/worktrees/agent-a853c531d6133a76b, no shared context with Resolution 2's Execution or with either prior Reviewer) returned REQUEST CHANGES against ea433b6 — R-006 (MAJOR, R-005's remaining "mismatched delimiter length" limitation can fail completely silently via a shorter same-type closing fence, contradicting the explicit "fails loudly" claim in tdd-evidence.yml/verification.md/review.md that justified not fixing it) and R-007 (MINOR, informational — indentation tolerance also accepts tabs beyond the documented "3 leading spaces," a documentation-accuracy gap, not a corruption risk). R-003/R-004/the delimiter-type half of R-005 independently re-confirmed fixed via adversarial cases beyond the shipped tests; no Out-of-Scope Mutation. This is the second consecutive resolution_verification Iteration with material findings, reaching Protocol 2's Convergence Limit (section 12-13).
+  - id: convergence-decision-001
+    role: implementation
+    execution:
+      id: claude-code-implementation-0047-convergence-001
+      context_id: claude-code-session-2026-08-25-convergence-001
+    recorded_at: '2026-08-25T05:00:00Z'
+    revision:
+      id: chg-0047-resolution-002
+      immutable_ref:
+        type: git_commit
+        value: ea433b64bda9e5a92977cdb05dd5efd7d10810a6
+      commit: ea433b64bda9e5a92977cdb05dd5efd7d10810a6
+    source:
+      assurance: recorded
+      observed_by: operator
+      reference: review.md#convergence-decision
+      statement: The user was presented, in the active chat session on 2026-08-25, with the Convergence Limit situation (R-006's finding, and the four available convergence_decision options with their consequences explained) and explicitly selected new_full_review via AskUserQuestion -- fix R-006, then have a fresh, unrestricted Initial Review re-evaluate the whole subject rather than another scoped Resolution Verification.
+  - id: resolution-003
+    role: resolution
+    execution:
+      id: claude-code-implementation-0047-resolution-003
+      context_id: claude-code-session-2026-08-25-resolution-003
+    recorded_at: '2026-08-25T05:30:00Z'
+    scope:
+      - .forge/changes/CHG-0047-capability-architecture-foundation/tdd-evidence.yml
+      - .forge/changes/CHG-0047-capability-architecture-foundation/verification.md
+      - .forge/changes/CHG-0047-capability-architecture-foundation/review.md
+      - src/forge_cli/capabilities/loader.py
+      - tests/capabilities/test_loader.py
+    targets: [R-006, R-007]
+    revision:
+      id: chg-0047-resolution-003
+      immutable_ref:
+        type: git_commit
+        value: 9f85aac996246ac014d81990ea87a917ab61d157
+      commit: 9f85aac996246ac014d81990ea87a917ab61d157
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: review.md#resolution-of-iteration-3
+      statement: Resolution of Strict Review Iteration 3 (reviewer-003) findings R-006 and R-007, per the recorded new_full_review convergence_decision. R-006 fixed by making loader.py's _parse_sections track the opening fence's delimiter run length and require a same-type closing run of at least that length, matching CommonMark's fence-closing rule, with a RED-before-GREEN regression test (TDD-005). R-007 addressed by correcting TDD-004's behavior description to accurately state tabs are also tolerated (no code change -- the deviation was in the safe, over-recognize-as-fence direction). Re-ran full suite (750 passed, 2 warnings) and forge validate (PASS) after the fix. Reviewable Git workspace confirmed clean before this freeze.
+  - id: reviewer-004
+    role: review
+    execution:
+      id: a74feac752af6f16c
+      context_id: independent-review-context-a74feac752af6f16c
+    recorded_at: '2026-08-25T06:00:00Z'
+    revision:
+      id: chg-0047-resolution-003
+      immutable_ref:
+        type: git_commit
+        value: 9f85aac996246ac014d81990ea87a917ab61d157
+      commit: 9f85aac996246ac014d81990ea87a917ab61d157
+    source:
+      assurance: recorded
+      observed_by: operator
+      reference: review.md#iteration-4
+      statement: Independent Strict Review Iteration 4 (fresh, unrestricted Initial Review per the recorded new_full_review convergence_decision -- fresh execution, isolated Git worktree at .claude/worktrees/agent-a74feac752af6f16c, no shared context with any prior Execution) returned PASS against 9f85aac -- no BLOCKER or MAJOR finding survived a full re-audit that included 20+ new adversarial cases beyond all five TDD cycles' shipped tests, several cross-checked against a real CommonMark parser, plus independent RED reproduction of TDD-004/TDD-005 by reverting each fix in the Reviewer's own worktree. One non-blocking MINOR finding (R-008, plan.md template-placeholder leftover and a duplicated Implementation Boundary section) was found; fixing it touches plan.md, a reviewable file, so per C-026 it still requires its own scoped Resolution Verification against the new revision before Completion, even though R-008 itself is non-blocking (see resolution-004 and reviewer-005 below).
+  - id: resolution-004
+    role: resolution
+    execution:
+      id: claude-code-implementation-0047-resolution-004
+      context_id: claude-code-session-2026-08-25-resolution-004
+    recorded_at: '2026-08-25T06:30:00Z'
+    scope:
+      - .forge/changes/CHG-0047-capability-architecture-foundation/plan.md
+    targets: [R-008]
+    revision:
+      id: chg-0047-resolution-004
+      immutable_ref:
+        type: git_commit
+        value: 53aa1f00bf50818fec219511c8c938fa98e9708f
+      commit: 53aa1f00bf50818fec219511c8c938fa98e9708f
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: review.md#resolution-of-r-008
+      statement: Resolution of Strict Review Iteration 4 (reviewer-004) finding R-008. plan.md's unfilled template placeholder line after the forge:plan-approval-record marker, and the duplicated Implementation Boundary section, were removed. The substantive human-approval record (provenance.yml's plan-approval-001, which references the immutable original plan.md commit 9e6fe0e and its own content_digest) is unaffected -- this fix only removes leftover template text from a later, unrelated part of the same file. No code, test, or other Artifact was touched. Reviewable Git workspace confirmed clean before this freeze.
+  - id: reviewer-005
+    role: review
+    execution:
+      id: a641ae74c47b0ecf8
+      context_id: independent-review-context-a641ae74c47b0ecf8
+    recorded_at: '2026-08-25T07:00:00Z'
+    revision:
+      id: chg-0047-resolution-004
+      immutable_ref:
+        type: git_commit
+        value: 53aa1f00bf50818fec219511c8c938fa98e9708f
+      commit: 53aa1f00bf50818fec219511c8c938fa98e9708f
+    source:
+      assurance: recorded
+      observed_by: operator
+      reference: review.md#iteration-5
+      statement: Independent Strict Review Iteration 5 (Resolution Verification scoped to R-008, fresh execution, isolated Git worktree at .claude/worktrees/agent-a641ae74c47b0ecf8, no shared context with the Resolution Execution or any of the four prior Reviewer Executions) returned PASS against 53aa1f0 -- plan.md's fix confirmed correct and complete, the C-077 approval record confirmed untouched, diff scope confirmed limited to plan.md plus exempt review-control metadata (no Out-of-Scope Mutation), forge validate clean, full suite unregressed (750 passed, 2 warnings). One MINOR finding (R-009, review.md's own closure wording at the reviewed commit conflated finding severity with the C-026 reviewable-file rule) was already resolved by a subsequent review-control-metadata-only correction before this report was recorded. This closes Strict Review for CHG-0047.
+  - id: documentation-001
+    role: implementation
+    execution:
+      id: claude-code-implementation-0047-documentation-001
+      context_id: claude-code-session-2026-08-25-documentation-001
+    recorded_at: '2026-08-25T08:00:00Z'
+    revision:
+      id: chg-0047-documentation-001
+      immutable_ref:
+        type: git_commit
+        value: 356f201068d9d73953a9a264af7d52511f4ebe09
+      commit: 356f201068d9d73953a9a264af7d52511f4ebe09
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: manifest.yml#documentation
+      statement: "Documentation Impact evaluation (Flow STANDARD, documentation stage, scheduled after strict_review) for CHG-0047. Added CHANGELOG.md's Unreleased entry and docs/adr/0019-capability-architecture-foundation.md (F-008: material Architecture Change). No other file touched. Full suite re-verified (750 passed, 2 warnings) after the addition. Reviewable Git workspace confirmed clean before this freeze."
+  - id: reviewer-006
+    role: review
+    execution:
+      id: a43a864a38974e415
+      context_id: independent-review-context-a43a864a38974e415
+    recorded_at: '2026-08-25T09:00:00Z'
+    revision:
+      id: chg-0047-documentation-001
+      immutable_ref:
+        type: git_commit
+        value: 356f201068d9d73953a9a264af7d52511f4ebe09
+      commit: 356f201068d9d73953a9a264af7d52511f4ebe09
+    source:
+      assurance: recorded
+      observed_by: operator
+      reference: review.md#iteration-6
+      statement: Independent Strict Review Iteration 6 (Documentation Impact addition, Initial Review, fresh execution, isolated Git worktree at .claude/worktrees/agent-a43a864a38974e415, no shared context with the Implementation or any of the five prior Reviewer Executions) returned REQUEST CHANGES against 356f201 -- R-010 (BLOCKER, the documentation-001 subject-freeze provenance record existed in the working tree but had not yet been committed when this Iteration was launched, so forge validate correctly failed with a C-026 staleness finding at the reviewed commit) and R-011 (MINOR, ADR-0019 misattributes two finding IDs -- R-002/R-004 -- in its own history summary and omits R-005). R-010 was a process-sequencing gap, not a content defect, fixed immediately by committing documentation-001 (63aa0a4) before this report was recorded. R-011 is accepted, non-blocking, and not fixed (C-039). No Out-of-Scope Mutation; CHANGELOG.md/ADR-0019 content spot-checked against the shipped files and the real review history and found accurate; full suite unregressed (750 passed, 2 warnings).
+  - id: verification-001
+    role: implementation
+    execution:
+      id: claude-code-implementation-0047-verification-001
+      context_id: claude-code-session-2026-08-25-documentation-001
+    recorded_at: '2026-08-25T10:00:00Z'
+    revision:
+      id: chg-0047-documentation-001
+      immutable_ref:
+        type: git_commit
+        value: 356f201068d9d73953a9a264af7d52511f4ebe09
+      commit: 356f201068d9d73953a9a264af7d52511f4ebe09
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: verification.md
+      statement: "verification.md's PASS result (Test Evidence: 29 passed in tests/capabilities/, 750 passed full suite, TDD-001 through TDD-005 RED/GREEN evidence; Forge Evidence: forge validate PASS, diff-scope and forbidden-vocabulary checks) remains accurate against the frozen subject of review-006 (documentation-001, commit 356f201) -- the only content difference between the implementation subject reviewed in Iteration 4/5 (53aa1f0) and this final subject (356f201) is the Documentation Impact addition (CHANGELOG.md, docs/adr/0019-capability-architecture-foundation.md), which is non-executable documentation and does not invalidate any recorded Test/Forge Evidence, consistent with Iteration 6's own independent re-verification (750 passed, 2 warnings; forge validate PASS)."

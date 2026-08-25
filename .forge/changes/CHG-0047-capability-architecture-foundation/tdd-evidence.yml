@@ -1,0 +1,75 @@
+schema: forge/tdd-evidence@1
+change: CHG-0047
+status: compliant
+cycle_count: 5
+cycles:
+  - id: TDD-001
+    title: Minimal, immutable, Harness-neutral Capability model
+    requirements: [FR-003]
+    behavior: forge_cli.capabilities.model.Capability exists as a frozen dataclass exposing exactly the nine fields the contract requires, rejects post-construction mutation, and carries no Harness-specific field.
+    red:
+      command: .venv/bin/python -m pytest tests/capabilities/test_model.py -q
+      result: 1 error during collection (ModuleNotFoundError)
+      reason: forge_cli.capabilities.model did not exist yet.
+    green:
+      command: .venv/bin/python -m pytest tests/capabilities/test_model.py -q
+      result: 3 passed
+    notes:
+      - Model introduced with no lifecycle, authority, Gate, or execution field, per FR-003's Boundary.
+  - id: TDD-002
+    title: Deterministic Capability loading with explicit, specific errors
+    requirements: [FR-004, FR-005]
+    behavior: forge_cli.capabilities.loader.load_capability(path) locates, reads, parses (frontmatter + required sections), and normalizes a CAPABILITY.md into a Capability; loading the same unchanged file twice is deterministic; a missing file, missing/invalid frontmatter, or a missing/empty required section raises CapabilityDefinitionError identifying the path and the problem, not a generic exception.
+    red:
+      command: .venv/bin/python -m pytest tests/capabilities/test_loader.py -q
+      result: 1 error during collection (ModuleNotFoundError)
+      reason: forge_cli.capabilities.loader did not exist yet.
+    green:
+      command: .venv/bin/python -m pytest tests/capabilities/test_loader.py -q
+      result: 22 passed
+    notes:
+      - No package/fallback resolution logic was introduced (unlike protocol_resources.resolve_protocol_root) — the loader takes an explicit Path, matching NFR-001 and the Discovery finding that repository-native capability definitions do not need packaged-resource fallback.
+      - No discovery/enumeration, registry, cache, composition, or execution was introduced.
+  - id: TDD-003
+    title: Section parser does not mistake a heading-shaped line inside a fenced code block for a new section
+    requirements: [FR-004]
+    origin: Independent Strict Review Iteration 1, Finding R-002
+    behavior: A required section's body may contain a fenced code block (```` ``` ````/`~~~`) illustrating markdown structure — including a line that looks like a `##` heading — without that inner line being mistaken for the start of a new section. capability.md's own "Example skeleton" section demonstrates exactly this pattern, so the loader must not silently truncate a section at a heading-shaped line inside a fence.
+    red:
+      command: .venv/bin/python -m pytest tests/capabilities/test_loader.py -k fenced -q
+      result: 1 failed
+      reason: The prior regex-based section scan (re.MULTILINE over the whole body) matched any line starting with "## ", including one nested inside a fenced code block, and silently truncated the enclosing section's content there instead of raising an error or including it verbatim.
+    green:
+      command: .venv/bin/python -m pytest tests/capabilities/ -q
+      result: 26 passed
+    notes:
+      - "Fix: _parse_sections now scans body line-by-line, toggling fence state on lines starting with ``` or ~~~, and only recognizes a \"## \" line as a section heading when not inside an open fence."
+  - id: TDD-004
+    title: Fence tracking respects CommonMark indentation and matches delimiter type
+    requirements: [FR-004]
+    origin: Independent Strict Review Iteration 2 (Resolution Verification), Findings R-004 and R-005
+    behavior: A fenced code block opened with up to 3 leading whitespace characters (spaces or tabs — CommonMark itself specifies spaces, this implementation is intentionally slightly more permissive in the safe, over-recognize-as-fence direction, per Independent Review Finding R-007) is still recognized as a fence, and a fence opened with one delimiter type (backtick or tilde) is only closed by a line using that same delimiter type — so a heading-shaped line inside either kind of fence is never mistaken for a new section.
+    red:
+      command: .venv/bin/python -m pytest tests/capabilities/test_loader.py -k "indented or mismatched" -q
+      result: 2 failed
+      reason: "TDD-003's fix used ^(```|~~~) anchored at column 0 with no delimiter-type tracking: an indented fence-open line was never recognized as a fence at all (silently truncating the section at the heading-shaped line inside it, R-004), and a ~~~ line inside a ``` fence toggled fence state early, leaving the parser out of sync for the rest of the file (R-005)."
+    green:
+      command: .venv/bin/python -m pytest tests/capabilities/ -q
+      result: 28 passed
+    notes:
+      - "Fix: _FENCE_PATTERN now allows up to 3 leading spaces/tabs before the delimiter; _parse_sections tracks which delimiter character (backtick or tilde) opened the current fence and only closes on a matching line, per CommonMark fence semantics."
+  - id: TDD-005
+    title: Fence closing requires a delimiter run at least as long as the opening one
+    requirements: [FR-004]
+    origin: Independent Strict Review Iteration 3 (Resolution Verification), Finding R-006
+    behavior: A fence opened with N delimiter characters of a given type is only closed by a line with at least N characters of that same type, per CommonMark fence semantics — a shorter same-type run (e.g. a 3-backtick line inside a 4-backtick-opened fence) does not close the fence, so a heading-shaped line still inside the (longer) fence is never mistaken for a new section and content is never silently dropped.
+    red:
+      command: .venv/bin/python -m pytest tests/capabilities/test_loader.py -k shorter -q
+      result: 1 failed
+      reason: "TDD-004's fix tracked delimiter type but not delimiter length, so a same-type but shorter closing line ended the fence prematurely; the heading-shaped line that followed was then parsed as a real section boundary, and the eventual longer closing line opened an unterminated fence that swallowed the rest of the document (surfacing as a missing required section, or in other document shapes as silent truncation) -- exactly the case Iteration 2's own 'fails loudly, not silently' disclosure incorrectly claimed was safe."
+    green:
+      command: .venv/bin/python -m pytest tests/capabilities/ -q
+      result: 29 passed
+    notes:
+      - "Fix: _parse_sections now records the opening fence's delimiter length and only closes the fence on a same-type line whose run length is >= that length, matching CommonMark's fence-closing rule exactly."
+      - Full suite and forge validate re-verified after this fix (750 passed, 2 warnings; forge validate PASS) -- see verification.md.

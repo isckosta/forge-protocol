@@ -1,0 +1,122 @@
+schema: forge/change@2
+protocol: 2
+change:
+  id: CHG-0047
+  title: Capability Architecture Foundation
+  kind: feature
+flow:
+  initial: standard
+  current: standard
+  escalations: []
+state:
+  current: complete
+artifacts:
+  intent: complete
+  discovery: complete
+  specification: complete
+  test_design: complete
+  plan: approved
+  tdd_evidence: complete
+  verification: complete
+  review: complete
+  documentation: complete
+requirements:
+  total: 5
+  implemented: 5
+  verified: 5
+tdd:
+  status: compliant
+  cycles: 5
+verification:
+  status: passed
+review:
+  status: passed
+  iteration: 6
+  blockers: 0
+  majors: 0
+  minors: 1
+  observations: 2
+  convergence:
+    state: nominal
+    consecutive_unconverged_verifications: 0
+  iterations:
+    - id: review-001
+      revision: chg-0047-implementation-001
+      subject_provenance: implementation-subject-001
+      reviewer_provenance: reviewer-001
+      kind: initial_review
+      status: failed
+      full_review_required: false
+      new_material_findings: 2
+      finding_classes: []
+    - id: review-002
+      revision: chg-0047-resolution-001
+      subject_provenance: resolution-001
+      reviewer_provenance: reviewer-002
+      kind: resolution_verification
+      status: failed
+      full_review_required: false
+      new_material_findings: 2
+      finding_classes:
+        - resolution_regression
+    - id: review-003
+      revision: chg-0047-resolution-002
+      subject_provenance: resolution-002
+      reviewer_provenance: reviewer-003
+      kind: resolution_verification
+      status: failed
+      full_review_required: false
+      new_material_findings: 1
+      finding_classes:
+        - resolution_regression
+    - id: review-004
+      revision: chg-0047-resolution-003
+      subject_provenance: resolution-003
+      reviewer_provenance: reviewer-004
+      kind: initial_review
+      status: passed
+      full_review_required: false
+      new_material_findings: 0
+      finding_classes: []
+      convergence_decision:
+        option: new_full_review
+        reason: The user was presented with the Convergence Limit situation (R-006's finding, and all four available options) and selected new_full_review -- fix the finding, then have a fresh, unrestricted Initial Review re-evaluate the whole subject rather than another scoped Resolution Verification. Recorded in review.md's Convergence Decision section and provenance.yml's convergence-decision-001 record.
+        recorded_at: '2026-08-25T05:00:00Z'
+    - id: review-005
+      revision: chg-0047-resolution-004
+      subject_provenance: resolution-004
+      reviewer_provenance: reviewer-005
+      kind: resolution_verification
+      status: passed
+      full_review_required: false
+      new_material_findings: 0
+      finding_classes: []
+    - id: review-006
+      revision: chg-0047-documentation-001
+      subject_provenance: documentation-001
+      reviewer_provenance: reviewer-006
+      kind: initial_review
+      status: passed
+      full_review_required: false
+      new_material_findings: 0
+      finding_classes: []
+documentation:
+  impact_evaluated: true
+  update_required: true
+  reason: >-
+    Updated: CHANGELOG.md (Unreleased entry) and
+    docs/adr/0019-capability-architecture-foundation.md (F-008: a new
+    architectural layer -- the Forge Capability concept, its boundary
+    with Core/Flow/Harness Adapters, and the deliberate F-010 foundation-
+    simplicity constraint -- is a material Architecture Change). No RFC
+    (no Protocol integer, Schema, or Gate semantics changed). No
+    Knowledge Capture Artifact (STANDARD Flow does not include one).
+decisions:
+  - id: DEC-001
+    class: technical
+    materiality: material
+    status: resolved
+    authority: human
+    owning_artifact: plan
+    discovered_in: plan
+    resolved_via: human_decision
