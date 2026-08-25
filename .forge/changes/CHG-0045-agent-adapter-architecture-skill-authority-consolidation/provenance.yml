@@ -555,3 +555,28 @@ records:
         consecutive resolution_verification Iterations with
         new_material_findings > 0) not at risk -- Iteration 3 already had
         0, and this Iteration also has 0.
+  - id: verification-002
+    role: implementation
+    execution:
+      id: claude-code-implementation-0045
+      context_id: claude-code-session-2026-08-25
+    recorded_at: '2026-08-25T08:00:00Z'
+    revision:
+      id: chg-0045-resolution-003
+      immutable_ref:
+        type: git_commit
+        value: b626080ef976f83c34e085d177cf1cfdd356faf0
+      commit: b626080ef976f83c34e085d177cf1cfdd356faf0
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: verification.md
+      statement: >-
+        Re-verification-per-subject: the final passed Review Iteration
+        (Iteration 4, review-004) reviewed resolution-003 (b626080), not
+        95b521e (verification-001's subject). Same pattern as
+        verification-001 -- verification.md's Result (PASS) is unchanged:
+        resolution-003 fixed a documentation-accuracy defect in generated
+        skill guidance (PR36-CODEX-001), not the underlying FR-001 through
+        FR-007 behavioral verification. Full suite 721 passed, confirmed
+        again after this fix.
