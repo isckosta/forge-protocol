@@ -10,7 +10,7 @@ status: active
 
 ## Verdict
 
-**Convergence Limit reached — `review_convergence_failed`.** Iteration 1: REQUEST CHANGES, resolved. Iteration 2: REQUEST CHANGES, resolved. Iteration 3: REQUEST CHANGES — two consecutive `resolution_verification` Iterations have now returned material new findings (Protocol 2 §12, Convergence Limit = 2). Per §13/C-049, Forge MUST NOT continue automatically with another scoped Resolution → Resolution Verification cycle; the process returns authority to the human engineer to record an explicit `convergence_decision` before review may continue.
+**Pending Iteration 4 (Initial Review).** Iteration 1: REQUEST CHANGES, resolved. Iteration 2: REQUEST CHANGES, resolved. Iteration 3: REQUEST CHANGES — Convergence Limit reached (Protocol 2 §12, limit = 2). The user recorded an explicit `convergence_decision: new_full_review`; R-006/R-007 were fixed; a fresh, unrestricted Initial Review of the whole subject is now pending against the current revision.
 
 ## Iteration 1 — REQUEST CHANGES
 
@@ -150,4 +150,16 @@ This is the second consecutive `failed` Resolution Verification with material fi
 
 ## Convergence
 
-Two consecutive `resolution_verification` Iterations (`review-002`, `review-003`) returned `status: failed` with `new_material_findings > 0` — the Convergence Limit (2) is reached at this point in the Iteration history. Per Protocol 2 §13, `review.convergence.state: review_convergence_failed` is recorded in `manifest.yml`, and `review.status: passed` MUST NOT be asserted while this state holds. Continuing requires an explicit human-engineer decision (`convergence_decision`: `new_full_review`, `return_to_earlier_phase`, `accept_residual_risk`, or `abort_or_supersede`) recorded on the Iteration immediately following this one — not selected autonomously by any agent. This section records the trigger; the decision itself is recorded separately once made.
+Two consecutive `resolution_verification` Iterations (`review-002`, `review-003`) returned `status: failed` with `new_material_findings > 0` — the Convergence Limit (2) is reached at this point in the Iteration history. Per Protocol 2 §13, `review.convergence.state: review_convergence_failed` is recorded in `manifest.yml`, and `review.status: passed` MUST NOT be asserted while this state holds. Continuing requires an explicit human-engineer decision (`convergence_decision`: `new_full_review`, `return_to_earlier_phase`, `accept_residual_risk`, or `abort_or_supersede`) recorded on the Iteration immediately following this one — not selected autonomously by any agent.
+
+### Convergence Decision
+
+The situation (R-006's finding, the Convergence Limit being reached, and the four available options with their consequences) was presented to the user in the active chat session on 2026-08-25. The user selected **`new_full_review`**: fix R-006 (and, if cheap, R-007), then have a fresh, unrestricted Initial Review — not another scoped Resolution Verification — re-evaluate the whole subject from scratch. Rationale recorded at the time: R-006's root cause is narrow and well understood (compare closing-fence run length against the opening run length, not just delimiter type), the architecture and documentation have held up across all three prior Iterations with no structural rework needed, and `return_to_earlier_phase`/`abort_or_supersede` were judged disproportionate to a localized parser fix, while `accept_residual_risk` would leave a demonstrated silent-truncation defect unfixed in the shipped foundation.
+
+## Resolution (of Iteration 3)
+
+R-006 fixed: `_parse_sections` now also tracks the opening fence's delimiter run length and only closes the fence on a same-type line whose run length is `>=` that length, matching CommonMark's actual fence-closing rule (`TDD-005`, RED→GREEN). R-007 addressed by correcting `TDD-004`'s behavior description (it already tolerated tabs, not just spaces, in the safe direction; the description was updated to say so honestly, no code change). Full suite and `forge validate` re-verified after the fix (see `verification.md`). See `provenance.yml`'s `resolution-003` record for the frozen revision this produced.
+
+## Iteration 4 — Initial Review (pending)
+
+Per the Convergence Decision above, this Iteration is classified `kind: initial_review` — a fresh, unrestricted re-evaluation of the whole subject, not a scoped Resolution Verification. Recorded below once the independent Reviewer returns its verdict.

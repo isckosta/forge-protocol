@@ -85,15 +85,17 @@ def load_capability(path: Path) -> Capability:
 def _parse_sections(body: str, path: Path) -> dict[str, str]:
     headings: list[tuple[str, int, int]] = []
     fence_delimiter: str | None = None
+    fence_length = 0
     offset = 0
     for line in body.splitlines(keepends=True):
         fence_match = _FENCE_PATTERN.match(line)
         if fence_match is not None:
-            delimiter = fence_match.group(1)[0]
+            run = fence_match.group(1)
+            delimiter, length = run[0], len(run)
             if fence_delimiter is None:
-                fence_delimiter = delimiter
-            elif fence_delimiter == delimiter:
-                fence_delimiter = None
+                fence_delimiter, fence_length = delimiter, length
+            elif fence_delimiter == delimiter and length >= fence_length:
+                fence_delimiter, fence_length = None, 0
         elif fence_delimiter is None:
             match = _SECTION_HEADING_PATTERN.match(line.rstrip("\n"))
             if match is not None:

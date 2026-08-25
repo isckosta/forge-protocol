@@ -25,8 +25,8 @@ was introduced.
 
 ## Test Evidence
 
-- `.venv/bin/python -m pytest tests/capabilities/ -q`: **28 passed**.
-- Full suite: `.venv/bin/python -m pytest -q`: **749 passed, 2 warnings**
+- `.venv/bin/python -m pytest tests/capabilities/ -q`: **29 passed**.
+- Full suite: `.venv/bin/python -m pytest -q`: **750 passed, 2 warnings**
   (warnings pre-exist this Change — deliberate failure injection in
   `tests/unit/test_experience_capture.py`, unrelated to this Change).
 - `.venv/bin/python -m pytest tests/contract/test_protocol_contract.py -q`:
@@ -39,7 +39,7 @@ was introduced.
 - `TDD-002` (RED, `tests/capabilities/test_loader.py`): failed collection
   before the change (`ModuleNotFoundError: No module named
   'forge_cli.capabilities.loader'`) for the expected reason; passes after
-  (22 passed at the time; 23 after TDD-003, 25 after TDD-004 added more tests).
+  (22 passed at the time; 23 after TDD-003, 25 after TDD-004, 26 after TDD-005 added more tests).
 - `TDD-003` (RED, `tests/capabilities/test_loader.py -k fenced`): added in
   response to independent Strict Review Iteration 1, Finding R-002 —
   failed for the expected reason (a heading-shaped line inside a fenced
@@ -54,6 +54,14 @@ was introduced.
   delimiter type inside an open fence, both desynchronized the tracker);
   passes after making `_FENCE_PATTERN` tolerate up to 3 leading
   spaces/tabs and tracking which delimiter character opened the fence.
+- `TDD-005` (RED, `tests/capabilities/test_loader.py -k shorter`): added
+  in response to independent Strict Review Iteration 3 (Resolution
+  Verification), Finding R-006 — failed for the expected reason (a
+  same-type but shorter closing delimiter line ended a fence
+  prematurely, since TDD-004's fix tracked delimiter type but not
+  length); passes after `_parse_sections` also tracks the opening
+  fence's delimiter length and requires a closing run of at least that
+  length, per CommonMark's actual fence-closing rule.
 
 ## Forge Evidence
 
@@ -128,21 +136,42 @@ tracking which delimiter character opened the current fence, matching
 CommonMark fence semantics for these two cases, with a regression test
 (TDD-004).
 
-A remaining, explicitly accepted limitation (part of R-005, not fixed):
-an unterminated fence, or one closed by a delimiter of mismatched
-length, surfaces as a generic "missing required section" error rather
-than a fence-specific diagnostic. This fails loudly, not silently, and
-was judged disproportionate to refine further for this foundation
-Change (C-039) — Independent Review agreed this is lower severity than
-R-004 for exactly that reason. Three further non-blocking observations
-across both Iterations (a non-`re.escape`d path in one
-`pytest.raises(match=...)` call; duplicate `##` headings silently
-overwrite rather than error) were left as documented, accepted
-limitations — neither affects any Acceptance Criterion.
+Independent Strict Review Iteration 3 (Resolution Verification) found
+that the accepted-limitation claim above was itself wrong: a same-type
+but *shorter* closing delimiter (e.g. a 3-backtick line inside a
+4-backtick-opened fence) did **not** fail loudly — it silently ended
+the fence early, so a heading-shaped line still logically inside the
+fence was treated as a real new section, with the content after it
+dropped without any error (R-006, MAJOR). This reached Protocol 2's
+Convergence Limit (two consecutive `resolution_verification` Iterations
+with material findings — `manifest.yml`'s `review.convergence` records
+`state: review_convergence_failed`), which requires an explicit human
+`convergence_decision` rather than another automatic scoped resolution
+cycle. The user reviewed the situation and selected `new_full_review`
+(fix the finding, then have a fresh, unrestricted Initial Review — not
+another scoped Resolution Verification — re-evaluate the whole subject).
+R-006 was fixed by making `_parse_sections` also track the opening
+fence's delimiter length and require a same-type closing run of at
+least that length, matching CommonMark's actual rule (`TDD-005`).
+Iteration 3 also raised R-007 (MINOR, informational, not a defect): the
+indentation tolerance accepts leading tabs as well as spaces, more
+permissive than `TDD-004`'s original wording — corrected by wording,
+not code, since the deviation is in the safe, over-recognize-as-fence
+direction.
+
+Four non-blocking observations across the three Iterations (a
+non-`re.escape`d path in one `pytest.raises(match=...)` call; duplicate
+`##` headings silently overwrite rather than error; the tab-indentation
+wording gap just described) remain as documented, accepted limitations
+— none affects any Acceptance Criterion, and each was judged
+disproportionate to eliminate further for this foundation Change
+(C-039).
 
 ## Conclusion
 
 Verification passes for the implemented scope, including the fixes made
-in response to independent Strict Review Iterations 1 and 2's findings.
-The Change is not marked complete until an independent Strict Review
-Iteration passes cleanly against the current revision.
+in response to independent Strict Review Iterations 1, 2, and 3's
+findings, and the human `new_full_review` convergence decision recorded
+after the Convergence Limit was reached. The Change is not marked
+complete until a fresh, unrestricted Initial Review passes cleanly
+against the current revision.

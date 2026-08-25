@@ -170,3 +170,22 @@ def test_mismatched_fence_delimiter_type_does_not_close_an_open_fence(
 
     assert capability.behavior == behavior_text
     assert "Fake Heading" not in capability.outputs
+
+
+def test_a_shorter_same_type_delimiter_does_not_close_a_longer_open_fence(
+    tmp_path: Path,
+) -> None:
+    behavior_text = (
+        "Behavior text before the example.\n"
+        "````\n"
+        "code using a ``` triple-backtick span\n"
+        "```\n"
+        "## Fake Heading Inside Code Block\n"
+        "````\n"
+        "Behavior text after the example."
+    )
+
+    capability = _load_with_behavior(tmp_path, behavior_text)
+
+    assert capability.behavior == behavior_text
+    assert "Fake Heading" not in capability.outputs
