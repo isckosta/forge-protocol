@@ -1,0 +1,53 @@
+schema: forge/change@2
+protocol: 2
+change:
+  id: CHG-0048
+  title: Proportional Review Profiles
+  kind: feature
+flow:
+  initial: standard
+  current: full
+  escalations:
+    - from: standard
+      to: full
+      reason: >-
+        Discovery confirmed this Change touches Contract normative text
+        (C-022, C-023), all three Flow definitions, multiple Protocol 2
+        schemas, and Harness Adapter projections -- squarely matching
+        fast.yml's own disqualifiers (architectural_change,
+        major_public_contract_change) and requiring an RFC (F-008).
+        STANDARD's scaffold default was superseded before any
+        Specification work began.
+state:
+  current: intent
+artifacts:
+  intent: active
+  discovery: pending
+  specification: pending
+  specification_review: pending
+  architecture: pending
+  test_strategy: pending
+  plan: pending
+  tasks: pending
+  tdd_evidence: active
+  verification: pending
+  review: pending
+  documentation: pending
+requirements:
+  total: 0
+  implemented: 0
+  verified: 0
+tdd:
+  status: pending
+verification:
+  status: pending
+review:
+  status: pending
+  iteration: 0
+  blockers: 0
+  majors: 0
+  minors: 0
+  observations: 0
+  iterations: []
+documentation:
+  impact_evaluated: false
