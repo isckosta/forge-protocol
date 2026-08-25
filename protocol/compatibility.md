@@ -167,6 +167,36 @@ integer, Schema field, Gate, lifecycle stage, or Markdown validator. User
 Stories are optional context; existing Requirements, Acceptance Criteria,
 historical Specifications, and `traceability.yml` semantics remain valid.
 
+### CHG-0048 — Proportional Review Profiles
+
+CHG-0048 (RFC-0007, accepted for Protocol 2) decouples "Review is
+required" from "Review is strict/adversarial": C-022 and C-023 now
+scope the exhaustive adversarial-search obligation to the `strict`
+Review Profile (FULL), while `focused` (FAST) and `standard`
+(STANDARD) remain genuine Review with identical rejection authority on
+any material Finding actually observed. This is treated as a
+Protocol-2-compatible clarification, not a new Protocol integer: no
+historical Change's already-recorded Review is invalidated (a
+`profile`-less historical record is interpreted as `strict`, the
+previously universal behavior), Reviewer/Resolver independence
+(C-026), evidence requirements (C-025), Finding severities, Resolution
+Verification (C-047–C-050), and the Convergence Limit are unconditioned
+on profile and unchanged for all three Flows. `protocol/schemas/policy-review.schema.json`
+(Protocol 1) and `protocol/contract/engineering.md` (Protocol 1) are
+untouched — Review Profiles are a Protocol 2 concept only. Schema
+changes are additive in three of the four touched files
+(`change-v2.schema.json`'s `review.iterations[].profile`,
+`policy-review-v2.schema.json`, `project-flow.schema.json`); the fourth
+(`flow.schema.json`, replacing `strict`/`adversarial`'s `const: true`
+with a `profile` enum plus boolean fields) narrows a previously
+unconditional schema guarantee, but only three live canonical Flow
+files exist to apply it to — no historical Flow-file population is
+invalidated. See `docs/rfcs/0007-proportional-review-profiles.md` for the full
+resolved normative question (no separate ADR: this RFC already
+satisfies F-008 for this Change) and
+`.forge/changes/CHG-0048-proportional-review-profiles/architecture.md`
+for the component-level design.
+
 ## Schema catalog
 
 `schemas/catalog.yml` is the portable list of schemas shipped by the distribution. Catalog presence does not imply that every schema is normative for every Protocol version. Applicability is defined by the selected Protocol contract and the artifact's own identifier. Cross-field semantic constraints that JSON Schema cannot express remain deterministic Core validation responsibilities.
