@@ -17,13 +17,23 @@ records:
       assurance: recorded
       observed_by: operator
       reference: plan.md#approval-record
+      content_digest:
+        algorithm: sha256
+        path: plan.md
+        value: 61c186b8dc1017988e21a6001214b34e4480104e21faef6f63d51651152f5f01
       statement: >-
         Explicit human approval of the CHG-0045 Plan was received via a
         direct AskUserQuestion Plan Decision prompt ("O Plan da CHG-0045
         ... está pronto para Implementation?"), answered "Aprovar e
         prosseguir", in the active session on 2026-08-24. This is
         repository-native, self-recorded evidence (assurance: recorded),
-        not cryptographic or external attestation (C-077).
+        not cryptographic or external attestation (C-077). `content_digest`
+        added post hoc (CHG-0046's own Discovery found this omission,
+        MR-008) -- computed against `plan.md`'s actual current content
+        using `evaluator.py`'s exact canonicalization (\r\n normalized,
+        both marker-comment lines stripped before sha256); `plan.md`
+        itself is unedited, so this backfill does not affect C-026's
+        review-subject-freeze exception set.
   - id: implementation-subject-001
     role: implementation
     execution:
@@ -52,6 +62,35 @@ records:
         remain in the working tree but predate this Change, are unrelated
         to its scope (Discovery's "Non-authorities excluded" section), and
         do not affect this Change's reviewable material.
+  - id: verification-001
+    role: implementation
+    execution:
+      id: claude-code-implementation-0045
+      context_id: claude-code-session-2026-08-24
+    recorded_at: '2026-08-25T00:00:00Z'
+    revision:
+      id: chg-0045-resolution-002
+      immutable_ref:
+        type: git_commit
+        value: 95b521ef5ccec4e1651518b91a9e9ce74f86bb5a
+      commit: 95b521ef5ccec4e1651518b91a9e9ce74f86bb5a
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: verification.md
+      statement: >-
+        Added post hoc (CHG-0046's own Discovery found this gap, MR-006):
+        `implementation-subject-001` bound Verification evidence to
+        `23d763b` (the original, pre-Resolution implementation); Review
+        Iteration 3 (`review-003`), the final passed iteration, actually
+        reviewed `95b521e` (`resolution-002`), and no verification-role
+        record was ever bound to that commit. `verification.md`'s Result
+        (`PASS`) has not changed since Resolutions 1-2 -- both Resolutions
+        fixed Strict Review findings (R001-R008) without invalidating the
+        underlying FR-001 through FR-007 behavioral verification; this
+        record supplies the missing binding to the final reviewed subject,
+        matching CHG-0043's `verification-001/-002/-003` precedent of a
+        fresh verification-role record per changed subject commit.
   - id: review-001
     role: review
     execution:
