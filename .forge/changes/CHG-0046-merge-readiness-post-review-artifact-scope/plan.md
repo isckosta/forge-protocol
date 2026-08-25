@@ -112,4 +112,13 @@ TDD GREEN work may begin before then.
 
 <!-- forge:plan-approval-confirmation -->
 
+This Plan is explicitly authorized by the human maintainer to proceed to
+Implementation.
+
 <!-- forge:plan-approval-record -->
+
+**Approval record.** Explicit human approval was received from the user,
+selecting "Aprovar e prosseguir" in response to a direct AskUserQuestion
+Plan Decision prompt in the active session on 2026-08-25. This
+confirmation authorizes the recorded Plan decision (DEC-002) and
+continuation under C-077.
