@@ -39,3 +39,20 @@ records:
         path: plan.md
         value: 75244c36ee275eba458aa9afce4cf35852d2f4af99c7d0665359e195447cfc9c
       statement: The user explicitly approved continuation of CHG-0048 to Implementation in the active session on 2026-08-25, via AskUserQuestion, after reviewing the Architecture (including DEC-001), the Test Strategy (15 TDD cases), and the 11-item Plan summary, selecting "Aprovar e prosseguir".
+  - id: implementation-subject-001
+    role: implementation
+    execution:
+      id: claude-code-implementation-0048-subject-001
+      context_id: claude-code-session-2026-08-25-subject-001
+    recorded_at: '2026-08-25T00:00:00Z'
+    revision:
+      id: chg-0048-implementation-001
+      immutable_ref:
+        type: git_commit
+        value: 8c1f0503ca4eae81860664dc887a86fbc3ffca17
+      commit: 8c1f0503ca4eae81860664dc887a86fbc3ffca17
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: implementation-subject
+      statement: Frozen CHG-0048 implementation subject (immutable per C-026 once committed) -- Contract (protocol/versions/2/contract/engineering.md C-022/C-023/C-031), the three Flow definitions, the canonical Protocol 2 review policy, four Schemas, validation/__init__.py's new profile-floor check, both Adapters' profile-aware projections (review_independence.py, claude_code/projection.py, codex/projection.py), merge_readiness/evaluator.py's MR-004 label, protocol/compatibility.md, CHANGELOG.md, all new/modified tests, and all CHG-0048 planning/design/verification Artifacts. Reviewable Git workspace confirmed clean before freeze (only this Change's own review.md, review-control metadata, is untracked).
