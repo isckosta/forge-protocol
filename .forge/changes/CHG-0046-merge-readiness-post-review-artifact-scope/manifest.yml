@@ -9,7 +9,7 @@ flow:
   current: full
   escalations: []
 state:
-  current: plan
+  current: tdd_implementation
 artifacts:
   intent: complete
   discovery: complete
@@ -17,7 +17,7 @@ artifacts:
   specification_review: complete
   architecture: complete
   test_strategy: complete
-  plan: active
+  plan: approved
   tasks: complete
   tdd_evidence: active
   verification: pending
@@ -54,7 +54,8 @@ decisions:
   - id: DEC-002
     class: technical
     materiality: material
-    status: awaiting_decision
+    status: resolved
     authority: human
     owning_artifact: plan
     discovered_in: plan
+    resolved_via: human_decision
