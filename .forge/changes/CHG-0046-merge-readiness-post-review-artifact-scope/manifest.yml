@@ -9,16 +9,16 @@ flow:
   current: full
   escalations: []
 state:
-  current: test_strategy
+  current: plan
 artifacts:
   intent: complete
   discovery: complete
   specification: complete
   specification_review: complete
   architecture: complete
-  test_strategy: active
-  plan: pending
-  tasks: pending
+  test_strategy: complete
+  plan: active
+  tasks: complete
   tdd_evidence: active
   verification: pending
   review: pending
@@ -51,3 +51,10 @@ decisions:
     owning_artifact: architecture
     discovered_in: specification
     resolved_via: autonomous_decision
+  - id: DEC-002
+    class: technical
+    materiality: material
+    status: awaiting_decision
+    authority: human
+    owning_artifact: plan
+    discovered_in: plan
