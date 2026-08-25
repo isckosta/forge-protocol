@@ -30,17 +30,22 @@ requirements:
   verified: 2
 tdd:
   status: compliant
-  cycles: 5
+  cycles: 7
 verification:
   status: passed
 review:
-  status: pending
-  iteration: 0
+  status: failed
+  iteration: 1
   blockers: 0
-  majors: 0
+  majors: 2
   minors: 0
-  observations: 0
-  iterations: []
+  observations: 1
+  iterations:
+    - id: review-001
+      revision: chg-0046-implementation-001
+      status: failed
+      subject_provenance: implementation-subject-001
+      reviewer_provenance: review-001
 documentation:
   impact_evaluated: false
 decisions:

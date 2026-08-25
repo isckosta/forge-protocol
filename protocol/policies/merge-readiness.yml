@@ -8,12 +8,13 @@ merge_readiness:
     - adapters/
     - .claude/skills/forge/
     - .agents/skills/forge/
-    - .forge/adapters/
   material_paths:
     - pyproject.toml
     - setup.cfg
     - tox.ini
     - .claude/CLAUDE.md
+    - .forge/adapters/claude-code/installation.yml
+    - .forge/adapters/codex/installation.yml
   permitted_paths:
     - README.md
     - CONTRIBUTING.md

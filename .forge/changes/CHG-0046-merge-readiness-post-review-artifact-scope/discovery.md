@@ -247,3 +247,25 @@ inspection of `provenance.yml:4-26`) — `digest` stays `None`, and
 one-record provenance gaps, correctable directly on CHG-0045's branch
 (`provenance.yml` is already exempt from the freeze), independent of
 anything this Change touches.
+
+### Addendum (post-Review): a third pre-existing crash, found resolving R001
+
+Independent Strict Review Iteration 1 found a real defect (R001) in this
+Change's own new `is_complete` line — an unguarded
+`manifest.get("state", {}).get("current")` read that raises `AttributeError`
+on a malformed `state:` field (a bare string instead of a mapping),
+inconsistent with every other manifest-section read in the same file.
+Resolving it (hoisting the file's existing isinstance-guarded `state` read
+and reusing it) required isolating a minimal reproduction fixture to
+confirm genuine RED/GREEN. Doing so surfaced that the *same* unguarded
+pattern already exists, independently, in
+`src/forge_cli/validation/__init__.py:321` (`st=m.get("state")or{}`),
+crashing identically at line 375's `st.get("current")` — and because
+`evaluate_merge_readiness()` calls `validate_project()` (which reaches
+that line) *before* `_check_change()` (where this Change's own, now-fixed
+line lives) whenever `.forge/forge.yml` exists, this pre-existing bug
+actually fires *first* in any realistic repository, for the exact same
+malformed-manifest input R001 describes. Confirmed genuinely pre-existing
+(the file is untouched by this Change's diff) and out of Scope (Scope
+names only `evaluator.py` and the materiality policy) — flagged as a
+separate, standalone finding rather than fixed here or left undocumented.

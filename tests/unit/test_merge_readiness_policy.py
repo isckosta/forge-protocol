@@ -32,3 +32,15 @@ def test_unrelated_unclassified_path_still_falls_back_to_ambiguous() -> None:
     classify_path's fail-closed default for anything else."""
     policy = load_materiality_policy()
     assert classify_path("unclassified.data", policy) == "ambiguous"
+
+
+def test_sibling_adapter_directory_file_stays_ambiguous() -> None:
+    """Resolution of Review R002: `.forge/adapters/*/installation.yml` is
+    the only path Architecture names for that family — a sibling file in
+    the same adapter directory (e.g. the user-owned `config.yml`) is not
+    one of the ten paths Discovery identified and must keep resolving to
+    `ambiguous`, per AC-005. A bare `.forge/adapters/` directory prefix
+    would incorrectly sweep this in as `material`."""
+    policy = load_materiality_policy()
+    assert classify_path(".forge/adapters/claude-code/config.yml", policy) == "ambiguous"
+    assert classify_path(".forge/adapters/claude-code/installation.yml", policy) == "material"

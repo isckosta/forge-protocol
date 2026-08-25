@@ -15,15 +15,20 @@ status: complete
 ## Summary
 
 All 5 Acceptance Criteria (AC-001 through AC-005) verified and passing.
-Both Functional Requirements (FR-001, FR-002) implemented via 5 TDD
-cycles, each RED-before-GREEN for the expected reason where a behavior
-change was under test (TDD-001, TDD-004), and passing unmodified as
-guard/characterization evidence where no behavior change was expected
-(TDD-002, TDD-003, TDD-005). The Specification-level acceptance check —
+Both Functional Requirements (FR-001, FR-002) implemented and, after
+Strict Review Iteration 1 (REQUEST CHANGES — R001, R002, both MAJOR),
+corrected via 7 total TDD cycles: TDD-001/TDD-004 RED-before-GREEN for the
+original behavior; TDD-002/TDD-003/TDD-005 guard/characterization evidence
+requiring no behavior change; TDD-006/TDD-007 RED-before-GREEN for the two
+Review findings' Resolution (see `review.md` and `tasks.md` for the
+Resolution narrative). The Specification-level acceptance check —
 reproducing CHG-0045's actual PR #36 base/head commits against this
 Change's implementation — confirms MR-015 and MR-017 no longer appear;
 MR-006 and MR-008 still appear, exactly as Success Criteria predicted (Out
-of Scope, CHG-0045's own bookkeeping).
+of Scope, CHG-0045's own bookkeeping). Re-run after the Resolution, this
+check is unaffected by R001/R002 (both were internal robustness/scope-
+precision defects, not changes to MR-015/MR-017's observable pass/fail
+outcome for this specific reproduction).
 
 ## Acceptance Coverage
 
@@ -42,9 +47,11 @@ of Scope, CHG-0045's own bookkeeping).
 - TDD-003: passes unmodified before and after the fix (characterization test of the pre-existing, Out-of-Scope gap — Discovery/Specification). Confirms this Change does not regress or accidentally alter `change_root`-external handling in either direction.
 - TDD-004: RED confirmed against unmodified `protocol/policies/merge-readiness.yml` — all 10 parametrized cases return `ambiguous`. GREEN after adding 3 `material_prefixes` entries and 1 `material_paths` entry — all 10 return `material`.
 - TDD-005: passes unmodified before and after (fail-closed fallback guard).
-- Full suite: `.venv/bin/python -m pytest -q` → `702 passed, 2 warnings` (both warnings pre-existing, `tests/unit/test_experience_capture.py`, unrelated to this Change — FER capture-failure logging tests, not a real failure).
-- `tests/cli/test_merge_check.py` alone: `11 passed` (8 pre-existing + 3 new; no pre-existing test modified).
-- `tests/unit/test_merge_readiness_policy.py` (new file): `11 passed` (10 parametrized + 1).
+- TDD-006 (Resolution of R001): RED confirmed against the Iteration-1-reviewed `evaluator.py` (`60b699b`) — `AttributeError: 'str' object has no attribute 'get'`, re-reproduced directly before re-applying the fix, matching the Reviewer's own independent reproduction in `review.md`. GREEN after hoisting the file's existing isinstance-guarded `state` read to the top of `_check_change()` and reusing it for `is_complete`, removing the second unguarded inline read.
+- TDD-007 (Resolution of R002): RED confirmed against the Iteration-1-reviewed `merge-readiness.yml`'s bare `.forge/adapters/` prefix — `classify_path(".forge/adapters/claude-code/config.yml", policy) == "material"` (expected `ambiguous`). GREEN after replacing that prefix with two exact `material_paths` entries (`.forge/adapters/claude-code/installation.yml`, `.forge/adapters/codex/installation.yml`), matching Architecture's own stated design.
+- Full suite: `.venv/bin/python -m pytest -q` → `704 passed, 2 warnings` (both warnings pre-existing, `tests/unit/test_experience_capture.py`, unrelated to this Change — FER capture-failure logging tests, not a real failure).
+- `tests/cli/test_merge_check.py` alone: `12 passed` (8 pre-existing + 4 new; no pre-existing test modified).
+- `tests/unit/test_merge_readiness_policy.py` (new file): `12 passed` (10 parametrized + 2).
 
 ## Forge Evidence
 
@@ -77,7 +84,13 @@ package itself and its CLI wiring (`change_cli.py`) — confirmed by
 does not claim to, close the separate pre-existing gap TDD-003
 characterizes (no protection against a completed Change's implementation
 changing outside its own `change_root`) — recorded as Out of Scope and
-flagged separately (not fixed here).
+flagged separately (not fixed here). TDD-006's Resolution work also
+surfaced a second, unrelated, pre-existing bug in
+`src/forge_cli/validation/__init__.py:321` (`st=m.get("state")or{}`, the
+identical unguarded-string-state pattern R001 fixed, one file over) —
+confirmed by direct reproduction, genuinely untouched by this Change's
+diff, out of this Change's Scope, flagged separately rather than fixed or
+silently left undocumented.
 
 ## Conclusion
 

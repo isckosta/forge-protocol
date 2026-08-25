@@ -346,6 +346,51 @@ def test_merge_check_does_not_detect_external_drift_after_completion(tmp_path, m
     assert "MERGE READY" in result.stdout
 
 
+def test_merge_check_degrades_gracefully_on_malformed_state_field(tmp_path, monkeypatch) -> None:
+    """Resolution of Review R001: a malformed `state:` field (a bare string
+    instead of a mapping) must not crash the CLI with an unhandled
+    AttributeError when MR-015's is_complete check reads it — it must
+    reuse the same isinstance-guarded read every other manifest-section
+    access in _check_change() already uses, and degrade to a controlled
+    diagnostic instead.
+
+    Deliberately does not write .forge/forge.yml: with it present,
+    evaluate_merge_readiness() runs validate_project() first, which hits an
+    unrelated, pre-existing, unguarded `st=m.get("state")or{}` read at
+    validation/__init__.py:321/375 (confirmed by direct reproduction, out
+    of scope for CHG-0046 -- flagged separately) before _check_change() is
+    ever reached, masking whether *this* Change's own evaluator.py read is
+    guarded. Omitting forge.yml isolates the assertion to evaluator.py's
+    own code path, which is what R001 and this Change's Scope are about."""
+    monkeypatch.chdir(tmp_path)
+    subprocess.run(["git", "init", "-q"], cwd=tmp_path, check=True)
+    subprocess.run(["git", "config", "user.email", "test@example.com"], cwd=tmp_path, check=True)
+    subprocess.run(["git", "config", "user.name", "Test"], cwd=tmp_path, check=True)
+    (tmp_path / "README.md").write_text("base\n", encoding="utf-8")
+    base = _commit(tmp_path, "base")
+    change_dir = tmp_path / ".forge" / "changes" / "CHG-9008-fixture"
+    change_dir.mkdir(parents=True)
+    manifest = _manifest(status="complete")
+    manifest["state"] = "complete"  # malformed: bare string, not {current: ...}
+    manifest["change"]["id"] = "CHG-9008"
+    (change_dir / "manifest.yml").write_text(yaml.safe_dump(manifest, sort_keys=False), encoding="utf-8")
+    (change_dir / "verification.md").write_text("## Result\n\n**PASS**\n", encoding="utf-8")
+    (change_dir / "review.md").write_text("## Verdict\n\n**PASS**\n", encoding="utf-8")
+    subject = _commit(tmp_path, "freeze CHG-9008 subject with malformed state")
+    provenance = {"schema": "forge/execution-provenance@2", "change": "CHG-9008", "records": [
+        {"id": "impl-001", "role": "implementation", "execution": {"id": "impl", "context_id": "impl-context"}, "revision": {"id": "fixture", "immutable_ref": {"type": "git_commit", "value": subject}, "commit": subject}, "source": {"assurance": "recorded", "observed_by": "self", "reference": "implementation-subject", "statement": "Fixture."}},
+        {"id": "review-001", "role": "review", "execution": {"id": "review", "context_id": "review-context"}, "revision": {"id": "fixture", "immutable_ref": {"type": "git_commit", "value": subject}, "commit": subject}, "source": {"assurance": "recorded", "observed_by": "self", "reference": "strict-review", "statement": "Fixture."}},
+        {"id": "verification-001", "role": "implementation", "execution": {"id": "verification", "context_id": "verification-context"}, "revision": {"id": "fixture", "immutable_ref": {"type": "git_commit", "value": subject}, "commit": subject}, "source": {"assurance": "recorded", "observed_by": "self", "reference": "verification.md", "statement": "Fixture."}},
+    ]}
+    (change_dir / "provenance.yml").write_text(yaml.safe_dump(provenance, sort_keys=False), encoding="utf-8")
+    head = _commit(tmp_path, "record review-control metadata")
+    result = runner.invoke(app, ["change", "merge-check", "--base", base, "--head", head])
+    assert result.exception is None or isinstance(result.exception, SystemExit), (
+        f"unhandled exception (not a controlled CLI exit): {result.exception!r}"
+    )
+    assert "MERGE BLOCKED" in result.stdout or "MERGE READY" in result.stdout, result.stdout
+
+
 def test_merge_check_blocks_stale_plan_digest(tmp_path, monkeypatch) -> None:
     monkeypatch.chdir(tmp_path)
     subprocess.run(["git", "init", "-q"], cwd=tmp_path, check=True)

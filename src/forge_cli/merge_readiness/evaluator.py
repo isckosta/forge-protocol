@@ -68,6 +68,7 @@ def _check_change(root: Path, change_id: str, head_revision: str) -> tuple[list[
     checks: list[ReadinessCheck] = []
     diagnostics: list[ReadinessDiagnostic] = []
     relative = path.relative_to(root).as_posix()
+    state = manifest.get("state", {}) if isinstance(manifest.get("state"), dict) else {}
 
     checks.append(ReadinessCheck("MR-STRUCTURAL", "pass", change_id, "Manifest loaded"))
     flow = manifest.get("flow", {}).get("current") if isinstance(manifest.get("flow"), dict) else None
@@ -142,7 +143,7 @@ def _check_change(root: Path, change_id: str, head_revision: str) -> tuple[list[
                         f"{change_root}/provenance.yml",
                         f"{change_root}/review.md",
                     }
-                    is_complete = manifest.get("state", {}).get("current") == "complete"
+                    is_complete = state.get("current") == "complete"
                     stale = delta.returncode != 0 or any(
                         item and item not in allowed
                         for item in delta.stdout.splitlines()
@@ -195,7 +196,6 @@ def _check_change(root: Path, change_id: str, head_revision: str) -> tuple[list[
             review_text = ""
         if "**PASS**" not in review_text and "\nPASS\n" not in review_text:
             diagnostics.append(ReadinessDiagnostic("MR-007", "Review status is contradicted by review.md", change_id, review_relative))
-    state = manifest.get("state", {}) if isinstance(manifest.get("state"), dict) else {}
     if state.get("current") != "complete":
         diagnostics.append(ReadinessDiagnostic("MR-005", "COMPLETION NOT READY", change_id, relative, "complete", str(state.get("current"))))
     if state.get("current") == "complete":

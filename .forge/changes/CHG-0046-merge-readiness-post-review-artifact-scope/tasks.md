@@ -21,51 +21,51 @@ status: pending
 
 ### Plan 1-3 · MR-015 TDD tests (RED)
 
-- [ ] T-001 Add TDD-001 (`state.current: complete`, Change-local post-freeze
+- [x] T-001 Add TDD-001 (`state.current: complete`, Change-local post-freeze
       file tolerated), confirm RED for the expected reason (`MR-015` in
       stdout).
       `Plan: 1` · `Requirements: FR-001` · `Test Design: TDD-001`
-- [ ] T-002 Add TDD-002 (same file, `state.current` not `complete`),
+- [x] T-002 Add TDD-002 (same file, `state.current` not `complete`),
       confirm it passes against unmodified `evaluator.py` (guard, not RED).
       `Plan: 2` · `Requirements: FR-001` · `Test Design: TDD-002`
-- [ ] T-003 Add TDD-003 (characterization test: `change_root`-external
+- [x] T-003 Add TDD-003 (characterization test: `change_root`-external
       file post-freeze while complete; documents today's actual `MERGE
       READY` outcome).
       `Plan: 3` · `Requirements: (none — Out of Scope characterization)` · `Test Design: TDD-003`
 
 ### Plan 4 · MR-015 implementation (GREEN)
 
-- [ ] T-004 Implement the state-conditioned allowed-set change in
+- [x] T-004 Implement the state-conditioned allowed-set change in
       `evaluator.py`'s `_check_change()` per Architecture's Design section.
       Confirm TDD-001 GREEN; TDD-002/TDD-003 unaffected.
       `Plan: 4` · `Requirements: FR-001` · `Test Design: TDD-001, TDD-002, TDD-003`
 
 ### Plan 5-6 · MR-017 TDD tests and policy data (RED/GREEN)
 
-- [ ] T-005 Add TDD-004 (ten paths, parametrized), confirm RED
+- [x] T-005 Add TDD-004 (ten paths, parametrized), confirm RED
       (`ambiguous` today).
       `Plan: 5` · `Requirements: FR-002` · `Test Design: TDD-004`
-- [ ] T-006 Add the four prefix/path entries to
+- [x] T-006 Add the four prefix/path entries to
       `protocol/policies/merge-readiness.yml`. Confirm TDD-004 GREEN.
       `Plan: 6` · `Requirements: FR-002` · `Test Design: TDD-004`
 
 ### Plan 7-9 · Regression and acceptance verification
 
-- [ ] T-007 Confirm `test_ambiguous_unclassified_diff_is_blocked` and the
+- [x] T-007 Confirm `test_ambiguous_unclassified_diff_is_blocked` and the
       full existing `tests/cli/test_merge_check.py` suite pass unmodified
       (AC-005 / TDD-005).
       `Plan: 7` · `Requirements: FR-002`
-- [ ] T-008 Run full `pytest -q`, `forge validate`, `forge doctor` against
+- [x] T-008 Run full `pytest -q`, `forge validate`, `forge doctor` against
       this repository's own state; confirm clean.
       `Plan: 8`
-- [ ] T-009 Reproduce CHG-0045's actual PR #36 base/head against this
+- [x] T-009 Reproduce CHG-0045's actual PR #36 base/head against this
       Change's implementation; confirm `MR-015`/`MR-017` absent, record
       before/after output.
       `Plan: 9` · `Requirements: FR-001, FR-002`
 
 ### Plan 10-13 · Evidence and completion
 
-- [ ] T-010 Write `verification.md` with real evidence for every TDD-xxx,
+- [x] T-010 Write `verification.md` with real evidence for every TDD-xxx,
       full command output, and item 9's reproduction.
       `Plan: 10`
 - [ ] T-011 Documentation Impact evaluation (`CHANGELOG.md`, possible ADR
@@ -74,11 +74,59 @@ status: pending
 - [ ] T-012 `knowledge-capture.md` from real Implementation/Review
       evidence.
       `Plan: 12`
-- [ ] T-013 Independent Strict Review of the frozen subject.
+- [x] T-013 Independent Strict Review of the frozen subject
+      (`60b699bb69c06ed0b078572dd705191e73441c68`), Iteration 1
+      (`review-001`): **REQUEST CHANGES** — 0 BLOCKER, 2 MAJOR (R001, R002),
+      0 MINOR, 1 OBSERVATION (R003, non-blocking). Both MAJORs
+      independently reproduced by the Reviewer, both real: R001, an
+      unguarded `manifest.get("state", {}).get("current")` read in the new
+      `is_complete` line crashes with `AttributeError` on a malformed
+      `state:` field instead of degrading gracefully, inconsistent with
+      the file's own established guarded-read convention; R002, the
+      `.forge/adapters/` `material_prefixes` entry is broader than
+      Architecture's own stated `.forge/adapters/*/installation.yml`
+      design and Specification's AC-005 boundary, silently reclassifying
+      sibling adapter-directory files (e.g. `config.yml`) from `ambiguous`
+      to `material`. Full findings: `review.md`.
       `Plan: 13`
+- [x] T-014 Resolution of R001: hoisted the file's existing
+      isinstance-guarded `state` read to the top of `_check_change()` and
+      reused it for `is_complete`, removing the second, unguarded inline
+      read entirely. Added TDD-006, confirmed RED against the reviewed
+      subject (`60b699b`, re-reproducing R001 exactly) before re-applying
+      the fix, then GREEN.
+      `Requirements: FR-001` · `Test Design: TDD-006`
+- [x] T-015 Resolution of R002: replaced the `.forge/adapters/`
+      `material_prefixes` entry with two exact `material_paths` entries
+      (`.forge/adapters/claude-code/installation.yml`,
+      `.forge/adapters/codex/installation.yml`), matching Architecture's
+      own stated design exactly. Added TDD-007 (a sibling
+      `.forge/adapters/claude-code/config.yml` path stays `ambiguous`),
+      confirmed RED against the reviewed subject before the fix, then
+      GREEN.
+      `Requirements: FR-002` · `Test Design: TDD-007`
+- [x] T-016 Post-Resolution housekeeping: while isolating TDD-006's
+      fixture to evaluator.py's own code path, discovered a second,
+      unrelated, pre-existing bug with the identical unguarded-string-state
+      shape in `src/forge_cli/validation/__init__.py:321`
+      (`st=m.get("state")or{}`), confirmed genuinely untouched by this
+      Change's diff and out of Scope. Flagged separately (not fixed here,
+      not silently ignored) — recorded in `verification.md`,
+      `discovery.md` addendum, and as a standalone follow-up task.
+- [ ] T-017 Full suite (`pytest -q`, 704 passed), `forge validate`, `forge
+      doctor` re-confirmed clean after the Resolution. Freeze the new
+      Resolution subject; obtain an independent Resolution Verification
+      (Iteration 2) of this Resolution.
+      `Plan: 8`
+- [ ] T-018 Documentation Impact evaluation (`CHANGELOG.md`, possible ADR
+      for DEC-001).
+      `Plan: 11`
+- [ ] T-019 `knowledge-capture.md` from real Implementation/Review
+      evidence, including the Resolution and the two out-of-scope findings
+      surfaced along the way.
+      `Plan: 12`
 
 ## Status
 
-No task has started. Blocked on the C-077 Plan Decision (explicit human
-authorization) before any task above may begin — see `plan.md`
-"Implementation Boundary".
+T-001 through T-016 complete. T-017 (Resolution Verification) is next,
+required before Documentation Impact/Knowledge Capture/Completion.

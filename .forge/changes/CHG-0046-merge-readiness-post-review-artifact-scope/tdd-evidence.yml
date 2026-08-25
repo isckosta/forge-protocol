@@ -1,7 +1,7 @@
 schema: forge/tdd-evidence@1
 change: CHG-0046
 status: compliant
-cycle_count: 5
+cycle_count: 7
 cycles:
   - id: TDD-001
     title: MR-015 tolerates a Change-local artifact committed after the frozen subject once state.current is complete (FR-001/AC-001)
@@ -22,11 +22,23 @@ cycles:
     title: The ten Agent Adapter-generated paths Discovery identified resolve to material, not ambiguous (FR-002/AC-004)
     requirements: [FR-002]
     red: {observed: true, failure_reason: "All 10 parametrized cases fail: 'assert ambiguous == material' -- pytest tests/unit/test_merge_readiness_policy.py::test_agent_adapter_generated_paths_resolve_to_a_definite_classification, against the unmodified protocol/policies/merge-readiness.yml, 2026-08-25."}
-    green: {observed: true, evidence: "All 10 cases pass after adding 3 material_prefixes entries (.claude/skills/forge/, .agents/skills/forge/, .forge/adapters/) and 1 material_paths entry (.claude/CLAUDE.md) to protocol/policies/merge-readiness.yml."}
+    green: {observed: true, evidence: "All 10 cases pass. Final form (post-R002 Resolution, see TDD-007): 2 material_prefixes entries (.claude/skills/forge/, .agents/skills/forge/) and 3 material_paths entries (.claude/CLAUDE.md, .forge/adapters/claude-code/installation.yml, .forge/adapters/codex/installation.yml) in protocol/policies/merge-readiness.yml. The Iteration-1-reviewed version instead used a bare .forge/adapters/ material_prefixes entry -- see TDD-007/R002."}
   - id: TDD-005
     title: The materiality policy's fail-closed ambiguous fallback is unaffected for any other path (FR-002/AC-005)
     requirements: [FR-002]
     red: {observed: false, failure_reason: "Fail-closed fallback guard, not new-behavior assertion."}
     green: {observed: true, evidence: "test_unrelated_unclassified_path_still_falls_back_to_ambiguous passes unmodified both before and after the policy change; pre-existing tests/cli/test_merge_check.py::test_ambiguous_unclassified_diff_is_blocked also passes unmodified, confirming AC-005 at both the unit and CLI level."}
+  - id: TDD-006
+    title: MR-015's is_complete read degrades gracefully on a malformed manifest state field, instead of crashing (Resolution of Strict Review Iteration 1, R001)
+    requirements: [FR-001]
+    red: {observed: true, failure_reason: "AttributeError: 'str' object has no attribute 'get' at evaluator.py:145 (is_complete = manifest.get('state', {}).get('current') == 'complete') -- pytest tests/cli/test_merge_check.py::test_merge_check_degrades_gracefully_on_malformed_state_field, against the Iteration-1-reviewed evaluator.py (commit 60b699b), reproducing Review finding R001 exactly. Independently confirmed by the Reviewer's own reproduction in review.md before this fix, and re-reproduced directly here against the same commit before re-applying the fix, to confirm this new test is genuinely RED against the reviewed code, not just against a strawman."}
+    green: {observed: true, evidence: "Fixed by hoisting the file's existing isinstance-guarded state read (previously computed later in _check_change(), reused unchanged for MR-005) to the top of the function and reusing that single guarded variable for is_complete, removing the second unguarded inline read entirely. Same test passes; full merge-readiness suite (24 tests) and full pytest suite (704 tests) pass with no regression."}
+    notes:
+      - "While isolating this test to evaluator.py's own code path (omitting .forge/forge.yml from the fixture), found a second, unrelated, pre-existing bug with the identical shape in src/forge_cli/validation/__init__.py:321 (st=m.get('state')or{}, crashes identically at line 375 when validate_project() runs before _check_change()) -- confirmed by direct reproduction, genuinely pre-existing (validation/__init__.py is untouched by this Change's diff), out of scope for CHG-0046 (Scope names only evaluator.py and the materiality policy), flagged separately rather than silently fixed or silently ignored."
+  - id: TDD-007
+    title: The .forge/adapters/ material_prefixes entry is narrowed to exact installation.yml paths; a sibling adapter-directory file stays ambiguous (Resolution of Strict Review Iteration 1, R002)
+    requirements: [FR-002]
+    red: {observed: true, failure_reason: "classify_path('.forge/adapters/claude-code/config.yml', policy) == 'material' (expected 'ambiguous') -- pytest tests/unit/test_merge_readiness_policy.py::test_sibling_adapter_directory_file_stays_ambiguous, against the Iteration-1-reviewed protocol/policies/merge-readiness.yml's bare .forge/adapters/ material_prefixes entry, reproducing Review finding R002 exactly."}
+    green: {observed: true, evidence: "Fixed by replacing the .forge/adapters/ material_prefixes entry with two exact material_paths entries (.forge/adapters/claude-code/installation.yml, .forge/adapters/codex/installation.yml), matching Architecture's own stated .forge/adapters/*/installation.yml design and Specification's AC-005 boundary exactly. Same test passes; TDD-004's 10 parametrized cases still pass unaffected."}
 notes:
   - "Probing what AC-002 (drafted in Specification, before TDD-003 existed) could actually rely on -- during Architecture, not during TDD itself -- surfaced that MR-015's git diff pathspec (-- change_root) means it never inspects any change_root-external path, regardless of state.current, independent of this Change. This was confirmed by direct reproduction in a disposable fixture repository before TDD-003 was written, then written as TDD-003 specifically to characterize (not fix) that finding -- see Discovery, 'A more severe, orthogonal, pre-existing gap...', and Specification's Out of Scope."
