@@ -34,12 +34,12 @@ tdd:
 verification:
   status: passed
 review:
-  status: failed
-  iteration: 2
+  status: passed
+  iteration: 3
   blockers: 0
-  majors: 1
+  majors: 0
   minors: 0
-  observations: 2
+  observations: 1
   iterations:
     - id: review-001
       revision: chg-0045-implementation-001
@@ -61,6 +61,15 @@ review:
       finding_classes:
         - resolution_regression
         - unrelated_latent_finding
+    - id: review-003
+      revision: chg-0045-resolution-002
+      subject_provenance: resolution-002
+      reviewer_provenance: review-003
+      kind: resolution_verification
+      status: passed
+      full_review_required: false
+      new_material_findings: 0
+      finding_classes: []
 documentation:
   impact_evaluated: false
 decisions:
