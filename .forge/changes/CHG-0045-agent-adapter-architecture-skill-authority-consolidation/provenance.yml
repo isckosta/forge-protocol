@@ -493,3 +493,65 @@ records:
         commit) -- exactly the seven paths in scope above; no
         Out-of-Scope Mutation. 721 passed (was 720), forge validate/doctor
         clean once refrozen.
+  - id: review-004
+    role: review
+    execution:
+      id: claude-code-review-0045-resolution-verification-004
+      context_id: claude-code-review-session-2026-08-25b
+    recorded_at: '2026-08-25T08:15:00Z'
+    revision:
+      id: chg-0045-resolution-003
+      immutable_ref:
+        type: git_commit
+        value: b626080ef976f83c34e085d177cf1cfdd356faf0
+      commit: b626080ef976f83c34e085d177cf1cfdd356faf0
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: review.md
+      statement: >-
+        Independent Resolution Verification of CHG-0045 (Iteration 4,
+        kind: resolution_verification), executed in a new Execution and
+        Execution Context (claude-code-review-0045-resolution-
+        verification-004 / claude-code-review-session-2026-08-25b),
+        distinct from every prior Execution/Context recorded in this
+        file, and distinct from resolution-003's
+        claude-code-implementation-0045 / claude-code-session-2026-08-25.
+        Bounded per C-047 to PR36-CODEX-001, defects within the Resolution
+        Delta, and Out-of-Scope Mutation. Verdict: PASS. Independently
+        confirmed, not accepted from resolution-003's own account: read
+        adapter_cli.py::doctor directly -- ADAPTER is a genuinely required
+        positional Typer argument, no default; read both workflow.md
+        sources directly -- both now show `forge adapter doctor
+        <adapter-id>` with an explanatory clause, and remain byte-
+        identical (diff, empty output); read both installed SKILL.md
+        files directly -- both carry the identical corrected line, not
+        stale; ran forge adapter plan claude-code/codex against the
+        actual repository -- both report all paths UNCHANGED; verified
+        SKILL.md sha256sum digests directly against each
+        installation.yml's own recorded digest -- both match exactly.
+        Resolution Delta computed the way Core's own _resolution_delta()
+        actually computes it (read its docstring directly): the frozen
+        resolution commit's own first-parent diff, `git diff
+        b626080^..b626080` -- exactly the seven paths resolution-003's
+        own scope declares (b626080's sole parent, 0416da1, is not a
+        merge commit, so first-parent diff and full diff coincide here).
+        No Out-of-Scope Mutation. pytest tests/unit/
+        test_claude_code_workflow_resource_authority.py tests/unit/
+        test_first_change_baseline_guidance.py -v: 10 passed, including
+        the new targeted regression test. Full suite pytest -q: 721
+        passed. forge validate: "Forge project is valid". forge doctor:
+        all PASS except the same pre-existing disclosed WARNs from prior
+        Iterations, no new WARN/FAIL. git status --porcelain=v1
+        --untracked-files=all: clean, no untracked files (R008's
+        Iteration 2/3 disclosed trigger is not currently present). One
+        new non-blocking OBSERVATION recorded per C-050 (R009:
+        CHANGELOG.md line 29's pre-existing prose mention of the bare
+        `forge adapter doctor` command, read in context and found not
+        itself inaccurate -- descriptive prose, not operational guidance
+        an agent executes, unlike workflow.md; not targeted by
+        resolution-003; docs/adr/0018 contains no reference to the
+        command at all). new_material_findings: 0; Convergence Limit (2
+        consecutive resolution_verification Iterations with
+        new_material_findings > 0) not at risk -- Iteration 3 already had
+        0, and this Iteration also has 0.

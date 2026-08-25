@@ -35,11 +35,11 @@ verification:
   status: passed
 review:
   status: passed
-  iteration: 3
+  iteration: 4
   blockers: 0
   majors: 0
   minors: 0
-  observations: 1
+  observations: 2
   iterations:
     - id: review-001
       revision: chg-0045-implementation-001
@@ -70,6 +70,16 @@ review:
       full_review_required: false
       new_material_findings: 0
       finding_classes: []
+    - id: review-004
+      revision: chg-0045-resolution-003
+      subject_provenance: resolution-003
+      reviewer_provenance: review-004
+      kind: resolution_verification
+      status: passed
+      full_review_required: false
+      new_material_findings: 0
+      finding_classes:
+        - unrelated_latent_finding
 documentation:
   impact_evaluated: true
   update_required: true

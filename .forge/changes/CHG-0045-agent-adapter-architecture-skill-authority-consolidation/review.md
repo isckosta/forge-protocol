@@ -9,12 +9,15 @@ status: passed
 
 ## Verdict
 
-**PASS (final, Iteration 3 — `kind: resolution_verification`).** No
-blocking Findings remain outstanding. One non-blocking OBSERVATION (R008,
-an unrelated, pre-existing Core `forge validate` gap, Out of Scope for
-this Change) remains open, exactly as `CHG-0018/review.md`'s own R002
-remained open through that Change's Completion — see the important
-operational caveat about R008 at the end of Iteration 3, below.
+**PASS (final, Iteration 4 — `kind: resolution_verification`).** No
+blocking Findings remain outstanding. Two non-blocking OBSERVATIONs remain
+open: R008 (an unrelated, pre-existing Core `forge validate` gap, Out of
+Scope for this Change — its Iteration-3-disclosed untracked-file trigger
+is no longer present in the working tree as of Iteration 4) and R009 (a
+pre-existing `CHANGELOG.md` prose mention of the bare `forge adapter
+doctor` command, not itself inaccurate, recorded per C-050, not targeted
+by `resolution-003`). See Iteration 4, below, for PR36-CODEX-001's
+verification.
 
 - **Iteration 1** (`kind: initial_review`) — **REQUEST CHANGES**: 1
   BLOCKER (R001), 3 MAJOR (R002/R003/R004), 1 MINOR (R005), 0 OBSERVATION.
@@ -41,21 +44,37 @@ operational caveat about R008 at the end of Iteration 3, below.
   Convergence Limit (2 consecutive `resolution_verification` Iterations
   with `new_material_findings > 0`) is **not** reached, since Iteration 3
   itself has `new_material_findings: 0`.
+- **Iteration 4** (`kind: resolution_verification`) — **PASS**: verifies
+  the fix of `PR36-CODEX-001`, an external, independent Codex review-bot
+  finding on this repository's own open PR #36 (not a Finding raised by
+  this Review): `workflow.md`'s Bootstrap guidance now correctly shows
+  `forge adapter doctor <adapter-id>` (the real, required positional
+  argument, confirmed by direct read of `adapter_cli.py::doctor`), both
+  `workflow.md` sources remain byte-identical, both installed `SKILL.md`
+  files carry the identical fix (confirmed by direct read and independent
+  digest verification), and a genuine regression test was added. Resolution
+  Delta (`resolution-003`'s frozen commit's own first-parent diff,
+  `b626080^..b626080`, computed the way Core's own `_resolution_delta()`
+  computes it to avoid contamination from the intervening CHG-0046 merge)
+  is exactly the seven files `resolution-003` declares — no Out-of-Scope
+  Mutation. 0 new material findings; one new non-blocking OBSERVATION
+  (R009) recorded per C-050, not targeted by this Resolution.
 
 Everything below this Verdict down to the end of the original `##
 Conclusion` is Iteration 1's verbatim historical record, except the
 Summary table immediately below, which is restated in Raised/Outstanding
-form to account for R001-R007's resolution and R008's disposition.
-Iterations 2 and 3 are appended at the end of this file in order.
+form to account for R001-R007's resolution and R008/R009's disposition.
+Iterations 2, 3, and 4 are appended at the end of this file in order.
 
 `protocol/policies/review.yml` sets `blocking: [blocker, major]`; every
 BLOCKER and MAJOR ever raised (R001, R002, R003, R004, R007) is now
 resolved and independently re-verified. R005/R006 (non-blocking, also
-resolved) and R008 (non-blocking, open, Out of Scope) are the only
+resolved) and R008/R009 (non-blocking, open, Out of Scope) are the only
 Findings with any remaining trace, and none of them block. This Change
 may proceed toward Completion — subject to the R008 operational caveat in
-Iteration 3, below, which is about repository hygiene at Completion time,
-not about this Review's own verdict.
+Iteration 3, below, which is about repository hygiene, not about this
+Review's own verdict (and, as of Iteration 4, no longer empirically
+triggered — the working tree is clean of untracked files).
 
 **REQUEST CHANGES (Iteration 1, `kind: initial_review`), as originally
 recorded.** 1 BLOCKER, 3 MAJOR, 1 MINOR, 0 OBSERVATION — blocking per
@@ -98,12 +117,12 @@ Review, in the Iteration that recorded it. **Outstanding** is the state
 *after* the final Iteration, and is what `manifest.yml`'s
 `review.blockers`/`majors`/`minors`/`observations` carry.
 
-| Severity | Raised (It. 1) | Raised (It. 2) | Raised (It. 3) | Raised total | Outstanding | Blocking |
-| --- | --- | --- | --- | --- | --- | --- |
-| BLOCKER | 1 | 0 | 0 | 1 | 0 | yes |
-| MAJOR | 3 | 1 | 0 | 4 | 0 | yes |
-| MINOR | 1 | 0 | 0 | 1 | 0 | no |
-| OBSERVATION | 0 | 2 | 0 | 2 | 1 | no |
+| Severity | Raised (It. 1) | Raised (It. 2) | Raised (It. 3) | Raised (It. 4) | Raised total | Outstanding | Blocking |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| BLOCKER | 1 | 0 | 0 | 0 | 1 | 0 | yes |
+| MAJOR | 3 | 1 | 0 | 0 | 4 | 0 | yes |
+| MINOR | 1 | 0 | 0 | 0 | 1 | 0 | no |
+| OBSERVATION | 0 | 2 | 0 | 1 | 3 | 2 | no |
 
 R001 (BLOCKER, Iteration 1) and R002/R003/R004 (MAJOR, Iteration 1) are
 resolved by `resolution-001` and verified in Iteration 2 — no longer
@@ -117,7 +136,13 @@ recorded per C-050) remains open and outstanding — non-blocking to this
 Review's own verdict, Out of Scope for this Change to fix, but see
 Iteration 3's operational caveat about its concrete, empirically-confirmed
 consequence for this Change's own path to a `forge validate`-clean
-repository state.
+repository state (as of Iteration 4, the working tree is clean of
+untracked files and this consequence is not currently triggered). R009
+(OBSERVATION, Iteration 4, a pre-existing `CHANGELOG.md` prose mention of
+the bare `forge adapter doctor` command, not itself inaccurate, recorded
+per C-050) is likewise open and outstanding — non-blocking, not targeted
+by `resolution-003`, proportionate for a human maintainer to address
+alongside R008, not required by this Review.
 
 ## Review Subject
 
@@ -1196,3 +1221,211 @@ and Completion itself remain the Flow's own next stages, per
 `protocol/flows/full.yml`; the R008 operational caveat above is the human
 maintainer's to resolve at or before that point, not a re-opening of this
 Review's own verdict).
+
+## Iteration 4 — Resolution Verification
+
+### Iteration 4 scope and authority
+
+Bounded per C-047 to `PR36-CODEX-001` (the single Finding `resolution-003`
+targets — an external, independent GitHub Codex review-bot finding on this
+repository's own PR #36, not a Finding raised by this Review), defects
+within the Resolution Delta, and Out-of-Scope Mutation. Not a re-audit of
+`implementation-subject-001` or of anything Iterations 1-3 already
+examined and found sound. Performed cold, from repository state and the
+governing prompt alone, with no access to any prior Implementation or
+Resolution conversation.
+
+### Iteration 4 execution independence
+
+Distinct Execution/Execution Context from every prior record in
+`provenance.yml`: `claude-code-review-0045-resolution-verification-004` /
+`claude-code-review-session-2026-08-25b`, independent of `resolution-003`'s
+`claude-code-implementation-0045` / `claude-code-session-2026-08-25`. See
+`provenance.yml` record `review-004`.
+
+Subject: `resolution-003`, frozen at
+`b626080ef976f83c34e085d177cf1cfdd356faf0`. `HEAD` at the time of this
+Iteration is `0b72e582b4f941d3a36433821e01458d70cc244f` (this Change's own
+`resolution-003` provenance-recording commit), whose only difference from
+the subject is exactly `provenance.yml` (Change-local review-control
+metadata, exempt) — confirmed via `git diff --stat
+b626080..0b72e58` showing exactly one file, 44 insertions, 0 deletions.
+`git status --porcelain=v1 --untracked-files=all` at review time shows a
+clean working tree, no untracked files at all (R008's Iteration 2/3
+disclosed pre-existing untracked files are no longer present).
+
+### PR36-CODEX-001, re-checked against actual repository state — real finding, genuinely and completely fixed
+
+Read `src/forge_cli/adapter_cli.py`'s `doctor` command directly:
+
+```
+def doctor(adapter_id: Annotated[str, typer.Argument(metavar="ADAPTER")]) -> None:
+```
+
+`adapter_id` has no default and is declared `typer.Argument`, so `ADAPTER`
+is genuinely a required positional argument — confirmed, not accepted from
+the coordinator's own claim. The finding is real: an agent that read the
+prior wording ("`forge adapter doctor`" named as a bare alternative to
+`forge doctor`) and ran it literally would get Typer's missing-argument
+error, not a diagnosis.
+
+Read both `workflow.md` sources directly. Both now read (identical text,
+line 13-14 in each):
+
+```
+decision, check the Adapter's own recorded drift state (`forge doctor` or
+`forge adapter doctor <adapter-id>`, where `<adapter-id>` is the id shown
+under this repository's own `.forge/adapters/` directory, e.g.
+`claude-code` or `codex`) ...
+```
+
+This is a genuine, complete fix: it shows the required argument, and adds
+an explanatory clause telling an agent where to find a concrete value
+(`.forge/adapters/`), not just the bare placeholder syntax. `diff
+src/forge_cli/adapters/claude_code/resources/skills/workflow.md
+src/forge_cli/adapters/codex/resources/skills/workflow.md` → no output —
+still byte-identical, preserving the invariant
+`test_workflow_templates_project_identical_baseline_guidance` enforces.
+
+Read both installed `SKILL.md` files directly
+(`.claude/skills/forge/SKILL.md`, `.agents/skills/forge/SKILL.md`): both
+carry the identical corrected line (`` `forge adapter doctor
+<adapter-id>` ``) — not stale. Ran `forge adapter plan claude-code` and
+`forge adapter plan codex` against the actual current repository state
+myself: both report `UNCHANGED forge_owned .../SKILL.md` (and every other
+generated path `UNCHANGED`) — the installed projections match their
+recorded `installation.yml` digests exactly, confirmed independently by
+`sha256sum` against each `installation.yml`'s own recorded `digest:`
+value for `SKILL.md`
+(`.claude/skills/forge/SKILL.md` → `010a9a57...93aac`, matches;
+`.agents/skills/forge/SKILL.md` → `f3274a4e...057ce0`, matches). The
+regeneration via `forge adapter update` was genuine, not merely claimed.
+
+PR36-CODEX-001 is resolved.
+
+### Resolution Delta, computed independently — exact match to declared scope, no Out-of-Scope Mutation
+
+A naive `git diff 95b521e..b626080` would be wrong here: this branch was
+merged with `main` (picking up CHG-0046's entire unrelated diff) between
+Iteration 3's frozen subject and this Resolution. Computed the Resolution
+Delta the way Core's own `_resolution_delta()` actually computes it
+(`src/forge_cli/validation/__init__.py`, read directly — its own
+docstring: "Using the full range from the prior subject would incorrectly
+include unrelated Changes merged into the branch between the two frozen
+subjects"): the frozen resolution commit's own first-parent diff,
+`b626080^..b626080` (`b626080`'s only parent is `0416da1`, a linear commit,
+not a merge, so first-parent diff and full diff coincide here):
+
+```
+$ git diff --stat b626080ef976f83c34e085d177cf1cfdd356faf0^ b626080ef976f83c34e085d177cf1cfdd356faf0
+ .agents/skills/forge/SKILL.md                                       | 4 +++-
+ .claude/skills/forge/SKILL.md                                       | 4 +++-
+ .forge/adapters/claude-code/installation.yml                        | 2 +-
+ .forge/adapters/codex/installation.yml                              | 2 +-
+ src/forge_cli/adapters/claude_code/resources/skills/workflow.md     | 4 +++-
+ src/forge_cli/adapters/codex/resources/skills/workflow.md           | 4 +++-
+ tests/unit/test_claude_code_workflow_resource_authority.py          | 15 +++++++++++++++
+ 7 files changed, 29 insertions(+), 6 deletions(-)
+```
+
+Exactly the seven paths `resolution-003`'s own `scope:` declares — no more,
+no fewer. **Out-of-Scope Mutation: none.** `full_review_required` remains
+`false`.
+
+### New Findings introduced by the Resolution
+
+None discovered within the Resolution Delta or its immediate consequences.
+`new_material_findings: 0`.
+
+One non-blocking, C-050 latent observation outside the Resolution Delta,
+recorded rather than discarded, per the task's own instruction to check for
+it: `CHANGELOG.md` line 29 (pre-existing, part of this Change's original
+Unreleased entry, not touched by `resolution-003`) reads "...a
+digest-based drift record (`forge doctor`/`forge adapter doctor`) before
+trusting..." — naming the bare command without the now-required argument.
+This is prose describing a feature that was added, not literal
+copy-paste command guidance an agent would execute (unlike `workflow.md`,
+which is read and acted on directly by an operating agent) — read in
+context it is not inaccurate, since it never claims the bare command is
+runnable. `docs/adr/0018-agent-adapter-skill-authority-consolidation.md`
+contains no reference to `forge adapter doctor`/`forge doctor` at all —
+nothing stale there. `tasks.md`/`knowledge-capture.md` contain no entry
+documenting `resolution-003`/PR36-CODEX-001 (`tasks.md` stops at T-025,
+recorded before this fix); proportionate to record but not required to
+block on, since `tasks.md`'s own checklist is Change-local bookkeeping
+outside PR36-CODEX-001's targeted scope, not `workflow.md`'s own
+technical accuracy. Recorded as **R009 — OBSERVATION** (non-blocking,
+C-050, not targeted by this Resolution, not re-litigated further here).
+
+### Independent mechanical verification
+
+Every figure below was produced by this execution, not read from the
+coordinator's own account or any commit message.
+
+- `.venv/bin/pytest tests/unit/test_claude_code_workflow_resource_authority.py
+  tests/unit/test_first_change_baseline_guidance.py -v` → **10 passed**,
+  including the new
+  `test_workflow_template_shows_the_required_adapter_id_argument_for_adapter_doctor`,
+  which asserts `"forge adapter doctor <adapter-id>"` is present in the
+  loaded template — a genuine, targeted regression test, not tautological.
+- `.venv/bin/python -m pytest -q` → **721 passed** (up from Iteration 3's
+  701, the difference explained by the intervening CHG-0046 merge
+  bringing in its own additional tests, not by `resolution-003` itself —
+  `resolution-003`'s own first-parent diff adds exactly one new test,
+  `test_workflow_template_shows_the_required_adapter_id_argument_for_
+  adapter_doctor`), reproduced against the actual working tree at the
+  `resolution-003` subject.
+- `.venv/bin/forge validate`, run against the actual current repository
+  state → **`Forge project is valid`**. Confirmed independently.
+- `.venv/bin/forge doctor` → every check `PASS` except the same two
+  pre-existing, disclosed `WARN`s already present in Iterations 1-3
+  (`limitations` for both Adapters) plus the pre-existing, unrelated
+  `migration_available` `WARN` — no new `WARN`/`FAIL`.
+- `.venv/bin/forge adapter plan claude-code` / `codex` → all paths
+  `UNCHANGED`, confirmed independently against actual `sha256sum` digests.
+- `diff` of both `workflow.md` sources → empty (byte-identical).
+- `git diff b626080^..b626080` → exactly the seven declared scope paths
+  (see Resolution Delta above).
+
+### Scope discipline (C-047 / C-050)
+
+No unrelated latent Finding beyond R009 (recorded, non-blocking, not
+re-litigated as license for a broader re-audit per C-050) was discovered.
+Everything Iterations 1-3 already examined and found sound, and everything
+outside `resolution-003`'s own declared scope and PR36-CODEX-001's own
+subject matter, was left alone — re-examining it here would be the
+unrestricted re-audit C-047 forbids.
+
+### Convergence accounting
+
+`new_material_findings: 0` for this Iteration. No prior Iteration in this
+Review's history immediately precedes this one with `new_material_findings
+> 0` (Iteration 3 itself had `0`), so the Convergence Limit condition (2
+*consecutive* `resolution_verification` Iterations with
+`new_material_findings > 0`) is not met and was never at risk. No
+`convergence_decision` is required.
+
+### Verdict
+
+**PASS.**
+
+PR36-CODEX-001 is a real, external, independently-sourced finding (GitHub
+Codex review bot, PR #36, P2) and is now genuinely and completely fixed:
+`adapter_cli.py::doctor`'s `ADAPTER` argument is confirmed required by
+direct source read; both `workflow.md` sources correctly show the required
+argument with an explanatory clause and remain byte-identical to each
+other; both installed `SKILL.md` files carry the identical fix, confirmed
+both by direct content read and by independent `sha256sum`/`forge adapter
+plan` digest verification against `installation.yml`; a genuine, targeted
+regression test was added and passes. The Resolution Delta, computed the
+way Core's own `_resolution_delta()` computes it (first-parent diff of the
+frozen resolution commit, to avoid contaminating the delta with the
+intervening CHG-0046 merge), is exactly the seven files `resolution-003`
+declares — no more, no fewer, no Out-of-Scope Mutation. Full suite: 721
+passed. `forge validate`/`forge doctor` clean, no new `WARN`/`FAIL`. One
+non-blocking C-050 observation recorded (R009: a pre-existing `CHANGELOG.md`
+mention of the bare command, prose rather than operational guidance, not
+independently inaccurate) — not targeted by this Resolution, not blocking.
+Zero new material findings; the Convergence Limit is not at risk. This
+Change's Resolution Verification for PR36-CODEX-001 is **PASS** and may
+proceed toward Completion of this specific Resolution cycle.
