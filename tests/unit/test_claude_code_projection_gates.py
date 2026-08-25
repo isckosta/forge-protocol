@@ -221,3 +221,65 @@ def test_projection_points_every_applicable_flow_at_the_shared_independence_sect
             f"Flow `{flow}` gate-obligations section has no pointer to the shared "
             "independence section"
         )
+
+
+_REVIEW_GATE_FLOW = "gates:\n  before_completion:\n    require: [review_passed]\n"
+
+
+def _flow_with_profile(profile: str) -> str:
+    return f"review:\n  profile: {profile}\n" + _REVIEW_GATE_FLOW
+
+
+def test_projection_renders_focused_profile_instruction_for_fast() -> None:
+    """CHG-0048 TDD-010."""
+    skill = _protocol_2_skill_content((("fast", _flow_with_profile("focused")),))
+    assert "`focused` profile" in skill
+    assert "Completion requires Strict Review to pass." not in skill
+
+
+def test_projection_renders_standard_profile_instruction_for_standard() -> None:
+    """CHG-0048 TDD-010."""
+    skill = _protocol_2_skill_content((("standard", _flow_with_profile("standard")),))
+    assert "`standard` profile" in skill
+    assert "Completion requires Strict Review to pass." not in skill
+
+
+def test_projection_renders_unchanged_strict_instruction_for_full() -> None:
+    """CHG-0048 TDD-010 / AC-004: FULL's instruction is unchanged in substance."""
+    skill = _protocol_2_skill_content((("full", _flow_with_profile("strict")),))
+    assert "Completion requires Strict Review to pass." in skill
+
+
+def test_projection_defaults_to_strict_when_flow_declares_no_profile() -> None:
+    """Backward compatibility: a Flow document with no review.profile key
+    (the pre-CHG-0048 shape) is treated as strict."""
+    skill = _protocol_2_skill_content((("full", _REVIEW_GATE_FLOW),))
+    assert "Completion requires Strict Review to pass." in skill
+
+
+def test_projection_review_instructions_are_pairwise_distinct_across_profiles() -> None:
+    """CHG-0048 TDD-010."""
+    skill = _protocol_2_skill_content((
+        ("fast", _flow_with_profile("focused")),
+        ("standard", _flow_with_profile("standard")),
+        ("full", _flow_with_profile("strict")),
+    ))
+    heading = "### Flow `{flow}` gate obligations"
+    positions = {flow: skill.index(heading.format(flow=flow)) for flow in ("fast", "standard", "full")}
+    ordered = sorted(positions.items(), key=lambda item: item[1])
+    bounds = [start for _, start in ordered] + [len(skill)]
+    sections = {}
+    for index, (flow, start) in enumerate(ordered):
+        sections[flow] = skill[start:bounds[index + 1]]
+    lines = {flow: next(line for line in section.splitlines() if "Completion requires" in line and "Review" in line) for flow, section in sections.items()}
+    assert len({lines["fast"], lines["standard"], lines["full"]}) == 3
+
+
+def test_projection_reviewer_resolver_independence_block_is_unaffected_by_profile() -> None:
+    """CHG-0048 TDD-012: independence block stays single, shared, unchanged."""
+    skill = _protocol_2_skill_content((
+        ("fast", _flow_with_profile("focused")),
+        ("standard", _flow_with_profile("standard")),
+        ("full", _flow_with_profile("strict")),
+    ))
+    assert skill.count("### Reviewer/Resolver independence") == 1

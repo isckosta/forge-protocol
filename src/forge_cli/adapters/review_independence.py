@@ -62,6 +62,29 @@ REVIEWER_RESOLVER_INDEPENDENCE_POINTER = (
     f'"{REVIEWER_RESOLVER_INDEPENDENCE_LABEL}" section below; it is not restated per Flow.'
 )
 
+# CHG-0048: one shared per-profile review-instruction source for both
+# Adapters, mirroring the independence block above -- a profile changes
+# what a Reviewer is instructed to do (this text), never independence,
+# evidence, severities, or convergence (Contract-invariant, unconditioned
+# on profile).
+REVIEW_PROFILE_INSTRUCTION: dict[str, str] = {
+    "focused": (
+        "- Completion requires Review to pass, at the `focused` profile: "
+        "scoped to the actual diff, the regressions it could introduce, the "
+        "Requirement(s) it targets, and any material Finding actually "
+        "observed -- not an unrestricted search for any conceivable "
+        "rejection ground."
+    ),
+    "standard": (
+        "- Completion requires Review to pass, at the `standard` profile: "
+        "genuine, evidence-based evaluation of Specification compliance, "
+        "correctness, and implementation quality -- without the `strict` "
+        "profile's added obligation to exhaustively search beyond the "
+        "Change's own declared scope and evidence."
+    ),
+    "strict": "- Completion requires Strict Review to pass.",
+}
+
 
 def render_reviewer_resolver_independence_section() -> str:
     """Render the shared independence block as one standalone section."""

@@ -150,3 +150,46 @@ def test_projection_does_not_invent_pre_implementation_boundary_for_flow_without
     """FAST has no Plan stage and legitimately declares no `before_implementation` gate."""
     content = _content()
     assert "Implementation MUST NOT begin until" not in content
+
+
+_REVIEW_GATE_FLOW = "gates:\n  before_completion:\n    require: [review_passed]\n"
+
+
+def _flow_with_profile(profile: str) -> str:
+    return f"review:\n  profile: {profile}\n" + _REVIEW_GATE_FLOW
+
+
+def test_projection_renders_focused_profile_instruction_for_fast() -> None:
+    """CHG-0048 TDD-011 (Codex parity with Claude Code TDD-010)."""
+    content = _content(_flow_with_profile("focused"))
+    assert "`focused` profile" in content
+    assert "Completion requires Strict Review to pass." not in content
+
+
+def test_projection_renders_standard_profile_instruction_for_standard() -> None:
+    """CHG-0048 TDD-011."""
+    content = _content(_flow_with_profile("standard"))
+    assert "`standard` profile" in content
+    assert "Completion requires Strict Review to pass." not in content
+
+
+def test_projection_renders_unchanged_strict_instruction_for_full() -> None:
+    """CHG-0048 TDD-011 / AC-004."""
+    content = _content(_flow_with_profile("strict"))
+    assert "Completion requires Strict Review to pass." in content
+
+
+def test_projection_defaults_to_strict_when_flow_declares_no_profile() -> None:
+    content = _content(_REVIEW_GATE_FLOW)
+    assert "Completion requires Strict Review to pass." in content
+
+
+def test_projection_matches_claude_code_profile_instruction_text() -> None:
+    """CHG-0048 TDD-011: both Adapters must render the exact same per-profile
+    instruction text, sourced from the same shared module, not independently
+    authored copies."""
+    from forge_cli.adapters.review_independence import REVIEW_PROFILE_INSTRUCTION as shared
+
+    for profile in ("focused", "standard", "strict"):
+        content = _content(_flow_with_profile(profile))
+        assert shared[profile] in content

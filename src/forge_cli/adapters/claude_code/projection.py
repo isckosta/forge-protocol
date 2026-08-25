@@ -11,6 +11,7 @@ from typing import Iterable
 import yaml
 
 from forge_cli.adapters.review_independence import (
+    REVIEW_PROFILE_INSTRUCTION,
     REVIEWER_RESOLVER_INDEPENDENCE_LINES,
     REVIEWER_RESOLVER_INDEPENDENCE_POINTER,
     render_reviewer_resolver_independence_section,
@@ -83,6 +84,8 @@ def _gate_instructions(flows: Iterable[tuple[str, str]], protocol_id: int) -> st
     independence_applies = False
     for flow_id, content in sorted(flows, key=lambda item: item[0]):
         data = yaml.safe_load(content) or {}
+        review = data.get("review") or {}
+        review_profile = review.get("profile", "strict") if isinstance(review, dict) else "strict"
         gates = data.get("gates") or {}
         if not isinstance(gates, dict):
             continue
@@ -111,7 +114,7 @@ def _gate_instructions(flows: Iterable[tuple[str, str]], protocol_id: int) -> st
         if "verification_passed" in required:
             lines.append("- Completion requires Verification to pass.")
         if "review_passed" in required:
-            lines.append("- Completion requires Strict Review to pass.")
+            lines.append(REVIEW_PROFILE_INSTRUCTION.get(review_profile, REVIEW_PROFILE_INSTRUCTION["strict"]))
         if "blocking_review_threads_resolved" in required:
             lines.append(
                 "- Completion requires all blocking review threads on any active "
