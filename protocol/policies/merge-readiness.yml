@@ -3,6 +3,7 @@ merge_readiness:
   material_prefixes:
     - .github/workflows/
     - protocol/
+    - capabilities/
     - src/
     - tests/
     - adapters/

@@ -20,8 +20,8 @@ records:
       content_digest:
         algorithm: sha256
         path: plan.md
-        value: 0124254a52023f83e2649ee2fdc8ce9284893416090c81c2bfd7f11414e153e8
-      statement: The user explicitly approved continuation of CHG-0047 to Implementation in the active session on 2026-08-25, via AskUserQuestion, after reviewing the Discovery Repository Truth Audit, the Specification (FR-001-FR-005, NFR-001), the Test Design (TD-001-TD-007), and the 8-item Plan summary, selecting "Aprovar e prosseguir".
+        value: 95738f45d293d02e7354ade0f1ab7f66edc16c1a9e02e24991c4634ee68151e3
+      statement: "The user explicitly approved continuation of CHG-0047 to Implementation in the active session on 2026-08-25, via AskUserQuestion, after reviewing the Discovery Repository Truth Audit, the Specification (FR-001-FR-005, NFR-001), the Test Design (TD-001-TD-007), and the 8-item Plan summary, selecting \"Aprovar e prosseguir\". content_digest recomputed after the R-008 fix (removal of unfilled template text and a duplicate Implementation Boundary section from plan.md, per review.md's Iteration 4/Resolution-of-R-008) -- the approved substance (the 8-item Plan and the Human Plan Authorization prose) is unchanged; only trailing template cruft was removed."
   - id: implementation-subject-001
     role: implementation
     execution:
@@ -267,3 +267,20 @@ records:
       observed_by: operator
       reference: review.md#iteration-6
       statement: Independent Strict Review Iteration 6 (Documentation Impact addition, Initial Review, fresh execution, isolated Git worktree at .claude/worktrees/agent-a43a864a38974e415, no shared context with the Implementation or any of the five prior Reviewer Executions) returned REQUEST CHANGES against 356f201 -- R-010 (BLOCKER, the documentation-001 subject-freeze provenance record existed in the working tree but had not yet been committed when this Iteration was launched, so forge validate correctly failed with a C-026 staleness finding at the reviewed commit) and R-011 (MINOR, ADR-0019 misattributes two finding IDs -- R-002/R-004 -- in its own history summary and omits R-005). R-010 was a process-sequencing gap, not a content defect, fixed immediately by committing documentation-001 (63aa0a4) before this report was recorded. R-011 is accepted, non-blocking, and not fixed (C-039). No Out-of-Scope Mutation; CHANGELOG.md/ADR-0019 content spot-checked against the shipped files and the real review history and found accurate; full suite unregressed (750 passed, 2 warnings).
+  - id: verification-001
+    role: implementation
+    execution:
+      id: claude-code-implementation-0047-verification-001
+      context_id: claude-code-session-2026-08-25-documentation-001
+    recorded_at: '2026-08-25T10:00:00Z'
+    revision:
+      id: chg-0047-documentation-001
+      immutable_ref:
+        type: git_commit
+        value: 356f201068d9d73953a9a264af7d52511f4ebe09
+      commit: 356f201068d9d73953a9a264af7d52511f4ebe09
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: verification.md
+      statement: "verification.md's PASS result (Test Evidence: 29 passed in tests/capabilities/, 750 passed full suite, TDD-001 through TDD-005 RED/GREEN evidence; Forge Evidence: forge validate PASS, diff-scope and forbidden-vocabulary checks) remains accurate against the frozen subject of review-006 (documentation-001, commit 356f201) -- the only content difference between the implementation subject reviewed in Iteration 4/5 (53aa1f0) and this final subject (356f201) is the Documentation Impact addition (CHANGELOG.md, docs/adr/0019-capability-architecture-foundation.md), which is non-executable documentation and does not invalidate any recorded Test/Forge Evidence, consistent with Iteration 6's own independent re-verification (750 passed, 2 warnings; forge validate PASS)."
