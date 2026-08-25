@@ -150,3 +150,161 @@ records:
         specification-drift.md (new), tasks.md, traceability.yml,
         verification.md -- no file outside this Change's own directory
         touched, no Out-of-Scope Mutation.
+  - id: review-002
+    role: review
+    execution:
+      id: claude-code-review-0045-independent
+      context_id: claude-code-review-session-2026-08-24
+    recorded_at: '2026-08-25T00:05:00Z'
+    revision:
+      id: chg-0045-resolution-001
+      immutable_ref:
+        type: git_commit
+        value: b43cb761d08433ae8a0b7dbc3be82d1e57f09221
+      commit: b43cb761d08433ae8a0b7dbc3be82d1e57f09221
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: review.md
+      statement: >-
+        Independent Resolution Verification of CHG-0045 (Iteration 2,
+        kind: resolution_verification), continuing the same independent
+        Reviewer identity as review-001 (claude-code-review-0045-
+        independent / claude-code-review-session-2026-08-24), distinct
+        from resolution-001's claude-code-implementation-0045 /
+        claude-code-session-2026-08-24. Bounded per C-047 to R001-R005,
+        defects within the Resolution Delta, and Out-of-Scope Mutation --
+        not a re-audit of implementation-subject-001. Verdict: REQUEST
+        CHANGES. Independently reproduced, against actual repository state
+        at commit b43cb761d08433ae8a0b7dbc3be82d1e57f09221 rather than
+        accepted from resolution-001's own claim: pytest -q run twice
+        (fresh scratch venv and this repository's own committed .venv),
+        both yielding 701 passed, 0 failed, no longer reproducing
+        Iteration 1's traceability.schema.json violation --
+        traceability.yml's CON-001/CON-002/CON-004 now each carry a
+        non-empty tasks array (R001 resolved). tasks.md T-016 now contains
+        an explicit DEC-006 narrative naming and linking the T-016
+        authorization event (R002 resolved). tasks.md T-017/T-018 no
+        longer contradict manifest.yml's own documentation/
+        knowledge_capture: pending state, and explicitly flag their own
+        prior overclaim as corrected (R003 resolved). specification-
+        drift.md contains a genuine Root Cause/Evidence/Final decision
+        narrative (confirmed as an established artifact type via four
+        prior repository precedents, not invented ad hoc), and
+        specification.md's Compatibility Statement is honestly corrected
+        with a clearly labeled addendum rather than silently rewritten
+        (R004 resolved). traceability.yml's acceptance table now correctly
+        leaves AC-001 empty and populates AC-002 (R005 resolved). git diff
+        --name-only 23d763b..b43cb76 confirmed exactly six paths, five
+        substantive (specification.md, specification-drift.md, tasks.md,
+        traceability.yml, verification.md) plus provenance.yml (exempt
+        review-control metadata), all inside this Change's own directory
+        -- no Out-of-Scope Mutation. But adding this Iteration's own
+        review-002 entry (kind: resolution_verification) activates
+        forge validate's Resolution-scope check for the first time, which
+        genuinely fails: resolution-001's own provenance record has a
+        prose statement but no structured scope/targets fields, so forge
+        validate cannot mechanically confirm the Resolution Delta itself
+        (R007, MAJOR, blocking -- reproduced directly: `forge validate`
+        exits with "The Resolution referenced by a resolution_verification
+        Iteration must declare non-empty scope and targets before it can
+        be mechanically verified as scoped."). Isolated a second,
+        unrelated forge validate error to this repository's three
+        pre-existing, disclosed, untracked files by moving them aside and
+        re-running forge validate (error disappeared, then restored) --
+        a Core latent bug (any untracked file anywhere trips the C-026
+        freeze check for a Change's last pending/passed bound Iteration),
+        not caused by this Resolution, recorded per C-050 as R008
+        (OBSERVATION), matching CHG-0018/review.md's own R002 precedent
+        for a structurally similar unrelated Core gap. One further new,
+        non-blocking OBSERVATION recorded (R006: verification.md's and
+        specification-drift.md's forward-referencing prose about a
+        not-yet-existing knowledge-capture.md, accurate as a statement of
+        intent but presented in present/past tense -- recorded per C-050,
+        not blocking, not targeted by any further Resolution). R007 is the
+        only blocking finding in this Iteration; a further, narrowly-
+        bounded Resolution (completing resolution-001's scope/targets
+        fields -- review-control metadata, no new frozen subject required)
+        and Resolution Verification (Iteration 3) are the correct next
+        step, not a new unrestricted Initial Review (full_review_required:
+        false -- R007 is not an Out-of-Scope Mutation).
+  - id: resolution-001-scope
+    role: resolution
+    execution:
+      id: claude-code-implementation-0045
+      context_id: claude-code-session-2026-08-24
+    recorded_at: '2026-08-25T00:20:00Z'
+    scope:
+      - .forge/changes/CHG-0045-agent-adapter-architecture-skill-authority-consolidation/specification.md
+      - .forge/changes/CHG-0045-agent-adapter-architecture-skill-authority-consolidation/specification-drift.md
+      - .forge/changes/CHG-0045-agent-adapter-architecture-skill-authority-consolidation/tasks.md
+      - .forge/changes/CHG-0045-agent-adapter-architecture-skill-authority-consolidation/traceability.yml
+      - .forge/changes/CHG-0045-agent-adapter-architecture-skill-authority-consolidation/verification.md
+    targets: [R001, R002, R003, R004, R005]
+    revision:
+      id: chg-0045-resolution-001
+      immutable_ref:
+        type: git_commit
+        value: b43cb761d08433ae8a0b7dbc3be82d1e57f09221
+      commit: b43cb761d08433ae8a0b7dbc3be82d1e57f09221
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: review.md
+      statement: >-
+        R007 (Iteration 2, MAJOR): the pre-existing `resolution-001`
+        record (committed at chore(chg-0045): freeze Resolution revision
+        at b43cb76, before this record existed) omitted the `scope`/
+        `targets` fields `_validate_resolution_verification` requires to
+        mechanically verify a Resolution Delta. `resolution-001` itself is
+        an already-committed record and is not rewritten here (C-026
+        append-only) -- this is a new, additional record, referencing the
+        identical, unchanged revision (`b43cb761d08433ae8a0b7dbc3be82d1e57f09221`,
+        no new frozen subject), supplying exactly the scope/targets metadata
+        that record lacked. `manifest.yml`'s `review-002` Iteration's
+        `subject_provenance` now points here instead of at `resolution-001`
+        directly, since this record is what a Reviewer/Core must inspect to
+        mechanically verify the Resolution Delta going forward; the original
+        `resolution-001` record remains, unmodified, as the historical
+        account of what the Resolution actually changed and why.
+  - id: resolution-002
+    role: resolution
+    execution:
+      id: claude-code-implementation-0045
+      context_id: claude-code-session-2026-08-24
+    recorded_at: '2026-08-25T00:35:00Z'
+    scope:
+      - .forge/changes/CHG-0045-agent-adapter-architecture-skill-authority-consolidation/specification-drift.md
+      - .forge/changes/CHG-0045-agent-adapter-architecture-skill-authority-consolidation/tasks.md
+      - .forge/changes/CHG-0045-agent-adapter-architecture-skill-authority-consolidation/verification.md
+    targets: [R006]
+    revision:
+      id: chg-0045-resolution-002
+      immutable_ref:
+        type: git_commit
+        value: 95b521ef5ccec4e1651518b91a9e9ce74f86bb5a
+      commit: 95b521ef5ccec4e1651518b91a9e9ce74f86bb5a
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: review.md
+      statement: >-
+        Resolution of Strict Review Iteration 2 (review-002) finding R006
+        (OBSERVATION, non-blocking): verification.md's and
+        specification-drift.md's forward-referencing prose about
+        knowledge-capture.md, corrected from present/past tense to future
+        tense, naming the still-pending post-Review Flow stage explicitly
+        instead of implying the file already exists. tasks.md's T-020/T-021
+        entries record both this Resolution and the prior
+        resolution-001-scope metadata fix (R007) in full. R007 itself
+        required no new frozen subject (see resolution-001-scope, same
+        commit b43cb76 as resolution-001) -- only R006 required new
+        content, hence this distinct revision. Raw `git diff --stat
+        b43cb76..95b521e` shows 6 files (manifest.yml, provenance.yml,
+        review.md included); excluding this Change's own
+        manifest.yml/provenance.yml/review.md review-control metadata
+        (two intervening commits, 96658cb and 4fa5635, touched only those
+        three, confirmed by their own individual `git show --stat`), the
+        actual Resolution Delta is exactly specification-drift.md,
+        tasks.md, verification.md -- no file outside this Change's own
+        directory touched, no Out-of-Scope Mutation.

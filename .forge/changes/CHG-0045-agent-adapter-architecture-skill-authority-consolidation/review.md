@@ -9,11 +9,51 @@ status: failed
 
 ## Verdict
 
-**REQUEST CHANGES (Iteration 1, `kind: initial_review`).** 1 BLOCKER, 3
-MAJOR, 1 MINOR, 0 OBSERVATION. `protocol/policies/review.yml` sets
-`blocking: [blocker, major]`; this Change may not proceed to Completion
-until the BLOCKER and all three MAJOR findings are resolved and
-re-reviewed.
+**REQUEST CHANGES (Iteration 2, `kind: resolution_verification`).** R001
+through R005 (Iteration 1) are all genuinely resolved, but a new MAJOR
+finding (R007) was discovered inside the Resolution Delta itself, within
+this Iteration's own bounded C-047 authority: `resolution-001`'s own
+provenance record omits the `scope`/`targets` fields the schema and this
+repository's own `CHG-0018` precedent require for a `resolution_
+verification` Iteration's Resolution Delta to be mechanically verified —
+and `forge validate`, run independently against this exact repository
+state, genuinely fails with "The Resolution referenced by a
+resolution_verification Iteration must declare non-empty scope and
+targets before it can be mechanically verified as scoped." This blocks a
+`passed` verdict for this Iteration; it does not reopen R001-R005, all of
+which independently re-verified sound.
+
+- **Iteration 1** (`kind: initial_review`) — **REQUEST CHANGES**: 1
+  BLOCKER (R001), 3 MAJOR (R002/R003/R004), 1 MINOR (R005), 0 OBSERVATION.
+- **Iteration 2** (`kind: resolution_verification`) — **REQUEST CHANGES**:
+  0 BLOCKER, 1 new MAJOR (R007 — `resolution-001`'s own record fails
+  mechanical scope verification), 0 new MINOR, 2 new OBSERVATION (R006, a
+  premature-tense wording issue; R008, an unrelated, pre-existing Core
+  `forge validate` latent bug — see below). R001-R005 all independently
+  re-verified resolved against actual repository state at the frozen
+  Resolution subject `b43cb761d08433ae8a0b7dbc3be82d1e57f09221`, not
+  accepted from `resolution-001`'s own claim; the Resolution Delta (`git
+  diff 23d763b..b43cb76`) contains exactly the six files `resolution-001`
+  declares, all inside this Change's own directory — no Out-of-Scope
+  Mutation.
+
+This Change is **not yet PASS**. R007 requires a further, narrow
+Resolution (adding `scope`/`targets` to the existing `resolution-001`
+provenance record — a review-control-metadata completion, not a new code
+change or a new frozen subject, since `provenance.yml` is one of the
+three paths this repository's own C-026 freeze exemption already covers)
+and a further, bounded Resolution Verification (Iteration 3) before this
+Change may proceed toward Completion.
+
+Everything below this Verdict down to the end of the original `##
+Conclusion` is Iteration 1's verbatim historical record, except the
+Summary table immediately below, which is restated in Raised/Outstanding
+form to account for R001-R005's resolution and R006/R007/R008's addition.
+Iteration 2 is appended at the end of this file.
+
+**REQUEST CHANGES (Iteration 1, `kind: initial_review`), as originally
+recorded.** 1 BLOCKER, 3 MAJOR, 1 MINOR, 0 OBSERVATION — blocking per
+`protocol/policies/review.yml` (`blocking: [blocker, major]`).
 
 The generator-level de-duplication this Change sets out to make (FR-001
 through FR-006) is real and independently verified end to end: the
@@ -46,12 +86,28 @@ assertion and false task-completion checkmarks in its own frozen subject.
 
 ## Summary
 
-| Severity | Count | Blocking |
-| --- | --- | --- |
-| BLOCKER | 1 | yes |
-| MAJOR | 3 | yes |
-| MINOR | 1 | no |
-| OBSERVATION | 0 | no |
+Counting semantics, stated explicitly since the Protocol does not fix
+them: **Raised** is cumulative — every Finding ever recorded in this
+Review, in the Iteration that recorded it. **Outstanding** is the state
+*after* the final Iteration, and is what `manifest.yml`'s
+`review.blockers`/`majors`/`minors`/`observations` carry.
+
+| Severity | Raised (It. 1) | Raised (It. 2) | Raised total | Outstanding | Blocking |
+| --- | --- | --- | --- | --- | --- |
+| BLOCKER | 1 | 0 | 1 | 0 | yes |
+| MAJOR | 3 | 1 | 4 | 1 | yes |
+| MINOR | 1 | 0 | 1 | 0 | no |
+| OBSERVATION | 0 | 2 | 2 | 2 | no |
+
+R001 (BLOCKER, Iteration 1) and R002/R003/R004 (MAJOR, Iteration 1) are
+resolved by `resolution-001` and verified in Iteration 2 — no longer
+outstanding. R005 (MINOR, Iteration 1) is likewise resolved and verified.
+R007 (MAJOR, Iteration 2) is new, discovered inside the Resolution Delta
+itself, and is outstanding and blocking — this Change may not proceed to
+Completion until it is resolved and re-verified. R006 (OBSERVATION,
+Iteration 2, a wording issue) and R008 (OBSERVATION, Iteration 2, an
+unrelated pre-existing Core `forge validate` latent bug, recorded per
+C-050) are both non-blocking and outstanding.
 
 ## Review Subject
 
@@ -460,3 +516,434 @@ the evidence-integrity concern rather than standing alone. This Change is
 **REQUEST CHANGES**; it may proceed to a Resolution and re-Review once
 R001-R004 are addressed and R005 is, at the Resolver's discretion, cleaned
 up alongside them.
+
+## Iteration 2 — REQUEST CHANGES (`kind: resolution_verification`)
+
+### Iteration 2 scope and authority
+
+This Iteration is a **Resolution Verification**, not a second Initial
+Review. Per `protocol/contract/engineering.md` C-047 and
+`protocol/versions/2/specification.md` §10, its authority is bounded to
+exactly three things:
+
+1. R001-R005, the five Findings `resolution-001` targets;
+2. defects within `resolution-001`'s own Resolution Delta;
+3. Out-of-Scope Mutation.
+
+It is deliberately **not** a re-audit of `implementation-subject-001`.
+Nothing in Iteration 1's "Checked and found sound" section — FR-001,
+FR-002, FR-006's hook behavior, both Adapters' digests, `forge validate`/
+`doctor`/`adapter plan`, the provenance commit chain, the Self-Hosting
+Boundary, and everything else Iteration 1 already examined and found
+sound — was re-litigated here. Re-opening any of that is precisely what
+C-047 forbids.
+
+### Iteration 2 execution independence
+
+Executed in `claude-code-review-0045-independent` /
+`claude-code-review-session-2026-08-24` (this Review's own established
+identity, distinct from `resolution-001`'s
+`claude-code-implementation-0045` / `claude-code-session-2026-08-24`), a
+continuation of the same independent Reviewer identity that produced
+`review-001` — not a new, unrelated identity, but still an Execution and
+Execution Context distinct from the Implementation/Resolution session
+that produced `resolution-001`, satisfying C-026's actual requirement
+(independence from the *subject*, not a fresh identity per Iteration). No
+claim in `resolution-001`'s own `provenance.yml` statement, `tasks.md`
+T-016/T-020, `specification-drift.md`, or `verification.md`'s addendum was
+accepted without independent reproduction against the actual repository
+state at the new frozen subject. See `provenance.yml` record `review-002`
+for this execution's own self-recorded provenance.
+
+Subject: `resolution-001`, frozen at
+`b43cb761d08433ae8a0b7dbc3be82d1e57f09221` (revision
+`chg-0045-resolution-001`). `HEAD` at the time of this Iteration is
+`4fa5635` (this Review's own Iteration 1 `manifest.yml`/`provenance.yml`/
+`review.md` commit), whose only difference from the subject is exactly
+those three Change-local review-control paths — confirmed directly via
+`git diff --stat b43cb76..HEAD`, which shows only `manifest.yml`,
+`provenance.yml`, `review.md`. `git status --porcelain=v1
+--untracked-files=all` shows only the same three pre-existing, disclosed,
+unrelated untracked files noted in Iteration 1 (`.claude/CLAUDE.md`,
+`.playwright-mcp/`, `RELATORIO-SESSAO-2026-08-22.md`); otherwise clean.
+
+### Resolution Delta, computed independently — no Out-of-Scope Mutation
+
+Computed per §11 as the committed diff between the immutable revision of
+the Iteration immediately preceding this one (`review-001`'s subject,
+`23d763b5b076bd1fd3df75743e9df90fcc4b0423`) and this Iteration's own
+subject (`b43cb761d08433ae8a0b7dbc3be82d1e57f09221`) — both already-frozen
+historical commits, not the current workspace:
+
+```
+$ git diff --name-only 23d763b..b43cb76
+.forge/changes/CHG-0045-.../provenance.yml
+.forge/changes/CHG-0045-.../specification-drift.md
+.forge/changes/CHG-0045-.../specification.md
+.forge/changes/CHG-0045-.../tasks.md
+.forge/changes/CHG-0045-.../traceability.yml
+.forge/changes/CHG-0045-.../verification.md
+```
+
+`git log 1bb818b..b43cb76 --oneline` confirms this is a single commit
+(`b43cb76`), not a squashed range hiding other changes. Subtracting the
+one Change-local review-control path (`provenance.yml`) leaves exactly
+five: `specification-drift.md` (new), `specification.md`, `tasks.md`,
+`traceability.yml`, `verification.md` — every one of them inside this
+Change's own `.forge/changes/CHG-0045-.../` directory; no `src/`, `tests/`,
+`protocol/`, or other Change's directory appears anywhere in the diff.
+This matches `resolution-001`'s own narrated scope exactly, in both
+directions. **Out-of-Scope Mutation: none.** `full_review_required` is
+`false` and this Iteration is eligible to be `status: passed`.
+
+### R001, re-checked against actual repository state — resolved
+
+Not accepted from `resolution-001`'s own claimed "701 passed, 0 failed."
+Ran the full suite myself, twice — once via a fresh scratch venv
+(`pip install -e ".[test]"`) and once via this repository's own committed,
+pinned `.venv/bin/pytest` — against the working tree at this Iteration's
+subject:
+
+```
+$ .venv/bin/pytest -q
+701 passed, 2 warnings in 81.39s
+```
+
+Both runs agree: **701 passed, 0 failed**, matching `resolution-001`'s
+claim exactly and, critically, no longer reproducing Iteration 1's
+`test_canonical_yaml_instances_satisfy_their_declared_schemas` failure.
+Confirmed the root-cause fix directly by reading `traceability.yml`
+itself, not trusting the commit message: `requirements.CON-001.tasks`,
+`CON-002.tasks`, and `CON-004.tasks` now each read `[T-002]` — non-empty,
+satisfying `protocol/schemas/traceability.schema.json`'s `minItems: 1` —
+rather than the `[]` Iteration 1 found. `verification.md` gained an
+**Addendum** (not a silent rewrite of the original false claim) that
+names the actual pre-fix state (700 passed, 1 failed at freeze time,
+matching Iteration 1's own finding exactly), the root cause (suite not
+re-run after `traceability.yml`'s last edit before freezing), and the fix
+— the original "701 passed, 0 failed" sentence is left untouched above the
+Addendum, which is the honest way to correct a record (compare to R003's
+same pattern in `tasks.md`, below). R001 is resolved.
+
+### R002, re-checked against actual repository state — resolved
+
+Not accepted from `resolution-001`'s claim that "an explicit DEC-006
+narrative" was added. Read `tasks.md` T-016 directly: it now contains a
+dedicated paragraph, explicitly labeled **DEC-006**, that names the exact
+event it refers to ("the explicit, in-session human authorization
+described above — to bypass `AdapterService`'s own
+`_reject_drift`/`_reject_conflicts` guards for this one-time republish...
+is that Decision") and explicitly attributes the addition to this
+Review's own R002 finding. A future reader no longer has to guess what
+`manifest.yml`'s `DEC-006` entry refers to. R002 is resolved.
+
+### R003, re-checked against actual repository state — resolved
+
+Not accepted from `resolution-001`'s claim. Read `tasks.md` T-017/T-018
+directly, side by side with `manifest.yml`'s `documentation`/
+`knowledge_capture` fields (still, correctly, `pending`). T-017 now reads
+"Documentation Impact scoping recorded for the post-Review
+`documentation`/`knowledge_capture` stages... CHANGELOG.md entry and
+`knowledge-capture.md` are deferred to those stages" — past-tense
+completion language replaced with an accurate description of scoping, not
+completion — and explicitly says so ("this task previously, incorrectly,
+said Documentation Impact 'was evaluated' in the past tense; corrected").
+T-018 now reads "`knowledge-capture.md` was **not** written at this
+stage... Knowledge Capture is a post-Review stage... and is written after
+Review" — again explicitly flagging its own prior overclaim as corrected
+by R003. Neither task now contradicts `manifest.yml`'s own state. R003 is
+resolved.
+
+### R004, re-checked against actual repository state — resolved
+
+Not accepted from `resolution-001`'s claim that `specification-drift.md`
+is a "genuine Root Cause / Evidence / Final decision narrative." Read the
+full file directly: it has all three sections, each with real, specific
+content — Root Cause traces the original Compatibility Statement's
+unqualified "ordinary consequence" claim to an untested assumption made
+before Implementation attempted the republish; Evidence cites the actual
+guard-refusal mechanism (`_reject_drift`/`_reject_conflicts`) and
+attributes the finding to this Review's own Iteration 1; Final decision
+explicitly declines to build a supported recovery command as an
+undisclosed scope-creep fix, instead deferring it as named follow-up work.
+This is not a stub — confirmed `specification-drift.md` is itself an
+established artifact type in this repository (four prior precedents exist
+under `.forge/changes/`: CHG-0008, CHG-0011, CHG-0012, CHG-0013), not
+invented ad hoc for this Resolution.
+
+Read `specification.md`'s Compatibility Statement directly: the original
+"ordinary consequence" paragraph is left intact (not silently rewritten)
+and followed by a clearly labeled **"Corrected by Specification Drift
+after Strict Review Iteration 1 (R004)"** paragraph that states plainly
+the republish "required a one-time, human-authorized bypass of that
+production code," names the mechanism, and discloses that the same
+refusal is latent in every other Forge-governed repository with this
+Adapter installed under similarly stale conditions — matching, not
+softening, R004's original finding. R004 is resolved.
+
+### R005, re-checked against actual repository state — resolved
+
+Not accepted from `resolution-001`'s claim. Read `traceability.yml`'s
+`acceptance` table directly: `AC-001: []` (correctly empty now, matching
+FR-005's own `tests: []` — the independence-block test that was
+previously, incorrectly, listed here is no longer present) and
+`AC-002: [test_workflow_template_instructs_boundary_reporting_format]`
+(correctly populated, matching the same test already linked under
+`requirements.FR-007.tests`). R005 is resolved.
+
+### R007 — MAJOR — `resolution-001`'s own provenance record omits `scope`/`targets`, so `forge validate` cannot mechanically verify the Resolution Delta — genuinely reproduced, blocking
+
+**Not one of R001-R005** (it is a defect in the Resolution's own
+provenance record, not in any of the five files R001-R005 targeted), but
+squarely **inside the Resolution Delta** — `provenance.yml`'s
+`resolution-001` record was itself added by commit `b43cb76` (confirmed:
+`provenance.yml` appears in `git diff --stat 23d763b..b43cb76`, 28
+insertions) — so this is within this Iteration's own bounded C-047
+authority (point 2: defects within the Resolution Delta) to discover and
+record, not an unrestricted re-audit.
+
+**Problem:** Once this Review's own `review-002` entry (`kind:
+resolution_verification`) is added to `manifest.yml`'s bound Review
+Iterations — which this Iteration is required to do — `forge validate`'s
+`_validate_resolution_verification` check activates for the first time
+for this Change (it only runs when a bound Iteration has
+`kind: resolution_verification`) and requires the Resolution it verifies
+(`resolution-001`) to declare non-empty `scope` and `targets` lists so the
+tool can independently compute the Resolution Delta and check it for
+Out-of-Scope Mutation itself, mechanically. Read `provenance.yml`'s
+`resolution-001` record directly: it has a `statement` prose field
+narrating scope ("Resolution Delta (git diff 23d763b..b43cb76): exactly
+specification.md, specification-drift.md (new), tasks.md,
+traceability.yml, verification.md") but no structured `scope:` or
+`targets:` field at all. This repository's own established convention for
+exactly this situation — `CHG-0018/provenance.yml`'s `resolution-001`
+record — has both: `scope: [src/forge_cli/adapters/claude_code/
+projection.py, tests/unit/test_claude_code_projection_bundle.py]` and
+`targets: [R001]`. This Change's `resolution-001` record does not follow
+that precedent.
+
+**Evidence:** Ran `forge validate` against the actual working tree at this
+Iteration's own state (with `review-002` recorded):
+
+```
+$ .venv/bin/forge validate
+C-026 [.../manifest.yml] The Resolution referenced by a resolution_verification
+Iteration must declare non-empty scope and targets before it can be
+mechanically verified as scoped.
+```
+
+Reproduced deterministically, not a flake — the check is a pure structural
+read of `provenance.yml`, no network, no time-dependence.
+
+**Impact:** This is a real, mechanical `forge validate` failure at the
+frozen Resolution subject, for a Change whose `before_completion` gate
+requires exactly this kind of mechanical evidence, not narrative
+assertion. It does not indicate an actual Out-of-Scope Mutation — I
+independently confirmed, via direct `git diff --name-only 23d763b..b43cb76`
+computation (not via this mechanical check), that the Resolution Delta
+contains no Out-of-Scope Mutation — but `forge validate` cannot confirm
+that itself without the missing fields, which defeats the purpose of
+having a mechanical check at all. Blocking per `protocol/policies/
+review.yml` (MAJOR).
+
+**Suggested Resolution (non-blocking on this Review to specify, per
+C-025):** Add `scope: [specification.md, specification-drift.md,
+tasks.md, traceability.yml, verification.md]` and
+`targets: [R001, R002, R003, R004, R005]` to `resolution-001`'s existing
+`provenance.yml` record. Since `provenance.yml` is one of the three
+review-control-metadata paths this repository's own C-026 freeze
+exemption already covers, completing this record does not require a new
+frozen Resolution revision or a new commit touching `b43cb76`'s own
+content — only `provenance.yml` needs to gain the two fields, followed by
+a further, narrowly-bounded Resolution Verification (Iteration 3)
+confirming `forge validate` is then clean.
+
+### R008 — OBSERVATION — unrelated, pre-existing Core `forge validate` latent bug: any untracked file anywhere in the repository trips the C-026 freeze check for a Change's last `pending`/`passed` bound Review Iteration, recorded per C-050
+
+**Not targeted by `resolution-001`, not inside the Resolution Delta**
+(this is a Core validation-logic gap in `src/forge_cli/validation/
+__init__.py`, unrelated to any file `resolution-001` touched), **and not
+counted toward this Iteration's own `new_material_findings`** (C-047
+scopes this Iteration's authority to R001-R005, the Resolution Delta, and
+Out-of-Scope Mutation; C-050 requires an unrelated Finding discovered
+incidentally be recorded, not discarded, and not treated as license to
+re-audit further — the same posture `CHG-0018/review.md`'s own R002 took
+for a structurally similar Core gap). Recorded here because it is real,
+demonstrated, and would otherwise go unrecorded.
+
+**Problem:** `_reviewable_workspace_delta()`
+(`src/forge_cli/validation/__init__.py:82-93`) computes "has anything
+changed since this Review Iteration's frozen subject" as the union of
+committed diff, staged diff, unstaged diff, **and every untracked file in
+the repository** (`_untracked_paths()`, `git ls-files --others
+--exclude-standard`), minus only this specific Change's own three
+review-control-metadata paths. It does not scope untracked files to
+anything relevant to the Change being validated — a completely unrelated
+stray file anywhere in the repository (a scratch note, a tool-generated
+artifact, an editor swap file not covered by `.gitignore`) makes this
+check see "the workspace changed," even though nothing reviewable for
+*this* Change actually did.
+
+**Evidence, reproduced independently, not inferred:** Isolated the
+variable by temporarily moving this repository's three pre-existing,
+disclosed, unrelated untracked files (`.claude/CLAUDE.md`,
+`.playwright-mcp/`, `RELATORIO-SESSAO-2026-08-22.md`) out of the working
+tree (to a scratchpad location, restored immediately afterward — confirmed
+via `git status --porcelain` before and after) and re-ran `forge validate`:
+with the untracked files present, `forge validate` reported **two**
+errors, including "C-026 review subject changed after its immutable
+revision freeze; create new subject provenance."; with them moved aside,
+that specific error **disappeared** (only R007's `scope`/`targets` error
+remained) — isolating the cause to the untracked files themselves, not to
+anything this Resolution actually did.
+
+**Impact:** Non-blocking to this Iteration and not a defect in this
+Change's own Resolution. But it means `forge validate` can spuriously fail
+for *any* Forge-governed Change, in *any* repository, whenever a `passed`
+or `pending` last-bound Review Iteration exists alongside any untracked
+file anywhere in the working tree — a materially broader blast radius than
+"this Change's own reviewable material changed." Given R007 currently
+keeps this Iteration's own last bound entry at `status: failed` (not in
+`{"pending","passed"}`), this specific check does not currently fire for
+CHG-0045's own manifest — but it will resurface the moment a future
+Iteration legitimately reaches `passed` while these (or any other)
+untracked files remain present.
+
+**Suggested Resolution (non-blocking on this Review to specify, per
+C-025; Core-level, not this Change's own scope to fix):** Scope
+`_untracked_paths()`'s contribution to `_reviewable_workspace_delta()` to
+paths that are plausibly reviewable for the Change in question (e.g.
+under `src/`, `tests/`, `protocol/`, or the Change's own directory) rather
+than the entire repository's untracked-file surface, or exempt genuinely
+Change-unrelated untracked paths the same way `.gitignore`d paths are
+already exempted per this repository's own stated Reviewer/Resolver
+independence guidance ("Git-ignored cache/editor/temp files do not count
+as reviewable workspace mutations for the freeze invariant" — this
+untracked-but-not-ignored case is the same problem one step removed).
+
+### R006 — OBSERVATION — new, non-blocking wording finding discovered inside the Resolution Delta itself, recorded per C-050
+
+**Not targeted by `resolution-001`** (it postdates and is a byproduct of
+the R001/R004 fixes), **but inside the Resolution Delta** (`verification.md`
+and `specification-drift.md`, both Delta files), so within this
+Iteration's own bounded authority to record, per C-047's second scope
+item.
+
+**Problem:** `verification.md`'s new R001 Addendum states "Durable lesson
+recorded in `knowledge-capture.md`: re-run the full suite after the
+*last* content edit before freezing..." in the present/past tense, as if
+`knowledge-capture.md` already exists and already contains this lesson.
+`specification-drift.md`'s Final decision section similarly states the
+recovery-command follow-up work "is recorded as follow-up work in
+`knowledge-capture.md`." I checked: `.forge/changes/CHG-0045-.../` contains
+no `knowledge-capture.md` file — confirmed by directory listing, not
+inferred. This is not wrong in substance (`knowledge-capture.md` is a
+legitimate post-Review Flow stage per `protocol/flows/full.yml`, and
+`manifest.yml`'s own `knowledge_capture: pending` is accurate and
+consistent with T-017/T-018's now-corrected framing elsewhere in the same
+Resolution), but the specific phrasing in these two sentences reads as
+though the durable lesson and the follow-up-work record already exist,
+when they are, accurately, still intended future work.
+
+**Impact:** Non-blocking, and narrower than R003 (which this same
+Resolution correctly fixed for the *task-checklist* claims about
+`knowledge-capture.md`) — this is two sentences of forward-referencing
+prose in files this Iteration is otherwise satisfied with, not a
+checklist item falsely marked complete. Recorded so it is not silently
+dropped, per C-050.
+
+**Suggested Resolution (non-blocking on this Review to specify, per
+C-025):** When `knowledge-capture.md` is actually authored in the
+post-Review Documentation/Knowledge Capture stage, ensure it substantively
+contains the "re-run after the last content edit" lesson and the
+recovery-command follow-up item these two sentences promise; no change to
+`verification.md`/`specification-drift.md` is required before Completion,
+since both sentences are accurate statements of *intent*, not false
+claims of present fact in the way R003's original checklist items were.
+
+### New Findings introduced by the Resolution
+
+Three new Findings: **R007 (MAJOR, blocking)** — `resolution-001`'s own
+provenance record fails mechanical scope verification, a real defect
+inside the Resolution Delta itself, not an Out-of-Scope Mutation and not
+a regression in R001-R005's own fixes, but material enough to keep this
+Iteration from `status: passed`. **R006 (OBSERVATION, non-blocking)** — a
+wording precision issue inside the Resolution Delta. **R008 (OBSERVATION,
+non-blocking)** — an unrelated, pre-existing Core `forge validate` latent
+bug, recorded per C-050, not counted toward this Iteration's own
+determination. `full_review_required: false` for all three: none is an
+Out-of-Scope Mutation (C-047's specific trigger for mandatory
+`full_review_required: true`), so a further narrowly-bounded Resolution
+Verification (Iteration 3), not a new unrestricted Initial Review, is the
+correct next step once R007 is fixed.
+
+### Independent mechanical verification
+
+Every figure below was produced by this execution, not read from
+`resolution-001`'s own statement or any commit message.
+
+- `.venv/bin/pytest -q` → **701 passed, 0 failed**, reproduced against the
+  actual working tree at the Resolution subject (see R001 above).
+- `forge validate`, run against this Iteration's own recorded state
+  (`review-002` bound, `kind: resolution_verification`) → **fails** with
+  the single error R007 documents (`resolution-001` lacks `scope`/
+  `targets`) — reproduced deterministically; see R007 for the isolation
+  experiment separating this from R008's unrelated untracked-file cause.
+- `forge doctor` → every check `PASS` except the same two pre-existing,
+  disclosed `WARN`s already present in Iteration 1 (`limitations`,
+  `migration_available`) — unchanged by this Resolution, as expected,
+  since it touches no Adapter-generation code.
+- `git diff --name-only 23d763b..b43cb76` → exactly six paths, all inside
+  this Change's own directory (see Resolution Delta above).
+- `git status --porcelain=v1 --untracked-files=all` → clean except the
+  same three pre-existing, disclosed, unrelated untracked files noted in
+  Iteration 1 (see R008 for their specific, isolated role in a *different*,
+  now-dormant `forge validate` error).
+
+### Scope discipline (C-047 / C-050)
+
+No unrelated latent Finding beyond R008 was discovered in this Iteration.
+For the record of what was deliberately **not** re-examined: FR-001,
+FR-002, FR-006's hook behavior (both digests, both Adapters), the
+provenance commit chain, the Self-Hosting Boundary, and every other item
+in Iteration 1's "Checked and found sound" section were left alone —
+Iteration 1 examined them and found them sound; re-examining them here
+would be the unrestricted re-audit C-047 forbids.
+
+### Convergence accounting
+
+`new_material_findings: 1` (R007 — the only new Finding that is a real,
+material defect within the Resolution Delta; R006/R008 are non-blocking
+OBSERVATIONs, not material in the sense this field tracks).
+`full_review_required: false` — R007 is not an Out-of-Scope Mutation
+(C-047's specific trigger for mandatory `full_review_required: true`); it
+is a scoped, narrow metadata-completeness defect in `resolution-001`'s
+own record, correctable without reopening R001-R005 or expanding beyond
+this Iteration's own bounded authority.
+`consecutive_unconverged_verifications` is `1` after this Iteration (the
+first `resolution_verification` Iteration to end without a clean `passed`
+status) — below any Convergence Limit concern, since this is the first
+such non-convergence, not a repeated cycle on the same Finding.
+
+### Verdict
+
+**REQUEST CHANGES.**
+
+R001 through R005 are all genuinely resolved in repository state,
+re-verified directly against the actual frozen Resolution subject rather
+than accepted from `resolution-001`'s own claim. The Resolution Delta
+contains no Out-of-Scope Mutation — exactly the five declared files, all
+inside this Change's own directory. The full test suite is independently
+reproduced at 701 passed, 0 failed, closing the specific, quantified false
+claim R001 identified. But `resolution-001`'s own provenance record omits
+the `scope`/`targets` fields required for `forge validate` to mechanically
+confirm what I have independently confirmed by hand (R007, MAJOR,
+blocking) — a real, reproduced `forge validate` failure at this frozen
+subject, not a hypothetical one. Two further, non-blocking OBSERVATIONs
+were discovered inside or adjacent to the Resolution Delta and recorded
+per C-050 rather than pursued further here (R006, a wording precision
+issue; R008, an unrelated, pre-existing Core latent bug). This Change is
+**REQUEST CHANGES**; it may proceed to a further, narrowly-bounded
+Resolution (completing `resolution-001`'s own `scope`/`targets` fields —
+review-control metadata, not a new code change) and a further Resolution
+Verification (Iteration 3) once R007 is fixed.
