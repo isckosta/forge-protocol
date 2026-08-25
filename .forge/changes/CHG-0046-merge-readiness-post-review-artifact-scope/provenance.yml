@@ -387,3 +387,64 @@ records:
         touched; no Out-of-Scope Mutation. Full suite: 706 passed (704
         before this Resolution's TDD-010/TDD-011 net-additions). forge
         validate/doctor clean once refrozen.
+  - id: review-004
+    role: review
+    execution:
+      id: claude-code-review-0046-independent-4
+      context_id: claude-code-review-session-2026-08-25-iter4
+    recorded_at: '2026-08-25T05:00:00Z'
+    revision:
+      id: chg-0046-resolution-002
+      immutable_ref:
+        type: git_commit
+        value: 6c6cdab52cc519bff21b444188b6c059585e36d0
+      commit: 6c6cdab52cc519bff21b444188b6c059585e36d0
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: review.md
+      statement: >-
+        Independent Resolution Verification (Iteration 4,
+        kind: resolution_verification) of CHG-0046's frozen Resolution
+        subject (resolution-002, 6c6cdab52cc519bff21b444188b6c059585e36d0),
+        conducted in an Execution and Execution Context distinct from
+        every prior Execution/Context in this Change's history and from
+        resolution-002's own. Bounded per C-047/Sec 11 to PR37-CODEX-001,
+        defects within resolution-002's own Resolution Delta, and
+        Out-of-Scope Mutation. Read protocol/versions/2/specification.md
+        Sec 5/8/11/14 directly (not through Architecture's/Specification's
+        paraphrase) -- the check the three prior Iterations never
+        performed. Resolution Delta independently recomputed (git diff
+        ff8fe51..6c6cdab, excluding manifest.yml/provenance.yml/
+        review.md): matches resolution-002's declared scope exactly, no
+        Out-of-Scope Mutation. Full pytest suite independently re-run: 706
+        passed. tests/cli/test_merge_check.py plus
+        tests/unit/test_merge_readiness_policy.py: 26 passed. CHG-0045's
+        real PR #36 commits independently reproduced via disposable git
+        worktree: MR-015 correctly re-fires, matching verification.md's
+        disclosed claim. One new BLOCKER finding (R005, within the
+        Resolution Delta, not Out-of-Scope Mutation): the renewal-record
+        ancestor check evaluator.py's corrected MR-015 design introduces
+        verifies only that a renewal record's commit is an ancestor of
+        head_revision, never that it is a descendant of (or equal to) the
+        current subject_commit -- independently reproduced end-to-end
+        against a disposable fixture: a renewal record anchored during an
+        earlier freeze cycle (S1) silently and permanently tolerated an
+        unrelated, unexplained post-freeze tamper of the same path
+        against a later frozen subject (S2), reporting MERGE READY when
+        FAIL MR-015/MERGE BLOCKED was correct. Also found: Specification's
+        FR-001/AC-001 require the renewal record's commit to equal
+        head_revision exactly; Architecture's Design and the actual code
+        both implement the strictly broader "ancestor of" relation
+        instead, undisclosed and unreconciled between the two artifacts
+        this same Resolution rewrote. full_review_required: false (R005
+        is a correctness defect within evaluator.py, the file
+        resolution-002's own scope already names -- not an Out-of-Scope
+        Mutation, Sec 11's specific trigger for mandatory
+        full_review_required: true). new_material_findings: 1.
+        consecutive_unconverged_verifications after this Iteration: 1 (the
+        trailing run of failed resolution_verification Iterations with
+        new_material_findings > 0 was broken by Iteration 3's PASS;
+        Iteration 4 starts a new run) -- below the Convergence Limit of 2,
+        no Non-Convergence. Verdict: FAILED. Full findings in review.md,
+        "## Iteration 4 -- Resolution Verification".
