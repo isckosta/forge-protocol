@@ -18,3 +18,24 @@ records:
       observed_by: operator
       reference: docs/rfcs/0007-proportional-review-profiles.md#acceptance-record
       statement: The user explicitly accepted RFC-0007 (Proportional Review Profiles) in the active chat session on 2026-08-25, via AskUserQuestion, resolving the RFC's Open Normative Question in favor of the Protocol-2-compatible clarification reading (not a new Protocol 3). This acceptance is the F-008-required RFC authorizing this Change's Contract/Flow/schema/CLI/Adapter work.
+  - id: plan-approval-001
+    role: implementation
+    execution:
+      id: claude-code-implementation-0048-plan
+      context_id: claude-code-session-2026-08-25-plan
+    recorded_at: '2026-08-25T00:00:00Z'
+    revision:
+      id: chg-0048-plan-approval-001
+      immutable_ref:
+        type: git_commit
+        value: 41593a0020d418aa32e1f92c85cc3b1d99850fd8
+      commit: 41593a0020d418aa32e1f92c85cc3b1d99850fd8
+    source:
+      assurance: recorded
+      observed_by: operator
+      reference: plan.md#approval-record
+      content_digest:
+        algorithm: sha256
+        path: plan.md
+        value: 75244c36ee275eba458aa9afce4cf35852d2f4af99c7d0665359e195447cfc9c
+      statement: The user explicitly approved continuation of CHG-0048 to Implementation in the active session on 2026-08-25, via AskUserQuestion, after reviewing the Architecture (including DEC-001), the Test Strategy (15 TDD cases), and the 11-item Plan summary, selecting "Aprovar e prosseguir".
