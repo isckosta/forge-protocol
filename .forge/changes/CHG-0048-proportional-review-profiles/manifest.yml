@@ -19,7 +19,7 @@ flow:
         STANDARD's scaffold default was superseded before any
         Specification work began.
 state:
-  current: test_strategy
+  current: plan
 artifacts:
   intent: complete
   discovery: complete
@@ -28,7 +28,7 @@ artifacts:
   architecture: complete
   test_strategy: complete
   plan: pending
-  tasks: pending
+  tasks: active
   tdd_evidence: active
   verification: pending
   review: pending
