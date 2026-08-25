@@ -16,7 +16,9 @@ representations; do not redefine their lifecycle here.
   Strict Review requirements.
 - Before relying on this skill's own `references/*` for a state-changing
   decision, check the Adapter's own recorded drift state (`forge doctor` or
-  `forge adapter doctor`) — these references are generated content that can
+  `forge adapter doctor <adapter-id>`, where `<adapter-id>` is the id shown
+  under this repository's own `.forge/adapters/` directory, e.g.
+  `claude-code` or `codex`) — these references are generated content that can
   fall behind the canonical Forge state they project. If drift is reported,
   stop advancing on the affected reference and report it to the operator;
   do not run `forge adapter update` to self-heal without the operator's

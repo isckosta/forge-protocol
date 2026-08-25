@@ -12,7 +12,7 @@ generated_artifacts:
 - path: .claude/CLAUDE.md
   digest: b100acdfeef2732f61c2e8b6c207cb63de502d2a7eed24bc745f22e1ba7256b7
 - path: .claude/skills/forge/SKILL.md
-  digest: ba1d78c5b417be038a3ef403ee92ab259c898d24e13fe01230027f59c4e5df7b
+  digest: 010a9a574028c19c6b37a538890ce8564a92daf2a2d4ae8c2cb4109d91993aac
 - path: .claude/skills/forge/hooks/check-manifest-edit.sh
   digest: 8b298eea51692425193295ddf67776d6699f5ae670fc094a96da37f814398348
 - path: .claude/skills/forge/references/artifact-structure.md

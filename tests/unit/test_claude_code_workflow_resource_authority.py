@@ -37,6 +37,21 @@ def test_workflow_template_instructs_checking_adapter_drift_before_trusting_refe
     assert "stop" in template.lower() or "report" in template.lower()
 
 
+def test_workflow_template_shows_the_required_adapter_id_argument_for_adapter_doctor() -> None:
+    """Resolution of a Codex review finding (PR #36, P2): `forge adapter
+    doctor` requires a positional ADAPTER argument
+    (`adapter_cli.py::doctor`) -- an agent following the bare command name
+    with no argument gets a missing-argument error, not a diagnosis. The
+    template must show the argument is required, not just name the
+    command."""
+    template = projection.load_workflow_skill_template()
+    assert "forge adapter doctor" in template
+    assert "forge adapter doctor <adapter-id>" in template, (
+        "workflow.md names 'forge adapter doctor' without showing its "
+        "required ADAPTER argument"
+    )
+
+
 def test_workflow_template_instructs_boundary_reporting_format() -> None:
     """CHG-0045 FR-007/TDD-013: a human-authority/blocked/missing-evidence
     boundary report must name Change, Flow, State, Boundary, Required
