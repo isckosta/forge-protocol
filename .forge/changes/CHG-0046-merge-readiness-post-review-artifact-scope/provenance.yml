@@ -334,3 +334,56 @@ records:
         trailing run is broken at length 1 by this Iteration's own zero
         count. Verdict: PASS. Full findings in review.md, "## Iteration 3
         -- Resolution Verification".
+  - id: resolution-002
+    role: resolution
+    execution:
+      id: claude-code-implementation-0046
+      context_id: claude-code-session-2026-08-25
+    recorded_at: '2026-08-25T04:00:00Z'
+    scope:
+      - .forge/changes/CHG-0046-merge-readiness-post-review-artifact-scope/architecture.md
+      - .forge/changes/CHG-0046-merge-readiness-post-review-artifact-scope/knowledge-capture.md
+      - .forge/changes/CHG-0046-merge-readiness-post-review-artifact-scope/specification-drift.md
+      - .forge/changes/CHG-0046-merge-readiness-post-review-artifact-scope/specification.md
+      - .forge/changes/CHG-0046-merge-readiness-post-review-artifact-scope/tasks.md
+      - .forge/changes/CHG-0046-merge-readiness-post-review-artifact-scope/tdd-evidence.yml
+      - .forge/changes/CHG-0046-merge-readiness-post-review-artifact-scope/verification.md
+      - CHANGELOG.md
+      - docs/adr/0018-merge-readiness-post-review-artifact-scope.md
+      - src/forge_cli/merge_readiness/evaluator.py
+      - tests/cli/test_merge_check.py
+    targets: [PR37-CODEX-001]
+    revision:
+      id: chg-0046-resolution-002
+      immutable_ref:
+        type: git_commit
+        value: 6c6cdab52cc519bff21b444188b6c059585e36d0
+      commit: 6c6cdab52cc519bff21b444188b6c059585e36d0
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: specification-drift.md
+      statement: >-
+        Resolution of PR37-CODEX-001: an external, independent reviewer
+        (GitHub Codex review bot, PR #37, comment on evaluator.py:150)
+        found DEC-001's state.current-keyed MR-015 design directly
+        contradicts protocol/versions/2/specification.md Sec 5 ("The
+        exception MUST NOT be inferred from... membership in the Change
+        directory generally") and Sec 14 ("A manifest claim such as
+        state.current: complete... is not sufficient authorization").
+        Corrected per specification-drift.md: MR-015 now tolerates a
+        Change-local path only when covered by the scope of an explicit,
+        anchored role:implementation/resolution provenance record whose
+        commit is an ancestor of head_revision (DEC-003, supersedes
+        DEC-001). specification.md/architecture.md corrected; TDD-008
+        through TDD-011 added (RED confirmed against the prior,
+        superseded evaluator.py before each fix), TDD-001/TDD-002 kept as
+        the historical record of the superseded design's own cycles, not
+        deleted. Resolution Delta (git diff ff8fe51..6c6cdab, excluding
+        manifest.yml/provenance.yml/review.md): exactly the paths in
+        scope above -- no file outside this Change's own directory, the
+        evaluator.py/materiality-policy files Scope already named, their
+        tests, and Documentation Impact artifacts (CHANGELOG.md, the ADR)
+        touched; no Out-of-Scope Mutation. Full suite: 706 passed (704
+        before this Resolution's TDD-010/TDD-011 net-additions). forge
+        validate/doctor clean once refrozen.
