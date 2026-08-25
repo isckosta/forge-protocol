@@ -118,3 +118,39 @@ records:
       observed_by: operator
       reference: review.md#iteration-2
       statement: "Independent Strict Review Iteration 2 (Resolution Verification, strict profile, fresh execution, isolated Git worktree at .claude/worktrees/agent-aa5fd11c14137d34e, no shared context with the Resolution Execution or with Iteration 1's Reviewer) returned PASS against 493371c -- R-001 and R-002 both independently re-verified adversarially, including an end-to-end protocol_id matrix (-1, 0, 1, 2, 3) against both Adapters' real public entry points, going beyond the shipped regression tests. No Out-of-Scope Mutation (resolution-001's declared scope matched the actual commit diff 9-for-9). One new non-blocking finding, R-003 (a residual off-by-one in verification.md's own file-count self-correction), recorded and accepted per C-039, not fixed. Full suite (786 passed), forge validate (PASS), and a live evaluate_merge_readiness() re-run all independently reproduced."
+  - id: documentation-001
+    role: implementation
+    execution:
+      id: claude-code-implementation-0048-documentation-001
+      context_id: claude-code-session-2026-08-25-documentation-001
+    recorded_at: '2026-08-25T03:00:00Z'
+    scope:
+      - .forge/changes/CHG-0048-proportional-review-profiles/knowledge-capture.md
+    revision:
+      id: chg-0048-documentation-001
+      immutable_ref:
+        type: git_commit
+        value: 5257db0cc14962fff68a0d20d5e30303eab3083f
+      commit: 5257db0cc14962fff68a0d20d5e30303eab3083f
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: manifest.yml#documentation
+      statement: "Knowledge Capture (Flow FULL, knowledge_capture stage, scheduled after strict_review and documentation) for CHG-0048. Added knowledge-capture.md recording four durable lessons (protocol_id gating for new per-Flow Adapter text; the hand-arithmetic file-count failure mode; rebutting a superseded RFC's own rationale, not just its mechanism; resolve_effective_flow as the correct Flow-scoped validation integration point). No other file touched. Full suite re-verified (786 passed, 2 warnings) after the addition. Reviewable Git workspace confirmed clean before this freeze."
+  - id: verification-001
+    role: implementation
+    execution:
+      id: claude-code-implementation-0048-verification-001
+      context_id: claude-code-session-2026-08-25-documentation-001
+    recorded_at: '2026-08-25T03:00:00Z'
+    revision:
+      id: chg-0048-resolution-001
+      immutable_ref:
+        type: git_commit
+        value: 493371cb00979a19253b3b2ce7c4e03af9f2c524
+      commit: 493371cb00979a19253b3b2ce7c4e03af9f2c524
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: verification.md
+      statement: "verification.md's PASS result (786 passed full suite, forge validate PASS, Iteration 1/2 findings resolved and re-verified) remains accurate against review-002's frozen subject (resolution-001, commit 493371c) -- the sole reviewed and passed implementation subject. The subsequent Knowledge Capture addition (knowledge-capture.md, commit 5257db0/fa86381) is non-executable documentation, separately anchored by documentation-001, and does not invalidate any recorded Test/Forge Evidence."
