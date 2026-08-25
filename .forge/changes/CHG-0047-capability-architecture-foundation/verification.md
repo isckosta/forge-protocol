@@ -25,10 +25,13 @@ was introduced.
 
 ## Test Evidence
 
-- `.venv/bin/python -m pytest tests/capabilities/ -q`: **26 passed**.
-- Full suite: `.venv/bin/python -m pytest -q`: **747 passed, 2 warnings**
+- `.venv/bin/python -m pytest tests/capabilities/ -q`: **28 passed**.
+- Full suite: `.venv/bin/python -m pytest -q`: **749 passed, 2 warnings**
   (warnings pre-exist this Change — deliberate failure injection in
   `tests/unit/test_experience_capture.py`, unrelated to this Change).
+- `.venv/bin/python -m pytest tests/contract/test_protocol_contract.py -q`:
+  **34 passed** (includes `test_canonical_yaml_instances_satisfy_their_declared_schemas`,
+  which independently caught R-001 and R-003 below).
 - `TDD-001` (RED, `tests/capabilities/test_model.py`): failed collection
   before the change (`ModuleNotFoundError: No module named
   'forge_cli.capabilities.model'`) for the expected reason; passes after
@@ -36,13 +39,21 @@ was introduced.
 - `TDD-002` (RED, `tests/capabilities/test_loader.py`): failed collection
   before the change (`ModuleNotFoundError: No module named
   'forge_cli.capabilities.loader'`) for the expected reason; passes after
-  (22 passed at the time; 23 after TDD-003 added one more test).
+  (22 passed at the time; 23 after TDD-003, 25 after TDD-004 added more tests).
 - `TDD-003` (RED, `tests/capabilities/test_loader.py -k fenced`): added in
   response to independent Strict Review Iteration 1, Finding R-002 —
   failed for the expected reason (a heading-shaped line inside a fenced
   code block inside a section body was silently treated as the start of
   a new section, truncating the enclosing section); passes after fixing
   `_parse_sections` to track fence state.
+- `TDD-004` (RED, `tests/capabilities/test_loader.py -k "indented or
+  mismatched"`): added in response to independent Strict Review Iteration
+  2 (Resolution Verification), Findings R-004 and R-005 — failed for the
+  expected reason (TDD-003's fence tracking was anchored at column 0 with
+  no delimiter-type matching, so an indented fence, or a mismatched
+  delimiter type inside an open fence, both desynchronized the tracker);
+  passes after making `_FENCE_PATTERN` tolerate up to 3 leading
+  spaces/tabs and tracking which delimiter character opened the fence.
 
 ## Forge Evidence
 
@@ -89,25 +100,49 @@ capability contract, per the original request; `capability.md` is prose
 with a two-field frontmatter (`capability`, `schema`) and seven `##`
 sections, matching the minimal, human contract FR-002 requires.
 
-Independent Strict Review Iteration 1 (`review.md`) found two defects in
-the revision it evaluated, both fixed in this revision before Iteration
-2: `tdd-evidence.yml` carried a `full_suite:` key not permitted by
-`forge/tdd-evidence@1`'s schema (`additionalProperties: false`), which
-made `tests/contract/test_protocol_contract.py::test_canonical_yaml_instances_satisfy_their_declared_schemas`
+Independent Strict Review Iteration 1 (`review.md`) found two defects,
+both addressed before Iteration 2: `tdd-evidence.yml` carried a
+`full_suite:` key not permitted by `forge/tdd-evidence@1`'s schema
+(`additionalProperties: false`), which made
+`tests/contract/test_protocol_contract.py::test_canonical_yaml_instances_satisfy_their_declared_schemas`
 fail (R-001, BLOCKER) — removed; and the section parser mistook a
 heading-shaped line inside a fenced code block for a new section,
 silently truncating the enclosing section (R-002, MAJOR) — fixed by
 tracking fence state in `_parse_sections`, with a regression test
-(TDD-003). Two non-blocking observations from Iteration 1 (a
-non-`re.escape`d path in one `pytest.raises(match=...)` call; duplicate
-`##` headings silently overwrite rather than error) were left as
-documented, accepted limitations — neither affects any Acceptance
-Criterion, and manufacturing a fix for a non-blocking, low-likelihood
-edge case was judged disproportionate for a foundation Change (C-039).
+(TDD-003).
+
+Independent Strict Review Iteration 2 (Resolution Verification) then
+found that the R-001 fix itself introduced a *new* schema violation in
+the same file — two `tdd-evidence.yml` `notes` strings began with an
+unescaped `word:` clause, which YAML parses as a single-key mapping, not
+a string, again failing the same contract test and making the
+previously claimed "747 passed" count false (R-003, BLOCKER) — fixed by
+quoting those strings. It also found the R-002 fix was incomplete: an
+indented fence (valid CommonMark, up to 3 leading spaces) was not
+recognized as a fence at all, reproducing R-002's original silent-
+truncation symptom (R-004, MAJOR); and a fence opened with one delimiter
+type (`` ``` ``/`~~~`) could be desynchronized by a line using the other
+delimiter type inside it (R-005, MINOR/informational) — both fixed by
+making `_FENCE_PATTERN` tolerant of up to 3 leading spaces/tabs and
+tracking which delimiter character opened the current fence, matching
+CommonMark fence semantics for these two cases, with a regression test
+(TDD-004).
+
+A remaining, explicitly accepted limitation (part of R-005, not fixed):
+an unterminated fence, or one closed by a delimiter of mismatched
+length, surfaces as a generic "missing required section" error rather
+than a fence-specific diagnostic. This fails loudly, not silently, and
+was judged disproportionate to refine further for this foundation
+Change (C-039) — Independent Review agreed this is lower severity than
+R-004 for exactly that reason. Three further non-blocking observations
+across both Iterations (a non-`re.escape`d path in one
+`pytest.raises(match=...)` call; duplicate `##` headings silently
+overwrite rather than error) were left as documented, accepted
+limitations — neither affects any Acceptance Criterion.
 
 ## Conclusion
 
 Verification passes for the implemented scope, including the fixes made
-in response to independent Strict Review Iteration 1's findings. The
-Change is not marked complete until independent Strict Review Iteration
-2 passes against this revision.
+in response to independent Strict Review Iterations 1 and 2's findings.
+The Change is not marked complete until an independent Strict Review
+Iteration passes cleanly against the current revision.

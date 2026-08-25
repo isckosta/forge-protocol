@@ -1,7 +1,7 @@
 schema: forge/tdd-evidence@1
 change: CHG-0047
 status: compliant
-cycle_count: 3
+cycle_count: 4
 cycles:
   - id: TDD-001
     title: Minimal, immutable, Harness-neutral Capability model
@@ -43,5 +43,19 @@ cycles:
       command: .venv/bin/python -m pytest tests/capabilities/ -q
       result: 26 passed
     notes:
-      - Fix: _parse_sections now scans body line-by-line, toggling fence state on lines starting with ``` or ~~~, and only recognizes a "## " line as a section heading when not inside an open fence.
-      - Full suite re-verified after this fix: 747 passed, 2 warnings (see verification.md).
+      - "Fix: _parse_sections now scans body line-by-line, toggling fence state on lines starting with ``` or ~~~, and only recognizes a \"## \" line as a section heading when not inside an open fence."
+  - id: TDD-004
+    title: Fence tracking respects CommonMark indentation and matches delimiter type
+    requirements: [FR-004]
+    origin: Independent Strict Review Iteration 2 (Resolution Verification), Findings R-004 and R-005
+    behavior: A fenced code block opened with up to 3 leading spaces of indentation (valid CommonMark) is still recognized as a fence, and a fence opened with one delimiter type (backtick or tilde) is only closed by a line using that same delimiter type — so a heading-shaped line inside either kind of fence is never mistaken for a new section.
+    red:
+      command: .venv/bin/python -m pytest tests/capabilities/test_loader.py -k "indented or mismatched" -q
+      result: 2 failed
+      reason: "TDD-003's fix used ^(```|~~~) anchored at column 0 with no delimiter-type tracking: an indented fence-open line was never recognized as a fence at all (silently truncating the section at the heading-shaped line inside it, R-004), and a ~~~ line inside a ``` fence toggled fence state early, leaving the parser out of sync for the rest of the file (R-005)."
+    green:
+      command: .venv/bin/python -m pytest tests/capabilities/ -q
+      result: 28 passed
+    notes:
+      - "Fix: _FENCE_PATTERN now allows up to 3 leading spaces/tabs before the delimiter; _parse_sections tracks which delimiter character (backtick or tilde) opened the current fence and only closes on a matching line, per CommonMark fence semantics."
+      - "Known, accepted limitation (informational, not fixed): an unterminated fence, or one closed by a mismatched delimiter length, still surfaces as a generic missing-required-section error rather than a fence-specific diagnostic. Non-silent (fails loudly), low likelihood, and judged disproportionate to address further for this foundation Change (C-039)."

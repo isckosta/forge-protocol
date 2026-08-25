@@ -27,7 +27,7 @@ REQUIRED_SECTIONS: tuple[str, ...] = (
 
 _FRONTMATTER_PATTERN = re.compile(r"\A---\n(.*?)\n---\n", re.DOTALL)
 _SECTION_HEADING_PATTERN = re.compile(r"^##[ \t]+(.+?)[ \t]*$", re.MULTILINE)
-_FENCE_PATTERN = re.compile(r"^(```|~~~)")
+_FENCE_PATTERN = re.compile(r"^[ \t]{0,3}(`{3,}|~{3,})")
 
 
 class CapabilityDefinitionError(ValueError):
@@ -84,12 +84,17 @@ def load_capability(path: Path) -> Capability:
 
 def _parse_sections(body: str, path: Path) -> dict[str, str]:
     headings: list[tuple[str, int, int]] = []
-    in_fence = False
+    fence_delimiter: str | None = None
     offset = 0
     for line in body.splitlines(keepends=True):
-        if _FENCE_PATTERN.match(line):
-            in_fence = not in_fence
-        elif not in_fence:
+        fence_match = _FENCE_PATTERN.match(line)
+        if fence_match is not None:
+            delimiter = fence_match.group(1)[0]
+            if fence_delimiter is None:
+                fence_delimiter = delimiter
+            elif fence_delimiter == delimiter:
+                fence_delimiter = None
+        elif fence_delimiter is None:
             match = _SECTION_HEADING_PATTERN.match(line.rstrip("\n"))
             if match is not None:
                 headings.append((match.group(1).strip(), offset, offset + len(line)))
