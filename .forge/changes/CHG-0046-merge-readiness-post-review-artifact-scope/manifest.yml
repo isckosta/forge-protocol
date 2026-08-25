@@ -34,10 +34,10 @@ tdd:
 verification:
   status: passed
 review:
-  status: failed
-  iteration: 2
+  status: passed
+  iteration: 3
   blockers: 0
-  majors: 1
+  majors: 0
   minors: 0
   observations: 1
   iterations:
@@ -64,6 +64,15 @@ review:
         Delta itself, computed directly, contains no Out-of-Scope
         Mutation -- but the mechanical gate cannot confirm this itself
         without the missing fields).
+    - id: review-003
+      revision: chg-0046-resolution-001
+      subject_provenance: resolution-001-scope
+      reviewer_provenance: review-003
+      kind: resolution_verification
+      status: passed
+      full_review_required: false
+      new_material_findings: 0
+      finding_classes: []
 documentation:
   impact_evaluated: false
 decisions:

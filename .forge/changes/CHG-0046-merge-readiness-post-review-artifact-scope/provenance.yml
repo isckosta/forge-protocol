@@ -249,3 +249,53 @@ records:
         (R004 is a scoped provenance-metadata gap, not an Out-of-Scope
         Mutation). new_material_findings: 1. Full findings in review.md,
         "## Iteration 2".
+  - id: review-003
+    role: review
+    execution:
+      id: claude-code-review-0046-independent-3
+      context_id: claude-code-review-session-2026-08-25-iter3
+    recorded_at: '2026-08-25T02:00:00Z'
+    revision:
+      id: chg-0046-resolution-001
+      immutable_ref:
+        type: git_commit
+        value: ff8fe51cc3dd237252c579f9775d8122254bf189
+      commit: ff8fe51cc3dd237252c579f9775d8122254bf189
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: review.md
+      statement: >-
+        Independent Resolution Verification (Iteration 3,
+        kind: resolution_verification) of CHG-0046's frozen Resolution
+        subject, referenced via resolution-001-scope
+        (ff8fe51cc3dd237252c579f9775d8122254bf189, unchanged since
+        Iteration 2 -- no new frozen subject), conducted in an Execution
+        and Execution Context distinct from every prior Execution/Context
+        in this Change's history. Bounded per C-047 to R004 (the sole
+        Finding this Iteration targets), defects within
+        resolution-001-scope's own addition, and Out-of-Scope Mutation.
+        forge validate run directly against current repository state:
+        "Forge project is valid". resolution-001-scope's declared scope
+        (8 exact repository-relative paths) independently checked against
+        `git diff --name-only 60b699b..ff8fe51` (excluding
+        manifest.yml/provenance.yml/review.md): exact match, path-for-path
+        -- no Out-of-Scope Mutation, no over- or under-broad scope
+        declaration. resolution-001's own record independently confirmed
+        byte-for-byte (parsed YAML) unchanged since its original freeze at
+        commit 2f09140, satisfying C-026 append-only; resolution-001-scope
+        confirmed as a genuinely new, additive record (added at 9ef29aa),
+        not a disguised rewrite. Both records agree on the commit they
+        describe. manifest.yml's review-002.subject_provenance correctly
+        resolves to resolution-001-scope, no dangling reference. Full
+        pytest suite independently re-run: 704 passed, 2 warnings (same
+        pre-existing, unrelated FER warnings as Iterations 1-2);
+        tests/cli/test_merge_check.py plus
+        tests/unit/test_merge_readiness_policy.py: 24 passed. R001/R002's
+        substance was not re-litigated (already independently re-verified
+        twice: Iteration 1 and Iteration 2). new_material_findings: 0.
+        Convergence Limit (2 consecutive resolution_verification
+        Iterations with new_material_findings > 0) not reached -- the
+        trailing run is broken at length 1 by this Iteration's own zero
+        count. Verdict: PASS. Full findings in review.md, "## Iteration 3
+        -- Resolution Verification".

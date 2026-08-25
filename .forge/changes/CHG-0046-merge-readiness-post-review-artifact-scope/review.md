@@ -3,25 +3,36 @@ forge:
   artifact: review
   schema: 1
 change: CHG-0046
-status: active
+status: passed
 ---
 
 # CHG-0046 · Review
 
 ## Verdict
 
-**REQUEST CHANGES (Iteration 2, `kind: resolution_verification`, current).**
-R001 and R002 (Iteration 1, MAJOR) are both independently re-verified
-resolved. One new MAJOR was found within the Resolution Delta itself
-(R004 — `resolution-001`'s own provenance record omits the `scope`/
-`targets` fields Protocol 2 §11 requires, so `forge validate` cannot
-mechanically confirm no Out-of-Scope Mutation, even though this Iteration
-independently confirmed by hand that there is none). R003 (OBSERVATION,
-non-blocking) remains open unchanged. Currently outstanding: 0 BLOCKER, 1
-MAJOR (R004), 0 MINOR, 1 OBSERVATION (R003). See "## Iteration 2 —
-REQUEST CHANGES" below for full findings. The original Iteration 1 verdict
-text immediately below is left verbatim as the historical record of that
-Iteration.
+**PASS (final, Iteration 3 — `kind: resolution_verification`).** No
+blocking Findings remain outstanding. One non-blocking OBSERVATION (R003)
+remains open, unchanged since Iteration 1.
+
+- **Iteration 1** (`kind: initial_review`) — **REQUEST CHANGES**: 0
+  BLOCKER, 2 MAJOR (R001, R002), 0 MINOR, 1 OBSERVATION (R003).
+- **Iteration 2** (`kind: resolution_verification`) — **REQUEST CHANGES**:
+  R001/R002 both independently re-verified resolved against the frozen
+  Resolution subject `ff8fe51cc3dd237252c579f9775d8122254bf189`; Resolution
+  Delta independently recomputed, no Out-of-Scope Mutation. 1 new MAJOR
+  (R004 — `resolution-001`'s own provenance record lacked the `scope`/
+  `targets` fields Protocol 2 §11 requires, so `forge validate` could not
+  mechanically confirm the absence of Out-of-Scope Mutation even though
+  this Iteration had confirmed it by hand).
+- **Iteration 3** (`kind: resolution_verification`) — **PASS**: R004
+  resolved by a new, additive `resolution-001-scope` provenance record
+  (`resolution-001` itself unmodified, append-only per C-026) declaring
+  the exact `scope`/`targets` Protocol 2 §11 requires; `forge validate`
+  now genuinely passes; `resolution-001-scope`'s declared `scope`
+  independently confirmed to match the real Resolution Delta exactly; 0
+  new material findings. See "## Iteration 3 — Resolution Verification"
+  below for full detail. Iterations 1 and 2's verdict text is left
+  verbatim below as the historical record.
 
 **REQUEST CHANGES (Iteration 1, `kind: initial_review`), as originally
 recorded.** 0 BLOCKER, 2 MAJOR (R001, R002), 0 MINOR, 1 OBSERVATION (R003).
@@ -47,18 +58,20 @@ Architecture ("Design" section) explicitly promise (R002).
 
 | | |
 |---|---|
-| **Iterations** | 2 |
-| **Current Subject** | `ff8fe51cc3dd237252c579f9775d8122254bf189` (Resolution) |
+| **Iterations** | 3 |
+| **Current Subject** | `ff8fe51cc3dd237252c579f9775d8122254bf189` (Resolution, via `resolution-001-scope`) |
 | **Open Blockers** | 0 |
-| **Open Majors** | 1 (R004) |
+| **Open Majors** | 0 |
 | **Open Minors** | 0 |
 | **Open Observations** | 1 (R003) |
-| **Final Iteration** | 2 |
-| **Result** | REQUEST CHANGES |
+| **Final Iteration** | 3 |
+| **Result** | PASS |
 
 Iteration 1 subject (superseded): `60b699bb69c06ed0b078572dd705191e73441c68`.
 R001/R002 (Iteration 1, MAJOR) resolved by `resolution-001` and
-independently re-verified in Iteration 2 — no longer outstanding.
+independently re-verified in Iteration 2 — no longer outstanding. R004
+(Iteration 2, MAJOR) resolved by `resolution-001-scope` and independently
+re-verified in Iteration 3 — no longer outstanding.
 
 ## Current Subject
 
@@ -90,7 +103,7 @@ independent test/CLI execution performed in this session.
 | R001 | MAJOR | Resolved (Iteration 2) | 1 |
 | R002 | MAJOR | Resolved (Iteration 2) | 1 |
 | R003 | OBSERVATION | Open | 1 |
-| R004 | MAJOR | Open | 2 |
+| R004 | MAJOR | Resolved (Iteration 3) | 2 |
 
 ## Iteration 1 — REQUEST CHANGES
 
@@ -618,3 +631,127 @@ may proceed to a further, narrowly-bounded Resolution (completing
 `resolution-001`'s own `scope`/`targets` fields — review-control metadata,
 not a new code change) and a further Resolution Verification (Iteration
 3) once R004 is fixed.
+
+## Iteration 3 — Resolution Verification
+
+### Scope and authority
+
+Independent Resolution Verification, executed in a freshly spawned
+Execution and Execution Context (`claude-code-review-0046-independent-3`
+/ `claude-code-review-session-2026-08-25-iter3`, recorded in this Review's
+own `provenance.yml` entry `review-003`), distinct from every prior
+Execution/Context in this Change's history. Per C-047, bounded to R004
+(the only Finding Iteration 2 left open and the only thing this metadata
+Resolution targets), defects within its own Resolution Delta, and
+Out-of-Scope Mutation. No code, test, or behavioral change occurred
+between Iteration 2 and this Iteration — the subject commit
+(`ff8fe51cc3dd237252c579f9775d8122254bf189`) is unchanged; only a new,
+additive `provenance.yml` record (`resolution-001-scope`) and
+`manifest.yml`'s `review-002.subject_provenance` repoint were added.
+R001/R002's substance was not re-litigated (already independently
+re-verified twice: Iteration 1's own reproduction and Iteration 2's
+from-scratch re-reproduction).
+
+### R004 — re-checked against actual repository state — resolved
+
+`forge validate` run directly against current repository state:
+
+```
+$ forge validate
+Forge project is valid
+```
+
+Clean. `provenance.yml` now carries a new `resolution-001-scope` record
+(`role: resolution`, `revision.commit: ff8fe51...`, identical to
+`resolution-001`'s own commit — no new frozen subject) declaring `scope`
+(8 exact repository-relative paths) and `targets: [R001, R002, R003]`.
+`manifest.yml`'s `review-002` iteration entry's `subject_provenance` now
+reads `resolution-001-scope` instead of `resolution-001`.
+
+`resolution-001-scope`'s declared `scope` was independently checked
+against the real Resolution Delta:
+
+```
+$ git diff --name-only 60b699bb69c06ed0b078572dd705191e73441c68 ff8fe51cc3dd237252c579f9775d8122254bf189 \
+    -- . ':!.../manifest.yml' ':!.../provenance.yml' ':!.../review.md'
+.forge/changes/CHG-0046-.../discovery.md
+.forge/changes/CHG-0046-.../tasks.md
+.forge/changes/CHG-0046-.../tdd-evidence.yml
+.forge/changes/CHG-0046-.../verification.md
+protocol/policies/merge-readiness.yml
+src/forge_cli/merge_readiness/evaluator.py
+tests/cli/test_merge_check.py
+tests/unit/test_merge_readiness_policy.py
+```
+
+This is an exact match, path-for-path, with `resolution-001-scope`'s
+declared `scope` list — neither broader (no hidden Out-of-Scope Mutation
+concealed by an over-broad declaration) nor narrower (no in-scope work
+falsely excluded). R004 is resolved.
+
+### Provenance integrity checks
+
+- **`resolution-001` unmodified (C-026 append-only).** Extracted
+  `resolution-001`'s record as committed at `2f09140` (`chore(chg-0046):
+  freeze Resolution revision at ff8fe51`) and diffed it (parsed YAML, not
+  raw text) against the current record: byte-for-byte identical.
+  `resolution-001-scope` is a genuinely new, separate record (distinct
+  `id`, added at `9ef29aa`), not a disguised rewrite of `resolution-001`.
+- **Both records agree on the commit they describe.** `resolution-001`
+  and `resolution-001-scope` both bind `revision.commit:
+  ff8fe51cc3dd237252c579f9775d8122254bf189` — identical.
+- **`manifest.yml` internal consistency.** `review-002`'s
+  `subject_provenance: resolution-001-scope` correctly resolves to an
+  existing `role: resolution` record bound to the same commit
+  `review-002`'s own `revision: chg-0046-resolution-001` already
+  described; no orphaned or dangling reference.
+- **`git log --follow` on `provenance.yml`** shows exactly the expected
+  four commits (`c934594` Plan approval, `0913d92` Implementation freeze,
+  `2f09140` Resolution freeze, `9ef29aa` R004 fix) — no history rewrite,
+  no force-push artifact, no missing intermediate state.
+
+### Independent spot-check re-run
+
+Not accepted from Iteration 2's stated verdict alone — re-run directly in
+this Iteration's own Execution:
+
+```
+.venv/bin/python -m pytest tests/cli/test_merge_check.py tests/unit/test_merge_readiness_policy.py -v
+  -> 24 passed
+.venv/bin/python -m pytest -q
+  -> 704 passed, 2 warnings (same two pre-existing, unrelated FER warnings
+     as Iterations 1-2)
+```
+
+### New Findings introduced by this Resolution
+
+None. `new_material_findings: 0`.
+
+### Convergence accounting
+
+Iteration 2 ended with `new_material_findings: 1` (R004); this Iteration
+(3) ends with `new_material_findings: 0` — the trailing run of
+`resolution_verification` Iterations with `new_material_findings > 0` is
+broken at length 1, well below the Convergence Limit of 2. No Convergence
+Limit concern.
+
+### Checked and found sound (Iteration 3)
+
+- `resolution-001-scope`'s `scope` list matches the real Resolution Delta
+  exactly (see above) — no Out-of-Scope Mutation, no over/under-broad
+  scope declaration.
+- `resolution-001` remains intact and unmodified since its original
+  freeze commit.
+- `forge validate` passes cleanly against current repository state.
+- Full pytest suite: 704 passed, consistent with Iterations 1-2.
+
+### Conclusion
+
+R004 is genuinely resolved: `resolution-001-scope` supplies exactly the
+`scope`/`targets` metadata Protocol 2 §11 requires, referencing the same,
+unchanged, already-twice-reviewed commit; `forge validate` now passes;
+the declared scope independently verified accurate against the real
+diff; `resolution-001` itself remains untouched, satisfying C-026's
+append-only invariant. No new material finding. R003 (OBSERVATION)
+remains open, non-blocking, unchanged since Iteration 1. This Review is
+**PASS**.
