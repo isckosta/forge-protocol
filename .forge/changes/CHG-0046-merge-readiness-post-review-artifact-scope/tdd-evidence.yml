@@ -1,0 +1,70 @@
+schema: forge/tdd-evidence@1
+change: CHG-0046
+status: compliant
+cycle_count: 12
+cycles:
+  - id: TDD-001
+    title: "SUPERSEDED (Specification Drift): originally 'MR-015 tolerates a Change-local artifact once state.current is complete'. See TDD-008 for the corrected, Protocol-conformant replacement test."
+    requirements: [FR-001]
+    red: {observed: true, failure_reason: "MR-015 fires: 'FAIL MR-015 [CHG-9005]: REVIEW SUBJECT STALE' -- against the unmodified evaluator.py, 2026-08-25. Reproduced CHG-0045/PR-#36's exact failure as a minimal fixture (Discovery). This RED cycle's evidence remains valid; the GREEN implementation it originally drove (the state.current-keyed design) was later found Protocol-nonconformant and replaced -- see specification-drift.md."}
+    green: {observed: true, evidence: "SUPERSEDED. The original state.current-keyed GREEN implementation passed this test but was replaced after Specification Drift. The test itself was rewritten (same intent, corrected mechanism) as test_merge_check_tolerates_change_local_artifact_with_anchored_renewal_record -- see TDD-008."}
+  - id: TDD-002
+    title: "SUPERSEDED (Specification Drift): originally 'MR-015 still fires before state.current reaches complete'. See TDD-009 for the corrected replacement test (renewal-record-based, not state-based)."
+    requirements: [FR-001]
+    red: {observed: false, failure_reason: "Guard test, not new-behavior assertion."}
+    green: {observed: true, evidence: "SUPERSEDED -- rewritten as test_merge_check_still_flags_change_local_edit_without_renewal_record (TDD-009), since state.current is no longer read by MR-015 at all after Specification Drift."}
+  - id: TDD-003
+    title: MR-015 provides no protection against change_root-external drift, before or after this Change (characterization of a pre-existing, Out-of-Scope gap; AC-002)
+    requirements: []
+    red: {observed: false, failure_reason: "Characterization test, not new-behavior assertion -- documents Discovery's own reproduction of a pre-existing gap this Change deliberately does not close."}
+    green: {observed: true, evidence: "test_merge_check_does_not_detect_external_drift_after_completion passes unmodified both before and after the evaluator.py change -- src/probe.py changed post-freeze while state.current: complete still reports MERGE READY with no MR-015, unchanged in either direction by this Change."}
+  - id: TDD-004
+    title: The ten Agent Adapter-generated paths Discovery identified resolve to material, not ambiguous (FR-002/AC-004)
+    requirements: [FR-002]
+    red: {observed: true, failure_reason: "All 10 parametrized cases fail: 'assert ambiguous == material' -- pytest tests/unit/test_merge_readiness_policy.py::test_agent_adapter_generated_paths_resolve_to_a_definite_classification, against the unmodified protocol/policies/merge-readiness.yml, 2026-08-25."}
+    green: {observed: true, evidence: "All 10 cases pass. Final form (post-R002 Resolution, see TDD-007): 2 material_prefixes entries (.claude/skills/forge/, .agents/skills/forge/) and 3 material_paths entries (.claude/CLAUDE.md, .forge/adapters/claude-code/installation.yml, .forge/adapters/codex/installation.yml) in protocol/policies/merge-readiness.yml. The Iteration-1-reviewed version instead used a bare .forge/adapters/ material_prefixes entry -- see TDD-007/R002."}
+  - id: TDD-005
+    title: The materiality policy's fail-closed ambiguous fallback is unaffected for any other path (FR-002/AC-005)
+    requirements: [FR-002]
+    red: {observed: false, failure_reason: "Fail-closed fallback guard, not new-behavior assertion."}
+    green: {observed: true, evidence: "test_unrelated_unclassified_path_still_falls_back_to_ambiguous passes unmodified both before and after the policy change; pre-existing tests/cli/test_merge_check.py::test_ambiguous_unclassified_diff_is_blocked also passes unmodified, confirming AC-005 at both the unit and CLI level."}
+  - id: TDD-006
+    title: MR-015's is_complete read degrades gracefully on a malformed manifest state field, instead of crashing (Resolution of Strict Review Iteration 1, R001)
+    requirements: [FR-001]
+    red: {observed: true, failure_reason: "AttributeError: 'str' object has no attribute 'get' at evaluator.py:145 (is_complete = manifest.get('state', {}).get('current') == 'complete') -- pytest tests/cli/test_merge_check.py::test_merge_check_degrades_gracefully_on_malformed_state_field, against the Iteration-1-reviewed evaluator.py (commit 60b699b), reproducing Review finding R001 exactly. Independently confirmed by the Reviewer's own reproduction in review.md before this fix, and re-reproduced directly here against the same commit before re-applying the fix, to confirm this new test is genuinely RED against the reviewed code, not just against a strawman."}
+    green: {observed: true, evidence: "Fixed by hoisting the file's existing isinstance-guarded state read (previously computed later in _check_change(), reused unchanged for MR-005) to the top of the function and reusing that single guarded variable for is_complete, removing the second unguarded inline read entirely. Same test passes; full merge-readiness suite (24 tests) and full pytest suite (704 tests) pass with no regression."}
+    notes:
+      - "While isolating this test to evaluator.py's own code path (omitting .forge/forge.yml from the fixture), found a second, unrelated, pre-existing bug with the identical shape in src/forge_cli/validation/__init__.py:321 (st=m.get('state')or{}, crashes identically at line 375 when validate_project() runs before _check_change()) -- confirmed by direct reproduction, genuinely pre-existing (validation/__init__.py is untouched by this Change's diff), out of scope for CHG-0046 (Scope names only evaluator.py and the materiality policy), flagged separately rather than silently fixed or silently ignored."
+  - id: TDD-007
+    title: The .forge/adapters/ material_prefixes entry is narrowed to exact installation.yml paths; a sibling adapter-directory file stays ambiguous (Resolution of Strict Review Iteration 1, R002)
+    requirements: [FR-002]
+    red: {observed: true, failure_reason: "classify_path('.forge/adapters/claude-code/config.yml', policy) == 'material' (expected 'ambiguous') -- pytest tests/unit/test_merge_readiness_policy.py::test_sibling_adapter_directory_file_stays_ambiguous, against the Iteration-1-reviewed protocol/policies/merge-readiness.yml's bare .forge/adapters/ material_prefixes entry, reproducing Review finding R002 exactly."}
+    green: {observed: true, evidence: "Fixed by replacing the .forge/adapters/ material_prefixes entry with two exact material_paths entries (.forge/adapters/claude-code/installation.yml, .forge/adapters/codex/installation.yml), matching Architecture's own stated .forge/adapters/*/installation.yml design and Specification's AC-005 boundary exactly. Same test passes; TDD-004's 10 parametrized cases still pass unaffected."}
+  - id: TDD-008
+    title: MR-015 tolerates a Change-local artifact when an explicit, anchored renewal record's scope covers it (FR-001/AC-001, corrected design)
+    requirements: [FR-001]
+    red: {observed: true, failure_reason: "MR-015 fires with no renewal-record lookup at all in the pre-Specification-Drift evaluator.py -- pytest tests/cli/test_merge_check.py::test_merge_check_tolerates_change_local_artifact_with_anchored_renewal_record, confirmed RED before implementing the renewal-record check."}
+    green: {observed: true, evidence: "Passes after evaluator.py gains the renewal-record lookup: role in {implementation, resolution}, revision.commit an ancestor of head_revision, anchored via _first_committed_record (reused from MR-021), scope containing the exact path. MERGE READY, no MR-015."}
+  - id: TDD-009
+    title: MR-015 still fires with no renewal record at all, regardless of manifest.state (FR-001/AC-003, corrected design)
+    requirements: [FR-001]
+    red: {observed: false, failure_reason: "Guard test -- must fail (MR-015 fires) both before and after this Change; state.current is never consulted."}
+    green: {observed: true, evidence: "test_merge_check_still_flags_change_local_edit_without_renewal_record passes: MR-015 fires, exit code 1, with state.current: complete and no renewal record present -- confirms tolerance genuinely requires an explicit record, not a manifest flag."}
+  - id: TDD-010
+    title: An unanchored renewal record (rewritten after its first committed representation) provides no tolerance (AC-006)
+    requirements: [FR-001]
+    red: {observed: true, failure_reason: "Before _first_committed_record was wired into the renewal lookup, a naive 'does any record with this id/commit exist' check would have wrongly tolerated a rewritten renewal-001 record. test_merge_check_ignores_unanchored_renewal_record confirmed RED against that naive version."}
+    green: {observed: true, evidence: "Passes once the renewal lookup calls _first_committed_record(root, provenance_relative, item['id']) and compares it to the current record, mirroring MR-021's existing subject-anchoring check exactly (reused, not reimplemented)."}
+  - id: TDD-011
+    title: A renewal record's tolerance is scoped to exactly its declared paths, not the Change's entire uncovered delta (AC-007)
+    requirements: [FR-001]
+    red: {observed: true, failure_reason: "Before scope-precision was implemented, any renewal record naming head_revision blanket-tolerated the entire uncovered delta. test_merge_check_scopes_renewal_tolerance_to_the_declared_paths (specification.md rewritten alongside knowledge-capture.md, renewal scoped to knowledge-capture.md only) confirmed RED -- MR-015 did not fire for specification.md, which it should have."}
+    green: {observed: true, evidence: "Passes once uncovered_paths are checked individually against the union of all valid renewal records' declared scope sets, not against a single boolean 'any renewal exists' flag. MR-015 now correctly fires for specification.md while tolerating knowledge-capture.md in the same commit."}
+  - id: TDD-012
+    title: A renewal record anchored during an earlier freeze cycle does not tolerate tampering introduced after a later freeze (Resolution of Review R005, Iteration 4, BLOCKER)
+    requirements: [FR-001]
+    red: {observed: true, failure_reason: "test_merge_check_rejects_a_renewal_record_anchored_before_the_current_freeze fails against the pre-R005-fix evaluator.py (commit 6c6cdab): with only the upper-bound (renewal ancestor of head_revision) check, a renewal record anchored shortly after an earlier subject S1 remained valid forever, silently tolerating an unrelated post-S2 edit to the same path with no fresh renewal. Reproduces Reviewer's own end-to-end fixture reproduction in review.md exactly."}
+    green: {observed: true, evidence: "Fixed by adding a second, lower-bound ancestor check (subject_commit an ancestor of, or equal to, the renewal's own commit) alongside the existing upper bound -- both conditions required. Same test passes; full merge-readiness suite (27 tests) and full pytest suite (707 tests) pass with no regression. specification.md's FR-001/AC-001 text was also corrected (it previously said the renewal commit must equal head_revision exactly, contradicting the actual, intentional ancestor-based implementation -- a second defect Review Iteration 4 also flagged)."}
+notes:
+  - "Probing what AC-002 (drafted in Specification, before TDD-003 existed) could actually rely on -- during Architecture, not during TDD itself -- surfaced that MR-015's git diff pathspec (-- change_root) means it never inspects any change_root-external path, regardless of state.current, independent of this Change. This was confirmed by direct reproduction in a disposable fixture repository before TDD-003 was written, then written as TDD-003 specifically to characterize (not fix) that finding -- see Discovery, 'A more severe, orthogonal, pre-existing gap...', and Specification's Out of Scope."
+  - "TDD-001/TDD-002's original GREEN implementation (state.current-keyed) passed independent Strict Review three times (Iterations 1-3) before an external reviewer (Codex, PR #37) found it non-conformant with Protocol 2 specification.md Sec 5/Sec 14 -- see specification-drift.md. TDD-008 through TDD-011 are the corrected replacement cycles; TDD-001/TDD-002 are kept, marked superseded, as an honest record of what was tried, not deleted."
