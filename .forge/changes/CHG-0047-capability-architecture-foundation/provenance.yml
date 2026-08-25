@@ -1,0 +1,24 @@
+schema: forge/execution-provenance@2
+change: CHG-0047
+records:
+  - id: plan-approval-001
+    role: implementation
+    execution:
+      id: claude-code-implementation-0047
+      context_id: claude-code-session-2026-08-25
+    recorded_at: '2026-08-25T00:00:00Z'
+    revision:
+      id: chg-0047-plan-approval-001
+      immutable_ref:
+        type: git_commit
+        value: 9e6fe0ec1d33154ba9cfec0a035425b015da83b4
+      commit: 9e6fe0ec1d33154ba9cfec0a035425b015da83b4
+    source:
+      assurance: recorded
+      observed_by: operator
+      reference: plan.md#approval-record
+      content_digest:
+        algorithm: sha256
+        path: plan.md
+        value: 0124254a52023f83e2649ee2fdc8ce9284893416090c81c2bfd7f11414e153e8
+      statement: The user explicitly approved continuation of CHG-0047 to Implementation in the active session on 2026-08-25, via AskUserQuestion, after reviewing the Discovery Repository Truth Audit, the Specification (FR-001-FR-005, NFR-001), the Test Design (TD-001-TD-007), and the 8-item Plan summary, selecting "Aprovar e prosseguir".
