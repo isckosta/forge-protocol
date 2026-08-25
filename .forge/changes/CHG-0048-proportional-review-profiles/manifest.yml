@@ -51,7 +51,14 @@ review:
   observations: 0
   iterations: []
 documentation:
-  impact_evaluated: false
+  impact_evaluated: true
+  update_required: true
+  reason: >-
+    Updated: protocol/compatibility.md (### CHG-0048 entry -- material
+    Protocol compatibility resolution, RFC-0007 acceptance and the
+    Protocol-2-compatible-clarification reading) and CHANGELOG.md
+    (Unreleased entry). No new ADR (RFC-0007 already satisfies F-008 for
+    this Change).
 decisions:
   - id: DEC-001
     class: architectural

@@ -22,11 +22,12 @@ STANDARD_FLOW = (
 )
 
 
-def _content(flow_content: str = FLOW) -> str:
+def _content(flow_content: str = FLOW, protocol_id: int = 1) -> str:
     bundle = generate_codex_projection_bundle(CodexProjectionInput(
         flow_id="full",
         flow_content=flow_content,
         contract_content="Canonical Forge state is authoritative.\n",
+        protocol_id=protocol_id,
     ))
     return "\n".join(item.content for item in bundle.resources)
 
@@ -161,26 +162,26 @@ def _flow_with_profile(profile: str) -> str:
 
 def test_projection_renders_focused_profile_instruction_for_fast() -> None:
     """CHG-0048 TDD-011 (Codex parity with Claude Code TDD-010)."""
-    content = _content(_flow_with_profile("focused"))
+    content = _content(_flow_with_profile("focused"), protocol_id=2)
     assert "`focused` profile" in content
     assert "Completion requires Strict Review to pass." not in content
 
 
 def test_projection_renders_standard_profile_instruction_for_standard() -> None:
     """CHG-0048 TDD-011."""
-    content = _content(_flow_with_profile("standard"))
+    content = _content(_flow_with_profile("standard"), protocol_id=2)
     assert "`standard` profile" in content
     assert "Completion requires Strict Review to pass." not in content
 
 
 def test_projection_renders_unchanged_strict_instruction_for_full() -> None:
     """CHG-0048 TDD-011 / AC-004."""
-    content = _content(_flow_with_profile("strict"))
+    content = _content(_flow_with_profile("strict"), protocol_id=2)
     assert "Completion requires Strict Review to pass." in content
 
 
 def test_projection_defaults_to_strict_when_flow_declares_no_profile() -> None:
-    content = _content(_REVIEW_GATE_FLOW)
+    content = _content(_REVIEW_GATE_FLOW, protocol_id=2)
     assert "Completion requires Strict Review to pass." in content
 
 
@@ -191,5 +192,15 @@ def test_projection_matches_claude_code_profile_instruction_text() -> None:
     from forge_cli.adapters.review_independence import REVIEW_PROFILE_INSTRUCTION as shared
 
     for profile in ("focused", "standard", "strict"):
-        content = _content(_flow_with_profile(profile))
+        content = _content(_flow_with_profile(profile), protocol_id=2)
         assert shared[profile] in content
+
+
+def test_projection_uses_fixed_strict_review_instruction_under_protocol_1_even_with_a_profile() -> None:
+    """CHG-0048 Iteration 1 R-001 (Codex parity): Protocol 1 has no Review
+    Profile concept -- a Protocol 1 project must never receive a scoped
+    focused/standard instruction merely because the canonical Flow file
+    happens to carry a profile field."""
+    content = _content(_flow_with_profile("focused"), protocol_id=1)
+    assert "Completion requires Strict Review to pass." in content
+    assert "`focused` profile" not in content

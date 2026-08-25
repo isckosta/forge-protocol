@@ -295,3 +295,19 @@ def test_projection_review_profile_is_derived_fresh_not_cached() -> None:
     assert "`focused` profile" in first
     assert "Completion requires Strict Review to pass." in second
     assert "`focused` profile" not in second
+
+
+def test_projection_uses_fixed_strict_review_instruction_under_protocol_1_even_with_a_profile() -> None:
+    """CHG-0048 Iteration 1 R-001: Protocol 1's Contract has no Review
+    Profile concept (C-022/C-023 there are unconditionally adversarial).
+    A Protocol 1 project must never receive a scoped focused/standard
+    instruction merely because the canonical Flow file happens to carry a
+    profile field -- that field is a Protocol 2 concept."""
+    bundle = generate_claude_code_skill_bundle(
+        contract_content="contract",
+        flows=(("fast", _flow_with_profile("focused")),),
+        protocol_id=1,
+    )
+    skill = next(resource.content for resource in bundle.resources if resource.name == "skills/forge/SKILL.md")
+    assert "Completion requires Strict Review to pass." in skill
+    assert "`focused` profile" not in skill

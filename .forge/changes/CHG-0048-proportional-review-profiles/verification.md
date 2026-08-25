@@ -45,9 +45,10 @@ byte-unchanged.
 | AC-012 | FR-012 | `test_projection_review_profile_is_derived_fresh_not_cached` |
 | AC-013 | FR-013 | `test_merge_check_mr_004_label_is_profile_neutral` |
 
-- `.venv/bin/python -m pytest -q`: **784 passed, 2 warnings** (warnings
+- `.venv/bin/python -m pytest -q`: **786 passed, 2 warnings** (warnings
   pre-exist this Change — deliberate failure injection in
-  `tests/unit/test_experience_capture.py`, unrelated).
+  `tests/unit/test_experience_capture.py`, unrelated; count includes 2
+  regression tests added resolving Iteration 1's R-001).
 - `.venv/bin/python -m pytest tests/contract/ -q`: **52 passed** (34
   pre-existing + 18 new schema round-trip tests).
 - TDD-001 through TDD-004: see `tdd-evidence.yml`. TDD-001 and TDD-004
@@ -64,10 +65,29 @@ byte-unchanged.
 ## Forge Evidence
 
 - `forge validate`: **PASS** ("Forge project is valid").
-- `git diff --stat main..HEAD`: 33 files changed, matching Plan/Architecture
-  scope exactly — Contract (1), Flows (3), canonical review policy (1),
+- `git diff --stat main..HEAD`: **35 files changed** — corrected here
+  after Independent Strict Review Iteration 1's OBSERVATION 2 found the
+  original count (33, with a category breakdown that itself summed to
+  34) was wrong: Contract (1), Flows (3), canonical review policy (1),
   Schemas (4), validation (1), Adapters (3), merge_readiness (1), tests
-  (6), documentation (2), and this Change's own 12 Artifacts.
+  (5), RFCs (2, `docs/rfcs/0005...`/`0007...`, omitted from the original
+  count), documentation (2), and this Change's own 12 Artifacts. Every
+  file in the diff is legitimate and traces to a Functional Requirement;
+  this was a counting/arithmetic error in the original claim, not a
+  scope or content defect.
+- OBSERVATION 1 (Iteration 1, non-blocking, disclosed and accepted, not
+  fixed): none of the four touched JSON Schemas (`change-v2`, `flow`,
+  `policy-review-v2`, `project-flow`) are actually loaded by any
+  `src/forge_cli` runtime code — a pre-existing repository pattern this
+  Change did not introduce (independently confirmed by Iteration 1's
+  Reviewer: `grep -rln "flow.schema.json" src/` has no hits). Nothing
+  currently prevents a Flow file from declaring a `profile` inconsistent
+  with its own `strict`/`adversarial` booleans. Blast radius is low
+  today (only three maintainer-edited canonical Flow files exist; the
+  only live consumer of `strict`/`adversarial` is saturated by the
+  unrelated `"strict_review" in stages` check regardless). Left as a
+  documented, accepted limitation rather than inventing new enforcement
+  beyond this Change's scope (F-010, NFR-001).
 - `grep -rn "ReviewProfileEngine\|ReviewProfileRegistry\|ReviewProfilePipeline"` across
   `src/`, `protocol/`, `tests/`: **no matches**.
 - `protocol/contract/engineering.md` (Protocol 1), `protocol/schemas/policy-review.schema.json`
@@ -111,10 +131,28 @@ No concrete change to `src/forge_cli/configuration/__init__.py` or
 field was made — DEC-001 established this is not the right
 integration point (confirmed unread by any CLI code).
 
-Independent Strict Review (`strict` profile, since this Change is
-itself FULL Flow) remains pending.
+Independent Strict Review Iteration 1 found and this session resolved
+two findings before this revision was re-frozen: R-001 (BLOCKER —
+`_gate_instructions()` in both Adapters substituted the profile-specific
+instruction unconditionally, with no `protocol_id` gate, so a Protocol
+1 project would receive a scoped `focused`/`standard` instruction that
+Protocol 1's own unconditional C-022/C-023 does not authorize; fixed by
+gating the substitution on `protocol_id >= 2`, falling back to the
+fixed strict-only line otherwise, with a new regression test in both
+Adapters' test suites) and R-002 (MAJOR — this Change's own
+`manifest.yml` declared `documentation.impact_evaluated: false` while
+`artifacts.documentation: complete` and the actual committed
+`protocol/compatibility.md`/`CHANGELOG.md` entries contradicted it,
+violating C-028/C-029; fixed by correcting the field to `true` with a
+matching `reason`). OBSERVATION 2 (this Verification's file-count claim
+was wrong: 35 files, not 33) and OBSERVATION 3 (Architecture's
+described `flow.schema.json` `required` array didn't match what
+shipped — the shipped version is stricter, not weaker) were also
+addressed; see `review.md` for the full Iteration 1 record.
 
 ## Conclusion
 
-Verification passes for the implemented scope. The Change is not
-marked complete until independent Strict Review is performed.
+Verification passes for the implemented scope, including the fixes
+made in response to independent Strict Review Iteration 1's findings.
+The Change is not marked complete until an independent Strict Review
+Iteration passes cleanly against the current revision.

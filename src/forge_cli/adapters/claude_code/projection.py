@@ -114,7 +114,10 @@ def _gate_instructions(flows: Iterable[tuple[str, str]], protocol_id: int) -> st
         if "verification_passed" in required:
             lines.append("- Completion requires Verification to pass.")
         if "review_passed" in required:
-            lines.append(REVIEW_PROFILE_INSTRUCTION.get(review_profile, REVIEW_PROFILE_INSTRUCTION["strict"]))
+            if protocol_id >= 2:
+                lines.append(REVIEW_PROFILE_INSTRUCTION.get(review_profile, REVIEW_PROFILE_INSTRUCTION["strict"]))
+            else:
+                lines.append(REVIEW_PROFILE_INSTRUCTION["strict"])
         if "blocking_review_threads_resolved" in required:
             lines.append(
                 "- Completion requires all blocking review threads on any active "

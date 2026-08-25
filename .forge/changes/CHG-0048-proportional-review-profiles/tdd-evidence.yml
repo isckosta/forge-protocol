@@ -1,7 +1,7 @@
 schema: forge/tdd-evidence@1
 change: CHG-0048
 status: compliant
-cycle_count: 4
+cycle_count: 5
 cycles:
 - id: TDD-001
   title: Review profile floor rejects a weaker-than-canonical project override; accepts a stricter one; silent when absent
@@ -64,3 +64,19 @@ cycles:
   notes:
   - Purely cosmetic rename; no other line in the triggering function changed.
   - Full-suite evidence intentionally lives only in verification.md, not here -- adding a top-level full_suite key to this file is exactly the schema-violating mistake CHG-0047's R-001/R-003 findings identified and fixed; not repeating it.
+- id: TDD-005
+  title: Adapter review-profile instruction is gated on protocol_id >= 2; Protocol 1 always renders the fixed strict-only instruction
+  requirements:
+  - FR-005
+  origin: Independent Strict Review Iteration 1, Finding R-001
+  behavior: claude_code/projection.py and codex/projection.py's _gate_instructions() substitute the profile-specific REVIEW_PROFILE_INSTRUCTION only when protocol_id >= 2; under protocol_id 1 (or any value below 2) they always render the fixed strict-only completion line, regardless of what the canonical Flow file's review.profile happens to declare -- Protocol 1's Contract has no Review Profile concept and must never receive a scoped focused/standard instruction.
+  red:
+    command: .venv/bin/python -m pytest tests/unit/test_claude_code_projection_gates.py::test_projection_uses_fixed_strict_review_instruction_under_protocol_1_even_with_a_profile -q
+    result: 1 failed
+    reason: The prior implementation substituted REVIEW_PROFILE_INSTRUCTION unconditionally, with no protocol_id gate (unlike the adjacent Reviewer/Resolver independence block, which already had one) -- a Protocol 1 project reading a canonical Flow file that happens to carry review.profile=focused received the scoped focused-profile instruction text instead of the fixed strict-only line, exactly reproducing Iteration 1's R-001.
+  green:
+    command: .venv/bin/python -m pytest tests/unit/test_claude_code_projection_gates.py tests/unit/test_codex_projection_gates.py -q
+    result: 41 passed
+  notes:
+  - 'Fix: both projection.py files now check protocol_id >= 2 before substituting the profile-specific instruction, mirroring the existing independence-block gate exactly.'
+  - The existing Codex test helper _content() defaulted to protocol_id=1 (CodexProjectionInput's own default); the three pre-existing profile-instruction tests added earlier in this Change were updated to pass protocol_id=2 explicitly, since they test Protocol 2 behavior specifically -- this was itself a latent gap the R-001 fix surfaced, not a new defect introduced by the fix.
