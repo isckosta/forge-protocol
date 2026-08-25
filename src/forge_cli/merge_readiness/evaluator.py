@@ -68,6 +68,7 @@ def _check_change(root: Path, change_id: str, head_revision: str) -> tuple[list[
     checks: list[ReadinessCheck] = []
     diagnostics: list[ReadinessDiagnostic] = []
     relative = path.relative_to(root).as_posix()
+    state = manifest.get("state", {}) if isinstance(manifest.get("state"), dict) else {}
 
     checks.append(ReadinessCheck("MR-STRUCTURAL", "pass", change_id, "Manifest loaded"))
     flow = manifest.get("flow", {}).get("current") if isinstance(manifest.get("flow"), dict) else None
@@ -142,8 +143,57 @@ def _check_change(root: Path, change_id: str, head_revision: str) -> tuple[list[
                         f"{change_root}/provenance.yml",
                         f"{change_root}/review.md",
                     }
-                    if delta.returncode != 0 or any(item and item not in allowed for item in delta.stdout.splitlines()):
+                    uncovered_paths = [item for item in delta.stdout.splitlines() if item and item not in allowed]
+                    if delta.returncode != 0:
                         diagnostics.append(ReadinessDiagnostic("MR-015", "REVIEW SUBJECT STALE", change_id, relative, head_revision, subject_commit))
+                    elif uncovered_paths:
+                        # Protocol 2 Sec 5: the only paths that may differ
+                        # WITHOUT renewing subject provenance are the three
+                        # above. Any other change_root delta requires an
+                        # explicit, anchored provenance record -- whose
+                        # commit lies BETWEEN this evaluation's own
+                        # subject_commit and head_revision (inclusive: an
+                        # ancestor of head_revision, and a descendant of, or
+                        # equal to, subject_commit) -- declaring a scope
+                        # that covers the specific path. The lower bound
+                        # matters: a renewal anchored during an EARLIER
+                        # freeze cycle must not silently cover tampering
+                        # introduced after a LATER freeze (Review R005).
+                        # Not an implicit tolerance keyed on manifest.state
+                        # (Sec 5's own "MUST NOT be inferred from...
+                        # membership in the Change directory generally";
+                        # Sec 14's "a manifest claim... is not sufficient
+                        # authorization").
+                        renewed_scope: set[str] = set()
+                        for item in records:
+                            if not (isinstance(item, dict) and item.get("role") in {"implementation", "resolution"}):
+                                continue
+                            renewal_commit = (
+                                item.get("revision", {}).get("commit")
+                                or item.get("revision", {}).get("immutable_ref", {}).get("value")
+                            )
+                            if not isinstance(renewal_commit, str) or len(renewal_commit) != 40:
+                                continue
+                            renewal_upper = subprocess.run(
+                                ["git", "merge-base", "--is-ancestor", renewal_commit, head_revision],
+                                cwd=root, capture_output=True, check=False,
+                            )
+                            if renewal_upper.returncode != 0:
+                                continue
+                            renewal_lower = subprocess.run(
+                                ["git", "merge-base", "--is-ancestor", subject_commit, renewal_commit],
+                                cwd=root, capture_output=True, check=False,
+                            )
+                            if renewal_lower.returncode != 0:
+                                continue
+                            scope = item.get("scope")
+                            if not (isinstance(scope, list) and scope):
+                                continue
+                            anchored_renewal = _first_committed_record(root, provenance_relative, item.get("id", ""))
+                            if anchored_renewal is not None and anchored_renewal == item:
+                                renewed_scope.update(p for p in scope if isinstance(p, str))
+                        if any(item not in renewed_scope for item in uncovered_paths):
+                            diagnostics.append(ReadinessDiagnostic("MR-015", "REVIEW SUBJECT STALE", change_id, relative, head_revision, subject_commit))
             verification_records = [
                 item for item in records
                 if isinstance(item, dict)
@@ -189,7 +239,6 @@ def _check_change(root: Path, change_id: str, head_revision: str) -> tuple[list[
             review_text = ""
         if "**PASS**" not in review_text and "\nPASS\n" not in review_text:
             diagnostics.append(ReadinessDiagnostic("MR-007", "Review status is contradicted by review.md", change_id, review_relative))
-    state = manifest.get("state", {}) if isinstance(manifest.get("state"), dict) else {}
     if state.get("current") != "complete":
         diagnostics.append(ReadinessDiagnostic("MR-005", "COMPLETION NOT READY", change_id, relative, "complete", str(state.get("current"))))
     if state.get("current") == "complete":

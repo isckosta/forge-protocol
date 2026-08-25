@@ -1,0 +1,151 @@
+schema: forge/change@2
+protocol: 2
+change:
+  id: CHG-0046
+  title: Merge Readiness Post Review Artifact Scope
+  kind: feature
+flow:
+  initial: full
+  current: full
+  escalations: []
+state:
+  current: complete
+artifacts:
+  intent: complete
+  discovery: complete
+  specification: complete
+  specification_review: complete
+  architecture: complete
+  test_strategy: complete
+  plan: approved
+  tasks: complete
+  tdd_evidence: complete
+  verification: complete
+  review: complete
+  knowledge_capture: complete
+  documentation: complete
+requirements:
+  total: 2
+  implemented: 2
+  verified: 2
+tdd:
+  status: compliant
+  cycles: 7
+verification:
+  status: passed
+review:
+  status: passed
+  iteration: 5
+  blockers: 0
+  majors: 0
+  minors: 0
+  observations: 1
+  iterations:
+    - id: review-001
+      revision: chg-0046-implementation-001
+      status: failed
+      subject_provenance: implementation-subject-001
+      reviewer_provenance: review-001
+    - id: review-002
+      revision: chg-0046-resolution-001
+      subject_provenance: resolution-001-scope
+      reviewer_provenance: review-002
+      kind: resolution_verification
+      status: failed
+      full_review_required: false
+      new_material_findings: 1
+      finding_classes:
+        - resolution_regression
+      evidence_gap: >-
+        CHG-0046-R004 (MAJOR): resolution-001's own provenance record
+        declares no scope/targets, so forge validate cannot mechanically
+        confirm the Resolution Delta has no Out-of-Scope Mutation (R001
+        and R002 both independently re-verified resolved; the Resolution
+        Delta itself, computed directly, contains no Out-of-Scope
+        Mutation -- but the mechanical gate cannot confirm this itself
+        without the missing fields).
+    - id: review-003
+      revision: chg-0046-resolution-001
+      subject_provenance: resolution-001-scope
+      reviewer_provenance: review-003
+      kind: resolution_verification
+      status: passed
+      full_review_required: false
+      new_material_findings: 0
+      finding_classes: []
+    - id: review-004
+      revision: chg-0046-resolution-002
+      subject_provenance: resolution-002
+      reviewer_provenance: review-004
+      kind: resolution_verification
+      status: failed
+      full_review_required: false
+      new_material_findings: 1
+      finding_classes:
+        - resolution_regression
+      evidence_gap: >-
+        CHG-0046-R005 (BLOCKER): resolution-002's renewal-tolerance
+        mechanism for MR-015 (the corrected design replacing DEC-001's
+        rejected state.current boundary) checks only that a renewal
+        record's commit is an ancestor of head_revision, never that it is
+        a descendant of (or equal to) the current subject_commit. A
+        renewal record anchored during an earlier freeze cycle therefore
+        remains valid forever and silently tolerates an unrelated,
+        unexplained divergence of the same paths from a later frozen
+        subject -- independently reproduced end-to-end against a
+        disposable fixture repository (MERGE READY reported for a
+        post-freeze tamper no renewal record actually covers). Also a
+        direct, undisclosed textual conflict this Resolution itself
+        introduces: Specification's FR-001/AC-001 require the renewal
+        record's commit to equal head_revision exactly; Architecture and
+        the actual code both implement the strictly broader "ancestor of"
+        relation instead, and neither artifact reconciles the
+        disagreement. The Resolution Delta itself matches its declared
+        scope exactly (no Out-of-Scope Mutation); R005 is a correctness
+        defect within that Delta, not an Out-of-Scope Mutation.
+    - id: review-005
+      revision: chg-0046-resolution-003
+      subject_provenance: resolution-003
+      reviewer_provenance: review-005
+      kind: resolution_verification
+      status: passed
+      full_review_required: false
+      new_material_findings: 0
+      finding_classes: []
+documentation:
+  impact_evaluated: true
+  update_required: true
+  reason: >-
+    Updated: CHANGELOG.md (Unreleased entry, revised after Specification
+    Drift), docs/adr/0018-merge-readiness-post-review-artifact-scope.md
+    (DEC-003 is a material architectural decision -- explicit, anchored,
+    scoped renewal records, superseding DEC-001's rejected state.current
+    boundary). No RFC (this Change is merge-readiness-gate-internal logic,
+    not a Protocol or Contract redefinition -- CON-001 already establishes
+    no Contract or Flow meaning changed; the correction conforms to
+    Protocol 2's existing text, it does not amend it).
+decisions:
+  - id: DEC-001
+    class: architectural
+    materiality: material
+    status: superseded
+    authority: agent_with_review
+    owning_artifact: architecture
+    discovered_in: specification
+    resolved_via: autonomous_decision
+  - id: DEC-002
+    class: technical
+    materiality: material
+    status: resolved
+    authority: human
+    owning_artifact: plan
+    discovered_in: plan
+    resolved_via: human_decision
+  - id: DEC-003
+    class: architectural
+    materiality: material
+    status: resolved
+    authority: agent_with_review
+    owning_artifact: architecture
+    discovered_in: specification
+    resolved_via: autonomous_decision

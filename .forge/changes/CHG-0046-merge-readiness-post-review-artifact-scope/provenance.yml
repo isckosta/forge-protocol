@@ -1,0 +1,619 @@
+schema: forge/execution-provenance@2
+change: CHG-0046
+records:
+  - id: plan-approval-001
+    role: implementation
+    execution:
+      id: claude-code-implementation-0046
+      context_id: claude-code-session-2026-08-25
+    recorded_at: '2026-08-25T00:00:00Z'
+    revision:
+      id: chg-0046-plan-approval-001
+      immutable_ref:
+        type: git_commit
+        value: afdc4e36ff43dfb9cf487b853f996e981a23ffb4
+      commit: afdc4e36ff43dfb9cf487b853f996e981a23ffb4
+    source:
+      assurance: recorded
+      observed_by: operator
+      reference: plan.md#approval-record
+      content_digest:
+        algorithm: sha256
+        path: plan.md
+        value: c1b00348ba630f7114c5290c59e9bf7258e748e23e623601eac7f02c5086d219
+      statement: >-
+        Explicit human approval of the CHG-0046 Plan was received via a
+        direct AskUserQuestion Plan Decision prompt ("O Plan da CHG-0046
+        ... está pronto para Implementation?"), answered "Aprovar e
+        prosseguir", in the active session on 2026-08-25. This is
+        repository-native, self-recorded evidence (assurance: recorded),
+        not cryptographic or external attestation (C-077).
+  - id: implementation-subject-001
+    role: implementation
+    execution:
+      id: claude-code-implementation-0046
+      context_id: claude-code-session-2026-08-25
+    recorded_at: '2026-08-25T00:00:00Z'
+    revision:
+      id: chg-0046-implementation-001
+      immutable_ref:
+        type: git_commit
+        value: 60b699bb69c06ed0b078572dd705191e73441c68
+      commit: 60b699bb69c06ed0b078572dd705191e73441c68
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: verification.md
+      statement: >-
+        Frozen Implementation subject for CHG-0046: FR-001 and FR-002
+        implemented and verified (verification.md Result: PASS, 5/5 TDD
+        cycles, 702 passed in the full pytest suite, forge validate/doctor
+        clean). Directly reproduced against CHG-0045's actual PR #36
+        commits: MR-015 and MR-017 no longer appear. Effective reviewable
+        Git workspace at freeze time: clean (git status --short
+        --untracked-files=all empty), no committed post-subject delta, no
+        staged/unstaged reviewable changes, no untracked reviewable files.
+  - id: verification-001
+    role: implementation
+    execution:
+      id: claude-code-implementation-0046
+      context_id: claude-code-session-2026-08-25
+    recorded_at: '2026-08-25T00:00:00Z'
+    revision:
+      id: chg-0046-implementation-001
+      immutable_ref:
+        type: git_commit
+        value: 60b699bb69c06ed0b078572dd705191e73441c68
+      commit: 60b699bb69c06ed0b078572dd705191e73441c68
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: verification.md
+      statement: >-
+        Verification evidence for CHG-0046, bound to the same frozen
+        Implementation subject (chg-0046-implementation-001) per CHG-0043's
+        established re-verification-per-subject pattern.
+  - id: verification-002
+    role: implementation
+    execution:
+      id: claude-code-implementation-0046
+      context_id: claude-code-session-2026-08-25
+    recorded_at: '2026-08-25T02:00:00Z'
+    revision:
+      id: chg-0046-resolution-001
+      immutable_ref:
+        type: git_commit
+        value: ff8fe51cc3dd237252c579f9775d8122254bf189
+      commit: ff8fe51cc3dd237252c579f9775d8122254bf189
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: verification.md
+      statement: >-
+        Re-verification-per-subject: `verification-001` was bound to
+        `60b699b` (`implementation-subject-001`), but Review Iteration 3
+        (`review-003`), the final passed iteration, actually reviewed
+        `ff8fe51` (`resolution-001`, referenced through
+        `resolution-001-scope`) -- the Resolution that fixed R001/R002.
+        `verification.md`'s Result (`PASS`) is unchanged: the Resolution
+        fixed Strict Review findings, not the underlying FR-001/FR-002
+        behavioral verification (TDD-001 through TDD-007, full suite 704
+        passed, confirmed again post-Resolution). This record supplies the
+        missing binding to the actually-reviewed final subject, matching
+        CHG-0043's `verification-001/-002/-003` precedent this Change's
+        own `verification-001` record already cited -- an omission this
+        Change's own Discovery flagged as CHG-0045's MR-006 gap, then
+        repeated itself; found via this Change's own CI, not by Review
+        (Reviewer Iterations 1-3 all reviewed provenance/manifest
+        consistency but this specific cross-check -- the final subject's
+        actual commit vs. which verification record binds to it -- was not
+        among what any of the three independent Reviews happened to probe).
+  - id: review-001
+    role: review
+    execution:
+      id: claude-code-review-0046-independent
+      context_id: claude-code-review-session-2026-08-24
+    recorded_at: '2026-08-24T00:00:00Z'
+    revision:
+      id: chg-0046-implementation-001
+      immutable_ref:
+        type: git_commit
+        value: 60b699bb69c06ed0b078572dd705191e73441c68
+      commit: 60b699bb69c06ed0b078572dd705191e73441c68
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: review.md
+      statement: >-
+        Independent Strict Review Iteration 1 (kind: initial_review) of
+        CHG-0046's frozen Implementation subject
+        (implementation-subject-001, 60b699bb69c06ed0b078572dd705191e73441c68),
+        conducted in an Execution and Execution Context distinct from the
+        Implementation's (claude-code-implementation-0046 /
+        claude-code-session-2026-08-25). Verdict: REQUEST CHANGES -- 0
+        BLOCKER, 2 MAJOR (R001: unguarded manifest.state read in the new
+        MR-015 is_complete check crashes on a malformed state field; R002:
+        the .forge/adapters/ material_prefixes entry is broader than
+        Specification AC-005 and Architecture's own stated design), 0
+        MINOR, 1 OBSERVATION (R003). Full findings and evidence recorded in
+        review.md.
+  - id: resolution-001
+    role: resolution
+    execution:
+      id: claude-code-implementation-0046
+      context_id: claude-code-session-2026-08-25
+    recorded_at: '2026-08-25T00:00:00Z'
+    revision:
+      id: chg-0046-resolution-001
+      immutable_ref:
+        type: git_commit
+        value: ff8fe51cc3dd237252c579f9775d8122254bf189
+      commit: ff8fe51cc3dd237252c579f9775d8122254bf189
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: review.md
+      statement: >-
+        Resolution of Strict Review Iteration 1 (review-001) findings
+        R001-R002. R001 (MAJOR) fixed by hoisting the file's existing
+        isinstance-guarded `state` read (previously computed later in
+        _check_change(), reused unchanged for MR-005) to the top of the
+        function and reusing that single guarded variable for
+        is_complete, removing the second unguarded inline read entirely.
+        TDD-006 added; RED confirmed against the reviewed subject
+        (60b699b) before re-applying the fix -- AttributeError: 'str'
+        object has no attribute 'get', matching the Reviewer's own
+        reproduction exactly. R002 (MAJOR) fixed by replacing the bare
+        .forge/adapters/ material_prefixes entry with two exact
+        material_paths entries (.forge/adapters/claude-code/installation.yml,
+        .forge/adapters/codex/installation.yml), matching Architecture's
+        own stated .forge/adapters/*/installation.yml design exactly.
+        TDD-007 added; RED confirmed against the reviewed policy before
+        the fix. R003 (OBSERVATION) required no fix. Resolution Delta
+        (git diff 60b699b..ff8fe51, excluding manifest.yml/provenance.yml/
+        review.md): discovery.md (addendum), tasks.md, tdd-evidence.yml,
+        verification.md, protocol/policies/merge-readiness.yml,
+        src/forge_cli/merge_readiness/evaluator.py,
+        tests/cli/test_merge_check.py,
+        tests/unit/test_merge_readiness_policy.py -- no file outside
+        this Change's own directory, the two files Scope names, and their
+        tests touched; no Out-of-Scope Mutation. Full pytest suite: 704
+        passed (was 702 pre-Resolution); forge validate/doctor clean.
+  - id: resolution-001-scope
+    role: resolution
+    execution:
+      id: claude-code-implementation-0046
+      context_id: claude-code-session-2026-08-25
+    recorded_at: '2026-08-25T01:00:00Z'
+    scope:
+      - .forge/changes/CHG-0046-merge-readiness-post-review-artifact-scope/discovery.md
+      - .forge/changes/CHG-0046-merge-readiness-post-review-artifact-scope/tasks.md
+      - .forge/changes/CHG-0046-merge-readiness-post-review-artifact-scope/tdd-evidence.yml
+      - .forge/changes/CHG-0046-merge-readiness-post-review-artifact-scope/verification.md
+      - protocol/policies/merge-readiness.yml
+      - src/forge_cli/merge_readiness/evaluator.py
+      - tests/cli/test_merge_check.py
+      - tests/unit/test_merge_readiness_policy.py
+    targets: [R001, R002, R003]
+    revision:
+      id: chg-0046-resolution-001
+      immutable_ref:
+        type: git_commit
+        value: ff8fe51cc3dd237252c579f9775d8122254bf189
+      commit: ff8fe51cc3dd237252c579f9775d8122254bf189
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: review.md
+      statement: >-
+        R004 (Iteration 2, MAJOR): the pre-existing `resolution-001`
+        record (committed at chore(chg-0046): freeze Resolution revision
+        at ff8fe51, before this record existed) omitted the `scope`/
+        `targets` fields `_validate_resolution_verification` requires to
+        mechanically verify a Resolution Delta. `resolution-001` itself is
+        an already-committed record and is not rewritten here (C-026
+        append-only) -- this is a new, additional record, referencing the
+        identical, unchanged revision (`ff8fe51cc3dd237252c579f9775d8122254bf189`,
+        no new frozen subject), supplying exactly the scope/targets metadata
+        that record lacked, matching the exact Resolution Delta already
+        independently recomputed in Iteration 2's review (`git diff
+        60b699b..ff8fe51`, excluding the always-exempt
+        manifest.yml/provenance.yml/review.md). `manifest.yml`'s
+        `review-003` Iteration's `subject_provenance` points here instead
+        of at `resolution-001` directly, since this record is what a
+        Reviewer/Core must inspect to mechanically verify the Resolution
+        Delta going forward; the original `resolution-001` record remains,
+        unmodified, as the historical account of what the Resolution
+        actually changed and why. (Precedent: CHG-0045's own
+        `resolution-001-scope` record, R007, identical shape.)
+  - id: review-002
+    role: review
+    execution:
+      id: claude-code-review-0046-independent-2
+      context_id: claude-code-review-session-2026-08-24-iter2
+    recorded_at: '2026-08-24T00:00:00Z'
+    revision:
+      id: chg-0046-resolution-001
+      immutable_ref:
+        type: git_commit
+        value: ff8fe51cc3dd237252c579f9775d8122254bf189
+      commit: ff8fe51cc3dd237252c579f9775d8122254bf189
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: review.md
+      statement: >-
+        Independent Resolution Verification (Iteration 2,
+        kind: resolution_verification) of CHG-0046's frozen Resolution
+        subject (resolution-001, ff8fe51cc3dd237252c579f9775d8122254bf189),
+        conducted in an Execution and Execution Context distinct from
+        resolution-001's (claude-code-implementation-0046 /
+        claude-code-session-2026-08-25) and from review-001's
+        (claude-code-review-0046-independent /
+        claude-code-review-session-2026-08-24). Bounded per Protocol 2
+        Sec 10-11 to R001/R002, defects within the Resolution Delta, and
+        Out-of-Scope Mutation -- not a re-audit of
+        implementation-subject-001. Verdict: REQUEST CHANGES. R001
+        independently re-reproduced end to end: checked out evaluator.py
+        at 60b699b (pre-fix) against a fixture Change with a malformed
+        state: complete (bare string) manifest and a populated
+        review.iterations list, confirmed AttributeError: 'str' object
+        has no attribute 'get'; restored evaluator.py to ff8fe51 (post-fix)
+        and re-ran the identical fixture, confirmed no exception, a
+        controlled MR-005 diagnostic instead. R002 independently
+        re-verified via classify_path() against the live policy:
+        .forge/adapters/claude-code/config.yml -> ambiguous,
+        .forge/adapters/{claude-code,codex}/installation.yml -> material.
+        Both R001 and R002 resolved. Resolution Delta (git diff
+        60b699b..ff8fe51, excluding manifest.yml/provenance.yml/review.md)
+        independently recomputed: discovery.md, tasks.md,
+        tdd-evidence.yml, verification.md, protocol/policies/merge-readiness.yml,
+        src/forge_cli/merge_readiness/evaluator.py,
+        tests/cli/test_merge_check.py,
+        tests/unit/test_merge_readiness_policy.py -- matches
+        resolution-001's own claim exactly; no Out-of-Scope Mutation. Full
+        pytest suite independently re-run: 704 passed. forge doctor clean
+        (same two pre-existing WARNs). One new MAJOR finding (R004,
+        blocking, not an Out-of-Scope Mutation): resolution-001's own
+        provenance record declares no scope/targets fields (Protocol 2
+        Sec 11), so `forge validate` cannot mechanically confirm no
+        Out-of-Scope Mutation -- reproduced directly, `forge validate`
+        fails with "The Resolution referenced by a resolution_verification
+        Iteration must declare non-empty scope and targets before it can
+        be mechanically verified as scoped." full_review_required: false
+        (R004 is a scoped provenance-metadata gap, not an Out-of-Scope
+        Mutation). new_material_findings: 1. Full findings in review.md,
+        "## Iteration 2".
+  - id: review-003
+    role: review
+    execution:
+      id: claude-code-review-0046-independent-3
+      context_id: claude-code-review-session-2026-08-25-iter3
+    recorded_at: '2026-08-25T02:00:00Z'
+    revision:
+      id: chg-0046-resolution-001
+      immutable_ref:
+        type: git_commit
+        value: ff8fe51cc3dd237252c579f9775d8122254bf189
+      commit: ff8fe51cc3dd237252c579f9775d8122254bf189
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: review.md
+      statement: >-
+        Independent Resolution Verification (Iteration 3,
+        kind: resolution_verification) of CHG-0046's frozen Resolution
+        subject, referenced via resolution-001-scope
+        (ff8fe51cc3dd237252c579f9775d8122254bf189, unchanged since
+        Iteration 2 -- no new frozen subject), conducted in an Execution
+        and Execution Context distinct from every prior Execution/Context
+        in this Change's history. Bounded per C-047 to R004 (the sole
+        Finding this Iteration targets), defects within
+        resolution-001-scope's own addition, and Out-of-Scope Mutation.
+        forge validate run directly against current repository state:
+        "Forge project is valid". resolution-001-scope's declared scope
+        (8 exact repository-relative paths) independently checked against
+        `git diff --name-only 60b699b..ff8fe51` (excluding
+        manifest.yml/provenance.yml/review.md): exact match, path-for-path
+        -- no Out-of-Scope Mutation, no over- or under-broad scope
+        declaration. resolution-001's own record independently confirmed
+        byte-for-byte (parsed YAML) unchanged since its original freeze at
+        commit 2f09140, satisfying C-026 append-only; resolution-001-scope
+        confirmed as a genuinely new, additive record (added at 9ef29aa),
+        not a disguised rewrite. Both records agree on the commit they
+        describe. manifest.yml's review-002.subject_provenance correctly
+        resolves to resolution-001-scope, no dangling reference. Full
+        pytest suite independently re-run: 704 passed, 2 warnings (same
+        pre-existing, unrelated FER warnings as Iterations 1-2);
+        tests/cli/test_merge_check.py plus
+        tests/unit/test_merge_readiness_policy.py: 24 passed. R001/R002's
+        substance was not re-litigated (already independently re-verified
+        twice: Iteration 1 and Iteration 2). new_material_findings: 0.
+        Convergence Limit (2 consecutive resolution_verification
+        Iterations with new_material_findings > 0) not reached -- the
+        trailing run is broken at length 1 by this Iteration's own zero
+        count. Verdict: PASS. Full findings in review.md, "## Iteration 3
+        -- Resolution Verification".
+  - id: resolution-002
+    role: resolution
+    execution:
+      id: claude-code-implementation-0046
+      context_id: claude-code-session-2026-08-25
+    recorded_at: '2026-08-25T04:00:00Z'
+    scope:
+      - .forge/changes/CHG-0046-merge-readiness-post-review-artifact-scope/architecture.md
+      - .forge/changes/CHG-0046-merge-readiness-post-review-artifact-scope/knowledge-capture.md
+      - .forge/changes/CHG-0046-merge-readiness-post-review-artifact-scope/specification-drift.md
+      - .forge/changes/CHG-0046-merge-readiness-post-review-artifact-scope/specification.md
+      - .forge/changes/CHG-0046-merge-readiness-post-review-artifact-scope/tasks.md
+      - .forge/changes/CHG-0046-merge-readiness-post-review-artifact-scope/tdd-evidence.yml
+      - .forge/changes/CHG-0046-merge-readiness-post-review-artifact-scope/verification.md
+      - CHANGELOG.md
+      - docs/adr/0018-merge-readiness-post-review-artifact-scope.md
+      - src/forge_cli/merge_readiness/evaluator.py
+      - tests/cli/test_merge_check.py
+    targets: [PR37-CODEX-001]
+    revision:
+      id: chg-0046-resolution-002
+      immutable_ref:
+        type: git_commit
+        value: 6c6cdab52cc519bff21b444188b6c059585e36d0
+      commit: 6c6cdab52cc519bff21b444188b6c059585e36d0
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: specification-drift.md
+      statement: >-
+        Resolution of PR37-CODEX-001: an external, independent reviewer
+        (GitHub Codex review bot, PR #37, comment on evaluator.py:150)
+        found DEC-001's state.current-keyed MR-015 design directly
+        contradicts protocol/versions/2/specification.md Sec 5 ("The
+        exception MUST NOT be inferred from... membership in the Change
+        directory generally") and Sec 14 ("A manifest claim such as
+        state.current: complete... is not sufficient authorization").
+        Corrected per specification-drift.md: MR-015 now tolerates a
+        Change-local path only when covered by the scope of an explicit,
+        anchored role:implementation/resolution provenance record whose
+        commit is an ancestor of head_revision (DEC-003, supersedes
+        DEC-001). specification.md/architecture.md corrected; TDD-008
+        through TDD-011 added (RED confirmed against the prior,
+        superseded evaluator.py before each fix), TDD-001/TDD-002 kept as
+        the historical record of the superseded design's own cycles, not
+        deleted. Resolution Delta (git diff ff8fe51..6c6cdab, excluding
+        manifest.yml/provenance.yml/review.md): exactly the paths in
+        scope above -- no file outside this Change's own directory, the
+        evaluator.py/materiality-policy files Scope already named, their
+        tests, and Documentation Impact artifacts (CHANGELOG.md, the ADR)
+        touched; no Out-of-Scope Mutation. Full suite: 706 passed (704
+        before this Resolution's TDD-010/TDD-011 net-additions). forge
+        validate/doctor clean once refrozen.
+  - id: review-004
+    role: review
+    execution:
+      id: claude-code-review-0046-independent-4
+      context_id: claude-code-review-session-2026-08-25-iter4
+    recorded_at: '2026-08-25T05:00:00Z'
+    revision:
+      id: chg-0046-resolution-002
+      immutable_ref:
+        type: git_commit
+        value: 6c6cdab52cc519bff21b444188b6c059585e36d0
+      commit: 6c6cdab52cc519bff21b444188b6c059585e36d0
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: review.md
+      statement: >-
+        Independent Resolution Verification (Iteration 4,
+        kind: resolution_verification) of CHG-0046's frozen Resolution
+        subject (resolution-002, 6c6cdab52cc519bff21b444188b6c059585e36d0),
+        conducted in an Execution and Execution Context distinct from
+        every prior Execution/Context in this Change's history and from
+        resolution-002's own. Bounded per C-047/Sec 11 to PR37-CODEX-001,
+        defects within resolution-002's own Resolution Delta, and
+        Out-of-Scope Mutation. Read protocol/versions/2/specification.md
+        Sec 5/8/11/14 directly (not through Architecture's/Specification's
+        paraphrase) -- the check the three prior Iterations never
+        performed. Resolution Delta independently recomputed (git diff
+        ff8fe51..6c6cdab, excluding manifest.yml/provenance.yml/
+        review.md): matches resolution-002's declared scope exactly, no
+        Out-of-Scope Mutation. Full pytest suite independently re-run: 706
+        passed. tests/cli/test_merge_check.py plus
+        tests/unit/test_merge_readiness_policy.py: 26 passed. CHG-0045's
+        real PR #36 commits independently reproduced via disposable git
+        worktree: MR-015 correctly re-fires, matching verification.md's
+        disclosed claim. One new BLOCKER finding (R005, within the
+        Resolution Delta, not Out-of-Scope Mutation): the renewal-record
+        ancestor check evaluator.py's corrected MR-015 design introduces
+        verifies only that a renewal record's commit is an ancestor of
+        head_revision, never that it is a descendant of (or equal to) the
+        current subject_commit -- independently reproduced end-to-end
+        against a disposable fixture: a renewal record anchored during an
+        earlier freeze cycle (S1) silently and permanently tolerated an
+        unrelated, unexplained post-freeze tamper of the same path
+        against a later frozen subject (S2), reporting MERGE READY when
+        FAIL MR-015/MERGE BLOCKED was correct. Also found: Specification's
+        FR-001/AC-001 require the renewal record's commit to equal
+        head_revision exactly; Architecture's Design and the actual code
+        both implement the strictly broader "ancestor of" relation
+        instead, undisclosed and unreconciled between the two artifacts
+        this same Resolution rewrote. full_review_required: false (R005
+        is a correctness defect within evaluator.py, the file
+        resolution-002's own scope already names -- not an Out-of-Scope
+        Mutation, Sec 11's specific trigger for mandatory
+        full_review_required: true). new_material_findings: 1.
+        consecutive_unconverged_verifications after this Iteration: 1 (the
+        trailing run of failed resolution_verification Iterations with
+        new_material_findings > 0 was broken by Iteration 3's PASS;
+        Iteration 4 starts a new run) -- below the Convergence Limit of 2,
+        no Non-Convergence. Verdict: FAILED. Full findings in review.md,
+        "## Iteration 4 -- Resolution Verification".
+  - id: resolution-003
+    role: resolution
+    execution:
+      id: claude-code-implementation-0046
+      context_id: claude-code-session-2026-08-25
+    recorded_at: '2026-08-25T05:00:00Z'
+    scope:
+      - .forge/changes/CHG-0046-merge-readiness-post-review-artifact-scope/architecture.md
+      - .forge/changes/CHG-0046-merge-readiness-post-review-artifact-scope/specification.md
+      - .forge/changes/CHG-0046-merge-readiness-post-review-artifact-scope/tasks.md
+      - .forge/changes/CHG-0046-merge-readiness-post-review-artifact-scope/tdd-evidence.yml
+      - .forge/changes/CHG-0046-merge-readiness-post-review-artifact-scope/verification.md
+      - src/forge_cli/merge_readiness/evaluator.py
+      - tests/cli/test_merge_check.py
+    targets: [R005]
+    revision:
+      id: chg-0046-resolution-003
+      immutable_ref:
+        type: git_commit
+        value: e4832add69e85a87f50e86f20a8b1edca58a7299
+      commit: e4832add69e85a87f50e86f20a8b1edca58a7299
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: review.md
+      statement: >-
+        Resolution of Resolution Verification Iteration 4 (review-004)
+        finding R005 (BLOCKER): added the missing lower-bound ancestor
+        check (subject_commit an ancestor of, or equal to, the renewal
+        record's own commit) alongside the existing upper bound, in
+        evaluator.py's MR-015 renewal lookup. TDD-012 added; RED confirmed
+        against the reviewed subject (6c6cdab) before re-applying the fix,
+        matching the Reviewer's own end-to-end fixture reproduction
+        exactly. Also corrected specification.md's FR-001/AC-001 text
+        (previously required exact commit equality, contradicting the
+        actual, intentional ancestor-based implementation Architecture
+        already described) and added AC-008. Resolution Delta (git diff
+        6c6cdab..e4832ad, excluding manifest.yml/provenance.yml/review.md):
+        exactly the paths in scope above -- no file outside this Change's
+        own directory and the evaluator.py/tests Scope already named
+        touched; no Out-of-Scope Mutation. Full suite: 707 passed (was
+        706 before this Resolution's TDD-012 net-addition). forge
+        validate/doctor clean once refrozen.
+  - id: review-005
+    role: review
+    execution:
+      id: claude-code-review-0046-independent-5
+      context_id: claude-code-review-session-2026-08-25-iter5
+    recorded_at: '2026-08-25T06:00:00Z'
+    revision:
+      id: chg-0046-resolution-003
+      immutable_ref:
+        type: git_commit
+        value: e4832add69e85a87f50e86f20a8b1edca58a7299
+      commit: e4832add69e85a87f50e86f20a8b1edca58a7299
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: review.md
+      statement: >-
+        Independent Resolution Verification (Iteration 5,
+        kind: resolution_verification) of CHG-0046's frozen Resolution
+        subject (resolution-003, e4832add69e85a87f50e86f20a8b1edca58a7299),
+        conducted in an Execution and Execution Context distinct from
+        every prior Execution/Context in this Change's history and from
+        resolution-003's own (claude-code-implementation-0046 /
+        claude-code-session-2026-08-25). Bounded per C-047/Sec 11 to R005,
+        defects within resolution-003's own Resolution Delta, and
+        Out-of-Scope Mutation. Read protocol/versions/2/specification.md
+        Sec 5/8/11/14 directly, in full, before looking at code -- not
+        through any prior Iteration's paraphrase. Re-traced the actual
+        code (git show e4832ad:src/forge_cli/merge_readiness/evaluator.py):
+        the renewal loop now requires both an upper bound (renewal_commit
+        an ancestor of head_revision) and a lower bound (subject_commit an
+        ancestor of renewal_commit) before a record's scope is honored;
+        subject_commit is recomputed fresh inside _check_change() from the
+        manifest's current last-passed iteration on every invocation, so it
+        cannot be stale across Iterations. Independently re-reproduced the
+        exact BLOCKER scenario Iteration 4 found (renewal R1 anchored
+        between S1 and S2, tampering after S2, no fresh renewal) against a
+        disposable fixture: FAIL MR-015/MERGE BLOCKED now, where the
+        pre-Resolution code reported MERGE READY. Probed edge cases: merge/
+        branch ancestry (git merge-base --is-ancestor is strict DAG
+        reachability, no gap found -- content correctness remains
+        self-attested by design, per FR-001's own disclosed Boundary, not a
+        defect this Resolution should have closed); renewal_commit ==
+        subject_commit (both bounds pass, matching Specification's explicit
+        "or equal to" language, not a boundary bug); single-freeze-cycle
+        Change (lower bound trivially satisfied, no regression to the
+        common case, confirmed against the pre-existing single-freeze-cycle
+        fixture test still passing). No remaining gap found. Confirmed
+        specification.md's FR-001/AC-001 now state both bounds explicitly
+        (matching the code) and a new AC-008 states the two-freeze-cycle
+        scenario; architecture.md's Design section code sketch matches the
+        actual code verbatim -- Iteration 4's disclosed Specification/
+        Architecture/code disagreement is resolved. Resolution Delta (git
+        diff 6c6cdab..e4832ad, excluding manifest.yml/provenance.yml/
+        review.md) independently recomputed: matches resolution-003's
+        declared scope exactly, no Out-of-Scope Mutation. Full pytest suite
+        independently re-run: 707 passed. tests/cli/test_merge_check.py
+        plus tests/unit/test_merge_readiness_policy.py: 27 passed
+        (includes TDD-012). forge validate: "Forge project is valid".
+        forge doctor: clean, same two pre-existing disclosed WARNs. R001-
+        R004's substance was not re-litigated (already independently
+        re-verified in Iterations 1-3). new_material_findings: 0.
+        consecutive_unconverged_verifications after this Iteration: 0 (the
+        trailing run of failed resolution_verification Iterations with
+        new_material_findings > 0 was broken by this Iteration's own zero
+        count, ending the length-1 run Iteration 4 started) -- below the
+        Convergence Limit of 2, no Non-Convergence. Verdict: PASS. Full
+        findings in review.md, "## Iteration 5 -- Resolution
+        Verification".
+  - id: verification-003
+    role: implementation
+    execution:
+      id: claude-code-implementation-0046
+      context_id: claude-code-session-2026-08-25
+    recorded_at: '2026-08-25T06:00:00Z'
+    revision:
+      id: chg-0046-resolution-003
+      immutable_ref:
+        type: git_commit
+        value: e4832add69e85a87f50e86f20a8b1edca58a7299
+      commit: e4832add69e85a87f50e86f20a8b1edca58a7299
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: verification.md
+      statement: >-
+        Re-verification-per-subject: the final passed Review Iteration
+        (Iteration 5, review-005) reviewed resolution-003
+        (e4832ad), not ff8fe51 (verification-002's subject). Same pattern
+        as verification-001/verification-002 -- verification.md's Result
+        (PASS) is unchanged; the R005 Resolution fixed a Strict Review
+        finding in the renewal mechanism, not the underlying FR-001/FR-002
+        behavioral verification (TDD-001 through TDD-012, full suite 707
+        passed, confirmed again after the R005 fix).
+  - id: renewal-completion-001
+    role: implementation
+    execution:
+      id: claude-code-implementation-0046
+      context_id: claude-code-session-2026-08-25
+    recorded_at: '2026-08-25T06:00:00Z'
+    scope:
+      - .forge/changes/CHG-0046-merge-readiness-post-review-artifact-scope/knowledge-capture.md
+      - .forge/changes/CHG-0046-merge-readiness-post-review-artifact-scope/tasks.md
+      - docs/adr/0018-merge-readiness-post-review-artifact-scope.md
+    revision:
+      id: chg-0046-completion-001
+      immutable_ref:
+        type: git_commit
+        value: 37f856bc182785c68ac18ffd586b3109c70e7860
+      commit: 37f856bc182785c68ac18ffd586b3109c70e7860
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: knowledge-capture.md
+      statement: >-
+        Renewal record for this Change's own Documentation Impact /
+        Knowledge Capture reconfirmation, written after resolution-003
+        (e4832ad, Iteration 5's reviewed subject): knowledge-capture.md
+        (K-002), tasks.md (T-026/T-027), and docs/adr/0018-...md updated
+        to describe the final, independently-verified two-bound design --
+        exactly the FR-001 mechanism this Change itself implements,
+        applied to its own Completion. No implementation, test, or
+        specification/architecture content changed in this delta (git
+        diff e4832ad..37f856b confirms exactly the three paths in scope
+        above, plus the always-exempt manifest.yml/provenance.yml/
+        review.md).
