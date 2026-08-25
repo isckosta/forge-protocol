@@ -9,7 +9,7 @@ flow:
   current: full
   escalations: []
 state:
-  current: strict_review
+  current: complete
 artifacts:
   intent: complete
   discovery: complete
@@ -21,9 +21,9 @@ artifacts:
   tasks: complete
   tdd_evidence: complete
   verification: complete
-  review: pending
-  documentation: pending
-  knowledge_capture: pending
+  review: complete
+  documentation: complete
+  knowledge_capture: complete
 requirements:
   total: 7
   implemented: 7
@@ -71,7 +71,16 @@ review:
       new_material_findings: 0
       finding_classes: []
 documentation:
-  impact_evaluated: false
+  impact_evaluated: true
+  update_required: true
+  reason: >-
+    Updated: CHANGELOG.md (Unreleased entry), docs/adr/0018-agent-adapter-
+    skill-authority-consolidation.md (F-008: DEC-001/DEC-002 are material
+    architectural decisions -- shared-module extraction and guard-policy
+    locality). No RFC (F-008's RFC threshold is "Material Protocol
+    Changes"; this Change is Adapter-projection consolidation, not a
+    Protocol redefinition -- CON-001/CON-002 already establish no Contract
+    or Flow meaning changed).
 decisions:
   - id: DEC-001
     class: architectural

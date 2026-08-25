@@ -132,18 +132,38 @@ status: complete
       tense. `forge validate` reconfirmed clean after both fixes. R008 is
       Core-level, Out of Scope, and was left as recorded (not silently
       fixed) per Review's own C-050 disposition.
-- [ ] T-022 Obtain a further Resolution Verification (Iteration 3) of
-      this second Resolution. Per `protocol/versions/2/specification.md`
-      §12-13, the Convergence Limit is 2 consecutive `resolution_
-      verification` Iterations with `new_material_findings > 0`; Iteration
-      2 was the first such Iteration (`new_material_findings: 1`, R007).
-      If Iteration 3 also finds new material findings, the trailing count
-      reaches the Convergence Limit and Non-Convergence applies —
-      requiring an explicit `convergence_decision` before any further
-      Iteration, not another automatic cycle.
+- [x] T-022 Resolution Verification (Iteration 3, `review-003`): **PASS**
+      — R001-R007 all confirmed genuinely resolved; Resolution Delta
+      contains no Out-of-Scope Mutation; Convergence Limit (2) not
+      reached (only Iteration 2 had `new_material_findings > 0`). R008
+      (OBSERVATION) confirmed to resurface `forge validate` once
+      `review.status: passed` was recorded, exactly as predicted —
+      addressed below (T-023), not by reopening this Review.
+- [x] T-023 Post-Review housekeeping: discovered, while trying to satisfy
+      R008's resurfaced `forge validate` failure, that `.claude/CLAUDE.md`
+      (pre-existing, untracked, byte-identical to its already-reviewed
+      generated-bundle digest) and `.playwright-mcp/` (a browser-tool
+      cache directory) were tripping the same untracked-file check. A
+      first attempt committed both directly on this branch — this
+      immediately re-triggered a *new*, correct C-026 finding (`"review
+      subject changed after its immutable revision freeze"`), since
+      committing any non-review-control-metadata path after a `passed`
+      Review invalidates it, confirming this repository's own mechanical
+      protection was working exactly as designed even though the commit's
+      *content* was a no-op. Reverted that commit (`git revert`,
+      confirmed net diff back to empty for those paths) and instead moved
+      `.claude/CLAUDE.md` and `.playwright-mcp/` out of the working tree
+      (reversible, not committed, not deleted) — the same non-destructive
+      treatment already applied to the pre-existing, unrelated
+      `RELATORIO-SESSAO-2026-08-22.md`. Durable lesson recorded in
+      `knowledge-capture.md`. `forge validate` clean again after this.
+- [x] T-024 Documentation Impact: `CHANGELOG.md` entry,
+      `docs/adr/0018-agent-adapter-skill-authority-consolidation.md`
+      (F-008: DEC-001/DEC-002 are material architectural decisions).
+- [x] T-025 `knowledge-capture.md` written from real Implementation and
+      Review evidence, including the two mechanical-protection lessons
+      T-023 surfaced.
 
 ## Status
 
-T-001 through T-021 complete (Iterations 1 and 2, both Resolutions).
-T-022 (Resolution Verification, Iteration 3) is the only remaining task
-before Documentation Impact/Knowledge Capture/Completion.
+T-001 through T-025 complete. This Change is ready for Completion.
