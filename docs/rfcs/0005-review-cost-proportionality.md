@@ -1,6 +1,16 @@
 # RFC-0005 — Review Cost Proportionality
 
-Status: Proposed
+Status: Superseded by RFC-0007
+
+> Superseded 2026-08-25 by `docs/rfcs/0007-proportional-review-profiles.md`,
+> which explicitly authorizes what this RFC's own Non-goals section
+> ruled out ("removal of adversarial Review," "changes to current
+> Flows, Review policy, Contract, schemas, or CLI"). This RFC was never
+> accepted (it remained `Proposed` from CHG-0027 onward) and no
+> implementation Change was ever built on it; nothing here is
+> retracted as having been in force, only superseded as a live
+> proposal. The remainder of this document is preserved unmodified as
+> the historical record.
 
 ## Summary
 

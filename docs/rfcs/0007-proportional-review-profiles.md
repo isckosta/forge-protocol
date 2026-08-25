@@ -1,6 +1,6 @@
 # RFC-0007 — Proportional Review Profiles
 
-Status: Proposed
+Status: Accepted for Protocol 2
 
 ## Summary
 
@@ -140,7 +140,7 @@ populated with real per-Flow variance for Review itself.
     fails closed if project configuration attempts to declare a
     profile below the canonical floor for a Flow.
 
-## Open normative question (requires explicit human-authority resolution)
+## Open normative question — resolved at acceptance
 
 C-022/C-023 today apply their full, undifferentiated obligation to
 **every** Change regardless of Flow — including FAST and STANDARD.
@@ -159,16 +159,20 @@ meaning and minimum obligations of existing valid instances" is
 arguably satisfied since no *historical* Change's already-recorded
 Review is invalidated (requirement 12 of the originating request).
 
-This RFC does not resolve this question itself — it is exactly the
-kind of Material Unresolved Decision (Contract class, human authority)
-that must be recorded and escalated, not decided by an agent (C-054,
-C-055). A human maintainer's acceptance of this RFC must include an
-explicit choice between: **(a)** proceed as a Protocol-2-compatible
-amendment (this RFC's default framing above), recording the
-"clarification, not weakening" reading as the accepted rationale; or
-**(b)** require a new Protocol 3 identifier before any Contract text
-changes, with Protocol 2 remaining exactly as-is and this mechanism
-introduced only under the new identifier.
+This was exactly the kind of Material Unresolved Decision (Contract
+class, human authority) that must be recorded and escalated, not
+decided by an agent (C-054, C-055) — so it was presented to the human
+maintainer with both readings and their consequences, rather than
+resolved by default.
+
+**Resolved: (a), Protocol-2-compatible clarification.** The human
+maintainer explicitly accepted this reading in the active chat session
+on 2026-08-25: no historical Change's recorded Review is invalidated,
+Reviewer/Resolver independence and rejection authority remain
+identical across all three profiles, and only the adversarial-search
+*posture* changes for `focused`/`standard` — the underlying invariant
+is preserved, satisfying C-045. Protocol remains `2`; no new Protocol
+identifier is introduced by this RFC.
 
 ## Non-goals and safeguards
 
@@ -239,15 +243,19 @@ keeps today's rigor exactly as-is. The Open Normative Question above
 is the one place this RFC's acceptance requires a specific, recorded
 human choice about Protocol-identifier consequences, not left implicit.
 
-## Acceptance boundary
+## Acceptance record
 
-This RFC remains **Proposed**. A human maintainer must make a
-later, separate acceptance commit — following the pattern of
-`docs/rfcs/0002-harness-adapter-foundation.md` (proposal and
-acceptance as distinct commits) — and that acceptance must explicitly
-record the choice on the Open Normative Question above. This Change
-(CHG-0048) must not mark this RFC Accepted itself; it may proceed with
-Discovery/Specification/Architecture work that assumes acceptance, but
-Implementation MUST NOT cross into Contract-text changes until
-acceptance is recorded (mirroring C-077's Plan/Implementation
-boundary, applied here to the RFC/Contract-change boundary).
+Proposed and accepted in the same active chat session on 2026-08-25,
+following the pattern of `docs/rfcs/0002-harness-adapter-foundation.md`
+(proposal and acceptance as distinct commits — this RFC's proposal
+commit and this acceptance are likewise separate commits, not a single
+combined act). The human maintainer's acceptance explicitly recorded
+the resolution to the Open Normative Question above (Protocol-2-
+compatible clarification, not a new Protocol 3) before any Contract
+text, Flow file, schema, or CLI code was changed — mirroring C-077's
+Plan/Implementation boundary, applied here to the RFC/Contract-change
+boundary. `docs/rfcs/0005-review-cost-proportionality.md` is marked
+`Status: Superseded by RFC-0007` as a consequence of this acceptance.
+CHG-0048's own `provenance.yml` records the acceptance as repository-
+native evidence (`rfc-acceptance-001`), per the same evidentiary
+standard C-077 applies to Plan authorization.
