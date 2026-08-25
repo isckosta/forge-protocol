@@ -39,3 +39,6 @@ Thumbs.db
 
 # Local worktrees
 .worktrees/
+
+# Browser tooling caches
+.playwright-mcp/
