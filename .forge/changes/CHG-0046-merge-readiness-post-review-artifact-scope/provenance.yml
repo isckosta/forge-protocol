@@ -144,3 +144,108 @@ records:
         this Change's own directory, the two files Scope names, and their
         tests touched; no Out-of-Scope Mutation. Full pytest suite: 704
         passed (was 702 pre-Resolution); forge validate/doctor clean.
+  - id: resolution-001-scope
+    role: resolution
+    execution:
+      id: claude-code-implementation-0046
+      context_id: claude-code-session-2026-08-25
+    recorded_at: '2026-08-25T01:00:00Z'
+    scope:
+      - .forge/changes/CHG-0046-merge-readiness-post-review-artifact-scope/discovery.md
+      - .forge/changes/CHG-0046-merge-readiness-post-review-artifact-scope/tasks.md
+      - .forge/changes/CHG-0046-merge-readiness-post-review-artifact-scope/tdd-evidence.yml
+      - .forge/changes/CHG-0046-merge-readiness-post-review-artifact-scope/verification.md
+      - protocol/policies/merge-readiness.yml
+      - src/forge_cli/merge_readiness/evaluator.py
+      - tests/cli/test_merge_check.py
+      - tests/unit/test_merge_readiness_policy.py
+    targets: [R001, R002, R003]
+    revision:
+      id: chg-0046-resolution-001
+      immutable_ref:
+        type: git_commit
+        value: ff8fe51cc3dd237252c579f9775d8122254bf189
+      commit: ff8fe51cc3dd237252c579f9775d8122254bf189
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: review.md
+      statement: >-
+        R004 (Iteration 2, MAJOR): the pre-existing `resolution-001`
+        record (committed at chore(chg-0046): freeze Resolution revision
+        at ff8fe51, before this record existed) omitted the `scope`/
+        `targets` fields `_validate_resolution_verification` requires to
+        mechanically verify a Resolution Delta. `resolution-001` itself is
+        an already-committed record and is not rewritten here (C-026
+        append-only) -- this is a new, additional record, referencing the
+        identical, unchanged revision (`ff8fe51cc3dd237252c579f9775d8122254bf189`,
+        no new frozen subject), supplying exactly the scope/targets metadata
+        that record lacked, matching the exact Resolution Delta already
+        independently recomputed in Iteration 2's review (`git diff
+        60b699b..ff8fe51`, excluding the always-exempt
+        manifest.yml/provenance.yml/review.md). `manifest.yml`'s
+        `review-003` Iteration's `subject_provenance` points here instead
+        of at `resolution-001` directly, since this record is what a
+        Reviewer/Core must inspect to mechanically verify the Resolution
+        Delta going forward; the original `resolution-001` record remains,
+        unmodified, as the historical account of what the Resolution
+        actually changed and why. (Precedent: CHG-0045's own
+        `resolution-001-scope` record, R007, identical shape.)
+  - id: review-002
+    role: review
+    execution:
+      id: claude-code-review-0046-independent-2
+      context_id: claude-code-review-session-2026-08-24-iter2
+    recorded_at: '2026-08-24T00:00:00Z'
+    revision:
+      id: chg-0046-resolution-001
+      immutable_ref:
+        type: git_commit
+        value: ff8fe51cc3dd237252c579f9775d8122254bf189
+      commit: ff8fe51cc3dd237252c579f9775d8122254bf189
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: review.md
+      statement: >-
+        Independent Resolution Verification (Iteration 2,
+        kind: resolution_verification) of CHG-0046's frozen Resolution
+        subject (resolution-001, ff8fe51cc3dd237252c579f9775d8122254bf189),
+        conducted in an Execution and Execution Context distinct from
+        resolution-001's (claude-code-implementation-0046 /
+        claude-code-session-2026-08-25) and from review-001's
+        (claude-code-review-0046-independent /
+        claude-code-review-session-2026-08-24). Bounded per Protocol 2
+        Sec 10-11 to R001/R002, defects within the Resolution Delta, and
+        Out-of-Scope Mutation -- not a re-audit of
+        implementation-subject-001. Verdict: REQUEST CHANGES. R001
+        independently re-reproduced end to end: checked out evaluator.py
+        at 60b699b (pre-fix) against a fixture Change with a malformed
+        state: complete (bare string) manifest and a populated
+        review.iterations list, confirmed AttributeError: 'str' object
+        has no attribute 'get'; restored evaluator.py to ff8fe51 (post-fix)
+        and re-ran the identical fixture, confirmed no exception, a
+        controlled MR-005 diagnostic instead. R002 independently
+        re-verified via classify_path() against the live policy:
+        .forge/adapters/claude-code/config.yml -> ambiguous,
+        .forge/adapters/{claude-code,codex}/installation.yml -> material.
+        Both R001 and R002 resolved. Resolution Delta (git diff
+        60b699b..ff8fe51, excluding manifest.yml/provenance.yml/review.md)
+        independently recomputed: discovery.md, tasks.md,
+        tdd-evidence.yml, verification.md, protocol/policies/merge-readiness.yml,
+        src/forge_cli/merge_readiness/evaluator.py,
+        tests/cli/test_merge_check.py,
+        tests/unit/test_merge_readiness_policy.py -- matches
+        resolution-001's own claim exactly; no Out-of-Scope Mutation. Full
+        pytest suite independently re-run: 704 passed. forge doctor clean
+        (same two pre-existing WARNs). One new MAJOR finding (R004,
+        blocking, not an Out-of-Scope Mutation): resolution-001's own
+        provenance record declares no scope/targets fields (Protocol 2
+        Sec 11), so `forge validate` cannot mechanically confirm no
+        Out-of-Scope Mutation -- reproduced directly, `forge validate`
+        fails with "The Resolution referenced by a resolution_verification
+        Iteration must declare non-empty scope and targets before it can
+        be mechanically verified as scoped." full_review_required: false
+        (R004 is a scoped provenance-metadata gap, not an Out-of-Scope
+        Mutation). new_material_findings: 1. Full findings in review.md,
+        "## Iteration 2".

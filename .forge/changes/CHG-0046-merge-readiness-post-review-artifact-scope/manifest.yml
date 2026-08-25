@@ -35,9 +35,9 @@ verification:
   status: passed
 review:
   status: failed
-  iteration: 1
+  iteration: 2
   blockers: 0
-  majors: 2
+  majors: 1
   minors: 0
   observations: 1
   iterations:
@@ -46,6 +46,24 @@ review:
       status: failed
       subject_provenance: implementation-subject-001
       reviewer_provenance: review-001
+    - id: review-002
+      revision: chg-0046-resolution-001
+      subject_provenance: resolution-001-scope
+      reviewer_provenance: review-002
+      kind: resolution_verification
+      status: failed
+      full_review_required: false
+      new_material_findings: 1
+      finding_classes:
+        - resolution_regression
+      evidence_gap: >-
+        CHG-0046-R004 (MAJOR): resolution-001's own provenance record
+        declares no scope/targets, so forge validate cannot mechanically
+        confirm the Resolution Delta has no Out-of-Scope Mutation (R001
+        and R002 both independently re-verified resolved; the Resolution
+        Delta itself, computed directly, contains no Out-of-Scope
+        Mutation -- but the mechanical gate cannot confirm this itself
+        without the missing fields).
 documentation:
   impact_evaluated: false
 decisions:
