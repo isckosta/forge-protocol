@@ -39,17 +39,26 @@ requirements:
   verified: 13
 tdd:
   status: compliant
-  cycles: 4
+  cycles: 5
 verification:
   status: passed
 review:
   status: pending
-  iteration: 0
+  iteration: 1
   blockers: 0
   majors: 0
   minors: 0
-  observations: 0
-  iterations: []
+  observations: 1
+  iterations:
+    - id: review-001
+      revision: chg-0048-implementation-001
+      subject_provenance: implementation-subject-001
+      reviewer_provenance: reviewer-001
+      kind: initial_review
+      status: failed
+      full_review_required: false
+      new_material_findings: 2
+      finding_classes: []
 documentation:
   impact_evaluated: true
   update_required: true
