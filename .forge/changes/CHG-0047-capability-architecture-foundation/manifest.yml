@@ -9,7 +9,7 @@ flow:
   current: standard
   escalations: []
 state:
-  current: strict_review
+  current: documentation
 artifacts:
   intent: complete
   discovery: complete
@@ -18,7 +18,7 @@ artifacts:
   plan: approved
   tdd_evidence: complete
   verification: complete
-  review: pending
+  review: complete
   documentation: pending
 requirements:
   total: 5
@@ -30,8 +30,8 @@ tdd:
 verification:
   status: passed
 review:
-  status: pending
-  iteration: 4
+  status: passed
+  iteration: 5
   blockers: 0
   majors: 0
   minors: 0
@@ -82,6 +82,15 @@ review:
         option: new_full_review
         reason: The user was presented with the Convergence Limit situation (R-006's finding, and all four available options) and selected new_full_review -- fix the finding, then have a fresh, unrestricted Initial Review re-evaluate the whole subject rather than another scoped Resolution Verification. Recorded in review.md's Convergence Decision section and provenance.yml's convergence-decision-001 record.
         recorded_at: '2026-08-25T05:00:00Z'
+    - id: review-005
+      revision: chg-0047-resolution-004
+      subject_provenance: resolution-004
+      reviewer_provenance: reviewer-005
+      kind: resolution_verification
+      status: passed
+      full_review_required: false
+      new_material_findings: 0
+      finding_classes: []
 documentation:
   impact_evaluated: false
 decisions:

@@ -10,7 +10,7 @@ status: active
 
 ## Verdict
 
-**Pending Iteration 5.** Iteration 1: REQUEST CHANGES, resolved. Iteration 2: REQUEST CHANGES, resolved. Iteration 3: REQUEST CHANGES — Convergence Limit reached (Protocol 2 §12, limit = 2); the user recorded an explicit `convergence_decision: new_full_review`; R-006/R-007 were fixed. Iteration 4 (fresh, unrestricted Initial Review of the whole subject, per the convergence decision) returned **PASS** against commit `9f85aac` — no BLOCKER or MAJOR finding survived; one non-blocking MINOR finding (R-008, a `plan.md` prose gap) was found. Fixing R-008 touches `plan.md`, a reviewable file, so per C-026 the frozen subject must be refrozen and independently re-verified before Completion, even though R-008 itself is non-blocking — a scoped Resolution Verification (Iteration 5) is pending against the new revision.
+**PASS.** Iteration 1: REQUEST CHANGES, resolved. Iteration 2: REQUEST CHANGES, resolved. Iteration 3: REQUEST CHANGES — Convergence Limit reached (Protocol 2 §12, limit = 2); the user recorded an explicit `convergence_decision: new_full_review`; R-006/R-007 were fixed. Iteration 4 (fresh, unrestricted Initial Review of the whole subject) returned **PASS** against commit `9f85aac` — one non-blocking MINOR finding, R-008. Because fixing R-008 touched `plan.md`, a reviewable file, C-026 required the refrozen revision to be independently re-verified regardless of R-008's severity. Iteration 5 (Resolution Verification scoped to R-008, commit `53aa1f0`) returned **PASS** — no BLOCKER or MAJOR finding across all five Iterations survives in the final revision. Strict Review for CHG-0047 is closed.
 
 ## Iteration 1 — REQUEST CHANGES
 
@@ -205,3 +205,38 @@ After the `<!-- forge:plan-approval-record -->` marker, `plan.md` contained the 
 ## Resolution (of R-008)
 
 R-008's non-blocking severity means it does not, by itself, prevent Completion (C-027) — but fixing it edits `plan.md`, a reviewable file, not review-control metadata (only `manifest.yml`/`provenance.yml`/`review.md` are exempt from the C-026 freeze invariant). So the fix itself still produces a new revision that differs from Iteration 4's frozen subject, which `forge validate` correctly flags (C-026: "review subject changed after its immutable revision freeze") until that new revision is itself frozen and independently re-verified. The unfilled template placeholder line was replaced by removing it (the marker itself, `<!-- forge:plan-approval-record -->`, remains and is followed directly by the file's actual final content), and the duplicate `## Implementation Boundary` section was removed, leaving the single original one intact — see `provenance.yml`'s `resolution-004` record for the frozen revision this produced, and Iteration 5 below for its independent re-verification.
+
+## Iteration 5 — PASS (Resolution Verification)
+
+**Reviewer**: Independent Reviewer execution (fresh agent invocation, isolated Git worktree at `/home/isckosta/forge-protocol/.claude/worktrees/agent-a641ae74c47b0ecf8`, no shared context with the Resolution Execution that produced this revision or with any of the four prior Reviewer Executions), per C-026.
+
+**Commit reviewed**: `53aa1f00bf50818fec219511c8c938fa98e9708f`.
+
+**Classification**: `kind: resolution_verification`, scoped to R-008 — not a re-audit of the whole subject (Iteration 4 already performed that).
+
+### Resolution Delta inspected
+
+`git diff 9f85aac..53aa1f0` touches exactly four files: `plan.md` (the R-008 fix itself) plus `manifest.yml`/`provenance.yml`/`review.md` (review-control metadata, exempt, legitimately differing). **No Out-of-Scope Mutation.**
+
+### plan.md content check
+
+Confirmed: the unfilled template placeholder line is gone with no occurrence anywhere in the file; exactly one `## Implementation Boundary` section remains, text intact; the `<!-- forge:plan-approval-confirmation -->`/`<!-- forge:plan-approval-record -->` markers and the real approval prose between them (the substantive C-077 human-approval record) are byte-for-byte unchanged — the diff hunk starts only after the closing marker.
+
+### `provenance.yml` `plan-approval-001` sanity check
+
+Untouched by this diff (confirmed by hunk position); still references the original immutable Plan commit `9e6fe0ec1d33154ba9cfec0a035425b015da83b4` with its own `content_digest`, independent of and unaffected by this Resolution.
+
+### R-009 · MINOR — already resolved before this Iteration's report was recorded
+
+At the exact commit reviewed (`53aa1f0`), `review.md`'s "Resolution (of R-008)" section and top Verdict line stated Strict Review "is closed" and that R-008's non-blocking severity meant no further independent Review Iteration was required — conflating finding severity with the separate, controlling question of whether the fix touched a reviewable file under C-026. This was corrected in a later commit (`ef13ec8`, itself review-control metadata — `review.md` is exempt from the C-026 freeze invariant, so this correction did not require its own Resolution Verification) before this Iteration's result was recorded: see the current Verdict line and "Resolution (of R-008)" section above, which now correctly attribute the re-verification requirement to `plan.md` being a reviewable file, not to R-008's severity. No further action needed.
+
+### Checked and found sound (Iteration 5)
+
+- `git diff --stat 9f85aac..53aa1f0`: exactly 4 files, matching declared scope; no code, test, or documentation file outside this Change's own directory touched.
+- `forge validate` (isolated venv built inside the Reviewer's own worktree, at `53aa1f0`, not the shared repo's differently-pinned editable install): `Forge project is valid`.
+- Full suite `pytest -q` (same isolated venv): 750 passed, 2 warnings — unregressed, consistent with a docs-only Resolution.
+- `manifest.yml`'s `tdd.cycles: 4 → 5` (the only substantive change in that file at this commit) correctly matches `tdd-evidence.yml`'s `cycle_count: 5` — an accuracy correction to exempt metadata, not a defect.
+
+### Verdict
+
+**PASS.** No BLOCKER or MAJOR finding. R-009 (MINOR) was already resolved by a subsequent review-control-metadata-only correction before this report was recorded. `plan.md`'s content is correct, diff scope is exactly as declared (no Out-of-Scope Mutation), `plan-approval-001` is untouched and internally consistent, `forge validate` is clean, and the full suite is unregressed. This closes Strict Review for CHG-0047.

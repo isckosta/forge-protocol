@@ -216,3 +216,20 @@ records:
       observed_by: self
       reference: review.md#resolution-of-r-008
       statement: Resolution of Strict Review Iteration 4 (reviewer-004) finding R-008. plan.md's unfilled template placeholder line after the forge:plan-approval-record marker, and the duplicated Implementation Boundary section, were removed. The substantive human-approval record (provenance.yml's plan-approval-001, which references the immutable original plan.md commit 9e6fe0e and its own content_digest) is unaffected -- this fix only removes leftover template text from a later, unrelated part of the same file. No code, test, or other Artifact was touched. Reviewable Git workspace confirmed clean before this freeze.
+  - id: reviewer-005
+    role: review
+    execution:
+      id: a641ae74c47b0ecf8
+      context_id: independent-review-context-a641ae74c47b0ecf8
+    recorded_at: '2026-08-25T07:00:00Z'
+    revision:
+      id: chg-0047-resolution-004
+      immutable_ref:
+        type: git_commit
+        value: 53aa1f00bf50818fec219511c8c938fa98e9708f
+      commit: 53aa1f00bf50818fec219511c8c938fa98e9708f
+    source:
+      assurance: recorded
+      observed_by: operator
+      reference: review.md#iteration-5
+      statement: Independent Strict Review Iteration 5 (Resolution Verification scoped to R-008, fresh execution, isolated Git worktree at .claude/worktrees/agent-a641ae74c47b0ecf8, no shared context with the Resolution Execution or any of the four prior Reviewer Executions) returned PASS against 53aa1f0 -- plan.md's fix confirmed correct and complete, the C-077 approval record confirmed untouched, diff scope confirmed limited to plan.md plus exempt review-control metadata (no Out-of-Scope Mutation), forge validate clean, full suite unregressed (750 passed, 2 warnings). One MINOR finding (R-009, review.md's own closure wording at the reviewed commit conflated finding severity with the C-026 reviewable-file rule) was already resolved by a subsequent review-control-metadata-only correction before this report was recorded. This closes Strict Review for CHG-0047.
