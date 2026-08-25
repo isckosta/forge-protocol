@@ -9,12 +9,12 @@ flow:
   current: full
   escalations: []
 state:
-  current: specification
+  current: architecture
 artifacts:
   intent: complete
   discovery: complete
-  specification: active
-  specification_review: pending
+  specification: complete
+  specification_review: complete
   architecture: pending
   test_strategy: pending
   plan: pending
