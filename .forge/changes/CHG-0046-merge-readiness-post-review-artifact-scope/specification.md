@@ -72,18 +72,24 @@ report `REVIEW SUBJECT STALE` for a specific Change-local path (inside the
 Change's own `.forge/changes/CHG-xxxx-*/` directory) that differs from `S`
 at `head_revision`, when — and only when — an explicit provenance record
 with `role: implementation` or `role: resolution` exists whose
-`revision.commit` (or `revision.immutable_ref.value`) equals
-`head_revision` exactly, that record is anchored (its first committed
-representation is unchanged, per the same `_first_committed_record` check
-MR-021 already applies to subject records), and that record declares a
-`scope` (a list of exact repository-relative paths, mirroring §11's
-existing `resolution` scope shape) that includes the specific path in
-question. A renewal record's tolerance is scoped to exactly the paths it
-names — it does not blanket-cover the Change's entire uncovered delta
-merely by existing and naming the right commit. `manifest.yml`/
-`provenance.yml`/`review.md` remain tolerated unconditionally, per
-Protocol §5's own literal three-file exception — unchanged from before
-this Change existed.
+`revision.commit` (or `revision.immutable_ref.value`) `R` satisfies
+**both** bounds: `R` is an ancestor of (or equal to) `head_revision`, and
+`S` is an ancestor of (or equal to) `R`. Both bounds are required — the
+upper bound alone is insufficient (Review R005, Iteration 4, BLOCKER):
+without the lower bound, a renewal record anchored during an *earlier*
+freeze cycle would silently keep tolerating tampering introduced after a
+*later* freeze cycle, since it would remain an ancestor of every
+subsequent `head_revision` forever. The record must also be anchored
+(its first committed representation is unchanged, per the same
+`_first_committed_record` check MR-021 already applies to subject
+records), and must declare a `scope` (a list of exact repository-relative
+paths, mirroring §11's existing `resolution` scope shape) that includes
+the specific path in question. A renewal record's tolerance is scoped to
+exactly the paths it names — it does not blanket-cover the Change's
+entire uncovered delta merely by existing and satisfying both bounds.
+`manifest.yml`/`provenance.yml`/`review.md` remain tolerated
+unconditionally, per Protocol §5's own literal three-file exception —
+unchanged from before this Change existed.
 
 #### Expected Behavior
 Per Protocol §5 ("Appending a new provenance record... remains allowed
@@ -119,9 +125,22 @@ AC-001
 Given a Change whose Review subject is frozen at commit `S`
 When commits after `S` modify a Change-local path (e.g.
 `knowledge-capture.md`), and a `role: implementation` provenance record,
-anchored, exists with `revision.commit` equal to `head_revision` exactly
-and `scope` including that exact path
+anchored, exists whose commit is an ancestor of (or equal to)
+`head_revision` **and** a descendant of (or equal to) `S`, with `scope`
+including that exact path
 Then MR-015 does not fire.
+
+AC-008
+Given a Change with two sequential freeze cycles — subject `S1`, a
+renewal record `R1` anchored shortly after `S1` and scoped to
+`knowledge-capture.md`, then a Resolution frozen at a later subject `S2`
+(itself becoming the Change's current effective subject via a passed
+`resolution_verification` Iteration)
+When, after `S2`, `knowledge-capture.md` is modified again with **no**
+renewal record naming a commit that is a descendant of `S2`
+Then MR-015 still fires — `R1`, anchored before `S2`, does not satisfy
+the lower bound relative to the Change's *current* subject `S2`, and
+provides no tolerance for deltas introduced after `S2`.
 
 AC-007
 Given the same setup as AC-001, but the renewal record's `scope` names a
@@ -257,7 +276,7 @@ extra stages specifically.
 
 | Requirement | Discovery Finding | Acceptance |
 |---|---|---|
-| FR-001 | MR-015 allowed-file set vs. Protocol §5's literal three-file exception (evaluator.py, protocol/versions/2/specification.md §5) | AC-001, AC-002, AC-003, AC-006, AC-007 |
+| FR-001 | MR-015 allowed-file set vs. Protocol §5's literal three-file exception (evaluator.py, protocol/versions/2/specification.md §5) | AC-001, AC-002, AC-003, AC-006, AC-007, AC-008 |
 | FR-002 | MR-017 policy gap (policy.py:29-43, protocol/policies/merge-readiness.yml) | AC-004, AC-005 |
 
 ## Compatibility Statement

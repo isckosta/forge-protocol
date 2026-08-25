@@ -400,6 +400,82 @@ def test_merge_check_scopes_renewal_tolerance_to_the_declared_paths(tmp_path, mo
     assert result.exit_code == 1
 
 
+def test_merge_check_rejects_a_renewal_record_anchored_before_the_current_freeze(tmp_path, monkeypatch) -> None:
+    """Resolution of Review R005 (Iteration 4, BLOCKER): a renewal record
+    anchored during an EARLIER freeze cycle must not silently tolerate
+    tampering introduced after a LATER freeze. The ancestor check on a
+    renewal's commit needs a lower bound (subject_commit must itself be an
+    ancestor of the renewal commit), not just an upper bound (the renewal
+    commit must be an ancestor of head_revision) -- otherwise a renewal
+    anchored once, early, would cover every subsequent freeze forever."""
+    monkeypatch.chdir(tmp_path)
+    subprocess.run(["git", "init", "-q"], cwd=tmp_path, check=True)
+    subprocess.run(["git", "config", "user.email", "test@example.com"], cwd=tmp_path, check=True)
+    subprocess.run(["git", "config", "user.name", "Test"], cwd=tmp_path, check=True)
+    (tmp_path / "README.md").write_text("base\n", encoding="utf-8")
+    (tmp_path / ".forge").mkdir()
+    (tmp_path / ".forge" / "forge.yml").write_text("schema: forge/project@1\nproject:\n  name: fixture\nforge:\n  protocol: 2\nflows:\n  default: standard\n  allow_fast: true\n  auto_escalation: true\ntesting:\n  approach: tdd_first\nreview:\n  strict: true\ndocumentation:\n  impact_evaluation: required\n", encoding="utf-8")
+    (tmp_path / ".forge" / "flows").mkdir()
+    (tmp_path / ".forge" / "flows" / "standard.yml").write_text("schema: forge/project-flow@1\nflow:\n  canonical: standard\n  enabled: true\n", encoding="utf-8")
+    base = _commit(tmp_path, "base")
+
+    # First freeze/Review cycle (S1), then an old renewal record R1 bound to
+    # a commit shortly after S1, scoped to knowledge-capture.md.
+    subject_1 = _freeze_change_with_state(tmp_path, "CHG-9011", status="complete")
+    change_dir = tmp_path / ".forge" / "changes" / "CHG-9011-fixture"
+    (change_dir / "knowledge-capture.md").write_text("# lessons v1\n", encoding="utf-8")
+    renewal_commit = _commit(tmp_path, "first legitimate Knowledge Capture write")
+    provenance = yaml.safe_load((change_dir / "provenance.yml").read_text(encoding="utf-8"))
+    provenance["records"].append({
+        "id": "renewal-001", "role": "implementation",
+        "execution": {"id": "impl-2", "context_id": "impl-context-2"},
+        "revision": {"id": "fixture-renewal", "immutable_ref": {"type": "git_commit", "value": renewal_commit}, "commit": renewal_commit},
+        "scope": [".forge/changes/CHG-9011-fixture/knowledge-capture.md"],
+        "source": {"assurance": "recorded", "observed_by": "self", "reference": "knowledge-capture.md", "statement": "First legitimate renewal."},
+    })
+    (change_dir / "provenance.yml").write_text(yaml.safe_dump(provenance, sort_keys=False), encoding="utf-8")
+    _commit(tmp_path, "record first renewal provenance")
+
+    # Second freeze/Review cycle (S2): a Resolution fixes something in the
+    # implementation, gets its own passed Review Iteration, becoming the
+    # new final subject. Everything up to and including S2 is legitimate.
+    manifest = yaml.safe_load((change_dir / "manifest.yml").read_text(encoding="utf-8"))
+    (tmp_path / "src").mkdir()
+    (tmp_path / "src" / "runtime.py").write_text("value = 2  # resolution fix\n", encoding="utf-8")
+    subject_2 = _commit(tmp_path, "Resolution: fix runtime.py")
+    provenance["records"].append({
+        "id": "resolution-002", "role": "resolution",
+        "execution": {"id": "impl-3", "context_id": "impl-context-3"},
+        "revision": {"id": "fixture-resolution-2", "immutable_ref": {"type": "git_commit", "value": subject_2}, "commit": subject_2},
+        "scope": ["src/runtime.py"], "targets": ["R-FIXTURE"],
+        "source": {"assurance": "recorded", "observed_by": "self", "reference": "review.md", "statement": "Second Resolution, its own frozen subject."},
+    })
+    provenance["records"].append({
+        "id": "review-002", "role": "review",
+        "execution": {"id": "review-2", "context_id": "review-context-2"},
+        "revision": {"id": "fixture-resolution-2", "immutable_ref": {"type": "git_commit", "value": subject_2}, "commit": subject_2},
+        "source": {"assurance": "recorded", "observed_by": "self", "reference": "strict-review", "statement": "Second independent Review, passed."},
+    })
+    manifest["review"]["iterations"].append({
+        "id": "review-002", "revision": "fixture-resolution-2", "status": "passed",
+        "subject_provenance": "resolution-002", "reviewer_provenance": "review-002", "kind": "resolution_verification",
+        "full_review_required": False, "new_material_findings": 0, "finding_classes": [],
+    })
+    (change_dir / "manifest.yml").write_text(yaml.safe_dump(manifest, sort_keys=False), encoding="utf-8")
+    (change_dir / "provenance.yml").write_text(yaml.safe_dump(provenance, sort_keys=False), encoding="utf-8")
+    _commit(tmp_path, "record second freeze's review-control metadata")
+
+    # After S2, knowledge-capture.md is touched AGAIN, with no fresh
+    # renewal record -- only the stale renewal-001 (bound to a commit
+    # before S2) exists.
+    (change_dir / "knowledge-capture.md").write_text("# lessons v2 -- unexplained post-S2 edit\n", encoding="utf-8")
+    head = _commit(tmp_path, "unexplained edit after the second freeze, no new renewal")
+
+    result = runner.invoke(app, ["change", "merge-check", "--base", base, "--head", head])
+    assert "MR-015" in result.stdout, result.stdout
+    assert result.exit_code == 1
+
+
 def test_merge_check_does_not_detect_external_drift_after_completion(tmp_path, monkeypatch) -> None:
     """TDD-003 / AC-002 (characterization, not a behavior change): MR-015's
     `git diff` is scoped to `-- change_root` (evaluator.py), so it never

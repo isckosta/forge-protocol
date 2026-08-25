@@ -72,7 +72,14 @@ elif uncovered_paths:
         renewal_commit = item.get("revision", {}).get("commit") or item.get("revision", {}).get("immutable_ref", {}).get("value")
         if not isinstance(renewal_commit, str) or len(renewal_commit) != 40:
             continue
+        # Upper bound: the renewal must not postdate head_revision.
         if subprocess.run(["git", "merge-base", "--is-ancestor", renewal_commit, head_revision], ...).returncode != 0:
+            continue
+        # Lower bound (Review R005, Iteration 4, BLOCKER): the renewal must
+        # postdate THIS evaluation's own subject_commit -- otherwise a
+        # renewal anchored during an earlier freeze cycle would silently
+        # cover tampering introduced after a later one, forever.
+        if subprocess.run(["git", "merge-base", "--is-ancestor", subject_commit, renewal_commit], ...).returncode != 0:
             continue
         scope = item.get("scope")
         if not (isinstance(scope, list) and scope):
@@ -91,7 +98,10 @@ reused verbatim, not reimplemented, for renewal records (Architectural
 Goals). A renewal record's tolerance is scoped per-path (`scope`, mirroring
 §11's existing `resolution` shape) — a record covering `knowledge-capture.md`
 does not blanket-authorize an unrelated `specification.md` rewrite
-committed alongside it (AC-007). `manifest.state` is not read anywhere in
+committed alongside it (AC-007). Both bounds are required (AC-008): the
+original implementation only checked the upper bound, which Review
+Iteration 4 (R005) found let a stale, earlier-cycle renewal keep covering
+every later freeze indefinitely. `manifest.state` is not read anywhere in
 this block.
 
 ### MR-017: additive policy rules, no code change

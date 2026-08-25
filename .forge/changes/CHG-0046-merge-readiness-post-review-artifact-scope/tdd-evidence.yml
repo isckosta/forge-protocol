@@ -1,7 +1,7 @@
 schema: forge/tdd-evidence@1
 change: CHG-0046
 status: compliant
-cycle_count: 11
+cycle_count: 12
 cycles:
   - id: TDD-001
     title: "SUPERSEDED (Specification Drift): originally 'MR-015 tolerates a Change-local artifact once state.current is complete'. See TDD-008 for the corrected, Protocol-conformant replacement test."
@@ -60,6 +60,11 @@ cycles:
     requirements: [FR-001]
     red: {observed: true, failure_reason: "Before scope-precision was implemented, any renewal record naming head_revision blanket-tolerated the entire uncovered delta. test_merge_check_scopes_renewal_tolerance_to_the_declared_paths (specification.md rewritten alongside knowledge-capture.md, renewal scoped to knowledge-capture.md only) confirmed RED -- MR-015 did not fire for specification.md, which it should have."}
     green: {observed: true, evidence: "Passes once uncovered_paths are checked individually against the union of all valid renewal records' declared scope sets, not against a single boolean 'any renewal exists' flag. MR-015 now correctly fires for specification.md while tolerating knowledge-capture.md in the same commit."}
+  - id: TDD-012
+    title: A renewal record anchored during an earlier freeze cycle does not tolerate tampering introduced after a later freeze (Resolution of Review R005, Iteration 4, BLOCKER)
+    requirements: [FR-001]
+    red: {observed: true, failure_reason: "test_merge_check_rejects_a_renewal_record_anchored_before_the_current_freeze fails against the pre-R005-fix evaluator.py (commit 6c6cdab): with only the upper-bound (renewal ancestor of head_revision) check, a renewal record anchored shortly after an earlier subject S1 remained valid forever, silently tolerating an unrelated post-S2 edit to the same path with no fresh renewal. Reproduces Reviewer's own end-to-end fixture reproduction in review.md exactly."}
+    green: {observed: true, evidence: "Fixed by adding a second, lower-bound ancestor check (subject_commit an ancestor of, or equal to, the renewal's own commit) alongside the existing upper bound -- both conditions required. Same test passes; full merge-readiness suite (27 tests) and full pytest suite (707 tests) pass with no regression. specification.md's FR-001/AC-001 text was also corrected (it previously said the renewal commit must equal head_revision exactly, contradicting the actual, intentional ancestor-based implementation -- a second defect Review Iteration 4 also flagged)."}
 notes:
   - "Probing what AC-002 (drafted in Specification, before TDD-003 existed) could actually rely on -- during Architecture, not during TDD itself -- surfaced that MR-015's git diff pathspec (-- change_root) means it never inspects any change_root-external path, regardless of state.current, independent of this Change. This was confirmed by direct reproduction in a disposable fixture repository before TDD-003 was written, then written as TDD-003 specifically to characterize (not fix) that finding -- see Discovery, 'A more severe, orthogonal, pre-existing gap...', and Specification's Out of Scope."
   - "TDD-001/TDD-002's original GREEN implementation (state.current-keyed) passed independent Strict Review three times (Iterations 1-3) before an external reviewer (Codex, PR #37) found it non-conformant with Protocol 2 specification.md Sec 5/Sec 14 -- see specification-drift.md. TDD-008 through TDD-011 are the corrected replacement cycles; TDD-001/TDD-002 are kept, marked superseded, as an honest record of what was tried, not deleted."

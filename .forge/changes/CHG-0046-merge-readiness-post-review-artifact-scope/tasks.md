@@ -158,14 +158,38 @@ status: pending
       doctor` clean. Updated `docs/adr/0018-...md` and `CHANGELOG.md`'s
       Unreleased entry to describe the corrected design, not the
       superseded one.
-- [ ] T-024 Freeze the corrected implementation as a new Resolution
-      subject; obtain a fresh independent Strict Review of the corrected
-      design (the prior three Iterations reviewed DEC-001's now-superseded
-      design, not DEC-003's).
+- [x] T-024 Froze the corrected implementation as `resolution-002`
+      (`6c6cdab`, `role: resolution`, `targets: [PR37-CODEX-001]`).
+      Independent Resolution Verification (Iteration 4, `review-004`):
+      **FAILED** — 1 BLOCKER (R005): the renewal record's ancestor check
+      had no lower bound, so a renewal anchored during an earlier freeze
+      cycle would silently keep tolerating tampering introduced after a
+      later one, forever. Reproduced end-to-end by the Reviewer in a
+      disposable fixture. Also flagged: `specification.md`'s FR-001/AC-001
+      text said the renewal commit must equal `head_revision` exactly,
+      contradicting the actual, intentional ancestor-based implementation.
+      `Requirements: FR-001`
+
+### Plan 15 · Resolution of Review Iteration 4's R005 (BLOCKER)
+
+- [x] T-025 Added a second, lower-bound ancestor check (`subject_commit`
+      an ancestor of, or equal to, the renewal record's own commit) beside
+      the existing upper bound — both required. Added TDD-012
+      (`test_merge_check_rejects_a_renewal_record_anchored_before_the_current_freeze`),
+      confirmed RED against the pre-fix `evaluator.py` (`6c6cdab`) before
+      re-applying the fix, then GREEN. Corrected `specification.md`'s
+      FR-001/AC-001 text to state both bounds explicitly (ancestor-of/
+      descendant-of, not "equals exactly"); added AC-008. Updated
+      `architecture.md`'s Design code sketch and Risks. Full suite 707
+      passed (was 706), `forge validate`/`doctor` clean.
+      `Requirements: FR-001` · `Test Design: TDD-012`
+- [ ] T-026 Freeze the R005-corrected implementation as a new Resolution
+      subject; obtain a fresh independent Resolution Verification
+      (Iteration 5) of it.
 
 ## Status
 
-T-001 through T-023 complete. T-024 (fresh independent Strict Review of
-the corrected design) is next — required before Documentation
+T-001 through T-025 complete. T-026 (independent Resolution Verification
+of the R005-corrected design) is next — required before Documentation
 Impact/Knowledge Capture/Completion can be reconfirmed against the actual
 shipped design.

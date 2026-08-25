@@ -151,13 +151,19 @@ def _check_change(root: Path, change_id: str, head_revision: str) -> tuple[list[
                         # WITHOUT renewing subject provenance are the three
                         # above. Any other change_root delta requires an
                         # explicit, anchored provenance record -- whose
-                        # commit is an ancestor of (or equal to)
-                        # head_revision -- declaring a scope that covers the
-                        # specific path. Not an implicit tolerance keyed on
-                        # manifest.state (Sec 5's own "MUST NOT be inferred
-                        # from... membership in the Change directory
-                        # generally"; Sec 14's "a manifest claim... is not
-                        # sufficient authorization").
+                        # commit lies BETWEEN this evaluation's own
+                        # subject_commit and head_revision (inclusive: an
+                        # ancestor of head_revision, and a descendant of, or
+                        # equal to, subject_commit) -- declaring a scope
+                        # that covers the specific path. The lower bound
+                        # matters: a renewal anchored during an EARLIER
+                        # freeze cycle must not silently cover tampering
+                        # introduced after a LATER freeze (Review R005).
+                        # Not an implicit tolerance keyed on manifest.state
+                        # (Sec 5's own "MUST NOT be inferred from...
+                        # membership in the Change directory generally";
+                        # Sec 14's "a manifest claim... is not sufficient
+                        # authorization").
                         renewed_scope: set[str] = set()
                         for item in records:
                             if not (isinstance(item, dict) and item.get("role") in {"implementation", "resolution"}):
@@ -168,11 +174,17 @@ def _check_change(root: Path, change_id: str, head_revision: str) -> tuple[list[
                             )
                             if not isinstance(renewal_commit, str) or len(renewal_commit) != 40:
                                 continue
-                            renewal_ancestor = subprocess.run(
+                            renewal_upper = subprocess.run(
                                 ["git", "merge-base", "--is-ancestor", renewal_commit, head_revision],
                                 cwd=root, capture_output=True, check=False,
                             )
-                            if renewal_ancestor.returncode != 0:
+                            if renewal_upper.returncode != 0:
+                                continue
+                            renewal_lower = subprocess.run(
+                                ["git", "merge-base", "--is-ancestor", subject_commit, renewal_commit],
+                                cwd=root, capture_output=True, check=False,
+                            )
+                            if renewal_lower.returncode != 0:
                                 continue
                             scope = item.get("scope")
                             if not (isinstance(scope, list) and scope):

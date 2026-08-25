@@ -14,19 +14,19 @@ status: complete
 
 ## Summary
 
-All Acceptance Criteria (AC-001 through AC-007) verified and passing
-against the **corrected, Protocol-conformant design** (Specification
-Drift, after Codex's PR #37 finding that the original `state.current`-keyed
-design directly contradicted `protocol/versions/2/specification.md` §5/§14).
-11 total TDD cycles: TDD-001/TDD-002 are the original design's cycles,
-kept and marked superseded (not deleted — an honest record of what was
-tried and passed three internal independent Strict Review iterations
-before external review found it non-conformant); TDD-008 through TDD-011
-are the corrected replacement cycles (explicit, anchored,
-per-path-scoped renewal records); TDD-003/TDD-005 (characterization/
-fail-closed guards) and TDD-004/TDD-006/TDD-007 (MR-017 and the R001/R002
-Resolution fixes) are unaffected by the Specification Drift and remain
-valid as originally recorded.
+All Acceptance Criteria (AC-001 through AC-008) verified and passing
+against the **corrected, Protocol-conformant, two-bound design**
+(Specification Drift, after Codex's PR #37 finding that the original
+`state.current`-keyed design directly contradicted
+`protocol/versions/2/specification.md` §5/§14 — then Review Iteration 4's
+R005 finding that the first correction's ancestor check had no lower
+bound, letting a stale renewal cover any later freeze forever). 12 total
+TDD cycles: TDD-001/TDD-002 are the original design's cycles, kept and
+marked superseded (not deleted); TDD-008 through TDD-011 are the first
+correction's cycles; TDD-012 is the R005 fix (the lower-bound check);
+TDD-003/TDD-005 (characterization/fail-closed guards) and
+TDD-004/TDD-006/TDD-007 (MR-017 and the R001/R002 Resolution fixes) are
+unaffected by either correction and remain valid as originally recorded.
 
 ## Acceptance Coverage
 
@@ -39,6 +39,7 @@ valid as originally recorded.
 | AC-005 | FR-002 | PASS | TDD-005 (`test_unrelated_unclassified_path_still_falls_back_to_ambiguous`) plus pre-existing `test_ambiguous_unclassified_diff_is_blocked` |
 | AC-006 | FR-001 | PASS | TDD-010 (`test_merge_check_ignores_unanchored_renewal_record`) |
 | AC-007 | FR-001 | PASS | TDD-011 (`test_merge_check_scopes_renewal_tolerance_to_the_declared_paths`) |
+| AC-008 | FR-001 | PASS | TDD-012 (`test_merge_check_rejects_a_renewal_record_anchored_before_the_current_freeze`) |
 
 ## Test Evidence
 
@@ -50,8 +51,9 @@ valid as originally recorded.
 - TDD-009: MR-015 fires with no renewal record present, regardless of `state.current`'s value — confirms tolerance requires an explicit record.
 - TDD-010: an unanchored (later-rewritten) renewal record provides no tolerance — confirms the anchoring check is load-bearing, not decorative.
 - TDD-011: a renewal record's tolerance is scoped to exactly its declared paths — confirms a record covering `knowledge-capture.md` cannot be abused to blanket-tolerate an unrelated `specification.md` rewrite in the same commit.
-- Full suite: `.venv/bin/python -m pytest -q` → `706 passed, 2 warnings` (both warnings pre-existing, `tests/unit/test_experience_capture.py`, unrelated to this Change).
-- `tests/cli/test_merge_check.py` alone: `14 passed`.
+- TDD-012: RED confirmed against the pre-R005-fix evaluator.py (commit `6c6cdab`, the first Specification Drift correction, upper-bound-only) — a renewal anchored shortly after an earlier subject `S1` silently kept tolerating an unrelated edit committed after a later subject `S2`. GREEN after adding the lower-bound ancestor check (`subject_commit` an ancestor of, or equal to, the renewal's own commit).
+- Full suite: `.venv/bin/python -m pytest -q` → `707 passed, 2 warnings` (both warnings pre-existing, `tests/unit/test_experience_capture.py`, unrelated to this Change).
+- `tests/cli/test_merge_check.py` alone: `15 passed`.
 - `tests/unit/test_merge_readiness_policy.py`: `12 passed`.
 
 ## Forge Evidence
