@@ -80,3 +80,44 @@ records:
       observed_by: self
       reference: review.md#resolution
       statement: Resolution of Strict Review Iteration 1 (reviewer-001) findings R-001 and R-002. R-001 fixed by removing the schema-violating full_suite key from tdd-evidence.yml and correcting verification.md's full-suite count to the independently reproduced 747 passed. R-002 fixed by making loader.py's _parse_sections track fenced-code-block state and ignore heading-shaped lines inside an open fence, with a RED-before-GREEN regression test (TDD-003, tests/capabilities/test_loader.py::test_heading_shaped_line_inside_a_fenced_code_block_is_not_a_new_section). Re-ran full suite (747 passed, 2 warnings) and forge validate (PASS) after the fix. Reviewable Git workspace confirmed clean before this freeze (only this Change's own review.md differs from the reviewed subject by review-control content).
+  - id: reviewer-002
+    role: review
+    execution:
+      id: a23a2996c846c3c01
+      context_id: independent-review-context-a23a2996c846c3c01
+    recorded_at: '2026-08-25T02:00:00Z'
+    revision:
+      id: chg-0047-resolution-001
+      immutable_ref:
+        type: git_commit
+        value: fbb1a8bd8768774a3b6df8bb583eb42d4219ec54
+      commit: fbb1a8bd8768774a3b6df8bb583eb42d4219ec54
+    source:
+      assurance: recorded
+      observed_by: operator
+      reference: review.md#iteration-2
+      statement: Independent Strict Review Iteration 2 (Resolution Verification, fresh execution, isolated Git worktree at .claude/worktrees/agent-a23a2996c846c3c01, no shared context with the Resolution Execution or with Iteration 1's Reviewer) returned REQUEST CHANGES against fbb1a8b — R-003 (BLOCKER, the R-001 fix reintroduced a different schema violation in the same file via unquoted YAML notes strings, making the "747 passed" claim false again) and R-004 (MAJOR, the R-002 fence-tracking fix did not recognize an indented fence per CommonMark, reproducing R-002's original symptom), plus R-005 (MINOR, informational — mismatched fence delimiter type/unterminated fence produce a misleading diagnostic). All findings independently reproduced with concrete adversarial evidence, including cases beyond the Resolution's own shipped tests.
+  - id: resolution-002
+    role: resolution
+    execution:
+      id: claude-code-implementation-0047-resolution-002
+      context_id: claude-code-session-2026-08-25-resolution-002
+    recorded_at: '2026-08-25T03:00:00Z'
+    scope:
+      - .forge/changes/CHG-0047-capability-architecture-foundation/tdd-evidence.yml
+      - .forge/changes/CHG-0047-capability-architecture-foundation/verification.md
+      - .forge/changes/CHG-0047-capability-architecture-foundation/review.md
+      - src/forge_cli/capabilities/loader.py
+      - tests/capabilities/test_loader.py
+    targets: [R-003, R-004, R-005]
+    revision:
+      id: chg-0047-resolution-002
+      immutable_ref:
+        type: git_commit
+        value: ea433b64bda9e5a92977cdb05dd5efd7d10810a6
+      commit: ea433b64bda9e5a92977cdb05dd5efd7d10810a6
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: review.md#resolution-of-iteration-2
+      statement: Resolution of Strict Review Iteration 2 (reviewer-002) findings R-003, R-004, and R-005. R-003 fixed by quoting the two tdd-evidence.yml notes strings that YAML had parsed as single-key mappings. R-004 and R-005 (delimiter-type half) fixed by making loader.py's _FENCE_PATTERN tolerate up to 3 leading spaces/tabs and tracking which delimiter character opened the current fence, with a RED-before-GREEN regression test (TDD-004). R-005's remaining lower-severity half (unterminated fence / mismatched delimiter length producing a generic rather than fence-specific error) is a documented, accepted, non-silent limitation, not fixed (C-039 proportionality). Re-ran full suite (749 passed, 2 warnings) and forge validate (PASS) after the fix. Reviewable Git workspace confirmed clean before this freeze.

@@ -26,12 +26,12 @@ requirements:
   verified: 5
 tdd:
   status: compliant
-  cycles: 3
+  cycles: 4
 verification:
   status: passed
 review:
   status: pending
-  iteration: 1
+  iteration: 2
   blockers: 0
   majors: 0
   minors: 0
@@ -46,6 +46,16 @@ review:
       full_review_required: false
       new_material_findings: 2
       finding_classes: []
+    - id: review-002
+      revision: chg-0047-resolution-001
+      subject_provenance: resolution-001
+      reviewer_provenance: reviewer-002
+      kind: resolution_verification
+      status: failed
+      full_review_required: false
+      new_material_findings: 3
+      finding_classes:
+        - resolution_regression
 documentation:
   impact_evaluated: false
 decisions:
