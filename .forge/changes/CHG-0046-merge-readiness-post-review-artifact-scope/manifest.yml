@@ -9,7 +9,7 @@ flow:
   current: full
   escalations: []
 state:
-  current: complete
+  current: strict_review
 artifacts:
   intent: complete
   discovery: complete
@@ -21,7 +21,7 @@ artifacts:
   tasks: complete
   tdd_evidence: complete
   verification: complete
-  review: complete
+  review: active
   knowledge_capture: complete
   documentation: complete
 requirements:
@@ -34,7 +34,7 @@ tdd:
 verification:
   status: passed
 review:
-  status: passed
+  status: pending
   iteration: 3
   blockers: 0
   majors: 0
@@ -77,18 +77,19 @@ documentation:
   impact_evaluated: true
   update_required: true
   reason: >-
-    Updated: CHANGELOG.md (Unreleased entry), docs/adr/0018-merge-
-    readiness-post-review-artifact-scope.md (DEC-001 is a material
-    architectural decision -- the temporal state.current boundary versus
-    the rejected per-Flow-stage artifact mapping). No RFC (this Change is
-    merge-readiness-gate-internal logic, not a Protocol or Contract
-    redefinition -- CON-001 already establishes no Contract or Flow
-    meaning changed).
+    Updated: CHANGELOG.md (Unreleased entry, revised after Specification
+    Drift), docs/adr/0018-merge-readiness-post-review-artifact-scope.md
+    (DEC-003 is a material architectural decision -- explicit, anchored,
+    scoped renewal records, superseding DEC-001's rejected state.current
+    boundary). No RFC (this Change is merge-readiness-gate-internal logic,
+    not a Protocol or Contract redefinition -- CON-001 already establishes
+    no Contract or Flow meaning changed; the correction conforms to
+    Protocol 2's existing text, it does not amend it).
 decisions:
   - id: DEC-001
     class: architectural
     materiality: material
-    status: resolved
+    status: superseded
     authority: agent_with_review
     owning_artifact: architecture
     discovered_in: specification
@@ -101,3 +102,11 @@ decisions:
     owning_artifact: plan
     discovered_in: plan
     resolved_via: human_decision
+  - id: DEC-003
+    class: architectural
+    materiality: material
+    status: resolved
+    authority: agent_with_review
+    owning_artifact: architecture
+    discovered_in: specification
+    resolved_via: autonomous_decision

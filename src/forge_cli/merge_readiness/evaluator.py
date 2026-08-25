@@ -143,14 +143,45 @@ def _check_change(root: Path, change_id: str, head_revision: str) -> tuple[list[
                         f"{change_root}/provenance.yml",
                         f"{change_root}/review.md",
                     }
-                    is_complete = state.get("current") == "complete"
-                    stale = delta.returncode != 0 or any(
-                        item and item not in allowed
-                        for item in delta.stdout.splitlines()
-                        if not (is_complete and item.startswith(f"{change_root}/"))
-                    )
-                    if stale:
+                    uncovered_paths = [item for item in delta.stdout.splitlines() if item and item not in allowed]
+                    if delta.returncode != 0:
                         diagnostics.append(ReadinessDiagnostic("MR-015", "REVIEW SUBJECT STALE", change_id, relative, head_revision, subject_commit))
+                    elif uncovered_paths:
+                        # Protocol 2 Sec 5: the only paths that may differ
+                        # WITHOUT renewing subject provenance are the three
+                        # above. Any other change_root delta requires an
+                        # explicit, anchored provenance record -- whose
+                        # commit is an ancestor of (or equal to)
+                        # head_revision -- declaring a scope that covers the
+                        # specific path. Not an implicit tolerance keyed on
+                        # manifest.state (Sec 5's own "MUST NOT be inferred
+                        # from... membership in the Change directory
+                        # generally"; Sec 14's "a manifest claim... is not
+                        # sufficient authorization").
+                        renewed_scope: set[str] = set()
+                        for item in records:
+                            if not (isinstance(item, dict) and item.get("role") in {"implementation", "resolution"}):
+                                continue
+                            renewal_commit = (
+                                item.get("revision", {}).get("commit")
+                                or item.get("revision", {}).get("immutable_ref", {}).get("value")
+                            )
+                            if not isinstance(renewal_commit, str) or len(renewal_commit) != 40:
+                                continue
+                            renewal_ancestor = subprocess.run(
+                                ["git", "merge-base", "--is-ancestor", renewal_commit, head_revision],
+                                cwd=root, capture_output=True, check=False,
+                            )
+                            if renewal_ancestor.returncode != 0:
+                                continue
+                            scope = item.get("scope")
+                            if not (isinstance(scope, list) and scope):
+                                continue
+                            anchored_renewal = _first_committed_record(root, provenance_relative, item.get("id", ""))
+                            if anchored_renewal is not None and anchored_renewal == item:
+                                renewed_scope.update(p for p in scope if isinstance(p, str))
+                        if any(item not in renewed_scope for item in uncovered_paths):
+                            diagnostics.append(ReadinessDiagnostic("MR-015", "REVIEW SUBJECT STALE", change_id, relative, head_revision, subject_commit))
             verification_records = [
                 item for item in records
                 if isinstance(item, dict)

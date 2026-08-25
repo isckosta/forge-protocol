@@ -84,13 +84,38 @@ Change could usefully add this to the Plan/Tasks template for any
   waiting for a Resolution Verification to demand it as a follow-up
   `-scope` record.
 
+### K-001 · Three independent internal Strict Reviews all missed the same thing an external reviewer caught by reading the Protocol text directly
+
+The `state.current`-keyed design (DEC-001) passed Specification Review
+(SR-001/SR-002) and three independent internal Strict Review Iterations
+(R001–R004, all real, all correctly caught and fixed) before an external
+reviewer — a GitHub Codex bot on the opened PR, with no special access,
+following the same public repository — found it directly contradicted
+`protocol/versions/2/specification.md` §5/§14's own literal text. None of
+the internal passes had cross-referenced the design against Protocol 2's
+own normative specification document; they reasoned from an internal
+precedent (`forge validate`'s own carve-out) and from the code's internal
+consistency, both real and useful checks, but neither is a substitute for
+checking a design against the actual governing specification text when
+one exists and is directly on point. **Durable lesson:** when a Change
+modifies mechanical enforcement of a named Protocol invariant (here,
+C-026 / Sec 5's freeze rule), at least one Review pass — internal or
+external — must explicitly re-read the relevant Protocol section's literal
+text against the diff, not just check the diff's internal logic and test
+coverage. Three rounds of "does this code do what it says" review did not
+substitute for one round of "does this design match what the Protocol
+actually requires."
+
 ## References
 
-- Decisions: DEC-001 (architectural — temporal boundary over per-stage
-  artifact mapping), DEC-002 (Plan Decision, C-077).
-- `docs/adr/0018-merge-readiness-post-review-artifact-scope.md` (DEC-001,
-  the material architectural decision).
-- `review.md` Iterations 1–3 for R001–R004's full findings and Resolution
-  evidence.
+- Decisions: DEC-001 (superseded — temporal `state.current` boundary),
+  DEC-002 (Plan Decision, C-077), DEC-003 (the corrected, shipped design —
+  explicit anchored scoped renewal records).
+- `docs/adr/0018-merge-readiness-post-review-artifact-scope.md` (DEC-003,
+  the material architectural decision, and its correction history).
+- `specification-drift.md` for the full Root Cause / Evidence / Final
+  decision record of the correction.
+- `review.md` for every Iteration's full findings and Resolution
+  evidence, across both the original and corrected designs.
 - Discovery's "A more severe, orthogonal, pre-existing gap..." and
   "Addendum (post-Review)..." sections for the two out-of-scope findings.

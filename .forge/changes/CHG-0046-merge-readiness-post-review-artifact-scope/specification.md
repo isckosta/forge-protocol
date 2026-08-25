@@ -49,48 +49,89 @@ to justify a lower bar for security/integrity-adjacent tooling.
 
 ## Functional Requirements
 
-### FR-001 · MR-015 tolerates post-freeze Change-local artifacts once the Change is Complete
+### FR-001 · MR-015 tolerates post-freeze Change-local artifacts only when covered by an explicit, anchored renewal record
 Origin: Discovery, "MR-015: the CI gate and `forge validate` implement the
-same invariant, and disagree"; corrected by Specification Review SR-001
-(a per-Flow-stage artifact mapping cannot cover `tasks.md`, which is a
-continuously-updated checklist not tied to one stage, or
+same invariant, and disagree"; corrected twice — first by Specification
+Review SR-001 (a per-Flow-stage artifact mapping cannot cover `tasks.md`,
+a continuously-updated checklist not tied to one stage, or
 `specification-drift.md`, which `protocol/artifact-structure.md:436-441`
-documents as having no Flow stage or code representation at all).
+documents as having no Flow stage or code representation at all); then by
+**Specification Drift** (`specification-drift.md`), after an external,
+independent reviewer (Codex, on PR #37) found that the `state.current`-keyed
+temporal-boundary design SR-001 led to directly contradicts Protocol §5's
+explicit text: "The only post-freeze paths that MAY differ without
+renewing subject provenance are" the three literal files; "The exception
+MUST NOT be inferred from... membership in the Change directory
+generally." §14: "A manifest claim such as `state.current: complete`...
+is not sufficient authorization."
 Priority: must
 
 #### Requirement
 For a Change whose Review subject was frozen at commit `S`, MR-015 MUST NOT
-report `REVIEW SUBJECT STALE` solely because commits after `S` modify
-Change-local paths (inside the Change's own `.forge/changes/CHG-xxxx-*/`
-directory) once that Change's `manifest.yml: state.current` is `complete`
-at `head_revision`.
+report `REVIEW SUBJECT STALE` for a specific Change-local path (inside the
+Change's own `.forge/changes/CHG-xxxx-*/` directory) that differs from `S`
+at `head_revision`, when — and only when — an explicit provenance record
+with `role: implementation` or `role: resolution` exists whose
+`revision.commit` (or `revision.immutable_ref.value`) equals
+`head_revision` exactly, that record is anchored (its first committed
+representation is unchanged, per the same `_first_committed_record` check
+MR-021 already applies to subject records), and that record declares a
+`scope` (a list of exact repository-relative paths, mirroring §11's
+existing `resolution` scope shape) that includes the specific path in
+question. A renewal record's tolerance is scoped to exactly the paths it
+names — it does not blanket-cover the Change's entire uncovered delta
+merely by existing and naming the right commit. `manifest.yml`/
+`provenance.yml`/`review.md` remain tolerated unconditionally, per
+Protocol §5's own literal three-file exception — unchanged from before
+this Change existed.
 
 #### Expected Behavior
-This mirrors `forge validate`'s own already-shipped implementation of the
-same invariant (`validation/__init__.py:375`,
-`st.get("current")!="complete"`): staleness is enforced continuously while
-a Change is still in progress, and stops being re-checked once it has
-reached its terminal `complete` state — which is only reachable after
-MR-005 and MR-016 independently confirm `state.current == complete` and
-that `verification.md`/`review.md`/`provenance.yml` actually exist as
-committed evidence. `state.current` is not the sole guard; it is
-corroborated by those checks (CON-002).
+Per Protocol §5 ("Appending a new provenance record... remains allowed
+when previously anchored subject records and Iteration subject bindings
+remain unchanged") and §8 ("Completion MUST NOT occur when... the frozen
+reviewable workspace has changed **without renewed provenance**" —
+implying it MAY occur when provenance *is* renewed): a Change whose
+Documentation Impact / Knowledge Capture stage writes Change-local
+artifacts after Review passes must record an explicit new subject-
+provenance entry naming the exact resulting commit, self-attested
+(`assurance: recorded`, matching how `implementation-subject-001`/
+`verification-001`-shaped records already work elsewhere in this Protocol)
+— not rely on an implicit `state.current` flag. This is deliberately not
+the `role: resolution`/`resolution_verification` mechanism (§11): that
+machinery is Finding-specific (`targets` are Finding identifiers) and does
+not fit ordinary Flow-scheduled bookkeeping that targets no Finding.
+`manifest.state` is no longer read by MR-015 at all.
 
 #### Boundary
 This requirement governs only Change-local paths inside the Change's own
-directory. It does not extend the tolerance to any path outside that
-directory (AC-002), and it does not apply while the Change has not yet
-reached `state.current: complete` (AC-003) — during that window, MR-015
-must keep enforcing exactly as it does today.
+directory (AC-002 remains unaffected: this check still never inspects
+`change_root`-external paths). A renewal record's mere self-attested
+*existence* is what MR-015 checks — like every other self-attested
+provenance record already accepted elsewhere in this Protocol (§4:
+`recorded` is "the minimum for review_passed"), it is not independently
+re-verified content-by-content, and is not a claim that the *content* of
+whatever changed is itself correct — that remains, as always, Verification
+and Strict Review's responsibility, only for the parts of the Change that
+are actually reviewable material in the first place.
 
 #### Acceptance
 AC-001
-Given a Change whose Review subject is frozen at commit `S`, and whose
-`manifest.yml: state.current` is `complete` at `head_revision`
-When commits after `S` modify any Change-local path (e.g.
-`knowledge-capture.md`, `specification-drift.md`, `tasks.md`, in addition
-to the already-allowed `manifest.yml`/`provenance.yml`/`review.md`)
+Given a Change whose Review subject is frozen at commit `S`
+When commits after `S` modify a Change-local path (e.g.
+`knowledge-capture.md`), and a `role: implementation` provenance record,
+anchored, exists with `revision.commit` equal to `head_revision` exactly
+and `scope` including that exact path
 Then MR-015 does not fire.
+
+AC-007
+Given the same setup as AC-001, but the renewal record's `scope` names a
+different Change-local path than the one that actually changed (e.g. the
+record declares `scope: [knowledge-capture.md]` but `specification.md`
+also changed in the same commit)
+Then MR-015 still fires — for `specification.md` specifically, since it
+is outside the renewal's declared scope. A renewal record's existence
+does not blanket-authorize every Change-local path changed in the same
+commit, only the ones it names.
 
 AC-002
 Given the same Change and frozen commit `S`
@@ -100,21 +141,27 @@ Then MR-015's behavior toward that file is unchanged by this Change in
 either direction. **This is not a claim that MR-015 detects such a
 change** — Discovery confirms it structurally cannot: its `git diff`
 pathspec is `-- change_root`, so paths outside the Change's directory are
-never part of what this check inspects, independent of `state.current` and
-independent of this Change. AC-002 exists to bound this Change's own
-blast radius (the state-conditioned tolerance applies only inside
-`change_root`), not to assert a protection this repository does not
-currently have.
+never part of what this check inspects, independent of this Change. AC-002
+exists to bound this Change's own blast radius, not to assert a protection
+this repository does not currently have.
 
 AC-003
-Given a Change whose Review subject is frozen at commit `S`, whose
-`manifest.yml: state.current` at `head_revision` is **not** `complete`
-(e.g. still `review` or `documentation`)
+Given a Change whose Review subject is frozen at commit `S`
 When a commit after `S` modifies any Change-local path outside
-`manifest.yml`/`provenance.yml`/`review.md`
-Then MR-015 still fires — the tolerance in AC-001 is bounded by reaching
-Completion, not granted unconditionally to every Change-local path at
-every point in its lifecycle.
+`manifest.yml`/`provenance.yml`/`review.md`, and **no** provenance record
+of role `implementation` or `resolution` names `head_revision` exactly
+Then MR-015 still fires — regardless of `manifest.yml: state.current`'s
+value. There is no tolerance without an explicit, anchored renewal record;
+`state.current` is never consulted.
+
+AC-006
+Given the same setup as AC-001, but the candidate renewal record is not
+anchored (e.g. a later, differently-committed provenance edit claims to
+redefine which record has that id, or the record was not present in the
+first committed representation of `provenance.yml` that introduced its id)
+Then MR-015 still fires — a renewal claim that is not itself anchored
+provides no tolerance, mirroring MR-021's existing anchoring requirement
+for subject records.
 
 ### FR-002 · Agent Adapter–generated paths resolve to a definite classification
 Origin: Discovery, "MR-017: ten Adapter-generated paths have no
@@ -170,20 +217,35 @@ exactly as defined in `protocol/contract/engineering.md`. No Contract edit
 is in scope.
 
 ### CON-002
-`state.current` MAY be consulted by MR-015 (FR-001 requires it), but it
-MUST NOT become the *sole* safeguard: this Change must not remove or
-weaken MR-005 (`COMPLETION NOT READY` unless `state.current == complete`)
-or MR-016 (Completion requires `verification.md`/`review.md`/
-`provenance.yml` to actually exist as committed evidence at
-`head_revision`) — the checks that make `state.current: complete` a
-corroborated claim rather than bare self-attestation. This is narrower
-than this Constraint's original wording (revised by Specification Review
-SR-002), which would have ruled out consulting `state.current` at all and,
-with it, the only design SR-001 found to actually match Discovery's
-evidence. This still honors the underlying concern in
-[[project-merge-readiness-scoping-bug]] finding 6 — a status field trusted
-with *no* corroboration anywhere — by requiring the corroboration to stay
-in place, not by forbidding the field.
+MR-015 MUST NOT read `manifest.yml: state.current` at all, for any
+purpose — corrected by **Specification Drift** after Codex's PR #37
+finding that `state.current` is exactly the "membership in the Change
+directory generally"-style inference Protocol §5 forbids, and that §14
+explicitly names `state.current: complete` as insufficient authorization
+on its own. Tolerance for a Change-local post-freeze delta MUST instead
+depend only on an explicit, individually anchored provenance record
+naming the exact commit (FR-001) — auditable per-commit, not a single
+mutable manifest field covering every future commit once flipped once.
+This constraint superseded, not narrowed, this Constraint's two earlier
+revisions (original: forbid `state.current` outright; SR-002's revision:
+permit it if corroborated by MR-005/MR-016) — both were reasoning about
+the wrong axis. The concern in [[project-merge-readiness-scoping-bug]]
+finding 6 (a status field trusted with no corroboration) is now moot for
+MR-015 specifically: there is no field to trust, only individually
+anchored records.
+
+### CON-004
+Per Protocol §11, `role: resolution` remains reserved, by convention, for
+records declaring `scope`/`targets` naming actual Review Findings;
+non-Finding-driven Change-local bookkeeping (Documentation Impact,
+Knowledge Capture) should use `role: implementation` instead. MR-015's own
+mechanical check accepts either role for the renewal lookup (FR-001) —
+it does not itself enforce `scope`/`targets` presence on a `role:
+resolution` renewal record, since that enforcement already exists,
+unmodified, for `resolution_verification` Iterations specifically
+(§11, MR-018/MR-019-adjacent checks this Change does not touch). This
+Constraint documents the intended authoring convention; it does not add a
+new mechanical check beyond FR-001's own.
 
 ### CON-003
 Both fixes apply identically across `fast`, `standard`, and `full` Flows —
@@ -195,7 +257,7 @@ extra stages specifically.
 
 | Requirement | Discovery Finding | Acceptance |
 |---|---|---|
-| FR-001 | MR-015 allowed-file set vs. Flow stage order (evaluator.py:132-146 vs. protocol/flows/*.yml) | AC-001, AC-002, AC-003 |
+| FR-001 | MR-015 allowed-file set vs. Protocol §5's literal three-file exception (evaluator.py, protocol/versions/2/specification.md §5) | AC-001, AC-002, AC-003, AC-006, AC-007 |
 | FR-002 | MR-017 policy gap (policy.py:29-43, protocol/policies/merge-readiness.yml) | AC-004, AC-005 |
 
 ## Compatibility Statement
@@ -212,13 +274,21 @@ including of CHG-0045's still-open PR #36.
 ## Specification Gate
 
 Requirements are independently derived from Discovery's direct code and
-Git evidence (file/line citations, reproduced CLI output, byte-identical
-provenance excerpts), not from assumption. AC-001/AC-002/AC-003 together
-specify both the fix (tolerate post-Review-stage artifacts) and its
-regression boundary (implementation and pre-Review artifacts remain
-protected) as equally load-bearing, verifiable conditions — this
-Specification does not describe only the happy path. Ready for adversarial
-Specification Review.
+Git evidence, and — after Specification Drift — directly from Protocol
+2's own normative text (`protocol/versions/2/specification.md` §5, §8,
+§11, §14), not from an unchecked precedent assumption. AC-001/AC-003/AC-006
+together specify both the fix (tolerance requires an explicit, anchored
+renewal record) and its regression boundary (no tolerance without one,
+regardless of `state.current`; an unanchored renewal claim does not
+count) as equally load-bearing, verifiable conditions. This revision
+superseded the version adversarial Specification Review (SR-001/SR-002)
+originally passed — that Review's own findings (the stage-mapping design
+cannot cover `tasks.md`/`specification-drift.md`) remain correctly
+resolved by the *replacement* design too; only the state-conditioned
+mechanism SR-002 endorsed as CON-002's implementation was itself found
+non-conformant, by evidence outside this Specification's own re-reading
+of itself. Ready for a fresh adversarial Specification Review pass over
+the corrected FR-001/CON-002/CON-004.
 
 ## Out of Scope
 

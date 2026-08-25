@@ -127,7 +127,45 @@ status: pending
       surfaced along the way.
       `Plan: 12`
 
+### Plan 14 · Specification Drift correction (post-Completion, pre-merge)
+
+- [x] T-020 An external, independent reviewer (Codex, on PR #37) found
+      DEC-001's `state.current`-keyed design directly contradicts
+      Protocol 2 `specification.md` Sec 5/Sec 14. Wrote
+      `specification-drift.md`; corrected `specification.md` (FR-001,
+      CON-002, new CON-004, new AC-001/AC-003/AC-006/AC-007) and
+      `architecture.md` (DEC-001 superseded, new DEC-003, revised Design
+      section) to the explicit-anchored-scoped-renewal-record design.
+      `Requirements: FR-001`
+- [x] T-021 Reimplemented `evaluator.py`'s MR-015 check per the corrected
+      design: renewal lookup against `role: implementation`/`resolution`
+      records, ancestor-of-`head_revision` commit check, `scope`
+      membership per uncovered path, anchored via the existing
+      `_first_committed_record` (reused from MR-021, not reimplemented).
+      Added TDD-008 through TDD-011 (AC-001/AC-003/AC-006/AC-007);
+      TDD-001/TDD-002 kept, marked superseded, not deleted. Confirmed RED
+      against the pre-Drift `evaluator.py` for each new test before
+      implementing, then GREEN.
+      `Requirements: FR-001` · `Test Design: TDD-008, TDD-009, TDD-010, TDD-011`
+- [x] T-022 Re-verified the Specification-level acceptance check against
+      CHG-0045's real PR #36 commits: `MR-015` now correctly fires again
+      (CHG-0045's branch predates this correction and has no renewal
+      record), a genuine, disclosed consequence of the fix being
+      Protocol-conformant rather than a regression. Recorded in
+      `verification.md`, not silently omitted.
+      `Requirements: FR-001`
+- [x] T-023 Full suite re-run (706 passed), `forge validate`/`forge
+      doctor` clean. Updated `docs/adr/0018-...md` and `CHANGELOG.md`'s
+      Unreleased entry to describe the corrected design, not the
+      superseded one.
+- [ ] T-024 Freeze the corrected implementation as a new Resolution
+      subject; obtain a fresh independent Strict Review of the corrected
+      design (the prior three Iterations reviewed DEC-001's now-superseded
+      design, not DEC-003's).
+
 ## Status
 
-T-001 through T-019 complete. Review passed (Iteration 3). Documentation
-Impact and Knowledge Capture complete. Ready for Completion.
+T-001 through T-023 complete. T-024 (fresh independent Strict Review of
+the corrected design) is next — required before Documentation
+Impact/Knowledge Capture/Completion can be reconfirmed against the actual
+shipped design.

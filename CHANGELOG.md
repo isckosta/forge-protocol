@@ -14,20 +14,26 @@ until then.
 
 Fixed two real defects in the `forge-merge-readiness` gate
 (`forge change merge-check`). MR-015 (`REVIEW SUBJECT STALE`) previously
-blocked any Change whose Documentation Impact, Knowledge Capture, or
-Completion-stage bookkeeping — legitimately scheduled after Strict Review
-in every canonical Flow — touched any Change-local file other than
+blocked any Change whose Documentation Impact or Knowledge Capture
+bookkeeping — legitimately scheduled after Strict Review in every
+canonical Flow — touched any Change-local file other than
 `manifest.yml`/`provenance.yml`/`review.md` after the Review subject was
-frozen; it now tolerates any Change-local path once the Change reaches
-`state.current: complete`, mirroring `forge validate`'s own existing
-precedent for the same invariant. MR-017 (ambiguous materiality
+frozen; it now tolerates a specific Change-local path once an explicit,
+anchored provenance record (`role: implementation`/`resolution`) declares
+it in that record's `scope`, matching Protocol 2 §5's own text on
+renewing subject provenance. (An initial design instead granted blanket
+tolerance once `manifest.state` reached `complete`; an external review
+found that directly contradicted Protocol 2 §5/§14's literal text, and it
+was corrected — see ADR-0018.) MR-017 (ambiguous materiality
 classification) previously blocked any PR touching ten specific, real,
 digest-tracked Agent Adapter–generated paths (`.claude/CLAUDE.md`,
 `.claude/skills/forge/**`, `.agents/skills/forge/**`,
 `.forge/adapters/*/installation.yml`); the materiality policy now
 classifies them explicitly. Both defects were actively blocking a real,
-already-passed-Review Change (CHG-0045's PR #36) from merging. See
-ADR-0018 for the design.
+already-passed-Review Change (CHG-0045's PR #36) from merging; closing
+MR-015 for that PR specifically additionally requires its own branch to
+record one renewal provenance entry, since the corrected design does not
+grant tolerance retroactively.
 
 Separately documented, deliberately not fixed here: MR-015 provides no
 protection at all against a *completed* Change's implementation changing
