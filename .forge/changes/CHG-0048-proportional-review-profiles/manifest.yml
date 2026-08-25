@@ -19,7 +19,7 @@ flow:
         STANDARD's scaffold default was superseded before any
         Specification work began.
 state:
-  current: plan
+  current: tdd_implementation
 artifacts:
   intent: complete
   discovery: complete
@@ -27,7 +27,7 @@ artifacts:
   specification_review: complete
   architecture: complete
   test_strategy: complete
-  plan: pending
+  plan: approved
   tasks: active
   tdd_evidence: active
   verification: pending
@@ -60,3 +60,11 @@ decisions:
     owning_artifact: architecture
     discovered_in: architecture
     resolved_via: evidence
+  - id: DEC-002
+    class: technical
+    materiality: material
+    status: resolved
+    authority: human
+    owning_artifact: plan
+    discovered_in: plan
+    resolved_via: human_decision

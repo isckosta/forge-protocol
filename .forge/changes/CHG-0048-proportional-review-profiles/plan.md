@@ -3,7 +3,7 @@ forge:
   artifact: plan
   schema: 1
 change: CHG-0048
-status: draft
+status: approved
 ---
 
 # Plan — CHG-0048 Proportional Review Profiles
@@ -23,3 +23,13 @@ status: draft
 ## Implementation Boundary
 
 Reaching `plan_complete` is not authorization to begin Implementation.
+
+## Human Plan Authorization
+
+Este Plan é explicitamente autorizado pelo mantenedor humano para avançar à Implementation sob C-077.
+
+<!-- forge:plan-approval-confirmation -->
+
+O usuário aprovou explicitamente a continuação para Implementation na sessão ativa em 2026-08-25, via `AskUserQuestion`, após revisar o Architecture (incluindo DEC-001), o Test Strategy (15 TDD cases) e o resumo dos 11 itens deste Plan, selecionando explicitamente a opção "Aprovar e prosseguir".
+
+<!-- forge:plan-approval-record -->
