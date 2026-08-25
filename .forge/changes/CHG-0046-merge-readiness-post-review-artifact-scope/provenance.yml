@@ -560,3 +560,60 @@ records:
         Convergence Limit of 2, no Non-Convergence. Verdict: PASS. Full
         findings in review.md, "## Iteration 5 -- Resolution
         Verification".
+  - id: verification-003
+    role: implementation
+    execution:
+      id: claude-code-implementation-0046
+      context_id: claude-code-session-2026-08-25
+    recorded_at: '2026-08-25T06:00:00Z'
+    revision:
+      id: chg-0046-resolution-003
+      immutable_ref:
+        type: git_commit
+        value: e4832add69e85a87f50e86f20a8b1edca58a7299
+      commit: e4832add69e85a87f50e86f20a8b1edca58a7299
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: verification.md
+      statement: >-
+        Re-verification-per-subject: the final passed Review Iteration
+        (Iteration 5, review-005) reviewed resolution-003
+        (e4832ad), not ff8fe51 (verification-002's subject). Same pattern
+        as verification-001/verification-002 -- verification.md's Result
+        (PASS) is unchanged; the R005 Resolution fixed a Strict Review
+        finding in the renewal mechanism, not the underlying FR-001/FR-002
+        behavioral verification (TDD-001 through TDD-012, full suite 707
+        passed, confirmed again after the R005 fix).
+  - id: renewal-completion-001
+    role: implementation
+    execution:
+      id: claude-code-implementation-0046
+      context_id: claude-code-session-2026-08-25
+    recorded_at: '2026-08-25T06:00:00Z'
+    scope:
+      - .forge/changes/CHG-0046-merge-readiness-post-review-artifact-scope/knowledge-capture.md
+      - .forge/changes/CHG-0046-merge-readiness-post-review-artifact-scope/tasks.md
+      - docs/adr/0018-merge-readiness-post-review-artifact-scope.md
+    revision:
+      id: chg-0046-completion-001
+      immutable_ref:
+        type: git_commit
+        value: 37f856bc182785c68ac18ffd586b3109c70e7860
+      commit: 37f856bc182785c68ac18ffd586b3109c70e7860
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: knowledge-capture.md
+      statement: >-
+        Renewal record for this Change's own Documentation Impact /
+        Knowledge Capture reconfirmation, written after resolution-003
+        (e4832ad, Iteration 5's reviewed subject): knowledge-capture.md
+        (K-002), tasks.md (T-026/T-027), and docs/adr/0018-...md updated
+        to describe the final, independently-verified two-bound design --
+        exactly the FR-001 mechanism this Change itself implements,
+        applied to its own Completion. No implementation, test, or
+        specification/architecture content changed in this delta (git
+        diff e4832ad..37f856b confirms exactly the three paths in scope
+        above, plus the always-exempt manifest.yml/provenance.yml/
+        review.md).
