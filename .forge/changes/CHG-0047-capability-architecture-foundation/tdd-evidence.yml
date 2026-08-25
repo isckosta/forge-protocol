@@ -1,0 +1,35 @@
+schema: forge/tdd-evidence@1
+change: CHG-0047
+status: compliant
+cycle_count: 2
+cycles:
+  - id: TDD-001
+    title: Minimal, immutable, Harness-neutral Capability model
+    requirements: [FR-003]
+    behavior: forge_cli.capabilities.model.Capability exists as a frozen dataclass exposing exactly the nine fields the contract requires, rejects post-construction mutation, and carries no Harness-specific field.
+    red:
+      command: .venv/bin/python -m pytest tests/capabilities/test_model.py -q
+      result: 1 error during collection (ModuleNotFoundError)
+      reason: forge_cli.capabilities.model did not exist yet.
+    green:
+      command: .venv/bin/python -m pytest tests/capabilities/test_model.py -q
+      result: 3 passed
+    notes:
+      - Model introduced with no lifecycle, authority, Gate, or execution field, per FR-003's Boundary.
+  - id: TDD-002
+    title: Deterministic Capability loading with explicit, specific errors
+    requirements: [FR-004, FR-005]
+    behavior: forge_cli.capabilities.loader.load_capability(path) locates, reads, parses (frontmatter + required sections), and normalizes a CAPABILITY.md into a Capability; loading the same unchanged file twice is deterministic; a missing file, missing/invalid frontmatter, or a missing/empty required section raises CapabilityDefinitionError identifying the path and the problem, not a generic exception.
+    red:
+      command: .venv/bin/python -m pytest tests/capabilities/test_loader.py -q
+      result: 1 error during collection (ModuleNotFoundError)
+      reason: forge_cli.capabilities.loader did not exist yet.
+    green:
+      command: .venv/bin/python -m pytest tests/capabilities/test_loader.py -q
+      result: 22 passed
+    notes:
+      - No package/fallback resolution logic was introduced (unlike protocol_resources.resolve_protocol_root) — the loader takes an explicit Path, matching NFR-001 and the Discovery finding that repository-native capability definitions do not need packaged-resource fallback.
+      - No discovery/enumeration, registry, cache, composition, or execution was introduced.
+full_suite:
+  command: .venv/bin/python -m pytest -q
+  result: 746 passed, 2 warnings (warnings pre-exist this Change; unrelated experience-capture tests deliberately inject failures)
