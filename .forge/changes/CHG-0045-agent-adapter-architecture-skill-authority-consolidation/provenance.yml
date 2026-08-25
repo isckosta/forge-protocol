@@ -449,3 +449,47 @@ records:
         95b521e..968af1d, scoped to this Change's own directory, confirms
         exactly the two paths in scope above, plus the always-exempt
         manifest.yml/provenance.yml/review.md).
+  - id: resolution-003
+    role: resolution
+    execution:
+      id: claude-code-implementation-0045
+      context_id: claude-code-session-2026-08-25
+    recorded_at: '2026-08-25T07:30:00Z'
+    scope:
+      - .agents/skills/forge/SKILL.md
+      - .claude/skills/forge/SKILL.md
+      - .forge/adapters/claude-code/installation.yml
+      - .forge/adapters/codex/installation.yml
+      - src/forge_cli/adapters/claude_code/resources/skills/workflow.md
+      - src/forge_cli/adapters/codex/resources/skills/workflow.md
+      - tests/unit/test_claude_code_workflow_resource_authority.py
+    targets: [PR36-CODEX-001]
+    revision:
+      id: chg-0045-resolution-003
+      immutable_ref:
+        type: git_commit
+        value: b626080ef976f83c34e085d177cf1cfdd356faf0
+      commit: b626080ef976f83c34e085d177cf1cfdd356faf0
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: review.md
+      statement: >-
+        Resolution of PR36-CODEX-001: an external, independent reviewer
+        (GitHub Codex review bot, PR #36, P2) found workflow.md's
+        Bootstrap guidance named `forge adapter doctor` as an alternative
+        to `forge doctor` without disclosing that adapter_cli.py::doctor
+        requires a positional ADAPTER argument -- an agent following the
+        bare command literally gets a missing-argument error, not a
+        diagnosis. Fixed in both workflow.md sources (kept byte-identical
+        per the existing test_workflow_templates_project_identical_
+        baseline_guidance invariant), regenerated both installed SKILL.md
+        via `forge adapter update` (clean UPDATE, confirmed no CONFLICT
+        beforehand via `forge adapter plan`). Added a regression test.
+        Resolution Delta is this commit's own first-parent diff
+        (git diff b626080^..b626080, per the same CHG-0011 first-parent
+        mechanism validation/__init__.py's _resolution_delta already
+        uses to avoid contamination from the intervening main-merge
+        commit) -- exactly the seven paths in scope above; no
+        Out-of-Scope Mutation. 721 passed (was 720), forge validate/doctor
+        clean once refrozen.
