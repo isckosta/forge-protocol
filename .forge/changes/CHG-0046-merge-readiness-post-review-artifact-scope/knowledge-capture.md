@@ -106,6 +106,25 @@ coverage. Three rounds of "does this code do what it says" review did not
 substitute for one round of "does this design match what the Protocol
 actually requires."
 
+### K-002 · The first correction of a Protocol-conformance defect is not automatically conformant itself — it needs the same adversarial scrutiny as the original design
+
+Fixing K-001's finding (the rejected `state.current` design) with an
+ancestor-of-`head_revision` check was itself incomplete: it had no lower
+bound, so a renewal anchored once, early, would cover every later freeze
+forever (R005, Iteration 4) — a real security-relevant regression
+introduced by the *fix*, not present in the original three-file-only
+design it replaced (which had no escape hatch to abuse in the first
+place). Iteration 4 caught it by reading the Protocol text again, not by
+assuming the first correction was automatically correct because it
+responded to a real external finding. **Durable lesson:** a Resolution
+that corrects a Protocol-conformance defect is new, unreviewed logic in
+its own right — it requires the same independent adversarial scrutiny as
+the defect it fixes, not a lighter pass on the theory that "we already
+found and fixed the real problem." This Change needed five independent
+Review iterations in total (three for the original design, two more for
+its correction and the correction's own gap) before the actual shipped
+mechanism was verified sound.
+
 ## References
 
 - Decisions: DEC-001 (superseded — temporal `state.current` boundary),

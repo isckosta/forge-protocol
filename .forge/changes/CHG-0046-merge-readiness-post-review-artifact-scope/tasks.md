@@ -183,13 +183,23 @@ status: pending
       `architecture.md`'s Design code sketch and Risks. Full suite 707
       passed (was 706), `forge validate`/`doctor` clean.
       `Requirements: FR-001` · `Test Design: TDD-012`
-- [ ] T-026 Freeze the R005-corrected implementation as a new Resolution
-      subject; obtain a fresh independent Resolution Verification
-      (Iteration 5) of it.
+- [x] T-026 Froze the R005-corrected implementation as `resolution-003`
+      (`e4832ad`, `targets: [R005]`). Independent Resolution Verification
+      (Iteration 5, `review-005`): **PASSED** — 0 blockers, 0 new material
+      findings. Reviewer independently re-read Protocol Sec 5/8/11/14,
+      re-reproduced Iteration 4's exact BLOCKER fixture (now correctly
+      `MERGE BLOCKED`), probed merge/branch-ancestry, exact-equality, and
+      single-freeze-cycle edge cases, confirmed Specification/
+      Architecture/code mutually consistent.
+      `Requirements: FR-001`
+- [x] T-027 Updated `docs/adr/0018-...md` and `knowledge-capture.md`
+      (K-002) to describe the two-bound design and the lesson that a
+      correction needs the same adversarial scrutiny as the defect it
+      fixes.
 
 ## Status
 
-T-001 through T-025 complete. T-026 (independent Resolution Verification
-of the R005-corrected design) is next — required before Documentation
-Impact/Knowledge Capture/Completion can be reconfirmed against the actual
-shipped design.
+T-001 through T-027 complete. Review passed (Iteration 5, 0 blockers/
+majors, 1 open observation). Documentation Impact and Knowledge Capture
+reconfirmed against the actual shipped, Protocol-conformant design. Ready
+for Completion.

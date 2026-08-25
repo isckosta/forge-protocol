@@ -8,13 +8,21 @@ Status: Accepted for CHG-0046, independent Strict Review passed.
 tolerates a specific Change-local path (inside a Change's own
 `.forge/changes/CHG-xxxx-*/` directory) differing from its frozen Review
 subject, when — and only when — an explicit provenance record exists
-(`role: implementation` or `role: resolution`) whose commit is an
-ancestor of (or equal to) the commit under evaluation, whose first
-committed representation is unchanged (anchored, reusing the same
-`_first_committed_record` check MR-021 already applies to subject
-records), and whose declared `scope` (an exact list of repository-relative
-paths, mirroring the `scope` shape Protocol 2 §11 already defines for
-`resolution` records) includes that specific path. Before this Change,
+(`role: implementation` or `role: resolution`) whose commit satisfies
+**two** bounds relative to that specific evaluation, not one: it must be
+an ancestor of (or equal to) `head_revision` (the commit under
+evaluation), *and* the Change's own current frozen subject commit must be
+an ancestor of (or equal to) it. (The lower bound was added in a second
+correction, Review Iteration 4's R005 finding: an upper-bound-only check
+let a renewal anchored during an *earlier* freeze cycle silently keep
+covering tampering introduced after a *later* one, forever — Iteration 5
+independently confirmed the two-bound version closes this.) The record
+must also be anchored (its first committed representation is unchanged,
+reusing the same `_first_committed_record` check MR-021 already applies
+to subject records), and its declared `scope` (an exact list of
+repository-relative paths, mirroring the `scope` shape Protocol 2 §11
+already defines for `resolution` records) must include that specific
+path. Before this Change,
 MR-015 hardcoded a fixed three-file allowlist (`manifest.yml`,
 `provenance.yml`, `review.md`) with no escape hatch at all, which blocked
 any Change from merging if its Documentation Impact or Knowledge Capture

@@ -9,7 +9,7 @@ flow:
   current: full
   escalations: []
 state:
-  current: strict_review
+  current: complete
 artifacts:
   intent: complete
   discovery: complete
@@ -21,7 +21,7 @@ artifacts:
   tasks: complete
   tdd_evidence: complete
   verification: complete
-  review: active
+  review: complete
   knowledge_capture: complete
   documentation: complete
 requirements:
