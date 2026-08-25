@@ -68,10 +68,10 @@ Every Change MUST undergo Verification.
 Passing tests MUST NOT automatically be treated as proof of correctness.
 
 ## C-022 — Review required
-Every Change MUST undergo Strict Review.
+Every Change MUST undergo Review, at the rigor and posture defined by its Flow's Review Profile. `focused` and `standard` remain genuine Review with real rejection authority — never a rubber stamp, diff-only inspection, or passing-tests-only sufficiency.
 
 ## C-023 — Review is adversarial
-Strict Review MUST actively search for reasons to reject the Implementation.
+The `strict` Review Profile MUST actively search for reasons to reject the Implementation. `focused` and `standard` Review Profiles MUST reject on any material Finding they actually identify, without the added obligation to exhaustively search beyond the Change's own declared scope and evidence.
 
 ## C-024 — TDD is reviewable
 Reviewer SHOULD verify TDD evidence when TDD applies.
@@ -113,7 +113,7 @@ Manifest state MUST reflect repository reality.
 Essential engineering information MUST NOT exist exclusively in chat history.
 
 ## C-031 — FAST reduces ceremony, not quality
-FAST MUST NOT remove applicable TDD, Verification, Review, or Documentation Impact evaluation.
+FAST MUST NOT remove applicable TDD, Verification, Review, or Documentation Impact evaluation. FAST's Review Profile (`focused`) narrows Review's search obligation, not its authority to block on a real Finding.
 
 ## C-032 — Existing Architecture must be inspected
 Relevant existing Architecture SHOULD be inspected before new abstractions are introduced. For FULL Changes this is REQUIRED.

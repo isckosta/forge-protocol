@@ -1,6 +1,13 @@
 schema: forge/policy/review@2
 review:
   required: true
+  # profile documents the Protocol's own highest-tier review posture
+  # (the `full`/`strict` Flow). The profile that actually applies to a
+  # given Change is derived from that Change's effective Flow
+  # (protocol/flows/{fast,standard,full}.yml's own `review.profile`),
+  # never from this policy alone -- this field is the Protocol floor,
+  # not a per-Change value.
+  profile: strict
   strict: true
   adversarial: true
   objective: >

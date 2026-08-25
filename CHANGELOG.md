@@ -10,6 +10,29 @@ until then.
 
 ## Unreleased
 
+### Proportional Review Profiles
+
+Introduced three canonical Review Profiles bound to Flow — `focused`
+(FAST), `standard` (STANDARD), `strict` (FULL, behaviorally unchanged)
+— replacing the previous single, Flow-invariant adversarial Strict
+Review model. C-022/C-023 revised so "Review is required" no longer
+implies "Review is exhaustively adversarial" for FAST/STANDARD, while
+preserving identical rejection authority on any material Finding,
+Reviewer/Resolver independence, evidence requirements, severities,
+Resolution Verification, and the Convergence Limit across all three
+profiles. `forge validate` gained a profile-floor check: a project may
+require a stricter-than-canonical profile per Flow
+(`.forge/flows/<flow_id>.yml`) but never a weaker one. Claude Code and
+Codex Adapter projections now render a profile-specific review
+instruction per Flow section, sourced from one shared module. Schema
+changes are additive (`change-v2`, `policy-review-v2`,
+`project-flow`); `flow.schema.json` and Protocol 2's canonical review
+policy declare the canonical profile per Flow. Protocol 1 (Contract
+and schemas) is untouched. Authorized by RFC-0007 (accepted for
+Protocol 2), which formally supersedes RFC-0005. See
+`protocol/compatibility.md` and
+`.forge/changes/CHG-0048-proportional-review-profiles/`.
+
 ### Capability Architecture Foundation
 
 Introduced the Forge Capability abstraction: a specialized, reusable

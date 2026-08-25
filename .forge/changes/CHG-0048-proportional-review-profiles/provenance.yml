@@ -1,0 +1,156 @@
+schema: forge/execution-provenance@2
+change: CHG-0048
+records:
+  - id: rfc-acceptance-001
+    role: implementation
+    execution:
+      id: claude-code-implementation-0048
+      context_id: claude-code-session-2026-08-25-rfc
+    recorded_at: '2026-08-25T00:00:00Z'
+    revision:
+      id: chg-0048-rfc-acceptance-001
+      immutable_ref:
+        type: git_commit
+        value: 119f2a61d7205b202d6f518b9e44052028491b89
+      commit: 119f2a61d7205b202d6f518b9e44052028491b89
+    source:
+      assurance: recorded
+      observed_by: operator
+      reference: docs/rfcs/0007-proportional-review-profiles.md#acceptance-record
+      statement: The user explicitly accepted RFC-0007 (Proportional Review Profiles) in the active chat session on 2026-08-25, via AskUserQuestion, resolving the RFC's Open Normative Question in favor of the Protocol-2-compatible clarification reading (not a new Protocol 3). This acceptance is the F-008-required RFC authorizing this Change's Contract/Flow/schema/CLI/Adapter work.
+  - id: plan-approval-001
+    role: implementation
+    execution:
+      id: claude-code-implementation-0048-plan
+      context_id: claude-code-session-2026-08-25-plan
+    recorded_at: '2026-08-25T00:00:00Z'
+    revision:
+      id: chg-0048-plan-approval-001
+      immutable_ref:
+        type: git_commit
+        value: 41593a0020d418aa32e1f92c85cc3b1d99850fd8
+      commit: 41593a0020d418aa32e1f92c85cc3b1d99850fd8
+    source:
+      assurance: recorded
+      observed_by: operator
+      reference: plan.md#approval-record
+      content_digest:
+        algorithm: sha256
+        path: plan.md
+        value: 75244c36ee275eba458aa9afce4cf35852d2f4af99c7d0665359e195447cfc9c
+      statement: The user explicitly approved continuation of CHG-0048 to Implementation in the active session on 2026-08-25, via AskUserQuestion, after reviewing the Architecture (including DEC-001), the Test Strategy (15 TDD cases), and the 11-item Plan summary, selecting "Aprovar e prosseguir".
+  - id: implementation-subject-001
+    role: implementation
+    execution:
+      id: claude-code-implementation-0048-subject-001
+      context_id: claude-code-session-2026-08-25-subject-001
+    recorded_at: '2026-08-25T00:00:00Z'
+    revision:
+      id: chg-0048-implementation-001
+      immutable_ref:
+        type: git_commit
+        value: 8c1f0503ca4eae81860664dc887a86fbc3ffca17
+      commit: 8c1f0503ca4eae81860664dc887a86fbc3ffca17
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: implementation-subject
+      statement: Frozen CHG-0048 implementation subject (immutable per C-026 once committed) -- Contract (protocol/versions/2/contract/engineering.md C-022/C-023/C-031), the three Flow definitions, the canonical Protocol 2 review policy, four Schemas, validation/__init__.py's new profile-floor check, both Adapters' profile-aware projections (review_independence.py, claude_code/projection.py, codex/projection.py), merge_readiness/evaluator.py's MR-004 label, protocol/compatibility.md, CHANGELOG.md, all new/modified tests, and all CHG-0048 planning/design/verification Artifacts. Reviewable Git workspace confirmed clean before freeze (only this Change's own review.md, review-control metadata, is untracked).
+  - id: reviewer-001
+    role: review
+    execution:
+      id: ad6eed539bea23e77
+      context_id: independent-review-context-ad6eed539bea23e77
+    recorded_at: '2026-08-25T00:00:00Z'
+    revision:
+      id: chg-0048-implementation-001
+      immutable_ref:
+        type: git_commit
+        value: 8c1f0503ca4eae81860664dc887a86fbc3ffca17
+      commit: 8c1f0503ca4eae81860664dc887a86fbc3ffca17
+    source:
+      assurance: recorded
+      observed_by: operator
+      reference: review.md#iteration-1
+      statement: "Independent Strict Review Iteration 1 (strict profile, fresh execution, isolated Git worktree at .claude/worktrees/agent-ad6eed539bea23e77, no shared context with the Implementation) returned REQUEST CHANGES against 8c1f0503 -- R-001 (BLOCKER, the Adapter review-profile instruction substitution was not gated on protocol_id, leaking a scoped focused/standard instruction into Protocol 1 projections with no Contract backing) and R-002 (MAJOR, manifest.yml's documentation.impact_evaluated: false contradicted repository reality and its own artifacts.documentation: complete, violating C-028/C-029), plus 3 non-blocking OBSERVATIONs (one accepted/disclosed, two documentation-accuracy corrections applied). Both material findings were independently reproduced with concrete evidence (direct function calls, a live merge-readiness run) before being reported, and the full suite, contract suite, and forge validate claims were all independently re-counted, not trusted."
+  - id: resolution-001
+    role: resolution
+    execution:
+      id: claude-code-implementation-0048-resolution-001
+      context_id: claude-code-session-2026-08-25-resolution-001
+    recorded_at: '2026-08-25T01:00:00Z'
+    scope:
+      - src/forge_cli/adapters/claude_code/projection.py
+      - src/forge_cli/adapters/codex/projection.py
+      - tests/unit/test_claude_code_projection_gates.py
+      - tests/unit/test_codex_projection_gates.py
+      - .forge/changes/CHG-0048-proportional-review-profiles/architecture.md
+      - .forge/changes/CHG-0048-proportional-review-profiles/verification.md
+      - .forge/changes/CHG-0048-proportional-review-profiles/tdd-evidence.yml
+      - .forge/changes/CHG-0048-proportional-review-profiles/manifest.yml
+      - .forge/changes/CHG-0048-proportional-review-profiles/review.md
+    targets: [R-001, R-002]
+    revision:
+      id: chg-0048-resolution-001
+      immutable_ref:
+        type: git_commit
+        value: 493371cb00979a19253b3b2ce7c4e03af9f2c524
+      commit: 493371cb00979a19253b3b2ce7c4e03af9f2c524
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: review.md#resolution
+      statement: Resolution of Strict Review Iteration 1 (reviewer-001) findings R-001 and R-002, plus OBSERVATION 2/3 documentation corrections. R-001 fixed by gating both Adapters' profile-instruction substitution on protocol_id >= 2, with regression tests (TDD-005). R-002 fixed by correcting manifest.yml's documentation.impact_evaluated to true with a matching reason. Re-ran full suite (786 passed, 2 warnings) and forge validate (PASS) after the fix. Reviewable Git workspace confirmed clean before this freeze.
+  - id: reviewer-002
+    role: review
+    execution:
+      id: aa5fd11c14137d34e
+      context_id: independent-review-context-aa5fd11c14137d34e
+    recorded_at: '2026-08-25T02:00:00Z'
+    revision:
+      id: chg-0048-resolution-001
+      immutable_ref:
+        type: git_commit
+        value: 493371cb00979a19253b3b2ce7c4e03af9f2c524
+      commit: 493371cb00979a19253b3b2ce7c4e03af9f2c524
+    source:
+      assurance: recorded
+      observed_by: operator
+      reference: review.md#iteration-2
+      statement: "Independent Strict Review Iteration 2 (Resolution Verification, strict profile, fresh execution, isolated Git worktree at .claude/worktrees/agent-aa5fd11c14137d34e, no shared context with the Resolution Execution or with Iteration 1's Reviewer) returned PASS against 493371c -- R-001 and R-002 both independently re-verified adversarially, including an end-to-end protocol_id matrix (-1, 0, 1, 2, 3) against both Adapters' real public entry points, going beyond the shipped regression tests. No Out-of-Scope Mutation (resolution-001's declared scope matched the actual commit diff 9-for-9). One new non-blocking finding, R-003 (a residual off-by-one in verification.md's own file-count self-correction), recorded and accepted per C-039, not fixed. Full suite (786 passed), forge validate (PASS), and a live evaluate_merge_readiness() re-run all independently reproduced."
+  - id: documentation-001
+    role: implementation
+    execution:
+      id: claude-code-implementation-0048-documentation-001
+      context_id: claude-code-session-2026-08-25-documentation-001
+    recorded_at: '2026-08-25T03:00:00Z'
+    scope:
+      - .forge/changes/CHG-0048-proportional-review-profiles/knowledge-capture.md
+    revision:
+      id: chg-0048-documentation-001
+      immutable_ref:
+        type: git_commit
+        value: 5257db0cc14962fff68a0d20d5e30303eab3083f
+      commit: 5257db0cc14962fff68a0d20d5e30303eab3083f
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: manifest.yml#documentation
+      statement: "Knowledge Capture (Flow FULL, knowledge_capture stage, scheduled after strict_review and documentation) for CHG-0048. Added knowledge-capture.md recording four durable lessons (protocol_id gating for new per-Flow Adapter text; the hand-arithmetic file-count failure mode; rebutting a superseded RFC's own rationale, not just its mechanism; resolve_effective_flow as the correct Flow-scoped validation integration point). No other file touched. Full suite re-verified (786 passed, 2 warnings) after the addition. Reviewable Git workspace confirmed clean before this freeze."
+  - id: verification-001
+    role: implementation
+    execution:
+      id: claude-code-implementation-0048-verification-001
+      context_id: claude-code-session-2026-08-25-documentation-001
+    recorded_at: '2026-08-25T03:00:00Z'
+    revision:
+      id: chg-0048-resolution-001
+      immutable_ref:
+        type: git_commit
+        value: 493371cb00979a19253b3b2ce7c4e03af9f2c524
+      commit: 493371cb00979a19253b3b2ce7c4e03af9f2c524
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: verification.md
+      statement: "verification.md's PASS result (786 passed full suite, forge validate PASS, Iteration 1/2 findings resolved and re-verified) remains accurate against review-002's frozen subject (resolution-001, commit 493371c) -- the sole reviewed and passed implementation subject. The subsequent Knowledge Capture addition (knowledge-capture.md, commit 5257db0/fa86381) is non-executable documentation, separately anchored by documentation-001, and does not invalidate any recorded Test/Forge Evidence."

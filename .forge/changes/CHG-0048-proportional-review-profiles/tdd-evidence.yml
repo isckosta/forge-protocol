@@ -1,0 +1,82 @@
+schema: forge/tdd-evidence@1
+change: CHG-0048
+status: compliant
+cycle_count: 5
+cycles:
+- id: TDD-001
+  title: Review profile floor rejects a weaker-than-canonical project override; accepts a stricter one; silent when absent
+  requirements:
+  - FR-010
+  behavior: validate_project produces an explicit, path-identifying Finding when a project's .forge/flows/<flow_id>.yml declares review.profile weaker than that Flow's canonical floor; produces no Finding when the override is stricter-or-equal, or when no profile override is declared at all.
+  red:
+    command: .venv/bin/python -m pytest tests/unit/test_validation_review_profile.py -q
+    result: 1 failed, 2 passed
+    reason: _validate_review_profile_floor did not exist and resolve_effective_flow's return value was discarded by validate_project, so a project declaring review.profile=focused for a FULL-classified Flow produced no Finding (the two passed cases were vacuously true; no Finding is produced either way before the function exists, and they became meaningful regression guards only after GREEN).
+  green:
+    command: .venv/bin/python -m pytest tests/unit/test_validation_review_profile.py tests/unit/test_validation.py -q
+    result: 7 passed
+  notes:
+  - No new mechanism was introduced -- resolve_effective_flow was already called by validate_project for every project Flow file; only its previously-discarded return value is now inspected.
+- id: TDD-002
+  title: Four Protocol-2 Schemas accept/require the new profile field correctly; Protocol 1 schema untouched
+  requirements:
+  - FR-008
+  behavior: change-v2.schema.json's review.iterations[] items, policy-review-v2.schema.json, and project-flow.schema.json accept an optional profile enum and continue accepting its omission; flow.schema.json requires profile and no longer forces strict/adversarial to true. policy-review.schema.json (Protocol 1) is byte-identical to before.
+  red:
+    command: retroactive reconstruction, not a live pre-edit pytest run -- see notes
+    result: Additional properties are not allowed ('profile' was unexpected)
+    reason: 'The Schema edits (protocol/schemas/change-v2, flow, policy-review-v2, project-flow schema.json files) were made before tests/contract/test_review_profile_schemas.py was written, inverting this cycle''s RED-before-GREEN order -- a genuine process deviation from Plan item 1''s intended sequencing, discovered mid-Implementation because TDD-001''s project-flow-override tests needed the canonical Flow files to already declare a real profile to compare against, which pulled the Schema/Flow edits earlier than planned. RED was verified retroactively and mechanically, not merely asserted: loading the pre-edit change-v2.schema.json and flow.schema.json (commit 8f15363) and validating the exact same fixture documents test_review_profile_schemas.py uses both reproduced the expected rejection before the edit. This is disclosed per C-017, not silently smoothed over.'
+  green:
+    command: .venv/bin/python -m pytest tests/contract/test_review_profile_schemas.py -q
+    result: 18 passed
+  notes:
+  - 'Plan sequencing discovery: item 1 (RED) was planned before items 3-4 (Schema/Flow edits), but TDD-001''s meaningful assertions require the canonical Flow files to already carry a real profile value. Executed as items 3-4 then 1-2 instead; recorded here per C-069 rather than silently editing the already-approved Plan.'
+- id: TDD-003
+  title: Adapter-projected review instruction is profile-specific per Flow; independence block unaffected; both Adapters agree
+  requirements:
+  - FR-002
+  - FR-003
+  - FR-004
+  - FR-009
+  behavior: claude_code/projection.py and codex/projection.py's _gate_instructions() render a profile-specific instruction line, sourced from one shared REVIEW_PROFILE_INSTRUCTION map in review_independence.py, per Flow's review.profile, defaulting to strict when absent; the Reviewer/Resolver independence block remains single, shared, and byte-unchanged.
+  red:
+    command: retroactive reconstruction, not a live pre-edit pytest run -- see notes
+    result: pre-edit projection.py contained no REVIEW_PROFILE_INSTRUCTION reference and unconditionally emitted the fixed strict-only completion instruction for every Flow
+    reason: Implemented directly alongside the Schema/Flow work in the same session, before the new claude_code/codex projection tests were written -- the same process deviation as TDD-002, disclosed for the same reason. Verified retroactively by loading the pre-edit projection.py (commit 8f15363), confirming it could not have passed test_projection_renders_focused_profile_instruction_for_fast, since it would have rendered the fixed strict-only text for every Flow, including one declaring review.profile=focused.
+  green:
+    command: .venv/bin/python -m pytest tests/unit/test_claude_code_projection_gates.py tests/unit/test_codex_projection_gates.py -q
+    result: 39 passed
+  notes:
+  - 'Design refinement, implementation-time, not a re-opened Specification/Architecture decision: the shared instruction map lives in review_independence.py, the existing CHG-0045 cross-Adapter shared-text module, rather than being duplicated in both projection.py files or introduced as a new module -- consistent with that module''s own stated purpose and with F-010.'
+  - TDD-014 (fresh derivation, no caching -- FR-012) and TDD-015 (no historical Change regression -- FR-011) are property proofs of this same implementation, not new behavior; both were GREEN on first run, as the Plan anticipated (items 8-9).
+- id: TDD-004
+  title: MR-004's diagnostic label is profile-neutral; trigger condition unchanged
+  requirements:
+  - FR-013
+  behavior: merge_readiness.evaluator's MR-004 diagnostic message no longer contains the phrase Strict Review in any case; the condition that triggers it (review.status not passed) and its blocking semantics are unchanged.
+  red:
+    command: .venv/bin/python -m pytest tests/cli/test_merge_check.py::test_merge_check_mr_004_label_is_profile_neutral -q
+    result: 1 failed
+    reason: 'The first assertion attempt, checking for the mixed-case substring Strict Review, passed vacuously against the actual all-caps label STRICT REVIEW NOT READY, which would have masked a real regression -- caught and corrected to a case-insensitive comparison before trusting it as evidence, then reproduced genuine RED against the un-renamed label: the case-insensitive assertion failed because the label still read strict review not ready.'
+  green:
+    command: .venv/bin/python -m pytest tests/cli/test_merge_check.py -q
+    result: 16 passed
+  notes:
+  - Purely cosmetic rename; no other line in the triggering function changed.
+  - Full-suite evidence intentionally lives only in verification.md, not here -- adding a top-level full_suite key to this file is exactly the schema-violating mistake CHG-0047's R-001/R-003 findings identified and fixed; not repeating it.
+- id: TDD-005
+  title: Adapter review-profile instruction is gated on protocol_id >= 2; Protocol 1 always renders the fixed strict-only instruction
+  requirements:
+  - FR-005
+  origin: Independent Strict Review Iteration 1, Finding R-001
+  behavior: claude_code/projection.py and codex/projection.py's _gate_instructions() substitute the profile-specific REVIEW_PROFILE_INSTRUCTION only when protocol_id >= 2; under protocol_id 1 (or any value below 2) they always render the fixed strict-only completion line, regardless of what the canonical Flow file's review.profile happens to declare -- Protocol 1's Contract has no Review Profile concept and must never receive a scoped focused/standard instruction.
+  red:
+    command: .venv/bin/python -m pytest tests/unit/test_claude_code_projection_gates.py::test_projection_uses_fixed_strict_review_instruction_under_protocol_1_even_with_a_profile -q
+    result: 1 failed
+    reason: The prior implementation substituted REVIEW_PROFILE_INSTRUCTION unconditionally, with no protocol_id gate (unlike the adjacent Reviewer/Resolver independence block, which already had one) -- a Protocol 1 project reading a canonical Flow file that happens to carry review.profile=focused received the scoped focused-profile instruction text instead of the fixed strict-only line, exactly reproducing Iteration 1's R-001.
+  green:
+    command: .venv/bin/python -m pytest tests/unit/test_claude_code_projection_gates.py tests/unit/test_codex_projection_gates.py -q
+    result: 41 passed
+  notes:
+  - 'Fix: both projection.py files now check protocol_id >= 2 before substituting the profile-specific instruction, mirroring the existing independence-block gate exactly.'
+  - The existing Codex test helper _content() defaulted to protocol_id=1 (CodexProjectionInput's own default); the three pre-existing profile-instruction tests added earlier in this Change were updated to pass protocol_id=2 explicitly, since they test Protocol 2 behavior specifically -- this was itself a latent gap the R-001 fix surfaced, not a new defect introduced by the fix.

@@ -87,7 +87,7 @@ def _check_change(root: Path, change_id: str, head_revision: str) -> tuple[list[
             diagnostics.append(ReadinessDiagnostic("MR-006", "Verification status is contradicted by verification.md", change_id, verification_relative))
     review = manifest.get("review", {}) if isinstance(manifest.get("review"), dict) else {}
     if review.get("status") != "passed":
-        diagnostics.append(ReadinessDiagnostic("MR-004", "STRICT REVIEW NOT READY", change_id, relative, "passed", str(review.get("status"))))
+        diagnostics.append(ReadinessDiagnostic("MR-004", "REVIEW NOT READY", change_id, relative, "passed", str(review.get("status"))))
     if review.get("status") == "passed":
         iterations = review.get("iterations")
         if isinstance(iterations, list) and not any(

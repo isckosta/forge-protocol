@@ -221,3 +221,93 @@ def test_projection_points_every_applicable_flow_at_the_shared_independence_sect
             f"Flow `{flow}` gate-obligations section has no pointer to the shared "
             "independence section"
         )
+
+
+_REVIEW_GATE_FLOW = "gates:\n  before_completion:\n    require: [review_passed]\n"
+
+
+def _flow_with_profile(profile: str) -> str:
+    return f"review:\n  profile: {profile}\n" + _REVIEW_GATE_FLOW
+
+
+def test_projection_renders_focused_profile_instruction_for_fast() -> None:
+    """CHG-0048 TDD-010."""
+    skill = _protocol_2_skill_content((("fast", _flow_with_profile("focused")),))
+    assert "`focused` profile" in skill
+    assert "Completion requires Strict Review to pass." not in skill
+
+
+def test_projection_renders_standard_profile_instruction_for_standard() -> None:
+    """CHG-0048 TDD-010."""
+    skill = _protocol_2_skill_content((("standard", _flow_with_profile("standard")),))
+    assert "`standard` profile" in skill
+    assert "Completion requires Strict Review to pass." not in skill
+
+
+def test_projection_renders_unchanged_strict_instruction_for_full() -> None:
+    """CHG-0048 TDD-010 / AC-004: FULL's instruction is unchanged in substance."""
+    skill = _protocol_2_skill_content((("full", _flow_with_profile("strict")),))
+    assert "Completion requires Strict Review to pass." in skill
+
+
+def test_projection_defaults_to_strict_when_flow_declares_no_profile() -> None:
+    """Backward compatibility: a Flow document with no review.profile key
+    (the pre-CHG-0048 shape) is treated as strict."""
+    skill = _protocol_2_skill_content((("full", _REVIEW_GATE_FLOW),))
+    assert "Completion requires Strict Review to pass." in skill
+
+
+def test_projection_review_instructions_are_pairwise_distinct_across_profiles() -> None:
+    """CHG-0048 TDD-010."""
+    skill = _protocol_2_skill_content((
+        ("fast", _flow_with_profile("focused")),
+        ("standard", _flow_with_profile("standard")),
+        ("full", _flow_with_profile("strict")),
+    ))
+    heading = "### Flow `{flow}` gate obligations"
+    positions = {flow: skill.index(heading.format(flow=flow)) for flow in ("fast", "standard", "full")}
+    ordered = sorted(positions.items(), key=lambda item: item[1])
+    bounds = [start for _, start in ordered] + [len(skill)]
+    sections = {}
+    for index, (flow, start) in enumerate(ordered):
+        sections[flow] = skill[start:bounds[index + 1]]
+    lines = {flow: next(line for line in section.splitlines() if "Completion requires" in line and "Review" in line) for flow, section in sections.items()}
+    assert len({lines["fast"], lines["standard"], lines["full"]}) == 3
+
+
+def test_projection_reviewer_resolver_independence_block_is_unaffected_by_profile() -> None:
+    """CHG-0048 TDD-012: independence block stays single, shared, unchanged."""
+    skill = _protocol_2_skill_content((
+        ("fast", _flow_with_profile("focused")),
+        ("standard", _flow_with_profile("standard")),
+        ("full", _flow_with_profile("strict")),
+    ))
+    assert skill.count("### Reviewer/Resolver independence") == 1
+
+
+def test_projection_review_profile_is_derived_fresh_not_cached() -> None:
+    """CHG-0048 TDD-014 (FR-012): simulates a C-005 escalation between two
+    renders of the same Flow id -- the second render must reflect the new
+    profile, proving there is no module-level cache keyed only on flow_id."""
+    first = _protocol_2_skill_content((("full", _flow_with_profile("focused")),))
+    second = _protocol_2_skill_content((("full", _flow_with_profile("strict")),))
+
+    assert "`focused` profile" in first
+    assert "Completion requires Strict Review to pass." in second
+    assert "`focused` profile" not in second
+
+
+def test_projection_uses_fixed_strict_review_instruction_under_protocol_1_even_with_a_profile() -> None:
+    """CHG-0048 Iteration 1 R-001: Protocol 1's Contract has no Review
+    Profile concept (C-022/C-023 there are unconditionally adversarial).
+    A Protocol 1 project must never receive a scoped focused/standard
+    instruction merely because the canonical Flow file happens to carry a
+    profile field -- that field is a Protocol 2 concept."""
+    bundle = generate_claude_code_skill_bundle(
+        contract_content="contract",
+        flows=(("fast", _flow_with_profile("focused")),),
+        protocol_id=1,
+    )
+    skill = next(resource.content for resource in bundle.resources if resource.name == "skills/forge/SKILL.md")
+    assert "Completion requires Strict Review to pass." in skill
+    assert "`focused` profile" not in skill
