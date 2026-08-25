@@ -283,3 +283,15 @@ def test_projection_reviewer_resolver_independence_block_is_unaffected_by_profil
         ("full", _flow_with_profile("strict")),
     ))
     assert skill.count("### Reviewer/Resolver independence") == 1
+
+
+def test_projection_review_profile_is_derived_fresh_not_cached() -> None:
+    """CHG-0048 TDD-014 (FR-012): simulates a C-005 escalation between two
+    renders of the same Flow id -- the second render must reflect the new
+    profile, proving there is no module-level cache keyed only on flow_id."""
+    first = _protocol_2_skill_content((("full", _flow_with_profile("focused")),))
+    second = _protocol_2_skill_content((("full", _flow_with_profile("strict")),))
+
+    assert "`focused` profile" in first
+    assert "Completion requires Strict Review to pass." in second
+    assert "`focused` profile" not in second

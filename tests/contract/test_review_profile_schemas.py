@@ -168,3 +168,16 @@ def _minimal_policy_review_v2_document() -> dict:
             },
         },
     }
+
+
+def test_no_historical_change_is_invalidated_by_the_review_profile_change() -> None:
+    """CHG-0048 TDD-015 (FR-011): forge validate against this repository's
+    own .forge/ (containing every historical Change manifest) must still
+    report no findings after the Review Profile schema/Flow/Contract
+    changes -- the additive fields default to strict for anything that
+    predates them."""
+    from forge_cli import validation
+
+    result = validation.validate_project(ROOT, ROOT / "protocol")
+
+    assert result.passed is True, result.findings
