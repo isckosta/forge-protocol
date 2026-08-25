@@ -127,9 +127,11 @@ set.
   paths.
 - Test coverage for both fixes, including a regression test reproducing the
   exact CHG-0045/PR-#36 false-positive scenario (Review frozen, then
-  Documentation/Knowledge Capture/Completion artifacts committed) and a
-  regression test proving the freeze invariant still fires when the
-  *implementation* changes post-freeze.
+  Documentation/Knowledge Capture/Completion artifacts committed while
+  `state.current` reaches `complete`) and a regression test proving MR-015
+  still fires for the same kind of Change-local, pre-Completion edit it
+  flags today when the Change has *not yet* reached `state.current:
+  complete`.
 
 ## Out of Scope
 
@@ -142,6 +144,14 @@ set.
   exception set — independent of this Change. This Change does not merge
   CHG-0045's PR #36; it removes the two gate defects blocking an accurate
   evaluation, so CHG-0045 can be judged on its own remaining, real merits.
+- **MR-015 provides no protection today against a completed Change's
+  implementation changing outside its own `change_root` directory** —
+  found while investigating this Change, confirmed by direct reproduction,
+  real and already live on `main`, independent of CHG-0045. Closing it
+  means resolving the same repo-wide-vs-per-Change tension CHG-0036 already
+  fought once, for the completed state specifically — materially larger
+  than either fix here. Named explicitly (Discovery, Specification's Out
+  of Scope) rather than left an implicit, false assumption.
 - Any other deferred merge-readiness finding already on record
   ([[project-merge-readiness-scoping-bug]]): TDD evidence trusted from the
   manifest without checking `tdd-evidence.yml`'s actual cycles; the Plan
@@ -161,8 +171,11 @@ set.
 - A Change that legitimately writes Documentation/Knowledge Capture/
   Completion artifacts after its Review subject is frozen is never flagged
   MR-015-stale for that alone.
-- A Change whose implementation genuinely changes after its Review subject
-  is frozen is still, correctly, flagged MR-015-stale — no regression in
-  the invariant CHG-0036 originally shipped this check to enforce.
+- A Change that has *not yet* reached `state.current: complete` is still
+  flagged MR-015-stale for exactly the Change-local edits it is flagged for
+  today — no regression in that part of the check's existing behavior. (No
+  claim is made about `change_root`-external implementation changes: MR-015
+  provides no such protection today, in either direction, independent of
+  this Change — see Out of Scope.)
 - None of the ten currently-ambiguous Adapter-generated paths trigger
   MR-017 anymore.

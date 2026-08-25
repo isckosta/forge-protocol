@@ -95,9 +95,16 @@ Then MR-015 does not fire.
 AC-002
 Given the same Change and frozen commit `S`
 When a commit after `S` modifies a file outside the Change's own directory
-(e.g. `src/forge_cli/...`), regardless of `state.current`
-Then MR-015 still fires — no regression in the invariant CHG-0036 shipped
-this check to enforce.
+(e.g. `src/forge_cli/...`)
+Then MR-015's behavior toward that file is unchanged by this Change in
+either direction. **This is not a claim that MR-015 detects such a
+change** — Discovery confirms it structurally cannot: its `git diff`
+pathspec is `-- change_root`, so paths outside the Change's directory are
+never part of what this check inspects, independent of `state.current` and
+independent of this Change. AC-002 exists to bound this Change's own
+blast radius (the state-conditioned tolerance applies only inside
+`change_root`), not to assert a protection this repository does not
+currently have.
 
 AC-003
 Given a Change whose Review subject is frozen at commit `S`, whose
@@ -217,6 +224,16 @@ Specification Review.
 
 - MR-006 and MR-008: confirmed in Discovery as genuine CHG-0045 provenance
   gaps, not gate defects. Not addressed by any requirement here.
+- **MR-015 provides no protection today against a completed Change's
+  implementation changing outside its own `change_root` directory**
+  (Discovery, "A more severe, orthogonal, pre-existing gap..."),
+  confirmed by direct reproduction against a disposable fixture repository.
+  This is real, already live on `main`, and independent of everything
+  CHG-0045 triggered — but closing it means resolving the same repo-wide-
+  vs-per-Change tension CHG-0036 already fought once, for the *completed*
+  state specifically, which is a materially larger problem than either FR
+  here. Left unaddressed, named explicitly rather than silently carried
+  forward as an assumed protection.
 - Any other deferred merge-readiness finding on record
   ([[project-merge-readiness-scoping-bug]]).
 - Redesigning the materiality policy's schema, or reclassifying any path

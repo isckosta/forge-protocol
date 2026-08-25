@@ -170,12 +170,15 @@ other Implementation decision.
   accepted at all, and MR-006/MR-007/MR-012/MR-018/MR-021 independently
   cross-check that recorded Review/Verification evidence is internally
   consistent and provenance-backed — a Change cannot manufacture a
-  corroborated `complete` state from nothing. A Change that *is*
-  legitimately complete and then has its Change-local files further edited
-  is, by definition, no longer misrepresenting unreviewed work as
-  reviewed; MR-015's purpose (protect the *reviewed implementation*) is
-  satisfied by AC-002's unconditional, structural protection of
-  `change_root`-external paths.
+  corroborated `complete` state from nothing.
+- **This Change does not close, and could be mistaken for closing, the
+  separate and more severe pre-existing gap that MR-015 provides no
+  protection at all — today, independent of this Change, in either
+  direction — against a completed Change's implementation changing
+  outside its own `change_root`** (Discovery; confirmed by direct
+  reproduction). Not mitigated by this Change; recorded explicitly in
+  Specification's Out of Scope rather than left implicit, precisely so it
+  is not read as resolved by AC-002's narrower, corrected guarantee.
 - **The additive `merge-readiness.yml` policy change could be read as
   loosening materiality classification generally.** Mitigated: FR-002/AC-005
   requires the fallback to stay `ambiguous` for every other path; only ten

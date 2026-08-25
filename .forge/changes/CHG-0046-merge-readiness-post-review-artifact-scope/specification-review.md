@@ -93,10 +93,21 @@ completion-gating check corroborating it) rather than forbidding
   — it does not reference any Flow's stage list at all, which if anything
   makes CON-003 easier to satisfy than the original stage-derivation
   design would have.
-- AC-002 (implementation changes outside the Change directory still flag
-  MR-015) is untouched by either finding and remains the Specification's
-  primary defense against weakening the invariant CHG-0036 shipped this
-  check to enforce.
+- AC-002 is untouched by SR-001/SR-002. **Correction, found during
+  Architecture, after this Review's original pass:** AC-002's original
+  wording claimed MR-015 "still fires" for `change_root`-external changes
+  as an existing protection this Change must not regress. Architecture's
+  own trace of `evaluator.py:134`'s `-- change_root` `git diff` pathspec,
+  confirmed by direct reproduction, found MR-015 structurally never
+  inspects any path outside `change_root`, independent of `state.current`
+  and independent of this Change — there is no such existing protection to
+  regress. AC-002 was revised in `specification.md` to bound this Change's
+  blast radius rather than assert a protection that does not exist; the
+  finding itself is recorded in Discovery ("A more severe, orthogonal,
+  pre-existing gap...") and named explicitly in Out of Scope. Corrected
+  directly in `specification.md`, not re-litigated as a new SR-numbered
+  finding, since it does not change either FR's substance — only AC-002's
+  own wording was inaccurate.
 - Out of Scope's exclusion of MR-006/MR-008 remains correct: neither
   finding here touches provenance-record completeness, only the temporal
   window in which Change-local *files* may differ from the frozen subject.

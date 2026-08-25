@@ -186,6 +186,44 @@ policy's prefix list anticipates. Any PR touching generated Adapter output
 — which is the entire mechanism CHG-0045 built — trips MR-017
 unconditionally.
 
+### A more severe, orthogonal, pre-existing gap found while probing MR-015's actual scope
+
+Verifying what protection AC-002 (Specification, drafted after this
+paragraph) could rely on surfaced that MR-015's `-- change_root` pathspec
+(`evaluator.py:134`) means it **never inspects any path outside the
+Change's own directory, regardless of `state.current`.** Empirically
+reproduced against a disposable fixture repository (not this repository):
+freeze a Change's subject as `complete` with a passing Review/Verification
+exactly as `test_merge_check_accepts_complete_change_without_material_runtime_diff`
+does, then commit a further change to `src/runtime.py` on top, attributed
+to the same already-complete Change (no new Change directory) —
+`forge change merge-check` reports **`MERGE READY`**. `forge validate`
+also does not catch it: `_reviewable_workspace_delta`'s C-026 check is
+whole-repo-scoped (unlike MR-015) and *would* see the `src/` change, but
+it is gated by the same `st.get("current")!="complete"` condition
+(`validation/__init__.py:375`) this Discovery already cited as the
+carve-out MR-015 is missing — so once a Change is `complete`, neither
+mechanism verifies that the actually-merged implementation still matches
+what Strict Review reviewed.
+
+This is real and already live on `main`, independent of CHG-0045 and of
+anything MR-015/MR-017's fixes touch — MR-015 was, per CHG-0036's own
+history, deliberately scoped to `change_root` to fix cross-Change
+contamination (memory: [[project-merge-readiness-scoping-bug]] finding 1),
+not to detect a Change's own implementation drift; nothing else in
+`evaluator.py` fills that gap for the completed-Change case. Adopting the
+temporal `state.current == "complete"` boundary this Discovery otherwise
+recommends for `change_root` paths does not make this worse — MR-015 already
+provided zero protection for non-`change_root` paths regardless of state —
+but it also does not make it better, and a reader could otherwise mistake
+"MR-015 still protects `change_root`-external paths" for a true statement.
+It is not. Closing this gap requires resolving the same tension CHG-0036
+already fought once (repo-wide staleness detection vs. cross-Change false
+positives) for the *completed* state specifically, which is a materially
+larger design problem than either MR-015 or MR-017's fix here — recorded
+as an explicit Out-of-Scope finding for a future Change, not silently
+absorbed into this one.
+
 ### MR-006 and MR-008: real, but not this gate's defect
 
 `bound_verification_records` (`evaluator.py:155-161`) requires a
