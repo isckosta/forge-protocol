@@ -414,3 +414,38 @@ records:
         (2 consecutive resolution_verification Iterations with
         new_material_findings > 0) not reached -- only Iteration 2 had a
         nonzero count, not two consecutive.
+  - id: renewal-completion-001
+    role: implementation
+    execution:
+      id: claude-code-implementation-0045
+      context_id: claude-code-session-2026-08-25
+    recorded_at: '2026-08-25T07:00:00Z'
+    scope:
+      - .forge/changes/CHG-0045-agent-adapter-architecture-skill-authority-consolidation/knowledge-capture.md
+      - .forge/changes/CHG-0045-agent-adapter-architecture-skill-authority-consolidation/tasks.md
+    revision:
+      id: chg-0045-completion-001
+      immutable_ref:
+        type: git_commit
+        value: 968af1d80c7b147f03362053cf30af4c24cb57c5
+      commit: 968af1d80c7b147f03362053cf30af4c24cb57c5
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: knowledge-capture.md
+      statement: >-
+        Renewal record for this Change's own Documentation Impact /
+        Knowledge Capture bookkeeping, written after review-003's frozen
+        subject (95b521e): knowledge-capture.md (durable lessons from
+        Implementation and Review, including the two mechanical-protection
+        lessons T-023 surfaced) and tasks.md (T-022 recording Review
+        Iteration 3's PASS, T-023 post-Review housekeeping, T-024
+        Documentation Impact, T-025 Knowledge Capture) -- exactly the
+        Flow-scheduled post-strict_review bookkeeping CHG-0046's own
+        FR-001 mechanism (Protocol 2 Sec 5 Sec 8) exists to tolerate, via
+        an explicit, anchored, scoped record rather than an implicit
+        manifest-state flag. No implementation, test, or specification/
+        architecture content changed in this delta (git diff
+        95b521e..968af1d, scoped to this Change's own directory, confirms
+        exactly the two paths in scope above, plus the always-exempt
+        manifest.yml/provenance.yml/review.md).
