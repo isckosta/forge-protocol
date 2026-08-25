@@ -34,9 +34,9 @@ tdd:
 verification:
   status: passed
 review:
-  status: pending
-  iteration: 4
-  blockers: 1
+  status: passed
+  iteration: 5
+  blockers: 0
   majors: 0
   minors: 0
   observations: 1
@@ -103,6 +103,15 @@ review:
         disagreement. The Resolution Delta itself matches its declared
         scope exactly (no Out-of-Scope Mutation); R005 is a correctness
         defect within that Delta, not an Out-of-Scope Mutation.
+    - id: review-005
+      revision: chg-0046-resolution-003
+      subject_provenance: resolution-003
+      reviewer_provenance: review-005
+      kind: resolution_verification
+      status: passed
+      full_review_required: false
+      new_material_findings: 0
+      finding_classes: []
 documentation:
   impact_evaluated: true
   update_required: true

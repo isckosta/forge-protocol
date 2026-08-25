@@ -10,7 +10,20 @@ status: active
 
 ## Verdict
 
-**REQUEST CHANGES (current, Iteration 4 — `kind: resolution_verification`,
+**PASS (current, Iteration 5 — `kind: resolution_verification`, PASSED).**
+`resolution-003` adds the lower-bound ancestor check R005 (Iteration 4,
+BLOCKER) required — a renewal record's commit must now be an ancestor of
+(or equal to) `head_revision` **and** a descendant of (or equal to) the
+current `subject_commit`, both checked, mirroring corrected
+Specification FR-001/AC-001 text and Architecture's Design section
+exactly. Independently re-derived against Protocol §5/§8/§11/§14's own
+text (not trusted from any prior Iteration's summary), independently
+re-traced against the actual code, and independently re-reproduced
+end-to-end against the exact BLOCKER scenario Iteration 4 found: the
+current code genuinely rejects it. No new material finding. See
+"## Iteration 5 — Resolution Verification" below.
+
+**REQUEST CHANGES (superseded, Iteration 4 — `kind: resolution_verification`,
 FAILED).** A new BLOCKER (R005) was independently found in
 `resolution-002`'s own Resolution Delta — the design that replaced the
 `state.current`-keyed mechanism Iterations 1–3 reviewed. Iteration 3's
@@ -18,9 +31,10 @@ PASS below applied to the subject *then* current (`ff8fe51`, Resolution
 `resolution-001-scope`); that subject was superseded by `resolution-002`
 (`6c6cdab`) after an external reviewer (Codex, PR #37) found the design
 Iterations 1–3 all passed directly contradicted
-`protocol/versions/2/specification.md` §5. Iteration 4 reviews that new
-subject and does not pass it. See "## Iteration 4 — Resolution
-Verification" below.
+`protocol/versions/2/specification.md` §5. Iteration 4 reviewed that
+subject and did not pass it; R005 is now resolved by `resolution-003` and
+independently re-verified in Iteration 5. See "## Iteration 4 —
+Resolution Verification" below.
 
 - **Iteration 1** (`kind: initial_review`) — **REQUEST CHANGES**: 0
   BLOCKER, 2 MAJOR (R001, R002), 0 MINOR, 1 OBSERVATION (R003).
@@ -51,6 +65,16 @@ Verification" below.
   unexplained divergence from a later frozen subject — independently
   reproduced end-to-end). See "## Iteration 4 — Resolution Verification"
   below for full detail.
+- **Iteration 5** (`kind: resolution_verification`) — **PASS**: reviews
+  `resolution-003` (`e4832ad`), which adds the missing lower-bound
+  ancestor check (`subject_commit` an ancestor of, or equal to, the
+  renewal record's own commit) alongside the pre-existing upper bound.
+  Independently re-derived against Protocol §5/§8/§11/§14's own text,
+  independently re-traced through the actual code (including the
+  boundary and single-freeze-cycle cases), and independently
+  re-reproduced end-to-end against the exact BLOCKER scenario Iteration 4
+  found: correctly rejected now. 0 new material findings. See
+  "## Iteration 5 — Resolution Verification" below for full detail.
 
 **REQUEST CHANGES (Iteration 1, `kind: initial_review`), as originally
 recorded.** 0 BLOCKER, 2 MAJOR (R001, R002), 0 MINOR, 1 OBSERVATION (R003).
@@ -76,23 +100,26 @@ Architecture ("Design" section) explicitly promise (R002).
 
 | | |
 |---|---|
-| **Iterations** | 4 |
-| **Current Subject** | `6c6cdab52cc519bff21b444188b6c059585e36d0` (Resolution `resolution-002`) |
-| **Open Blockers** | 1 (R005) |
+| **Iterations** | 5 |
+| **Current Subject** | `e4832add69e85a87f50e86f20a8b1edca58a7299` (Resolution `resolution-003`) |
+| **Open Blockers** | 0 |
 | **Open Majors** | 0 |
 | **Open Minors** | 0 |
 | **Open Observations** | 1 (R003) |
-| **Final Iteration** | 4 |
-| **Result** | FAILED |
+| **Final Iteration** | 5 |
+| **Result** | PASS |
 
 Iteration 1 subject (superseded): `60b699bb69c06ed0b078572dd705191e73441c68`.
 Iteration 2/3 subject (superseded): `ff8fe51cc3dd237252c579f9775d8122254bf189`.
+Iteration 4 subject (superseded): `6c6cdab52cc519bff21b444188b6c059585e36d0`.
 R001/R002 (Iteration 1, MAJOR) resolved by `resolution-001` and
 independently re-verified in Iteration 2 — no longer outstanding. R004
 (Iteration 2, MAJOR) resolved by `resolution-001-scope` and independently
 re-verified in Iteration 3 — no longer outstanding, against that
-(superseded) subject. R005 (Iteration 4, BLOCKER) is open against the
-current subject (`resolution-002`) and blocks Completion.
+(superseded) subject. R005 (Iteration 4, BLOCKER) resolved by
+`resolution-003` and independently re-verified in Iteration 5 — no longer
+outstanding. R003 (OBSERVATION) remains open, non-blocking, unchanged
+since Iteration 1.
 
 ## Current Subject
 
@@ -125,7 +152,7 @@ independent test/CLI execution performed in this session.
 | R002 | MAJOR | Resolved (Iteration 2) | 1 |
 | R003 | OBSERVATION | Open | 1 |
 | R004 | MAJOR | Resolved (Iteration 3) | 2 |
-| R005 | BLOCKER | Open | 4 |
+| R005 | BLOCKER | Resolved (Iteration 5) | 4 |
 
 ## Iteration 1 — REQUEST CHANGES
 
@@ -1068,3 +1095,265 @@ not hypothetical, and is a defect within `resolution-002`'s own
 Resolution Delta. Per the instructions governing this Iteration: **do not
 mark this passed under pressure to finally get this done.** This Review
 Iteration is **FAILED**.
+
+## Iteration 5 — Resolution Verification
+
+### Scope and authority
+
+Independent Resolution Verification of `resolution-003`
+(`e4832add69e85a87f50e86f20a8b1edca58a7299`), executed in a freshly
+spawned Execution and Execution Context
+(`claude-code-review-0046-independent-5` /
+`claude-code-review-session-2026-08-25-iter5`, recorded in this Review's
+own `provenance.yml` entry `review-005`), distinct from every prior
+Execution/Context in this Change's history (`claude-code-implementation-0046`
+for all Implementation/Resolution work, and
+`claude-code-review-0046-independent[-2/-3/-4]` for the four prior
+Reviews) and from `resolution-003`'s own
+(`claude-code-implementation-0046` / `claude-code-session-2026-08-25`).
+Per C-047/§11, bounded to R005 (the sole Finding `resolution-003`
+targets), defects within `resolution-003`'s own Resolution Delta, and
+Out-of-Scope Mutation. This Iteration re-read
+`protocol/versions/2/specification.md` §5/§8/§11/§14 directly, in full,
+before looking at code, per the instruction that opened this task — this
+Change has already had two internal design mistakes (the `state.current`
+boundary, and the missing lower bound) survive prior Iterations that
+reasoned from paraphrase rather than the Protocol's own text, so
+re-deriving conformance independently, not trusting any prior Iteration's
+summary of it, was treated as mandatory rather than optional.
+
+### R005 — re-checked against the actual two-bound code — resolved
+
+Read `git show e4832add69e85a87f50e86f20a8b1edca58a7299:src/forge_cli/merge_readiness/evaluator.py`
+directly (not `architecture.md`'s code sketch, though it matches
+verbatim). The renewal loop inside `_check_change()` now runs, per
+candidate record, in order: (1) role filter (`implementation`/
+`resolution`), (2) 40-character commit extraction, (3) **upper bound** —
+`git merge-base --is-ancestor renewal_commit head_revision`, (4) **lower
+bound** — `git merge-base --is-ancestor subject_commit renewal_commit`
+(the line this Resolution adds), (5) non-empty `scope`, (6)
+`_first_committed_record` anchoring (MR-021's exact function, reused
+verbatim). Both (3) and (4) must pass before a record's `scope` is
+folded into `renewed_scope`. `subject_commit` itself (the value the lower
+bound is checked against) is computed once, earlier in the same
+`_check_change()` call (line ~120), from `subject_revision` →
+`subject_record` → `record_index.get(final_iteration.get("subject_provenance"))`,
+where `final_iteration` is the last entry in the manifest's `iterations`
+list with `status: passed` — read fresh from `manifest.yml`/
+`provenance.yml` at `head_revision` on every invocation. There is no
+caching across evaluations and no code path that reuses a `subject_commit`
+value computed for a different Iteration's `_check_change()` call; each
+`forge change merge-check` invocation re-derives it from whichever Review
+Iteration currently reads as "last passed" in the manifest at that
+`head_revision`. This directly answers the task's stale-`subject_commit`
+question: it cannot use a stale value, because it is never stored between
+evaluations — it is recomputed from the current committed manifest state
+each time.
+
+**End-to-end re-reproduction of the exact BLOCKER scenario**, not trusted
+from `resolution-003`'s own statement or from the new test's existence
+alone — read `test_merge_check_rejects_a_renewal_record_anchored_before_the_current_freeze`
+(`tests/cli/test_merge_check.py:403-476`) in full and manually re-derived
+the same scenario by hand against a disposable fixture: froze `S1`
+(`state.current: complete`), added `renewal-001` (`role: implementation`,
+commit shortly after `S1`, `scope: [knowledge-capture.md]`) — a
+legitimate renewal explaining a real post-`S1` edit. Froze a **second**,
+later subject `S2` via a passed `resolution_verification` Iteration (a
+new `role: resolution` record, `scope: [src/runtime.py]`, plus its own
+`review-002` iteration entry with `status: passed`) — `knowledge-capture.md`
+unchanged at `S2`, byte-identical to `S1`. Then, **after `S2`, with no
+new renewal record**, modified `knowledge-capture.md` again and committed
+it as `head`. Ran `forge change merge-check --base <base> --head <head>`
+against the current (`e4832ad`) `evaluator.py`:
+
+```
+FAIL MR-015 [CHG-9011]: REVIEW SUBJECT STALE
+MERGE BLOCKED
+```
+
+Correctly rejected: `renewal-001`'s commit satisfies the upper bound
+(ancestor of `head`, trivially, forever) but fails the lower bound —
+`subject_commit` is now `S2` (the last-passed Iteration's subject), and
+`S2` is *not* an ancestor of `renewal-001`'s commit (which predates `S2`)
+— so `renewal-001` contributes nothing to `renewed_scope`, and
+`knowledge-capture.md` correctly remains uncovered. This is the exact
+inverse of Iteration 4's `MERGE READY` reproduction against the
+pre-Resolution code. The genuinely new test in `tests/cli/test_merge_check.py`
+asserts the identical outcome (`"MR-015" in result.stdout`, `exit_code == 1`)
+and passes.
+
+### Edge cases probed independently (not just the headline scenario)
+
+- **Different-branch / merge-commit ancestry.** `git merge-base
+  --is-ancestor A B` is a well-defined DAG-reachability check: it answers
+  "is A reachable from B by following parent links," including through
+  merge commits, regardless of which branch A was originally authored on.
+  There is no special-case behavior here for merged-in side branches that
+  would make the check report something other than actual repository
+  ancestry — a renewal commit merged into `head_revision`'s history *is*
+  an ancestor of `head_revision` by definition, and the lower bound
+  independently requires `subject_commit` to be its own ancestor too. Both
+  bounds are strict DAG reachability, not heuristics, so no merge
+  topology can make a renewal record satisfy both bounds without actually
+  sitting, in the true commit graph, between `subject_commit` and
+  `head_revision`. What this design does *not* do — and explicitly
+  disclaims, in Specification's own Boundary section for FR-001 — is
+  verify the renewal record's *content* is correct; it checks only that
+  an anchored, scoped, temporally-bounded record exists. That is a
+  documented, Protocol-consistent limitation (the same `recorded`-assurance
+  self-attestation model §4 already applies to every other provenance
+  record in this Protocol), not a defect this Resolution introduces or
+  should have closed — closing it would require a different Protocol
+  primitive (`verified` assurance) that FR-001 never claimed to provide.
+- **Renewal record's commit equal to `subject_commit` itself.** `git
+  merge-base --is-ancestor X X` succeeds (a commit is trivially its own
+  ancestor), so both bounds pass when `renewal_commit == subject_commit`.
+  This matches Specification's explicit "(or equal to)" language on both
+  bounds (FR-001, AC-001) — a provenance record anchored at the exact
+  frozen subject commit is deliberately eligible to supply scope-limited
+  tolerance, not a boundary bug. This is also an ordinary, expected shape:
+  a `role: resolution` record is routinely recorded at the same commit as
+  the subject freeze itself, so more than one record can legitimately
+  coincide with `subject_commit`. No behavioral surprise found here.
+- **Single-freeze-cycle Change (the ordinary, common case).** Traced by
+  hand: with only one freeze ever, `subject_commit = S`, and a renewal
+  record `R` created after `S` in linear history. Lower bound: `S`
+  ancestor of `R` — true, since `R` postdates `S` in a straight line.
+  Upper bound: `R` ancestor of `head_revision` — true. Both pass exactly
+  as before this Resolution; `test_merge_check_tolerates_change_local_artifact_with_anchored_renewal_record`
+  (a single-freeze-cycle fixture, unmodified by `resolution-003`) still
+  passes, confirming the lower bound adds no friction to the common case.
+  This Change's own history is itself additional evidence: Iterations 1–3
+  (single effective freeze cycle at a time) never needed a second bound
+  to behave correctly; only Iteration 4's two-freeze-cycle scenario
+  exposed the gap.
+- **`subject_commit` re-anchoring by a later Review Iteration.** Already
+  covered above (subject_commit is recomputed fresh, per call, from the
+  manifest's current last-passed iteration) — there is no code path where
+  a later Iteration's fresh `_check_change()` call could observe an
+  earlier Iteration's `subject_commit`.
+
+No remaining gap in the ancestor-bound logic was found under any of these
+probes.
+
+### Specification / Architecture / code consistency — reconciled
+
+Iteration 4's second finding (within R005) was that Specification's
+FR-001/AC-001 said "equal `head_revision` exactly" while Architecture and
+the code both implemented "ancestor of." Re-read `specification.md`
+directly: FR-001's Requirement text now reads "**both** bounds: `R` is an
+ancestor of (or equal to) `head_revision`, and `S` is an ancestor of (or
+equal to) `R`" (specification.md:75-77), AC-001 requires the record's
+commit to be "an ancestor of (or equal to) `head_revision` **and** a
+descendant of (or equal to) (`S`)" (specification.md:127-129), and a new
+AC-008 (specification.md:133-143) states the exact two-freeze-cycle
+scenario and its expected rejection. `architecture.md`'s Design section
+code sketch (architecture.md:75-83) shows both `git merge-base
+--is-ancestor` calls, annotated with the same R005 citation, and matches
+the actual `evaluator.py` diff verbatim. All three artifacts — Specification,
+Architecture, code — now agree; no undisclosed disagreement remains.
+
+### Resolution Delta — no Out-of-Scope Mutation, scope matches exactly
+
+```
+$ git diff --name-only 6c6cdab52cc519bff21b444188b6c059585e36d0 e4832add69e85a87f50e86f20a8b1edca58a7299
+.forge/changes/CHG-0046-.../architecture.md
+.forge/changes/CHG-0046-.../manifest.yml
+.forge/changes/CHG-0046-.../provenance.yml
+.forge/changes/CHG-0046-.../review.md
+.forge/changes/CHG-0046-.../specification.md
+.forge/changes/CHG-0046-.../tasks.md
+.forge/changes/CHG-0046-.../tdd-evidence.yml
+.forge/changes/CHG-0046-.../verification.md
+src/forge_cli/merge_readiness/evaluator.py
+tests/cli/test_merge_check.py
+```
+
+Subtracting the three always-exempt review-control paths
+(`manifest.yml`/`provenance.yml`/`review.md`) leaves exactly the 7 paths
+`resolution-003`'s own `scope` declares — no more, no less. **No
+Out-of-Scope Mutation; no under- or over-declared scope.**
+
+### Provenance integrity checks
+
+- **Prior records unmodified (C-026 append-only).** `resolution-001`,
+  `resolution-001-scope`, `resolution-002`, and Reviews 1–4's own records
+  remain, by construction of this append-only YAML history, untouched by
+  `resolution-003`'s addition — `resolution-003` is a new record, not a
+  rewrite of any prior one.
+- **`resolution-003` itself.** `role: resolution`, `targets: [R005]`,
+  `scope` naming exactly the 7 Change-local/code/test paths above,
+  `revision.commit: e4832add69e85a87f50e86f20a8b1edca58a7299`. Frozen by
+  a subsequent commit (`2953107`) that touches only `provenance.yml` —
+  confirmed directly (`git show --stat 2953107`): review-control metadata
+  only, per §5's exception.
+- **Effective reviewable workspace unchanged since `e4832ad`.** `git diff
+  --stat e4832ad HEAD` shows exactly one file, `provenance.yml`, 43
+  insertions, 0 deletions — the `resolution-003` freeze record itself.
+  `git status --short --untracked-files=all` at the current tip is empty.
+
+### Independent test/CLI re-run
+
+Not accepted from `verification.md`'s or `resolution-003`'s stated claim
+alone — re-run directly in this Iteration's own Execution:
+
+```
+.venv/bin/python -m pytest tests/cli/test_merge_check.py tests/unit/test_merge_readiness_policy.py -v
+  -> 27 passed (includes TDD-012:
+     test_merge_check_rejects_a_renewal_record_anchored_before_the_current_freeze)
+.venv/bin/python -m pytest -q
+  -> 707 passed, 2 warnings (same two pre-existing, unrelated FER warnings
+     as Iterations 1-4)
+.venv/bin/forge validate
+  -> Forge project is valid
+.venv/bin/forge doctor
+  -> clean except the same two pre-existing, disclosed WARNs
+     (adapter:installation_missing, migration_available)
+```
+
+### New Findings introduced by this Resolution
+
+None. `new_material_findings: 0`.
+
+### Convergence accounting
+
+Iteration 4 ended with `new_material_findings: 1` (R005), starting a new
+trailing run of length 1. This Iteration (5) ends with
+`new_material_findings: 0` — the trailing run of `resolution_verification`
+Iterations with `status: failed` and `new_material_findings > 0` is
+broken at length 1, well below the Convergence Limit of 2. No Convergence
+Limit concern; no `convergence_decision` is required on the next
+Iteration.
+
+### Checked and found sound (Iteration 5)
+
+- The two-bound ancestor check genuinely closes the gap Iteration 4
+  found: independently re-derived against Protocol §5/§8/§11/§14's own
+  text, independently re-traced through the actual code, and
+  independently re-reproduced end-to-end against the exact BLOCKER
+  scenario (`MERGE BLOCKED` now, where the pre-Resolution code reported
+  `MERGE READY`).
+- No remaining gap found in the ancestor-bound logic across the probed
+  edge cases (merge/branch topology, the `renewal_commit == subject_commit`
+  boundary, the single-freeze-cycle common case, `subject_commit`
+  freshness across Iterations).
+- Resolution Delta matches `resolution-003`'s declared `scope` exactly —
+  no Out-of-Scope Mutation, no over- or under-broad declaration.
+- Specification's FR-001/AC-001, Architecture's Design section, and the
+  actual code now mutually agree on the two-bound "ancestor of ... and
+  descendant of" relation — Iteration 4's disclosed textual conflict is
+  resolved.
+- Full pytest suite independently re-run: 707 passed. `forge
+  validate`/`forge doctor` independently re-run: clean, same two
+  pre-existing disclosed `WARN`s.
+
+### Conclusion
+
+`resolution-003` genuinely resolves R005: the missing lower bound is
+added exactly where Iteration 4 identified it belonged, the exact
+reproduced BLOCKER scenario is now correctly rejected, no new gap was
+found under adversarial probing of merge topology, boundary, and
+single-freeze-cycle cases, and Specification/Architecture/code are now
+mutually consistent. The Resolution Delta contains no Out-of-Scope
+Mutation. R003 (OBSERVATION) remains open, non-blocking, unchanged since
+Iteration 1. No new material finding. This Review Iteration is **PASS**.

@@ -491,3 +491,72 @@ records:
         touched; no Out-of-Scope Mutation. Full suite: 707 passed (was
         706 before this Resolution's TDD-012 net-addition). forge
         validate/doctor clean once refrozen.
+  - id: review-005
+    role: review
+    execution:
+      id: claude-code-review-0046-independent-5
+      context_id: claude-code-review-session-2026-08-25-iter5
+    recorded_at: '2026-08-25T06:00:00Z'
+    revision:
+      id: chg-0046-resolution-003
+      immutable_ref:
+        type: git_commit
+        value: e4832add69e85a87f50e86f20a8b1edca58a7299
+      commit: e4832add69e85a87f50e86f20a8b1edca58a7299
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: review.md
+      statement: >-
+        Independent Resolution Verification (Iteration 5,
+        kind: resolution_verification) of CHG-0046's frozen Resolution
+        subject (resolution-003, e4832add69e85a87f50e86f20a8b1edca58a7299),
+        conducted in an Execution and Execution Context distinct from
+        every prior Execution/Context in this Change's history and from
+        resolution-003's own (claude-code-implementation-0046 /
+        claude-code-session-2026-08-25). Bounded per C-047/Sec 11 to R005,
+        defects within resolution-003's own Resolution Delta, and
+        Out-of-Scope Mutation. Read protocol/versions/2/specification.md
+        Sec 5/8/11/14 directly, in full, before looking at code -- not
+        through any prior Iteration's paraphrase. Re-traced the actual
+        code (git show e4832ad:src/forge_cli/merge_readiness/evaluator.py):
+        the renewal loop now requires both an upper bound (renewal_commit
+        an ancestor of head_revision) and a lower bound (subject_commit an
+        ancestor of renewal_commit) before a record's scope is honored;
+        subject_commit is recomputed fresh inside _check_change() from the
+        manifest's current last-passed iteration on every invocation, so it
+        cannot be stale across Iterations. Independently re-reproduced the
+        exact BLOCKER scenario Iteration 4 found (renewal R1 anchored
+        between S1 and S2, tampering after S2, no fresh renewal) against a
+        disposable fixture: FAIL MR-015/MERGE BLOCKED now, where the
+        pre-Resolution code reported MERGE READY. Probed edge cases: merge/
+        branch ancestry (git merge-base --is-ancestor is strict DAG
+        reachability, no gap found -- content correctness remains
+        self-attested by design, per FR-001's own disclosed Boundary, not a
+        defect this Resolution should have closed); renewal_commit ==
+        subject_commit (both bounds pass, matching Specification's explicit
+        "or equal to" language, not a boundary bug); single-freeze-cycle
+        Change (lower bound trivially satisfied, no regression to the
+        common case, confirmed against the pre-existing single-freeze-cycle
+        fixture test still passing). No remaining gap found. Confirmed
+        specification.md's FR-001/AC-001 now state both bounds explicitly
+        (matching the code) and a new AC-008 states the two-freeze-cycle
+        scenario; architecture.md's Design section code sketch matches the
+        actual code verbatim -- Iteration 4's disclosed Specification/
+        Architecture/code disagreement is resolved. Resolution Delta (git
+        diff 6c6cdab..e4832ad, excluding manifest.yml/provenance.yml/
+        review.md) independently recomputed: matches resolution-003's
+        declared scope exactly, no Out-of-Scope Mutation. Full pytest suite
+        independently re-run: 707 passed. tests/cli/test_merge_check.py
+        plus tests/unit/test_merge_readiness_policy.py: 27 passed
+        (includes TDD-012). forge validate: "Forge project is valid".
+        forge doctor: clean, same two pre-existing disclosed WARNs. R001-
+        R004's substance was not re-litigated (already independently
+        re-verified in Iterations 1-3). new_material_findings: 0.
+        consecutive_unconverged_verifications after this Iteration: 0 (the
+        trailing run of failed resolution_verification Iterations with
+        new_material_findings > 0 was broken by this Iteration's own zero
+        count, ending the length-1 run Iteration 4 started) -- below the
+        Convergence Limit of 2, no Non-Convergence. Verdict: PASS. Full
+        findings in review.md, "## Iteration 5 -- Resolution
+        Verification".
