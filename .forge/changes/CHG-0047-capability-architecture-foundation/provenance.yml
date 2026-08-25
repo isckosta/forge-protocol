@@ -121,3 +121,20 @@ records:
       observed_by: self
       reference: review.md#resolution-of-iteration-2
       statement: Resolution of Strict Review Iteration 2 (reviewer-002) findings R-003, R-004, and R-005. R-003 fixed by quoting the two tdd-evidence.yml notes strings that YAML had parsed as single-key mappings. R-004 and R-005 (delimiter-type half) fixed by making loader.py's _FENCE_PATTERN tolerate up to 3 leading spaces/tabs and tracking which delimiter character opened the current fence, with a RED-before-GREEN regression test (TDD-004). R-005's remaining lower-severity half (unterminated fence / mismatched delimiter length producing a generic rather than fence-specific error) is a documented, accepted, non-silent limitation, not fixed (C-039 proportionality). Re-ran full suite (749 passed, 2 warnings) and forge validate (PASS) after the fix. Reviewable Git workspace confirmed clean before this freeze.
+  - id: reviewer-003
+    role: review
+    execution:
+      id: a853c531d6133a76b
+      context_id: independent-review-context-a853c531d6133a76b
+    recorded_at: '2026-08-25T04:00:00Z'
+    revision:
+      id: chg-0047-resolution-002
+      immutable_ref:
+        type: git_commit
+        value: ea433b64bda9e5a92977cdb05dd5efd7d10810a6
+      commit: ea433b64bda9e5a92977cdb05dd5efd7d10810a6
+    source:
+      assurance: recorded
+      observed_by: operator
+      reference: review.md#iteration-3
+      statement: Independent Strict Review Iteration 3 (Resolution Verification, fresh execution, isolated Git worktree at .claude/worktrees/agent-a853c531d6133a76b, no shared context with Resolution 2's Execution or with either prior Reviewer) returned REQUEST CHANGES against ea433b6 — R-006 (MAJOR, R-005's remaining "mismatched delimiter length" limitation can fail completely silently via a shorter same-type closing fence, contradicting the explicit "fails loudly" claim in tdd-evidence.yml/verification.md/review.md that justified not fixing it) and R-007 (MINOR, informational — indentation tolerance also accepts tabs beyond the documented "3 leading spaces," a documentation-accuracy gap, not a corruption risk). R-003/R-004/the delimiter-type half of R-005 independently re-confirmed fixed via adversarial cases beyond the shipped tests; no Out-of-Scope Mutation. This is the second consecutive resolution_verification Iteration with material findings, reaching Protocol 2's Convergence Limit (section 12-13).
