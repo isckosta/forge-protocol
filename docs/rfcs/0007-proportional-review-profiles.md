@@ -95,24 +95,41 @@ populated with real per-Flow variance for Review itself.
    separation, provenance binding), C-027 (blocking Findings block
    Completion), C-047–C-050 (Resolution Verification scoping,
    Out-of-Scope Mutation, Convergence Limit, unrelated-latent-finding
-   handling), C-067–C-068 (Artifact structure guidance, outcome-before-
-   evidence). Finding severities (BLOCKER/MAJOR/MINOR/observation), the
-   Convergence Limit (2), and repository-native provenance are a single
-   mechanism shared by all three profiles.
+   handling), C-059 (a Reviewer discovering a missing material Decision
+   requests changes, regardless of profile — this is triggered by
+   discovery, not by a search mandate, so it is profile-orthogonal by
+   construction), C-067–C-068 (Artifact structure guidance,
+   outcome-before-evidence). Finding severities
+   (BLOCKER/MAJOR/MINOR/observation), the Convergence Limit (2), and
+   repository-native provenance are a single mechanism shared by all
+   three profiles.
 7. C-031 is clarified, not weakened: *"FAST's Review Profile
    (`focused`) MUST NOT remove applicable TDD, Verification, Review, or
    Documentation Impact evaluation — it narrows Review's search
    obligation, not its authority to block on a real Finding."*
-8. Schema changes are additive only: `profile` is a new, optional
-   (defaulted) enum field in `protocol/schemas/change-v2.schema.json`'s
-   `review` object, `protocol/schemas/flow.schema.json`'s `review`
-   sub-schema (replacing its hardcoded `strict`/`adversarial` consts
-   with the new enum, while `required: true` stays constant), and
-   `protocol/schemas/policy-review-v2.schema.json`. A manifest or Flow
-   that omits `profile` is interpreted as `strict` (the historically
-   universal behavior) — this is the compatible-evolution reading
-   under C-045: no existing valid instance's minimum obligation is
-   reduced by silence.
+8. Schema changes: `profile` is a new, optional (defaulted) enum field
+   in `protocol/schemas/change-v2.schema.json`'s `review` object,
+   `protocol/schemas/policy-review-v2.schema.json`, and
+   `protocol/schemas/project.schema.json`'s `review` object (so a
+   project's effective configuration has a concrete, schema-legal place
+   to declare a stricter-than-floor profile per Decision point 12). A
+   manifest, policy, or project config that omits `profile` is
+   interpreted as `strict` (the historically universal behavior) — the
+   compatible-evolution reading under C-045: no existing valid
+   instance's minimum obligation is reduced by silence. Separately,
+   `protocol/schemas/flow.schema.json`'s `review` sub-schema replaces
+   its hardcoded `strict`/`adversarial` `const: true` with the new
+   `profile` enum (`required: true` stays constant) — this is **not**
+   an independent additive change: it is the direct schema encoding of
+   the Contract-text decision already resolved below (Open normative
+   question), since that schema constraint existed only to enforce
+   today's C-022/C-023 obligation. It narrows a previously
+   unconditional, machine-checked guarantee to hold only for `profile:
+   strict`; no historical Flow-file *instance* is invalidated by it
+   (only three live canonical files exist, edited in place by this
+   Change, not a population of historical documents to check against),
+   but it is recorded here explicitly as a schema-level consequence of
+   the Contract decision, not a separately-additive claim.
 9. `protocol/schemas/policy-review.schema.json` (Protocol 1) is left
    untouched — Protocol 1 keeps its existing, hardcoded
    `strict`/`adversarial` consts unconditionally. Profiles are a
@@ -139,6 +156,20 @@ populated with real per-Flow variance for Review itself.
     profile weaker than the Flow's canonical floor — `forge validate`
     fails closed if project configuration attempts to declare a
     profile below the canonical floor for a Flow.
+13. A Change's Review Profile is derived from `manifest.flow.current`
+    (the Change's **effective** Flow) at the time each Review Iteration
+    actually runs, never fixed at Specification or Plan time. A Change
+    that escalates Flow under C-005 mid-Change escalates its Review
+    Profile with it for any Review Iteration recorded after the
+    escalation; a Review Iteration already recorded before an
+    escalation is not retroactively invalidated (C-045) — it remains
+    valid evidence under the profile that applied when it ran.
+14. `src/forge_cli/merge_readiness/evaluator.py`'s `MR-004` diagnostic
+    label (`"STRICT REVIEW NOT READY"`) is renamed to a profile-neutral
+    label (e.g. `"REVIEW NOT READY"`), since "Strict Review" no longer
+    describes every Change's Review once this RFC ships — a one-line,
+    purely cosmetic rename with no change to `MR-004`'s trigger
+    condition or blocking semantics.
 
 ## Open normative question — resolved at acceptance
 
@@ -224,6 +255,32 @@ single Review lifecycle, Finding vocabulary, evidence model, and
 Convergence mechanism serves all three profiles; only the
 Reviewer-facing instructions (an Adapter-projection concern) and one
 new Flow-scoped policy field vary.
+
+### Waiting for RFC-0005's calibration pilot before proposing anything binding
+
+RFC-0005's own "Immediate mandatory thresholds" rejection, and its
+5–10-Change Calibration Pilot, were reasons to distrust an *ad hoc,
+data-derived, numeric* threshold chosen without a representative
+sample — exactly the kind of proposal RFC-0005 itself was scoped to
+avoid inventing prematurely. This RFC does not do that: it defines no
+numeric threshold, no score, and no measurement-derived cutoff at all.
+It defines three fixed, discrete, Protocol-authored profiles, each
+with every mechanically-checked guarantee (independence, evidence,
+severities, Convergence Limit, provenance) held identical and
+unconditioned on profile (Decision point 6, 10) — the entire class of
+risk a calibration pilot exists to bound (an under-calibrated numeric
+threshold silently letting real risk through) does not arise here,
+because nothing here is calibrated from data and nothing quantitative
+is being set. What *does* carry residual, honestly-acknowledged risk —
+a `focused` or `standard` Reviewer that under-searches, indistinguishable
+after the fact from one that searched correctly and found nothing — is
+addressed by keeping the floor per Flow non-negotiable (Decision point
+12) and by every profile retaining real, evidence-backed rejection
+authority on any Finding actually observed (Decision points 2–3), not
+by a pilot period. A pilot remains the right tool for a future,
+separate proposal that *does* want to introduce data-derived numeric
+calibration on top of this profile floor; it is not a precondition for
+adopting three fixed, non-numeric, Protocol-authored profiles.
 
 ## Compatibility and consequences
 

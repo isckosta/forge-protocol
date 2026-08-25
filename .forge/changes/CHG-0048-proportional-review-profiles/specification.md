@@ -101,25 +101,25 @@ AC-006 — C-031 em `protocol/versions/2/contract/engineering.md` reflete a clar
 Origin: RFC-0007 item 6; Constraint explícita do pedido original
 
 #### Requirement
-C-024, C-025, C-026, C-027, C-047, C-048, C-049, C-050, C-067, C-068 SHALL permanecer textualmente inalterados. Independência Reviewer/Resolver (execution/context separation, revision binding), requisitos de evidence para BLOCKER/MAJOR, severities (BLOCKER/MAJOR/MINOR/observation), Resolution, Resolution Verification, o Convergence Limit (2), e repository-native provenance SHALL ser aplicados de forma idêntica nos três profiles — nenhum desses mecanismos SHALL ser condicionado a `profile` em código ou em Contract.
+C-024, C-025, C-026, C-027, C-047, C-048, C-049, C-050, C-059, C-067, C-068 SHALL permanecer textualmente inalterados. Independência Reviewer/Resolver (execution/context separation, revision binding), requisitos de evidence para BLOCKER/MAJOR, severities (BLOCKER/MAJOR/MINOR/observation), Resolution, Resolution Verification, o Convergence Limit (2), e repository-native provenance SHALL ser aplicados de forma idêntica nos três profiles — nenhum desses mecanismos SHALL ser condicionado a `profile` em código ou em Contract.
 
 #### Boundary
 Este Requirement é uma restrição negativa: nenhuma nova lógica condicional por profile SHALL ser introduzida em nenhum desses mecanismos.
 
 #### Acceptance
-AC-007 — Diff desta Change não modifica o texto de C-024/C-025/C-026/C-027/C-047–C-050/C-067–C-068; `_validate_resolution_verification` e `_validate_protocol2_review_provenance` (`src/forge_cli/validation/__init__.py`) permanecem sem nenhum branch condicionado a `manifest.flow` ou a `profile` para independência, evidence, severities ou convergence.
+AC-007 — Diff desta Change não modifica o texto de C-024/C-025/C-026/C-027/C-047–C-050/C-059/C-067–C-068; `_validate_resolution_verification` e `_validate_protocol2_review_provenance` (`src/forge_cli/validation/__init__.py`) permanecem sem nenhum branch condicionado a `manifest.flow` ou a `profile` para independência, evidence, severities ou convergence.
 
-### FR-008 · Mudanças de Schema aditivas, com default `strict` retroativo
-Origin: RFC-0007 items 8–9; Discovery — catálogo de Schemas
+### FR-008 · Mudanças de Schema, com default `strict` retroativo
+Origin: RFC-0007 items 8–9 (revisado); Discovery — catálogo de Schemas; Specification Review SR-002/SR-003
 
 #### Requirement
-`protocol/schemas/change-v2.schema.json`'s objeto `review`, `protocol/schemas/flow.schema.json`'s sub-schema `review` (substituindo os `const: true` fixos de `strict`/`adversarial` por um enum `profile`, preservando `required: true` como constante), e `protocol/schemas/policy-review-v2.schema.json` SHALL ganhar um campo `profile` (enum `focused | standard | strict`) opcional. Um manifest ou Flow que omita `profile` SHALL ser interpretado como `strict`. `protocol/schemas/policy-review.schema.json` (Protocol 1) SHALL permanecer inalterado.
+`protocol/schemas/change-v2.schema.json`'s objeto `review`, `protocol/schemas/policy-review-v2.schema.json`, e `protocol/schemas/project.schema.json`'s objeto `review` (o mecanismo concreto de "configuração efetiva de projeto" que FR-010 referencia) SHALL ganhar um campo `profile` (enum `focused | standard | strict`) opcional, aditivo. Um manifest, política ou configuração de projeto que omita `profile` SHALL ser interpretado como `strict`. Separadamente, `protocol/schemas/flow.schema.json`'s sub-schema `review` SHALL substituir seus `const: true` fixos de `strict`/`adversarial` por um enum `profile` (preservando `required: true` como constante) — esta substituição SHALL ser tratada como a codificação direta em Schema da decisão de Contract já resolvida em FR-005 (RFC-0007, questão normativa resolvida), não como uma decisão aditiva independente: o `const: true` existia apenas para impor a obrigação hoje incondicional de C-022/C-023. `protocol/schemas/policy-review.schema.json` (Protocol 1) SHALL permanecer inalterado.
 
 #### Boundary
-Nenhuma Change histórica que já validou contra os Schemas atuais SHALL deixar de validar após esta mudança — o campo é opcional e seu default preserva o comportamento observável anterior.
+Nenhuma Change histórica cujo `manifest.yml`/`provenance.yml` já validou contra os Schemas atuais SHALL deixar de validar após esta mudança nos três Schemas cujo campo é aditivo (`change-v2`, `policy-review-v2`, `project`). `flow.schema.json`'s narrowing não tem instâncias históricas análogas para invalidar — só três arquivos canônicos vivos, editados nesta própria Change — mas é registrado explicitamente como uma redução de garantia mecânica, não uma reivindicação puramente aditiva.
 
 #### Acceptance
-AC-008 — Os três Schemas de Protocol 2 aceitam `profile` quando presente e continuam aceitando manifests/Flows que o omitem; `policy-review.schema.json` (Protocol 1) é byte-idêntico ao anterior; uma suíte de manifests históricos representativos (amostra de `.forge/changes/*/manifest.yml` já completos) continua validando sem erro.
+AC-008 — Os quatro Schemas de Protocol 2 tocados aceitam `profile` quando presente; os três com campo aditivo continuam aceitando manifests/políticas/configuração que o omitem; `policy-review.schema.json` (Protocol 1) é byte-idêntico ao anterior; uma suíte de manifests históricos representativos (amostra de `.forge/changes/*/manifest.yml` já completos) continua validando sem erro; `.forge/forge.yml`'s bloco `review:` existente (`strict: true`, `convergence: {...}`) continua validando sem erro contra `project.schema.json` após a mudança.
 
 ### FR-009 · Adapter projections profile-aware; independência permanece compartilhada
 Origin: RFC-0007 item 11; Discovery — `review_independence.py`, `claude_code/projection.py`, `codex/projection.py`
@@ -137,7 +137,7 @@ AC-009 — O `SKILL.md` gerado para Claude Code e Codex mostra, para cada seçã
 Origin: RFC-0007 item 12; Constraint 11 do pedido original
 
 #### Requirement
-A configuração efetiva de um projeto MAY declarar um profile mais rigoroso que o piso canônico do Flow (ex.: forçar `strict` em FAST), mas MUST NOT declarar um profile mais fraco que esse piso. `forge validate` SHALL falhar fechado (Finding explícito) quando a configuração efetiva de um projeto declarar um profile abaixo do piso canônico do Flow aplicável.
+A configuração efetiva de um projeto (`.forge/forge.yml`'s bloco `review:`, validado por `project.schema.json` per FR-008) MAY declarar um profile mais rigoroso que o piso canônico do Flow (ex.: forçar `strict` em FAST), mas MUST NOT declarar um profile mais fraco que esse piso. `forge validate` SHALL falhar fechado (Finding explícito) quando a configuração efetiva de um projeto declarar um profile abaixo do piso canônico do Flow aplicável.
 
 #### Acceptance
 AC-010 — Um teste demonstra que uma configuração de projeto declarando `profile: focused` para um Change classificado FULL (piso `strict`) produz um Finding de `forge validate`, enquanto declarar `profile: strict` para uma Change FAST (piso `focused`, reforçando) não produz Finding algum.
@@ -150,6 +150,27 @@ Nenhuma Change histórica completa SHALL ser invalidada por esta mudança. `forg
 
 #### Acceptance
 AC-011 — Reexecutar `forge validate` contra o estado atual do repositório (todas as Changes completas existentes) após esta mudança não introduz nenhum Finding novo.
+
+### FR-012 · Review Profile derivado do Flow efetivo; escalação C-005 propaga o profile
+Origin: RFC-0007 item 13; Specification Review SR-006
+
+#### Requirement
+O Review Profile aplicável a um Review Iteration SHALL ser derivado de `manifest.flow.current` (o Flow efetivo da Change) no momento em que aquele Iteration efetivamente ocorre — nunca fixado no momento de Specification ou de Plan. Uma Change que escalar de Flow sob C-005 no meio de sua execução SHALL escalar seu Review Profile junto, para qualquer Review Iteration registrado após a escalação.
+
+#### Boundary
+Um Review Iteration já registrado antes de uma escalação NÃO é invalidado retroativamente (C-045) — permanece evidência válida sob o profile que se aplicava quando ocorreu.
+
+#### Acceptance
+AC-012 — Um teste demonstra que uma Change com `flow.escalations` não-vazio tem, para um Review Iteration cujo `revision` é posterior (em histórico Git) ao commit de escalação, o profile do Flow `current` (pós-escalação) refletido na instrução do Reviewer; um Iteration anterior à escalação permanece válido sem exigir re-review.
+
+### FR-013 · Rótulo profile-neutro em Merge Readiness
+Origin: RFC-0007 item 14; Specification Review SR-007
+
+#### Requirement
+`src/forge_cli/merge_readiness/evaluator.py`'s diagnóstico `MR-004` (hoje rotulado `"STRICT REVIEW NOT READY"`) SHALL ser renomeado para um rótulo profile-neutro (ex.: `"REVIEW NOT READY"`). Este Requirement é puramente cosmético — a condição de disparo e a semântica de bloqueio de `MR-004` SHALL permanecer inalteradas.
+
+#### Acceptance
+AC-013 — `MR-004`'s texto de diagnóstico não contém mais a string "Strict Review"; nenhum teste existente de `merge_readiness` que dependa da condição de disparo (não do texto) quebra.
 
 ## Non-functional Requirements
 
@@ -165,7 +186,10 @@ A checagem de piso de profile (FR-010) SHALL ser determinística e mecanicamente
 `protocol/schemas/policy-review.schema.json` (Protocol 1) não é alterado. Nenhuma classe `ReviewProfileEngine`/`ReviewProfileRegistry`/execução paralela é introduzida.
 
 ### CON-002 · Escopo do Contract
-Apenas C-022, C-023 e a clarificação de C-031 são alterados textualmente. C-024–C-027, C-047–C-050, C-067–C-068 permanecem textualmente idênticos (FR-007).
+Apenas C-022, C-023 e a clarificação de C-031 são alterados textualmente. C-024–C-027, C-047–C-050, C-059, C-067–C-068 permanecem textualmente idênticos (FR-007).
+
+### CON-003 · Risco residual aceito e reconhecido explicitamente
+Os profiles `focused`/`standard` mudam a instrução dada ao Reviewer, não uma propriedade mecanicamente verificável do resultado — não há, e esta Change não introduz, um jeito de distinguir mecanicamente "Reviewer buscou dentro do escopo correto e não achou nada" de "Reviewer não buscou o suficiente". Isso é uma limitação deliberada e reconhecida (Specification Review SR-004), não uma omissão: o piso não-negociável por Flow (FR-010) e a autoridade de rejeição idêntica sobre qualquer Finding material efetivamente observado (FR-002–FR-003) são a mitigação aceita, não uma auditoria mecânica de exaustividade de busca — que exigiria o tipo de scoring/engine que esta Change explicitamente rejeita introduzir (Alternatives rejected, RFC-0007).
 
 ## Traceability Matrix
 
@@ -184,14 +208,16 @@ Apenas C-022, C-023 e a clarificação de C-031 são alterados textualmente. C-0
 | RFC-0007 item 11; consolidação do CHG-0045 | FR-009 | AC-009 |
 | RFC-0007 item 12; Constraint 11 | FR-010 | AC-010 |
 | Constraint 12; C-045 | FR-011 | AC-011 |
+| RFC-0007 item 13; SR-006 | FR-012 | AC-012 |
+| RFC-0007 item 14; SR-007 | FR-013 | AC-013 |
 
 ## Compatibility Statement
 
-RFC-0007 (aceito) resolveu a questão normativa central a favor de uma leitura compatível com Protocol 2 (C-045) — nenhuma Change histórica é invalidada, Protocol permanece `2`. Mudanças de Schema são aditivas com default retroativo `strict`. `protocol/schemas/policy-review.schema.json` (Protocol 1) e todo o Contract de Protocol 1 permanecem intocados. Independência Reviewer/Resolver, evidence, severities, Resolution, Resolution Verification e Convergence Limit são idênticos nos três profiles — nenhuma dessas garantias é reduzida. Uma entrada correspondente SHALL ser adicionada a `protocol/compatibility.md` documentando esta resolução (Documentation Impact).
+RFC-0007 (aceito) resolveu a questão normativa central a favor de uma leitura compatível com Protocol 2 (C-045) — nenhuma Change histórica é invalidada, Protocol permanece `2`. Mudanças de Schema em `change-v2`, `policy-review-v2` e `project` são aditivas com default retroativo `strict`; `flow.schema.json`'s narrowing de `const` para enum é a codificação direta da mesma decisão de Contract, sem instâncias históricas análogas a invalidar (FR-008). `protocol/schemas/policy-review.schema.json` (Protocol 1) e todo o Contract de Protocol 1 permanecem intocados. Independência Reviewer/Resolver, evidence, severities, Resolution, Resolution Verification e Convergence Limit são idênticos nos três profiles — nenhuma dessas garantias é reduzida. Uma entrada correspondente SHALL ser adicionada a `protocol/compatibility.md` documentando esta resolução (Documentation Impact).
 
 ## Specification Gate
 
-Esta Specification está completa: cada Requirement rastreia a RFC-0007 aceito e/ou à Discovery; os limites arquiteturais (independência, evidence, severities, convergence, Protocol 1 intocado) estão cobertos por FR-007/CON-001/CON-002; a questão normativa que poderia ter bloqueado esta Specification já foi resolvida (RFC-0007). Pronta para Specification Review adversarial.
+Esta Specification está completa: cada Requirement rastreia a RFC-0007 aceito e/ou à Discovery; os limites arquiteturais (independência, evidence, severities, convergence, Protocol 1 intocado) estão cobertos por FR-007/CON-001/CON-002; a questão normativa que poderia ter bloqueado esta Specification já foi resolvida (RFC-0007); os sete achados da Specification Review adversarial (SR-001–SR-007) foram endereçados: SR-001 (rebatido em RFC-0007's "Alternatives rejected"), SR-002/SR-003 (FR-008/FR-010 revisados, `project.schema.json` incluído), SR-004 (CON-003, risco residual reconhecido), SR-005 (C-059 adicionado a FR-007), SR-006 (FR-012), SR-007 (FR-013). Pronta para Architecture.
 
 ## Out of Scope
 

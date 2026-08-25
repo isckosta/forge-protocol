@@ -19,12 +19,12 @@ flow:
         STANDARD's scaffold default was superseded before any
         Specification work began.
 state:
-  current: specification
+  current: specification_review
 artifacts:
   intent: complete
   discovery: complete
   specification: complete
-  specification_review: pending
+  specification_review: complete
   architecture: pending
   test_strategy: pending
   plan: pending
@@ -34,7 +34,7 @@ artifacts:
   review: pending
   documentation: pending
 requirements:
-  total: 11
+  total: 13
   implemented: 0
   verified: 0
 tdd:
