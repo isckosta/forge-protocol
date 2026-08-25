@@ -31,14 +31,14 @@ verification:
   status: passed
 review:
   status: pending
-  iteration: 3
+  iteration: 4
   blockers: 0
   majors: 0
   minors: 0
   observations: 2
   convergence:
-    state: review_convergence_failed
-    consecutive_unconverged_verifications: 2
+    state: nominal
+    consecutive_unconverged_verifications: 0
   iterations:
     - id: review-001
       revision: chg-0047-implementation-001
@@ -69,6 +69,19 @@ review:
       new_material_findings: 1
       finding_classes:
         - resolution_regression
+    - id: review-004
+      revision: chg-0047-resolution-003
+      subject_provenance: resolution-003
+      reviewer_provenance: reviewer-004
+      kind: initial_review
+      status: passed
+      full_review_required: false
+      new_material_findings: 0
+      finding_classes: []
+      convergence_decision:
+        option: new_full_review
+        reason: The user was presented with the Convergence Limit situation (R-006's finding, and all four available options) and selected new_full_review -- fix the finding, then have a fresh, unrestricted Initial Review re-evaluate the whole subject rather than another scoped Resolution Verification. Recorded in review.md's Convergence Decision section and provenance.yml's convergence-decision-001 record.
+        recorded_at: '2026-08-25T05:00:00Z'
 documentation:
   impact_evaluated: false
 decisions:

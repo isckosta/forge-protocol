@@ -10,7 +10,7 @@ status: active
 
 ## Verdict
 
-**PASS.** Iteration 1: REQUEST CHANGES, resolved. Iteration 2: REQUEST CHANGES, resolved. Iteration 3: REQUEST CHANGES — Convergence Limit reached (Protocol 2 §12, limit = 2); the user recorded an explicit `convergence_decision: new_full_review`; R-006/R-007 were fixed. Iteration 4 (fresh, unrestricted Initial Review of the whole subject, per the convergence decision) returned **PASS** — no BLOCKER or MAJOR finding survived; one non-blocking MINOR finding (R-008, a `plan.md` prose gap) was found and fixed. Strict Review for CHG-0047 is closed.
+**Pending Iteration 5.** Iteration 1: REQUEST CHANGES, resolved. Iteration 2: REQUEST CHANGES, resolved. Iteration 3: REQUEST CHANGES — Convergence Limit reached (Protocol 2 §12, limit = 2); the user recorded an explicit `convergence_decision: new_full_review`; R-006/R-007 were fixed. Iteration 4 (fresh, unrestricted Initial Review of the whole subject, per the convergence decision) returned **PASS** against commit `9f85aac` — no BLOCKER or MAJOR finding survived; one non-blocking MINOR finding (R-008, a `plan.md` prose gap) was found. Fixing R-008 touches `plan.md`, a reviewable file, so per C-026 the frozen subject must be refrozen and independently re-verified before Completion, even though R-008 itself is non-blocking — a scoped Resolution Verification (Iteration 5) is pending against the new revision.
 
 ## Iteration 1 — REQUEST CHANGES
 
@@ -200,8 +200,8 @@ After the `<!-- forge:plan-approval-record -->` marker, `plan.md` contained the 
 
 ### Verdict
 
-**PASS.** No BLOCKER or MAJOR finding survived independent, adversarial re-verification. R-008 (MINOR) is genuine but non-blocking, affecting only this Change's own `plan.md` prose, not any Acceptance Criterion, shipped code, test, or the substantive human-approval provenance record. This closes Strict Review for CHG-0047.
+**PASS** against the subject reviewed (`9f85aac`). No BLOCKER or MAJOR finding survived independent, adversarial re-verification. R-008 (MINOR) is genuine but non-blocking, affecting only this Change's own `plan.md` prose, not any Acceptance Criterion, shipped code, test, or the substantive human-approval provenance record.
 
 ## Resolution (of R-008)
 
-R-008 fixed directly (a MINOR, non-blocking documentation-hygiene finding does not require a further independent Review Iteration to accept the already-recorded PASS verdict above — consistent with how this repository has historically handled non-blocking Observations, e.g. `CHG-0039`): the unfilled template placeholder line was replaced by removing it (the marker itself, `<!-- forge:plan-approval-record -->`, remains and is followed directly by the file's actual final content), and the duplicate `## Implementation Boundary` section was removed, leaving the single original one intact.
+R-008's non-blocking severity means it does not, by itself, prevent Completion (C-027) — but fixing it edits `plan.md`, a reviewable file, not review-control metadata (only `manifest.yml`/`provenance.yml`/`review.md` are exempt from the C-026 freeze invariant). So the fix itself still produces a new revision that differs from Iteration 4's frozen subject, which `forge validate` correctly flags (C-026: "review subject changed after its immutable revision freeze") until that new revision is itself frozen and independently re-verified. The unfilled template placeholder line was replaced by removing it (the marker itself, `<!-- forge:plan-approval-record -->`, remains and is followed directly by the file's actual final content), and the duplicate `## Implementation Boundary` section was removed, leaving the single original one intact — see `provenance.yml`'s `resolution-004` record for the frozen revision this produced, and Iteration 5 below for its independent re-verification.

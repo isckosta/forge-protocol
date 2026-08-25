@@ -179,3 +179,40 @@ records:
       observed_by: self
       reference: review.md#resolution-of-iteration-3
       statement: Resolution of Strict Review Iteration 3 (reviewer-003) findings R-006 and R-007, per the recorded new_full_review convergence_decision. R-006 fixed by making loader.py's _parse_sections track the opening fence's delimiter run length and require a same-type closing run of at least that length, matching CommonMark's fence-closing rule, with a RED-before-GREEN regression test (TDD-005). R-007 addressed by correcting TDD-004's behavior description to accurately state tabs are also tolerated (no code change -- the deviation was in the safe, over-recognize-as-fence direction). Re-ran full suite (750 passed, 2 warnings) and forge validate (PASS) after the fix. Reviewable Git workspace confirmed clean before this freeze.
+  - id: reviewer-004
+    role: review
+    execution:
+      id: a74feac752af6f16c
+      context_id: independent-review-context-a74feac752af6f16c
+    recorded_at: '2026-08-25T06:00:00Z'
+    revision:
+      id: chg-0047-resolution-003
+      immutable_ref:
+        type: git_commit
+        value: 9f85aac996246ac014d81990ea87a917ab61d157
+      commit: 9f85aac996246ac014d81990ea87a917ab61d157
+    source:
+      assurance: recorded
+      observed_by: operator
+      reference: review.md#iteration-4
+      statement: Independent Strict Review Iteration 4 (fresh, unrestricted Initial Review per the recorded new_full_review convergence_decision -- fresh execution, isolated Git worktree at .claude/worktrees/agent-a74feac752af6f16c, no shared context with any prior Execution) returned PASS against 9f85aac -- no BLOCKER or MAJOR finding survived a full re-audit that included 20+ new adversarial cases beyond all five TDD cycles' shipped tests, several cross-checked against a real CommonMark parser, plus independent RED reproduction of TDD-004/TDD-005 by reverting each fix in the Reviewer's own worktree. One non-blocking MINOR finding (R-008, plan.md template-placeholder leftover and a duplicated Implementation Boundary section) was found; fixing it touches plan.md, a reviewable file, so per C-026 it still requires its own scoped Resolution Verification against the new revision before Completion, even though R-008 itself is non-blocking (see resolution-004 and reviewer-005 below).
+  - id: resolution-004
+    role: resolution
+    execution:
+      id: claude-code-implementation-0047-resolution-004
+      context_id: claude-code-session-2026-08-25-resolution-004
+    recorded_at: '2026-08-25T06:30:00Z'
+    scope:
+      - .forge/changes/CHG-0047-capability-architecture-foundation/plan.md
+    targets: [R-008]
+    revision:
+      id: chg-0047-resolution-004
+      immutable_ref:
+        type: git_commit
+        value: 53aa1f00bf50818fec219511c8c938fa98e9708f
+      commit: 53aa1f00bf50818fec219511c8c938fa98e9708f
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: review.md#resolution-of-r-008
+      statement: Resolution of Strict Review Iteration 4 (reviewer-004) finding R-008. plan.md's unfilled template placeholder line after the forge:plan-approval-record marker, and the duplicated Implementation Boundary section, were removed. The substantive human-approval record (provenance.yml's plan-approval-001, which references the immutable original plan.md commit 9e6fe0e and its own content_digest) is unaffected -- this fix only removes leftover template text from a later, unrelated part of the same file. No code, test, or other Artifact was touched. Reviewable Git workspace confirmed clean before this freeze.
