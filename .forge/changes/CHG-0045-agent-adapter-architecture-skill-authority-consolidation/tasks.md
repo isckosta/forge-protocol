@@ -110,16 +110,40 @@ status: complete
       remediation-path gap — see `specification-drift.md`), 1 MINOR (R005,
       `traceability.yml` acceptance-table mapping errors). See `review.md`
       for the full independent Review.
-- [ ] T-020 Resolution: fix R001-R005 (this commit); re-run the full
-      suite to confirm 0 failures; freeze a new Resolution revision; obtain
-      an independent Resolution Verification re-Review of that revision
-      (C-026: a Resolver must not resolve blocking Findings in the
-      Reviewer's own Execution Context, and re-Review must itself be
-      independent of the Resolution).
+- [x] T-020 Resolution of Iteration 1 (R001-R005): fixed; full suite
+      reconfirmed 701 passed, 0 failed; froze Resolution revision
+      `b43cb761d08433ae8a0b7dbc3be82d1e57f09221`; obtained independent
+      Resolution Verification (Iteration 2, `review-002`) — **REQUEST
+      CHANGES** again: R001-R005 all confirmed genuinely resolved, but one
+      new MAJOR (R007) and two OBSERVATIONs (R006, R008) were found inside
+      the Resolution Delta itself (C-047 point 2), per `review.md`.
+- [x] T-021 Resolution of Iteration 2 (R006, R007): R007 fixed by adding a
+      new `resolution-001-scope` provenance record carrying the `scope`/
+      `targets` fields `_validate_resolution_verification` requires —
+      **not** by editing the already-committed `resolution-001` record in
+      place, which `forge validate` correctly rejected on a first attempt
+      as a C-026 rewrite of an immutable record (confirmed by direct
+      reproduction: `C-026 ... frozen subject authority cannot be
+      rewritten`). `manifest.yml`'s `review-002` iteration's
+      `subject_provenance` now points at `resolution-001-scope`;
+      `resolution-001` itself remains untouched, as required. R006 fixed
+      by correcting `verification.md`/`specification-drift.md`'s
+      forward-referencing prose about `knowledge-capture.md` to future
+      tense. `forge validate` reconfirmed clean after both fixes. R008 is
+      Core-level, Out of Scope, and was left as recorded (not silently
+      fixed) per Review's own C-050 disposition.
+- [ ] T-022 Obtain a further Resolution Verification (Iteration 3) of
+      this second Resolution. Per `protocol/versions/2/specification.md`
+      §12-13, the Convergence Limit is 2 consecutive `resolution_
+      verification` Iterations with `new_material_findings > 0`; Iteration
+      2 was the first such Iteration (`new_material_findings: 1`, R007).
+      If Iteration 3 also finds new material findings, the trailing count
+      reaches the Convergence Limit and Non-Convergence applies —
+      requiring an explicit `convergence_decision` before any further
+      Iteration, not another automatic cycle.
 
 ## Status
 
-T-001 through T-019 (Iteration 1) complete. Iteration 1's Verdict was
-REQUEST CHANGES. T-020 (Resolution + independent re-Review of the
-Resolution revision) is the only remaining task before Documentation
-Impact/Knowledge Capture/Completion.
+T-001 through T-021 complete (Iterations 1 and 2, both Resolutions).
+T-022 (Resolution Verification, Iteration 3) is the only remaining task
+before Documentation Impact/Knowledge Capture/Completion.

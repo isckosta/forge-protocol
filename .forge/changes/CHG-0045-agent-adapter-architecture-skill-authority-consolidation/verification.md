@@ -45,7 +45,8 @@ violation this Change's own `traceability.yml` introduced) independently,
 twice, in two separate environments. Fixed in the Resolution revision
 (see `review.md` R001, `tasks.md` T-020); re-run and reconfirmed 701
 passed, 0 failed against the Resolution revision before this addendum was
-written. Durable lesson recorded in `knowledge-capture.md`: re-run the
+written. Durable lesson, to be recorded in the still-pending
+`knowledge-capture.md` at its own post-Review Flow stage: re-run the
 full suite after the *last* content edit before freezing, not after the
 last code edit.
 

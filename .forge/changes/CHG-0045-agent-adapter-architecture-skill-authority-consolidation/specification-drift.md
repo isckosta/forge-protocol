@@ -69,7 +69,9 @@ similarly stale conditions. Building a supported recovery command (e.g.
 undertaken by this Change — it is new Adapter-CLI surface (F-005 scope),
 untested against the variety of staleness conditions a real second
 repository might exhibit, and not something Architecture evaluated
-alternatives for. It is recorded as follow-up work in
-`knowledge-capture.md` instead of being silently absorbed into this
-Change's already-approved Plan (C-069) or invented under Review pressure
-without its own Architecture-level consideration.
+alternatives for. It will be recorded as follow-up work in
+`knowledge-capture.md` at that Artifact's own post-Review Flow stage
+(not yet written as of this Specification Drift), instead of being
+silently absorbed into this Change's already-approved Plan (C-069) or
+invented under Review pressure without its own Architecture-level
+consideration.
