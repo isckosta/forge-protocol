@@ -19,7 +19,7 @@ flow:
         STANDARD's scaffold default was superseded before any
         Specification work began.
 state:
-  current: strict_review
+  current: complete
 artifacts:
   intent: complete
   discovery: complete
@@ -31,8 +31,9 @@ artifacts:
   tasks: complete
   tdd_evidence: complete
   verification: complete
-  review: pending
+  review: complete
   documentation: complete
+  knowledge_capture: complete
 requirements:
   total: 13
   implemented: 13
@@ -43,12 +44,12 @@ tdd:
 verification:
   status: passed
 review:
-  status: pending
-  iteration: 1
+  status: passed
+  iteration: 2
   blockers: 0
   majors: 0
   minors: 0
-  observations: 1
+  observations: 2
   iterations:
     - id: review-001
       revision: chg-0048-implementation-001
@@ -58,6 +59,15 @@ review:
       status: failed
       full_review_required: false
       new_material_findings: 2
+      finding_classes: []
+    - id: review-002
+      revision: chg-0048-resolution-001
+      subject_provenance: resolution-001
+      reviewer_provenance: reviewer-002
+      kind: resolution_verification
+      status: passed
+      full_review_required: false
+      new_material_findings: 0
       finding_classes: []
 documentation:
   impact_evaluated: true

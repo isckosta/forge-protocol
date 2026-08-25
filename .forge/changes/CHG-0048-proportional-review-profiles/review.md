@@ -3,44 +3,42 @@ forge:
   artifact: review
   schema: 1
 change: CHG-0048
-status: active
+status: complete
 ---
 
 # CHG-0048 · Review
 
 ## Verdict
 
-**Pending Iteration 2.** Iteration 1: REQUEST CHANGES — R-001 (BLOCKER) and R-002 (MAJOR) found and resolved in this session; 3 non-blocking OBSERVATIONs found, all addressed (1 accepted/disclosed, 2 corrected).
+**PASS.** Iteration 1: REQUEST CHANGES — R-001 (BLOCKER) and R-002 (MAJOR) found and resolved; 3 non-blocking OBSERVATIONs (1 accepted/disclosed, 2 corrected). Iteration 2 (Resolution Verification): **PASS** — both fixes independently re-verified adversarially; one further non-blocking OBSERVATION (R-003, a residual off-by-one in `verification.md`'s own file-count correction) recorded and accepted, not fixed, per C-039. Strict Review for CHG-0048 is closed.
 
 ## Review Summary
 
 | | |
 |---|---|
-| **Iterations** | 1 |
-| **Current Subject** | `8c1f0503ca4eae81860664dc887a86fbc3ffca17` (Iteration 1's reviewed subject; superseded by the Resolution below) |
-| **Open Blockers** | 0 (R-001 resolved) |
-| **Open Majors** | 0 (R-002 resolved) |
+| **Iterations** | 2 |
+| **Current Subject** | `493371cb00979a19253b3b2ce7c4e03af9f2c524` (Iteration 2's reviewed, passed subject) |
+| **Open Blockers** | 0 |
+| **Open Majors** | 0 |
 | **Open Minors** | 0 |
-| **Final Iteration** | 1 (REQUEST CHANGES) |
-| **Result** | Resolution applied; Iteration 2 pending |
+| **Final Iteration** | 2 (PASS) |
+| **Result** | PASS |
 
 ## Current Subject
 
 | | |
 |---|---|
-| **Subject SHA** | `8c1f0503ca4eae81860664dc887a86fbc3ffca17` (Iteration 1) |
-| **Frozen** | Yes — `provenance.yml`'s `implementation-subject-001` |
-| **Iteration** | 1 |
-
-The Resolution below produces a new revision, not yet frozen with its own `provenance.yml` record at the time of writing this section — see the Resolution's own note for the freeze sequencing.
+| **Subject SHA** | `493371cb00979a19253b3b2ce7c4e03af9f2c524` (Resolution, Iteration 2) |
+| **Frozen** | Yes — `provenance.yml`'s `resolution-001` |
+| **Iteration** | 2 |
 
 ## Reviewer Independence
 
-`provenance.yml`'s `reviewer-001` record (to be added alongside this Iteration's closure) will bind Execution `ad6eed539bea23e77` / Context `independent-review-context-ad6eed539bea23e77` — a fresh agent invocation in an isolated Git worktree (`.claude/worktrees/agent-ad6eed539bea23e77`), sharing no Execution or Execution Context identifier with `implementation-subject-001`'s `claude-code-implementation-0048-subject-001` / `claude-code-session-2026-08-25-subject-001`.
+`provenance.yml`'s `reviewer-001` (Execution `ad6eed539bea23e77`) and `reviewer-002` (Execution `aa5fd11c14137d34e`) records — each a fresh agent invocation in its own isolated Git worktree, sharing no Execution or Execution Context identifier with the Implementation, the Resolution, or each other.
 
 ## Open Findings
 
-No open findings. R-001 and R-002 are resolved (see Resolution below); the resolved revision awaits Iteration 2's independent re-verification.
+No open findings. R-003 (OBSERVATION, non-blocking) is recorded and accepted, not fixed, per C-039.
 
 ## Iteration 1 — REQUEST CHANGES
 
@@ -105,6 +103,44 @@ Architecture stated `strict`/`adversarial` would stop being `required` once thei
 
 R-001 and R-002 were fixed in a Resolution Execution distinct from Iteration 1's Reviewer Execution, in direct response to Iteration 1 (per C-026's Resolver-independence requirement). OBSERVATION 2 and OBSERVATION 3 were corrected in the same session (non-blocking documentation-accuracy fixes, not requiring independent resolution); OBSERVATION 1 was evaluated and explicitly left unfixed as a disclosed, accepted limitation. `tdd-evidence.yml` gained `TDD-005` documenting R-001's RED→GREEN cycle. The resolved revision will be frozen and referenced by `provenance.yml`'s next `resolution-*` record; Iteration 2 (once recorded) independently re-reviews that exact revision.
 
+## Iteration 2 — PASS (Resolution Verification)
+
+**Reviewer**: Independent Reviewer execution (fresh agent invocation, isolated Git worktree at `/home/isckosta/forge-protocol/.claude/worktrees/agent-aa5fd11c14137d34e`, no shared context with the Resolution Execution or with Iteration 1's Reviewer Execution), per C-026. `kind: resolution_verification`, scoped per C-047 to R-001, R-002, defects within the Resolution Delta, and Out-of-Scope Mutation.
+
+**Commit reviewed**: `493371cb00979a19253b3b2ce7c4e03af9f2c524` (frozen Resolution revision).
+
+**Resolution Delta inspected**: `git diff 8c1f0503ca4eae81860664dc887a86fbc3ffca17..493371cb00979a19253b3b2ce7c4e03af9f2c524`.
+
+### R-001 re-verification
+
+Both Adapters now gate the profile-instruction substitution on `protocol_id >= 2`, mirroring the existing independence-block gate exactly. Independently constructed an adversarial matrix (`protocol_id` ∈ {-1, 0, 1, 2, 3}) calling the real public entry points (`generate_claude_code_skill_bundle`/`generate_codex_projection_bundle`) end-to-end, not just the internal function — every value below 2 (including out-of-range `-1`/`0`) correctly falls back to the fixed strict-only line in both Adapters, with identical behavior across both. Confirmed the fixed string exists in exactly one place in `src/` (`review_independence.py`), so the new regression tests cannot pass vacuously. Genuinely fixed.
+
+### R-002 re-verification
+
+Independently confirmed (not trusting the manifest's own claim) that `protocol/compatibility.md` and `CHANGELOG.md` both contain real, substantive CHG-0048 entries matching the `reason` text. Re-ran `evaluate_merge_readiness()` live against this revision: the R-002-related `MR-009` diagnostics from Iteration 1 are gone; only the expected, still-pending `review`/`knowledge_capture` diagnostics remain. Genuinely fixed.
+
+### R-003 · OBSERVATION (non-blocking) — `verification.md`'s corrected file count is itself still off (35/12 claimed, 36/13 actual)
+
+The fix for Iteration 1's OBSERVATION 2 corrected 33→35 files but the real count (independently reproduced: `git diff --stat main HEAD`) is 36 — `discovery.md` was omitted from the Artifacts sub-count (12 claimed vs. 13 actual). Every other category in the breakdown is independently confirmed correct. No bearing on scope, R-001, or R-002 — `discovery.md` is legitimately part of this Change's own Artifact set, already covered by `implementation-subject-001`'s provenance statement.
+
+**Not fixed further** — a second consecutive minor arithmetic slip in the same sentence is genuinely worth a follow-up, but `verification.md` is a reviewable file: correcting it now would require refreezing and a third independent Resolution Verification cycle for a one-line cosmetic number, which is disproportionate (C-039) for something two independent Reviewers have now separately classified non-blocking. Recorded here as a known, accepted inaccuracy instead.
+
+### No Out-of-Scope Mutation
+
+`resolution-001.scope` (9 files) matches commit `493371c`'s own diff exactly, 9-for-9, independently confirmed via `git show 493371c --stat`.
+
+### Checked and found sound (Iteration 2)
+
+- Fresh-venv full suite: 786 passed, 2 warnings — exact match, independently reproduced.
+- `tests/unit/test_{claude_code,codex}_projection_gates.py`: 41 passed — exact match to `TDD-005`.
+- `forge validate`: PASS.
+- Both `projection.py` diffs and the `manifest.yml` diff in commit `493371c` are minimal and surgical (C-013) — no unrelated changes bundled in.
+- OBSERVATION 3's `architecture.md` correction independently confirmed accurate against the shipped `flow.schema.json`.
+
+### Verdict
+
+**PASS.** R-001 and R-002 are both genuinely, adversarially fixed with independently reproduced evidence beyond the shipped tests. R-003 (non-blocking) is recorded and accepted, not fixed, per C-039. This closes Strict Review for CHG-0048.
+
 ## Conclusion
 
-Iteration 1 is closed with REQUEST CHANGES, both findings resolved in this session. The Change is not marked complete until an independent Resolution Verification (Iteration 2) passes against the resolved revision, followed by the remaining Completion Gate checks (blocking review threads resolved, TDD compliance).
+Iteration 1 (REQUEST CHANGES) and Iteration 2 (Resolution Verification, PASS) are both closed. No BLOCKER or MAJOR finding remains open. Strict Review is complete for this Change; remaining Completion Gate checks (blocking review threads resolved — trivially satisfied, no external review surface — and TDD compliance, already `compliant`) are satisfied.

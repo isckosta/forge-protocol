@@ -101,3 +101,20 @@ records:
       observed_by: self
       reference: review.md#resolution
       statement: Resolution of Strict Review Iteration 1 (reviewer-001) findings R-001 and R-002, plus OBSERVATION 2/3 documentation corrections. R-001 fixed by gating both Adapters' profile-instruction substitution on protocol_id >= 2, with regression tests (TDD-005). R-002 fixed by correcting manifest.yml's documentation.impact_evaluated to true with a matching reason. Re-ran full suite (786 passed, 2 warnings) and forge validate (PASS) after the fix. Reviewable Git workspace confirmed clean before this freeze.
+  - id: reviewer-002
+    role: review
+    execution:
+      id: aa5fd11c14137d34e
+      context_id: independent-review-context-aa5fd11c14137d34e
+    recorded_at: '2026-08-25T02:00:00Z'
+    revision:
+      id: chg-0048-resolution-001
+      immutable_ref:
+        type: git_commit
+        value: 493371cb00979a19253b3b2ce7c4e03af9f2c524
+      commit: 493371cb00979a19253b3b2ce7c4e03af9f2c524
+    source:
+      assurance: recorded
+      observed_by: operator
+      reference: review.md#iteration-2
+      statement: "Independent Strict Review Iteration 2 (Resolution Verification, strict profile, fresh execution, isolated Git worktree at .claude/worktrees/agent-aa5fd11c14137d34e, no shared context with the Resolution Execution or with Iteration 1's Reviewer) returned PASS against 493371c -- R-001 and R-002 both independently re-verified adversarially, including an end-to-end protocol_id matrix (-1, 0, 1, 2, 3) against both Adapters' real public entry points, going beyond the shipped regression tests. No Out-of-Scope Mutation (resolution-001's declared scope matched the actual commit diff 9-for-9). One new non-blocking finding, R-003 (a residual off-by-one in verification.md's own file-count self-correction), recorded and accepted per C-039, not fixed. Full suite (786 passed), forge validate (PASS), and a live evaluate_merge_readiness() re-run all independently reproduced."
