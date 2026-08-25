@@ -142,7 +142,13 @@ def _check_change(root: Path, change_id: str, head_revision: str) -> tuple[list[
                         f"{change_root}/provenance.yml",
                         f"{change_root}/review.md",
                     }
-                    if delta.returncode != 0 or any(item and item not in allowed for item in delta.stdout.splitlines()):
+                    is_complete = manifest.get("state", {}).get("current") == "complete"
+                    stale = delta.returncode != 0 or any(
+                        item and item not in allowed
+                        for item in delta.stdout.splitlines()
+                        if not (is_complete and item.startswith(f"{change_root}/"))
+                    )
+                    if stale:
                         diagnostics.append(ReadinessDiagnostic("MR-015", "REVIEW SUBJECT STALE", change_id, relative, head_revision, subject_commit))
             verification_records = [
                 item for item in records

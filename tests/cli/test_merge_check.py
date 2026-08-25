@@ -240,6 +240,112 @@ def test_merge_check_flags_missing_required_stage_artifact(tmp_path, monkeypatch
     assert "Required artifact is missing: specification" in result.stdout, result.stdout
 
 
+def _freeze_change_with_state(tmp_path, change_id: str, status: str) -> str:
+    """CHG-0046: freeze a Change's Review subject with a chosen manifest
+    state.current, mirroring _freeze_change's provenance shape but letting
+    the caller control whether the Change has reached "complete" yet.
+    Callers must write .forge/forge.yml and .forge/flows/standard.yml into
+    the base commit themselves (before calling this), so those project-
+    configuration files never appear in the base..head diff under test."""
+    change_dir = tmp_path / ".forge" / "changes" / f"{change_id}-fixture"
+    change_dir.mkdir(parents=True)
+    manifest = _manifest(status=status)
+    manifest["change"]["id"] = change_id
+    (change_dir / "manifest.yml").write_text(yaml.safe_dump(manifest, sort_keys=False), encoding="utf-8")
+    (change_dir / "verification.md").write_text("## Result\n\n**PASS**\n", encoding="utf-8")
+    (change_dir / "review.md").write_text("## Verdict\n\n**PASS**\n", encoding="utf-8")
+    subject = _commit(tmp_path, f"freeze {change_id} subject ({status})")
+    provenance = {"schema": "forge/execution-provenance@2", "change": change_id, "records": [
+        {"id": "impl-001", "role": "implementation", "execution": {"id": "impl", "context_id": "impl-context"}, "revision": {"id": "fixture", "immutable_ref": {"type": "git_commit", "value": subject}, "commit": subject}, "source": {"assurance": "recorded", "observed_by": "self", "reference": "implementation-subject", "statement": "Fixture implementation subject."}},
+        {"id": "review-001", "role": "review", "execution": {"id": "review", "context_id": "review-context"}, "revision": {"id": "fixture", "immutable_ref": {"type": "git_commit", "value": subject}, "commit": subject}, "source": {"assurance": "recorded", "observed_by": "self", "reference": "strict-review", "statement": "Fixture independent review."}},
+        {"id": "verification-001", "role": "implementation", "execution": {"id": "verification", "context_id": "verification-context"}, "revision": {"id": "fixture", "immutable_ref": {"type": "git_commit", "value": subject}, "commit": subject}, "source": {"assurance": "recorded", "observed_by": "self", "reference": "verification.md", "statement": "Fixture verification evidence."}},
+    ]}
+    (change_dir / "provenance.yml").write_text(yaml.safe_dump(provenance, sort_keys=False), encoding="utf-8")
+    _commit(tmp_path, f"record {change_id} review-control metadata")
+    return subject
+
+
+def test_merge_check_tolerates_change_local_artifact_after_completion(tmp_path, monkeypatch) -> None:
+    """TDD-001 / AC-001: a Change-local artifact (e.g. knowledge-capture.md,
+    written by the knowledge_capture Flow stage, which every canonical Flow
+    schedules after strict_review) committed after the frozen subject must
+    not trip MR-015 once the Change has reached state.current: complete —
+    this is CHG-0045/PR-#36's exact false-positive reproduced as a minimal
+    fixture (Discovery)."""
+    monkeypatch.chdir(tmp_path)
+    subprocess.run(["git", "init", "-q"], cwd=tmp_path, check=True)
+    subprocess.run(["git", "config", "user.email", "test@example.com"], cwd=tmp_path, check=True)
+    subprocess.run(["git", "config", "user.name", "Test"], cwd=tmp_path, check=True)
+    (tmp_path / "README.md").write_text("base\n", encoding="utf-8")
+    (tmp_path / ".forge").mkdir()
+    (tmp_path / ".forge" / "forge.yml").write_text("schema: forge/project@1\nproject:\n  name: fixture\nforge:\n  protocol: 2\nflows:\n  default: standard\n  allow_fast: true\n  auto_escalation: true\ntesting:\n  approach: tdd_first\nreview:\n  strict: true\ndocumentation:\n  impact_evaluation: required\n", encoding="utf-8")
+    (tmp_path / ".forge" / "flows").mkdir()
+    (tmp_path / ".forge" / "flows" / "standard.yml").write_text("schema: forge/project-flow@1\nflow:\n  canonical: standard\n  enabled: true\n", encoding="utf-8")
+    base = _commit(tmp_path, "base")
+    _freeze_change_with_state(tmp_path, "CHG-9005", status="complete")
+    change_dir = tmp_path / ".forge" / "changes" / "CHG-9005-fixture"
+    (change_dir / "knowledge-capture.md").write_text("# lessons\n", encoding="utf-8")
+    head = _commit(tmp_path, "record post-Review Knowledge Capture artifact")
+    result = runner.invoke(app, ["change", "merge-check", "--base", base, "--head", head])
+    assert "MR-015" not in result.stdout, result.stdout
+    assert result.exit_code == 0, result.stdout
+    assert "MERGE READY" in result.stdout
+
+
+def test_merge_check_still_flags_change_local_edit_before_completion(tmp_path, monkeypatch) -> None:
+    """TDD-002 / AC-003: the same kind of Change-local edit as the test
+    above must still trip MR-015 while state.current has not yet reached
+    "complete" — the tolerance is bounded by Completion, not granted
+    unconditionally to every Change-local path at every point in the
+    Change's lifecycle."""
+    monkeypatch.chdir(tmp_path)
+    subprocess.run(["git", "init", "-q"], cwd=tmp_path, check=True)
+    subprocess.run(["git", "config", "user.email", "test@example.com"], cwd=tmp_path, check=True)
+    subprocess.run(["git", "config", "user.name", "Test"], cwd=tmp_path, check=True)
+    (tmp_path / "README.md").write_text("base\n", encoding="utf-8")
+    (tmp_path / ".forge").mkdir()
+    (tmp_path / ".forge" / "forge.yml").write_text("schema: forge/project@1\nproject:\n  name: fixture\nforge:\n  protocol: 2\nflows:\n  default: standard\n  allow_fast: true\n  auto_escalation: true\ntesting:\n  approach: tdd_first\nreview:\n  strict: true\ndocumentation:\n  impact_evaluation: required\n", encoding="utf-8")
+    (tmp_path / ".forge" / "flows").mkdir()
+    (tmp_path / ".forge" / "flows" / "standard.yml").write_text("schema: forge/project-flow@1\nflow:\n  canonical: standard\n  enabled: true\n", encoding="utf-8")
+    base = _commit(tmp_path, "base")
+    _freeze_change_with_state(tmp_path, "CHG-9006", status="documentation")
+    change_dir = tmp_path / ".forge" / "changes" / "CHG-9006-fixture"
+    (change_dir / "knowledge-capture.md").write_text("# lessons\n", encoding="utf-8")
+    head = _commit(tmp_path, "record Change-local edit before Completion")
+    result = runner.invoke(app, ["change", "merge-check", "--base", base, "--head", head])
+    assert "MR-015" in result.stdout, result.stdout
+    assert result.exit_code == 1
+
+
+def test_merge_check_does_not_detect_external_drift_after_completion(tmp_path, monkeypatch) -> None:
+    """TDD-003 / AC-002 (characterization, not a behavior change): MR-015's
+    `git diff` is scoped to `-- change_root` (evaluator.py), so it never
+    inspects paths outside the Change's own directory, independent of
+    state.current and independent of this Change. This test documents that
+    pre-existing, Out-of-Scope gap (Discovery, Specification Out of Scope)
+    so a future change to this scoping is a deliberate, visible decision,
+    not a silent regression or a silent, accidental fix."""
+    monkeypatch.chdir(tmp_path)
+    subprocess.run(["git", "init", "-q"], cwd=tmp_path, check=True)
+    subprocess.run(["git", "config", "user.email", "test@example.com"], cwd=tmp_path, check=True)
+    subprocess.run(["git", "config", "user.name", "Test"], cwd=tmp_path, check=True)
+    (tmp_path / "README.md").write_text("base\n", encoding="utf-8")
+    (tmp_path / ".forge").mkdir()
+    (tmp_path / ".forge" / "forge.yml").write_text("schema: forge/project@1\nproject:\n  name: fixture\nforge:\n  protocol: 2\nflows:\n  default: standard\n  allow_fast: true\n  auto_escalation: true\ntesting:\n  approach: tdd_first\nreview:\n  strict: true\ndocumentation:\n  impact_evaluation: required\n", encoding="utf-8")
+    (tmp_path / ".forge" / "flows").mkdir()
+    (tmp_path / ".forge" / "flows" / "standard.yml").write_text("schema: forge/project-flow@1\nflow:\n  canonical: standard\n  enabled: true\n", encoding="utf-8")
+    (tmp_path / "src").mkdir()
+    (tmp_path / "src" / "probe.py").write_text("value = 1\n", encoding="utf-8")
+    base = _commit(tmp_path, "base")
+    _freeze_change_with_state(tmp_path, "CHG-9007", status="complete")
+    (tmp_path / "src" / "probe.py").write_text("value = 2  # changed after freeze\n", encoding="utf-8")
+    head = _commit(tmp_path, "post-freeze implementation drift outside change_root")
+    result = runner.invoke(app, ["change", "merge-check", "--base", base, "--head", head])
+    assert "MR-015" not in result.stdout, result.stdout
+    assert result.exit_code == 0, result.stdout
+    assert "MERGE READY" in result.stdout
+
+
 def test_merge_check_blocks_stale_plan_digest(tmp_path, monkeypatch) -> None:
     monkeypatch.chdir(tmp_path)
     subprocess.run(["git", "init", "-q"], cwd=tmp_path, check=True)
