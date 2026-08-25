@@ -3,14 +3,14 @@ forge:
   artifact: review
   schema: 1
 change: CHG-0047
-status: active
+status: complete
 ---
 
 # Review — CHG-0047 Capability Architecture Foundation
 
 ## Verdict
 
-**PASS.** Iteration 1: REQUEST CHANGES, resolved. Iteration 2: REQUEST CHANGES, resolved. Iteration 3: REQUEST CHANGES — Convergence Limit reached (Protocol 2 §12, limit = 2); the user recorded an explicit `convergence_decision: new_full_review`; R-006/R-007 were fixed. Iteration 4 (fresh, unrestricted Initial Review of the whole subject) returned **PASS** against commit `9f85aac` — one non-blocking MINOR finding, R-008. Because fixing R-008 touched `plan.md`, a reviewable file, C-026 required the refrozen revision to be independently re-verified regardless of R-008's severity. Iteration 5 (Resolution Verification scoped to R-008, commit `53aa1f0`) returned **PASS** — no BLOCKER or MAJOR finding across all five Iterations survives in the final revision. Strict Review for CHG-0047 is closed.
+**PASS.** Iteration 1: REQUEST CHANGES, resolved. Iteration 2: REQUEST CHANGES, resolved. Iteration 3: REQUEST CHANGES — Convergence Limit reached (Protocol 2 §12, limit = 2); the user recorded an explicit `convergence_decision: new_full_review`; R-006/R-007 were fixed. Iteration 4 (fresh, unrestricted Initial Review of the whole subject) returned **PASS** against commit `9f85aac` — one non-blocking MINOR finding, R-008. Because fixing R-008 touched `plan.md`, a reviewable file, C-026 required the refrozen revision to be independently re-verified regardless of R-008's severity. Iteration 5 (Resolution Verification scoped to R-008, commit `53aa1f0`) returned **PASS**. Iteration 6 (Documentation Impact addition — `CHANGELOG.md`, ADR-0019 — Initial Review, commit `356f201`) returned **PASS**. No BLOCKER or MAJOR finding across all six Iterations survives in the final revision. Strict Review for CHG-0047 is closed.
 
 ## Iteration 1 — REQUEST CHANGES
 
@@ -240,3 +240,39 @@ At the exact commit reviewed (`53aa1f0`), `review.md`'s "Resolution (of R-008)" 
 ### Verdict
 
 **PASS.** No BLOCKER or MAJOR finding. R-009 (MINOR) was already resolved by a subsequent review-control-metadata-only correction before this report was recorded. `plan.md`'s content is correct, diff scope is exactly as declared (no Out-of-Scope Mutation), `plan-approval-001` is untouched and internally consistent, `forge validate` is clean, and the full suite is unregressed. This closes Strict Review for CHG-0047.
+
+## Iteration 6 — PASS (Documentation Impact, Initial Review)
+
+**Reviewer**: Independent Reviewer execution (fresh agent invocation, isolated Git worktree at `/home/isckosta/forge-protocol/.claude/worktrees/agent-a43a864a38974e415`, no shared context with the Implementation that produced this revision or with any of the five prior Reviewer Executions), per C-026.
+
+**Commit reviewed**: `356f201068d9d73953a9a264af7d52511f4ebe09`.
+
+**Classification**: `kind: initial_review`. STANDARD Flow's `documentation` stage runs after `strict_review`; `CHANGELOG.md` and `docs/adr/0019-capability-architecture-foundation.md` are reviewable files, so this new revision (the Documentation Impact addition) requires its own independent review before Completion, matching this repository's `CHG-0039` precedent. No prior Finding is being fixed, so `initial_review`, not `resolution_verification`.
+
+### Resolution Delta inspected
+
+`git diff 53aa1f0..356f201 --stat`: exactly `CHANGELOG.md`, `docs/adr/0019-capability-architecture-foundation.md` (new), plus this Change's own `manifest.yml`/`provenance.yml`/`review.md` (review-control metadata). **No Out-of-Scope Mutation.**
+
+### R-010 · BLOCKER (process gap, found and fixed before this report was recorded) — Commit `356f201` was reviewed before its subject-freeze provenance record was committed
+
+The Reviewer correctly identified that, at the exact moment `356f201` was checked out, `provenance.yml` had no `documentation-001` (or equivalent) record freezing that commit, and `forge validate` failed with `C-026 ... review subject changed after its immutable revision freeze`. Root cause: the `documentation-001` provenance record had been authored in the working tree but was not yet committed when this Iteration's Reviewer was launched — a process sequencing error, not a defect in `CHANGELOG.md`/`docs/adr/0019-...`'s content (the Reviewer found neither BLOCKER nor MAJOR content defects in either file). Fixed immediately: `documentation-001` committed (`63aa0a4`) before this report was recorded, matching this Change's own established pattern (every prior fix commit is followed by a review-control-metadata commit before the next Iteration).
+
+### R-011 · MINOR (documentation accuracy, accepted, not fixed) — ADR-0019 misattributes two finding IDs in its own history summary
+
+ADR-0019's Consequences paragraph reads "no fence-indentation tracking (R-002), no delimiter-type tracking (R-004), no delimiter-length tracking (R-006)." Checked against this file's own record: R-002 (Iteration 1) is the *original*, fence-unaware bug, not specifically an indentation finding; R-004 (Iteration 2) is the actual indentation finding; R-005 (Iteration 2, MINOR/informational) is the actual delimiter-type finding, omitted from the ADR's list; R-006 (Iteration 3) is correctly the delimiter-length finding. The overall narrative (successively narrower fence-parsing gaps across three Iterations, closing with a Convergence Limit episode) is accurate; only this one sentence's ID-to-gap mapping is off by one for two of three IDs, and omits R-005.
+
+**Not fixed.** Editing `docs/adr/0019-...md` is itself a reviewable-file mutation that would, under the same C-026 mechanism R-010 just demonstrated, require yet another frozen subject and independent Iteration to close — disproportionate for a documentation-accuracy correction with no AC, code, test, or safety-claim impact (unlike R-001/R-003, this does not misstate what was verified or make a false pass-count claim). Recorded here as a known, accepted, non-blocking limitation, consistent with how Observations 1–2 and R-007 were handled (C-039 proportionality).
+
+### Checked and found sound (Iteration 6)
+
+- `CHANGELOG.md`'s new entry and ADR-0019 spot-checked against the actual shipped files (`capabilities/README.md`'s architectural-boundaries list, `capabilities/capability.md`'s seven required sections and "no JSON Schema" declaration, `loader.py`'s own docstring, `model.py`'s `@dataclass(frozen=True)`) — accurate.
+- Neither document overclaims scope: no concrete Capability, registry, or executor is claimed to exist; `grep` for the five forbidden class names in `src/forge_cli/capabilities/` returns no matches.
+- F-010 and F-008 quoted correctly against `.claude/skills/forge/references/engineering-contract.md`.
+- `pyproject.toml` confirmed byte-identical to the pre-Change baseline (`git diff 7495615..356f201 -- pyproject.toml`: no output).
+- The ADR's Convergence/Iteration-4/Iteration-5 narrative independently checked line-by-line against this file's own "Convergence", "Convergence Decision", "Iteration 4", "Resolution (of R-008)", and "Iteration 5" sections — accurate.
+- ADR numbering: `0019` used exactly once.
+- Full suite (fresh venv): 750 passed, 2 warnings — unregressed (docs-only addition). `tests/capabilities/`: 29 passed. `tests/contract/test_protocol_contract.py`: 34 passed.
+
+### Verdict
+
+**PASS.** No BLOCKER or MAJOR content defect in `CHANGELOG.md` or `docs/adr/0019-...`. R-010 was a process-sequencing gap, fixed before this report was recorded (see `documentation-001` in `provenance.yml`, commit `63aa0a4`). R-011 (MINOR) is a genuine but non-blocking documentation-accuracy note, recorded and accepted rather than fixed, per C-039 proportionality.

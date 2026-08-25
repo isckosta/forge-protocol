@@ -250,3 +250,20 @@ records:
       observed_by: self
       reference: manifest.yml#documentation
       statement: "Documentation Impact evaluation (Flow STANDARD, documentation stage, scheduled after strict_review) for CHG-0047. Added CHANGELOG.md's Unreleased entry and docs/adr/0019-capability-architecture-foundation.md (F-008: material Architecture Change). No other file touched. Full suite re-verified (750 passed, 2 warnings) after the addition. Reviewable Git workspace confirmed clean before this freeze."
+  - id: reviewer-006
+    role: review
+    execution:
+      id: a43a864a38974e415
+      context_id: independent-review-context-a43a864a38974e415
+    recorded_at: '2026-08-25T09:00:00Z'
+    revision:
+      id: chg-0047-documentation-001
+      immutable_ref:
+        type: git_commit
+        value: 356f201068d9d73953a9a264af7d52511f4ebe09
+      commit: 356f201068d9d73953a9a264af7d52511f4ebe09
+    source:
+      assurance: recorded
+      observed_by: operator
+      reference: review.md#iteration-6
+      statement: Independent Strict Review Iteration 6 (Documentation Impact addition, Initial Review, fresh execution, isolated Git worktree at .claude/worktrees/agent-a43a864a38974e415, no shared context with the Implementation or any of the five prior Reviewer Executions) returned REQUEST CHANGES against 356f201 -- R-010 (BLOCKER, the documentation-001 subject-freeze provenance record existed in the working tree but had not yet been committed when this Iteration was launched, so forge validate correctly failed with a C-026 staleness finding at the reviewed commit) and R-011 (MINOR, ADR-0019 misattributes two finding IDs -- R-002/R-004 -- in its own history summary and omits R-005). R-010 was a process-sequencing gap, not a content defect, fixed immediately by committing documentation-001 (63aa0a4) before this report was recorded. R-011 is accepted, non-blocking, and not fixed (C-039). No Out-of-Scope Mutation; CHANGELOG.md/ADR-0019 content spot-checked against the shipped files and the real review history and found accurate; full suite unregressed (750 passed, 2 warnings).
