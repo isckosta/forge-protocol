@@ -30,9 +30,3 @@ Este Plan é explicitamente autorizado pelo mantenedor humano para avançar à I
 O usuário aprovou explicitamente a continuação para Implementation na sessão ativa em 2026-08-25, via `AskUserQuestion`, após revisar o Repository Truth Audit (Discovery), a Specification (FR-001 a FR-005, NFR-001), o Test Design (TD-001 a TD-007) e o resumo dos 8 itens deste Plan, selecionando explicitamente a opção "Aprovar e prosseguir".
 
 <!-- forge:plan-approval-record -->
-
-1. Describe the first approved work item and files.
-
-## Implementation Boundary
-
-Reaching `plan_complete` is not authorization to begin Implementation.

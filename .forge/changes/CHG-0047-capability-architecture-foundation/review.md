@@ -10,7 +10,7 @@ status: active
 
 ## Verdict
 
-**Pending Iteration 4 (Initial Review).** Iteration 1: REQUEST CHANGES, resolved. Iteration 2: REQUEST CHANGES, resolved. Iteration 3: REQUEST CHANGES — Convergence Limit reached (Protocol 2 §12, limit = 2). The user recorded an explicit `convergence_decision: new_full_review`; R-006/R-007 were fixed; a fresh, unrestricted Initial Review of the whole subject is now pending against the current revision.
+**PASS.** Iteration 1: REQUEST CHANGES, resolved. Iteration 2: REQUEST CHANGES, resolved. Iteration 3: REQUEST CHANGES — Convergence Limit reached (Protocol 2 §12, limit = 2); the user recorded an explicit `convergence_decision: new_full_review`; R-006/R-007 were fixed. Iteration 4 (fresh, unrestricted Initial Review of the whole subject, per the convergence decision) returned **PASS** — no BLOCKER or MAJOR finding survived; one non-blocking MINOR finding (R-008, a `plan.md` prose gap) was found and fixed. Strict Review for CHG-0047 is closed.
 
 ## Iteration 1 — REQUEST CHANGES
 
@@ -160,6 +160,48 @@ The situation (R-006's finding, the Convergence Limit being reached, and the fou
 
 R-006 fixed: `_parse_sections` now also tracks the opening fence's delimiter run length and only closes the fence on a same-type line whose run length is `>=` that length, matching CommonMark's actual fence-closing rule (`TDD-005`, RED→GREEN). R-007 addressed by correcting `TDD-004`'s behavior description (it already tolerated tabs, not just spaces, in the safe direction; the description was updated to say so honestly, no code change). Full suite and `forge validate` re-verified after the fix (see `verification.md`). See `provenance.yml`'s `resolution-003` record for the frozen revision this produced.
 
-## Iteration 4 — Initial Review (pending)
+## Iteration 4 — PASS (Initial Review)
 
-Per the Convergence Decision above, this Iteration is classified `kind: initial_review` — a fresh, unrestricted re-evaluation of the whole subject, not a scoped Resolution Verification. Recorded below once the independent Reviewer returns its verdict.
+**Reviewer**: Independent Reviewer execution (fresh agent invocation, isolated Git worktree at `/home/isckosta/forge-protocol/.claude/worktrees/agent-a74feac752af6f16c`, no shared context with any prior Execution — Implementation, Resolution, or any of the three prior Reviewer Executions), per C-026.
+
+**Commit reviewed**: `9f85aac996246ac014d81990ea87a917ab61d157`.
+
+**Classification**: `kind: initial_review`, per the Convergence Decision above (`new_full_review`) — a fresh, unrestricted re-audit of the entire subject against the pre-Change baseline (`7495615`), not a scope-bounded Resolution Verification.
+
+### Summary
+
+Every claim in `verification.md`/`tdd-evidence.yml` was independently reproduced. The Reviewer read `loader.py`/`model.py` fresh (no assumption prior fixes were correct), constructed 20+ new adversarial cases against `load_capability` beyond all five TDD cycles' shipped tests — including cross-checking ambiguous fence/heading cases against a real CommonMark parser (`markdown-it-py`) — reverted the two most recent fixes (TDD-004, TDD-005) in an isolated worktree to independently confirm their RED evidence, and audited diff scope and forbidden-vocabulary constraints end to end. No new BLOCKER or MAJOR defect was found.
+
+### R-008 · MINOR — `plan.md` carried unfilled template placeholder text and a duplicated "Implementation Boundary" section
+
+After the `<!-- forge:plan-approval-record -->` marker, `plan.md` contained the literal unfilled template line `1. Describe the first approved work item and files.` (every sibling Change's `plan.md` in this repository replaces this with real prose narrating the approval; CHG-0047 was the only one that hadn't), followed by a second, duplicate `## Implementation Boundary` section identical to the one already present earlier in the file. Neither defect is caught by `forge validate` (the `plan` artifact's prose is not schema-parsed), and neither compromises the actual approval record: `provenance.yml`'s `plan-approval-001` independently and correctly documents the human's explicit approval, with its own `content_digest` over the plan.md content as it stood at that frozen commit — the provenance chain remains internally consistent regardless of this prose gap. Not BLOCKER/MAJOR: no Acceptance Criterion references this text, and no shipped code, test, or the substantive approval record depends on it.
+
+### Investigated and found not to be defects (recorded for completeness)
+
+`manifest.yml`'s `tdd.cycles: 4` vs. `tdd-evidence.yml`'s `cycle_count: 5` (5 real `TDD-xxx` entries) looked like the same class of drift R-001/R-003 punished, but the Reviewer confirmed this field is not treated as strictly synced anywhere in this project's real practice (e.g. `CHG-0046`'s merged `manifest.yml` carries `tdd.cycles: 7` against its own `tdd-evidence.yml`'s `cycle_count: 12`, and `change-v2.schema.json` does not cross-validate the two) — not reported as a finding. Several fence/heading edge cases that looked plausible as new silent-truncation instances (a 4-space-indented fence, a fence properly nested under a list item, an unterminated fence in the final required section, a YAML-boolean-word `capability` id, CRLF line endings) were each independently checked — including against a real CommonMark parser for the ambiguous indentation cases — and confirmed to behave correctly (either loading correctly or failing loudly with a specific `CapabilityDefinitionError`), not silently.
+
+### Checked and found sound (Iteration 4)
+
+- `pytest tests/capabilities/ -q`: 29 passed (independently reproduced, fresh venv).
+- Full suite `pytest -q`: 750 passed, 2 warnings (matches `verification.md` exactly; warnings pre-exist, unrelated).
+- `pytest tests/contract/test_protocol_contract.py -q`: 34 passed; `tdd-evidence.yml` re-confirmed to parse with every `notes` entry as a plain string.
+- `forge validate`: PASS.
+- Diff scope: `git diff 7495615..9f85aac --stat` touches exactly 17 files (the 7 code/doc/test files this Specification scopes, plus this Change's own 10 Artifacts); `pyproject.toml`, `protocol/`, the Engineering Contract, and `src/forge_cli/adapters/capabilities.py` confirmed byte-identical to baseline.
+- Forbidden class names (`CapabilityRegistry`/`CapabilityExecutor`/`CapabilityPipeline`/`CapabilityGraph`/`CapabilityProvider`) appear only in prose *discussing the prohibition*, never in shipped code; no Claude/Codex/Cursor coupling in `src/forge_cli/capabilities/` (the only hits are the intentional negative assertion in `test_model.py`).
+- No speculative empty directories anywhere in the diff.
+- `Capability` model: exactly the required fields, frozen, no Harness-specific field, independently confirmed via `dataclasses.fields()`.
+- `load_capability`: locate → read → parse → normalize → return exactly as specified; every invalid-input path raises a specific, path-identifying `CapabilityDefinitionError`.
+- Determinism reconfirmed.
+- Fence-vs-heading disambiguation (the subject of R-002/R-004/R-005/R-006 across three prior Iterations): 20+ new adversarial cases beyond the shipped tests, several cross-checked against a real CommonMark parser, found no surviving silent-truncation case.
+- TDD-004/TDD-005 RED evidence independently reproduced by reverting each fix in the Reviewer's own worktree, re-running the targeted tests (`2 failed` and `1 failed` respectively, matching `tdd-evidence.yml` exactly), then restoring — worktree confirmed clean afterward.
+- Documentation (`capabilities/README.md`, `capabilities/capability.md`) read fresh in full: covers all required FR-001/FR-002 points, including the explicit `adapters/capabilities.py` disambiguation and the explicit "not a `SKILL.md`" statement; no JSON Schema introduced.
+- Proportionality reassessed after 5 TDD cycles and 3 review rounds: the design has not drifted — still a frozen dataclass and a single small loader file, no registry/executor/discovery/cache/package-resource fallback.
+- Iteration 2's and Iteration 3's own RED/GREEN claims independently spot-checked and found accurate (review-history honesty check).
+
+### Verdict
+
+**PASS.** No BLOCKER or MAJOR finding survived independent, adversarial re-verification. R-008 (MINOR) is genuine but non-blocking, affecting only this Change's own `plan.md` prose, not any Acceptance Criterion, shipped code, test, or the substantive human-approval provenance record. This closes Strict Review for CHG-0047.
+
+## Resolution (of R-008)
+
+R-008 fixed directly (a MINOR, non-blocking documentation-hygiene finding does not require a further independent Review Iteration to accept the already-recorded PASS verdict above — consistent with how this repository has historically handled non-blocking Observations, e.g. `CHG-0039`): the unfilled template placeholder line was replaced by removing it (the marker itself, `<!-- forge:plan-approval-record -->`, remains and is followed directly by the file's actual final content), and the duplicate `## Implementation Boundary` section was removed, leaving the single original one intact.
