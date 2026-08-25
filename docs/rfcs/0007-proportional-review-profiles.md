@@ -110,10 +110,19 @@ populated with real per-Flow variance for Review itself.
 8. Schema changes: `profile` is a new, optional (defaulted) enum field
    in `protocol/schemas/change-v2.schema.json`'s `review` object,
    `protocol/schemas/policy-review-v2.schema.json`, and
-   `protocol/schemas/project.schema.json`'s `review` object (so a
-   project's effective configuration has a concrete, schema-legal place
-   to declare a stricter-than-floor profile per Decision point 12). A
-   manifest, policy, or project config that omits `profile` is
+   `protocol/schemas/project-flow.schema.json`'s `review` object — the
+   already-existing, already-consumed per-Flow project override
+   mechanism (`.forge/flows/<flow_id>.yml`, `schema:
+   forge/project-flow@1`, merged with the canonical Flow by
+   `resolve_effective_flow`, which `forge validate` already calls for
+   every such file) — giving a project's effective configuration a
+   concrete, schema-legal, already-wired place to declare a
+   stricter-than-floor profile per Decision point 12.
+   `.forge/forge.yml`'s separate, project-wide `review.strict` field
+   (`protocol/schemas/project.schema.json`) is intentionally left
+   untouched: it is not read by any CLI code today (confirmed by
+   Architecture inspection) and is not the right integration point. A
+   manifest, policy, or project-flow config that omits `profile` is
    interpreted as `strict` (the historically universal behavior) — the
    compatible-evolution reading under C-045: no existing valid
    instance's minimum obligation is reduced by silence. Separately,
