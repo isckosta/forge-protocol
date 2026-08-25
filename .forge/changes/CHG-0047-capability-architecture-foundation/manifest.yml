@@ -26,7 +26,7 @@ requirements:
   verified: 5
 tdd:
   status: compliant
-  cycles: 4
+  cycles: 5
 verification:
   status: passed
 review:

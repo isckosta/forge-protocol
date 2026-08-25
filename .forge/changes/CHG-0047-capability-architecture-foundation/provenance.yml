@@ -138,3 +138,44 @@ records:
       observed_by: operator
       reference: review.md#iteration-3
       statement: Independent Strict Review Iteration 3 (Resolution Verification, fresh execution, isolated Git worktree at .claude/worktrees/agent-a853c531d6133a76b, no shared context with Resolution 2's Execution or with either prior Reviewer) returned REQUEST CHANGES against ea433b6 — R-006 (MAJOR, R-005's remaining "mismatched delimiter length" limitation can fail completely silently via a shorter same-type closing fence, contradicting the explicit "fails loudly" claim in tdd-evidence.yml/verification.md/review.md that justified not fixing it) and R-007 (MINOR, informational — indentation tolerance also accepts tabs beyond the documented "3 leading spaces," a documentation-accuracy gap, not a corruption risk). R-003/R-004/the delimiter-type half of R-005 independently re-confirmed fixed via adversarial cases beyond the shipped tests; no Out-of-Scope Mutation. This is the second consecutive resolution_verification Iteration with material findings, reaching Protocol 2's Convergence Limit (section 12-13).
+  - id: convergence-decision-001
+    role: implementation
+    execution:
+      id: claude-code-implementation-0047-convergence-001
+      context_id: claude-code-session-2026-08-25-convergence-001
+    recorded_at: '2026-08-25T05:00:00Z'
+    revision:
+      id: chg-0047-resolution-002
+      immutable_ref:
+        type: git_commit
+        value: ea433b64bda9e5a92977cdb05dd5efd7d10810a6
+      commit: ea433b64bda9e5a92977cdb05dd5efd7d10810a6
+    source:
+      assurance: recorded
+      observed_by: operator
+      reference: review.md#convergence-decision
+      statement: The user was presented, in the active chat session on 2026-08-25, with the Convergence Limit situation (R-006's finding, and the four available convergence_decision options with their consequences explained) and explicitly selected new_full_review via AskUserQuestion -- fix R-006, then have a fresh, unrestricted Initial Review re-evaluate the whole subject rather than another scoped Resolution Verification.
+  - id: resolution-003
+    role: resolution
+    execution:
+      id: claude-code-implementation-0047-resolution-003
+      context_id: claude-code-session-2026-08-25-resolution-003
+    recorded_at: '2026-08-25T05:30:00Z'
+    scope:
+      - .forge/changes/CHG-0047-capability-architecture-foundation/tdd-evidence.yml
+      - .forge/changes/CHG-0047-capability-architecture-foundation/verification.md
+      - .forge/changes/CHG-0047-capability-architecture-foundation/review.md
+      - src/forge_cli/capabilities/loader.py
+      - tests/capabilities/test_loader.py
+    targets: [R-006, R-007]
+    revision:
+      id: chg-0047-resolution-003
+      immutable_ref:
+        type: git_commit
+        value: 9f85aac996246ac014d81990ea87a917ab61d157
+      commit: 9f85aac996246ac014d81990ea87a917ab61d157
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: review.md#resolution-of-iteration-3
+      statement: Resolution of Strict Review Iteration 3 (reviewer-003) findings R-006 and R-007, per the recorded new_full_review convergence_decision. R-006 fixed by making loader.py's _parse_sections track the opening fence's delimiter run length and require a same-type closing run of at least that length, matching CommonMark's fence-closing rule, with a RED-before-GREEN regression test (TDD-005). R-007 addressed by correcting TDD-004's behavior description to accurately state tabs are also tolerated (no code change -- the deviation was in the safe, over-recognize-as-fence direction). Re-ran full suite (750 passed, 2 warnings) and forge validate (PASS) after the fix. Reviewable Git workspace confirmed clean before this freeze.
