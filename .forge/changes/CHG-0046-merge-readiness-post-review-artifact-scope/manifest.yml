@@ -9,7 +9,7 @@ flow:
   current: full
   escalations: []
 state:
-  current: strict_review
+  current: complete
 artifacts:
   intent: complete
   discovery: complete
@@ -21,9 +21,9 @@ artifacts:
   tasks: complete
   tdd_evidence: complete
   verification: complete
-  review: pending
-  knowledge_capture: pending
-  documentation: pending
+  review: complete
+  knowledge_capture: complete
+  documentation: complete
 requirements:
   total: 2
   implemented: 2
@@ -74,7 +74,16 @@ review:
       new_material_findings: 0
       finding_classes: []
 documentation:
-  impact_evaluated: false
+  impact_evaluated: true
+  update_required: true
+  reason: >-
+    Updated: CHANGELOG.md (Unreleased entry), docs/adr/0018-merge-
+    readiness-post-review-artifact-scope.md (DEC-001 is a material
+    architectural decision -- the temporal state.current boundary versus
+    the rejected per-Flow-stage artifact mapping). No RFC (this Change is
+    merge-readiness-gate-internal logic, not a Protocol or Contract
+    redefinition -- CON-001 already establishes no Contract or Flow
+    meaning changed).
 decisions:
   - id: DEC-001
     class: architectural

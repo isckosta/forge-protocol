@@ -10,6 +10,30 @@ until then.
 
 ## Unreleased
 
+### Merge Readiness Post-Review Artifact Scope
+
+Fixed two real defects in the `forge-merge-readiness` gate
+(`forge change merge-check`). MR-015 (`REVIEW SUBJECT STALE`) previously
+blocked any Change whose Documentation Impact, Knowledge Capture, or
+Completion-stage bookkeeping — legitimately scheduled after Strict Review
+in every canonical Flow — touched any Change-local file other than
+`manifest.yml`/`provenance.yml`/`review.md` after the Review subject was
+frozen; it now tolerates any Change-local path once the Change reaches
+`state.current: complete`, mirroring `forge validate`'s own existing
+precedent for the same invariant. MR-017 (ambiguous materiality
+classification) previously blocked any PR touching ten specific, real,
+digest-tracked Agent Adapter–generated paths (`.claude/CLAUDE.md`,
+`.claude/skills/forge/**`, `.agents/skills/forge/**`,
+`.forge/adapters/*/installation.yml`); the materiality policy now
+classifies them explicitly. Both defects were actively blocking a real,
+already-passed-Review Change (CHG-0045's PR #36) from merging. See
+ADR-0018 for the design.
+
+Separately documented, deliberately not fixed here: MR-015 provides no
+protection at all against a *completed* Change's implementation changing
+outside its own directory — a pre-existing, unrelated gap, real and live
+independent of this Change.
+
 ### Inspection Layout Proportional Investigation
 
 Elaborated `protocol/artifact-structure.md`'s "Inspection" guidance

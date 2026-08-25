@@ -68,11 +68,12 @@ status: pending
 - [x] T-010 Write `verification.md` with real evidence for every TDD-xxx,
       full command output, and item 9's reproduction.
       `Plan: 10`
-- [ ] T-011 Documentation Impact evaluation (`CHANGELOG.md`, possible ADR
-      for DEC-001).
+- [x] T-011 Documentation Impact evaluation (`CHANGELOG.md`, possible ADR
+      for DEC-001). Superseded/completed by T-018 below (Iteration
+      1's findings pushed this later in sequence).
       `Plan: 11`
-- [ ] T-012 `knowledge-capture.md` from real Implementation/Review
-      evidence.
+- [x] T-012 `knowledge-capture.md` from real Implementation/Review
+      evidence. Superseded/completed by T-019 below.
       `Plan: 12`
 - [x] T-013 Independent Strict Review of the frozen subject
       (`60b699bb69c06ed0b078572dd705191e73441c68`), Iteration 1
@@ -113,20 +114,20 @@ status: pending
       Change's diff and out of Scope. Flagged separately (not fixed here,
       not silently ignored) — recorded in `verification.md`,
       `discovery.md` addendum, and as a standalone follow-up task.
-- [ ] T-017 Full suite (`pytest -q`, 704 passed), `forge validate`, `forge
+- [x] T-017 Full suite (`pytest -q`, 704 passed), `forge validate`, `forge
       doctor` re-confirmed clean after the Resolution. Freeze the new
       Resolution subject; obtain an independent Resolution Verification
       (Iteration 2) of this Resolution.
       `Plan: 8`
-- [ ] T-018 Documentation Impact evaluation (`CHANGELOG.md`, possible ADR
+- [x] T-018 Documentation Impact evaluation (`CHANGELOG.md`, possible ADR
       for DEC-001).
       `Plan: 11`
-- [ ] T-019 `knowledge-capture.md` from real Implementation/Review
+- [x] T-019 `knowledge-capture.md` from real Implementation/Review
       evidence, including the Resolution and the two out-of-scope findings
       surfaced along the way.
       `Plan: 12`
 
 ## Status
 
-T-001 through T-016 complete. T-017 (Resolution Verification) is next,
-required before Documentation Impact/Knowledge Capture/Completion.
+T-001 through T-019 complete. Review passed (Iteration 3). Documentation
+Impact and Knowledge Capture complete. Ready for Completion.

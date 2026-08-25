@@ -3,7 +3,7 @@ forge:
   artifact: knowledge_capture
   schema: 1
 change: CHG-0046
-status: pending
+status: complete
 ---
 
 # CHG-0046 · Knowledge Capture
@@ -14,16 +14,83 @@ status: pending
 
 ## What Changed
 
-State the durable change in a few sentences — context for the knowledge below, not a file-by-file account. That belongs to Plan, Tasks, or the diff.
+`forge-merge-readiness`'s MR-015 check now tolerates any Change-local path
+changing after a Review subject freezes, once the Change reaches
+`state.current: complete` — replacing a hardcoded three-file allowlist
+that blocked a real, already-passed-Review Change (CHG-0045's PR #36).
+MR-017's materiality policy gained explicit rules for ten Agent
+Adapter–generated paths that previously fell through to `ambiguous`. Two
+Strict Review iterations found and required fixing real defects in the
+first implementation before a third passed.
 
 ## Durable Knowledge
 
-Record only what will still be true and useful after this Change is forgotten. Ask: will this still be valid, and could another Change decide better by knowing it? Do not duplicate Decision, Architecture, Specification, Review, or Specification Drift — reference them, extract the reusable lesson they revealed. Use short prose for a single dominant lesson. Use `### K-xxx · <title>` items when there are several genuinely independent lessons — ids are optional structure, not required, since no consumer depends on them today. If no additional knowledge beyond this Change was identified, say so plainly — that is a valid, complete answer, not a gap to fill.
+Two independent implementations of the same Contract invariant can
+silently diverge. `forge validate`'s local C-026 check
+(`validation/__init__.py`) and `forge-merge-readiness`'s CI-only MR-015
+check (`merge_readiness/evaluator.py`) both exist to detect "the Review
+subject changed after freeze," but were built at different times with
+different scoping choices (whole-repo vs. `change_root`-only) and,
+crucially, only one of them had the `state.current != "complete"`
+carve-out. Nothing compared them to each other; CI's own two steps on the
+same commit — "Validate Forge repository" (passing) and "Evaluate Forge
+Merge Readiness" (failing) — quietly disagreed until a real blocked PR
+forced the comparison. When two checks share a name or a stated purpose,
+verify they share behavior too, rather than assuming a shipped precedent
+in one automatically extends to the other.
+
+A Specification's Acceptance Criteria can overclaim by omission, not just
+by explicit falsehood. AC-002's original wording ("MR-015 still fires for
+`change_root`-external changes") sounded like a regression guard but
+described a protection that never existed — discovered only when
+Architecture traced the actual code, not when Specification Review read
+the prose. Tracing a claimed *existing* behavior against the real code,
+not just the *proposed* behavior against the Specification's prose, is a
+distinct check worth doing deliberately — Specification Review's own
+adversarial pass caught two other real defects (SR-001, SR-002) but not
+this one, because both were about the *design being proposed*, not about
+verifying a claim of *already-true* behavior.
+
+Provenance records that satisfy a mechanical schema check (`scope`/
+`targets` on a `resolution_verification`'s subject) are easy to omit when
+writing a Resolution record for the first time, because nothing forces
+them into existence at that moment — the gap only surfaces later, at the
+next Resolution Verification. This is the same class of gap CHG-0045's own
+R007 hit (`resolution-001-scope`, an append-only corrective record, not a
+rewrite) — now confirmed to recur across at least two Changes. A future
+Change could usefully add this to the Plan/Tasks template for any
+`resolution-001`-shaped record, so it stops being rediscovered per-Change.
 
 ## Consequences for Future Changes
 
-State concrete implications for future work, only when they exist. Give each conclusion a scope (Forge Core, Harness Adapter, CLI, review workflow, …) rather than implying it applies to the whole system.
+- **`forge-merge-readiness` (CLI):** MR-015's tolerance is bounded by
+  `state.current: complete`, not by which Flow stage an artifact belongs
+  to — a future Change adding a new post-`strict_review` Flow stage does
+  not need to touch `evaluator.py` at all; the temporal boundary already
+  covers it.
+- **`forge-merge-readiness` (CLI), out of scope here:** MR-015 still
+  provides no protection against a *completed* Change's implementation
+  changing outside its own directory (Discovery; Specification Out of
+  Scope). A future Change closing this needs to resolve the same
+  repo-wide-vs-per-Change false-positive tension CHG-0036 already fought
+  once, for the completed state specifically.
+- **`forge validate` (CLI), out of scope here:** a real, reproducible,
+  pre-existing crash exists at `validation/__init__.py:321`
+  (`st=m.get("state")or{}`, the identical unguarded-string-state shape
+  R001 fixed one file over) — flagged separately, not fixed by this
+  Change.
+- **Review workflow:** when writing a `resolution-NNN` provenance record
+  for the first time, include `scope`/`targets` immediately rather than
+  waiting for a Resolution Verification to demand it as a follow-up
+  `-scope` record.
 
 ## References
 
-Reference Specification, Architecture, Decision, Review, or Specification Drift by id — do not duplicate their content. When this work is materially architectural or Protocol-level, reference the `docs/adr/`/`docs/rfcs/` entry already produced for it, rather than restating it here. This is distinct from the Forge Experience Report (`docs/experience-reporting.md`): FER is opt-in and records what happened during a real execution; this document records what should remain known afterward.
+- Decisions: DEC-001 (architectural — temporal boundary over per-stage
+  artifact mapping), DEC-002 (Plan Decision, C-077).
+- `docs/adr/0018-merge-readiness-post-review-artifact-scope.md` (DEC-001,
+  the material architectural decision).
+- `review.md` Iterations 1–3 for R001–R004's full findings and Resolution
+  evidence.
+- Discovery's "A more severe, orthogonal, pre-existing gap..." and
+  "Addendum (post-Review)..." sections for the two out-of-scope findings.
