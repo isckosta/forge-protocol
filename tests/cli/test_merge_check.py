@@ -100,6 +100,32 @@ def test_merge_check_blocks_incomplete_lifecycle_claim(tmp_path, monkeypatch) ->
     assert "MR-005" in result.stdout
 
 
+def test_merge_check_mr_004_label_is_profile_neutral(tmp_path, monkeypatch) -> None:
+    """CHG-0048 TDD-013: MR-004's diagnostic label must not say "Strict
+    Review" -- Review is no longer synonymous with the strict profile."""
+    monkeypatch.chdir(tmp_path)
+    subprocess.run(["git", "init", "-q"], cwd=tmp_path, check=True)
+    subprocess.run(["git", "config", "user.email", "test@example.com"], cwd=tmp_path, check=True)
+    subprocess.run(["git", "config", "user.name", "Test"], cwd=tmp_path, check=True)
+    (tmp_path / "README.md").write_text("base\n", encoding="utf-8")
+    (tmp_path / ".forge").mkdir()
+    (tmp_path / ".forge" / "forge.yml").write_text("schema: forge/project@1\nproject:\n  name: fixture\nforge:\n  protocol: 2\nflows:\n  default: standard\n  allow_fast: true\n  auto_escalation: true\ntesting:\n  approach: tdd_first\nreview:\n  strict: true\ndocumentation:\n  impact_evaluation: required\n", encoding="utf-8")
+    (tmp_path / ".forge" / "flows").mkdir()
+    (tmp_path / ".forge" / "flows" / "standard.yml").write_text("schema: forge/project-flow@1\nflow:\n  canonical: standard\n  enabled: true\n", encoding="utf-8")
+    base = _commit(tmp_path, "base")
+    change_dir = tmp_path / ".forge" / "changes" / "CHG-9001-fixture"
+    change_dir.mkdir(parents=True)
+    (change_dir / "manifest.yml").write_text(
+        yaml.safe_dump(_manifest(status="review", review_status="pending"), sort_keys=False),
+        encoding="utf-8",
+    )
+    head = _commit(tmp_path, "record pending Change")
+    result = runner.invoke(app, ["change", "merge-check", "--base", base, "--head", head])
+    assert result.exit_code == 1
+    assert "MR-004" in result.stdout
+    assert "strict review" not in result.stdout.lower()
+
+
 def test_merge_check_accepts_complete_change_without_material_runtime_diff(tmp_path, monkeypatch) -> None:
     monkeypatch.chdir(tmp_path)
     subprocess.run(["git", "init", "-q"], cwd=tmp_path, check=True)
