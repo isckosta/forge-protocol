@@ -233,3 +233,20 @@ records:
       observed_by: operator
       reference: review.md#iteration-5
       statement: Independent Strict Review Iteration 5 (Resolution Verification scoped to R-008, fresh execution, isolated Git worktree at .claude/worktrees/agent-a641ae74c47b0ecf8, no shared context with the Resolution Execution or any of the four prior Reviewer Executions) returned PASS against 53aa1f0 -- plan.md's fix confirmed correct and complete, the C-077 approval record confirmed untouched, diff scope confirmed limited to plan.md plus exempt review-control metadata (no Out-of-Scope Mutation), forge validate clean, full suite unregressed (750 passed, 2 warnings). One MINOR finding (R-009, review.md's own closure wording at the reviewed commit conflated finding severity with the C-026 reviewable-file rule) was already resolved by a subsequent review-control-metadata-only correction before this report was recorded. This closes Strict Review for CHG-0047.
+  - id: documentation-001
+    role: implementation
+    execution:
+      id: claude-code-implementation-0047-documentation-001
+      context_id: claude-code-session-2026-08-25-documentation-001
+    recorded_at: '2026-08-25T08:00:00Z'
+    revision:
+      id: chg-0047-documentation-001
+      immutable_ref:
+        type: git_commit
+        value: 356f201068d9d73953a9a264af7d52511f4ebe09
+      commit: 356f201068d9d73953a9a264af7d52511f4ebe09
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: manifest.yml#documentation
+      statement: "Documentation Impact evaluation (Flow STANDARD, documentation stage, scheduled after strict_review) for CHG-0047. Added CHANGELOG.md's Unreleased entry and docs/adr/0019-capability-architecture-foundation.md (F-008: material Architecture Change). No other file touched. Full suite re-verified (750 passed, 2 warnings) after the addition. Reviewable Git workspace confirmed clean before this freeze."
