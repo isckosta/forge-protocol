@@ -289,3 +289,52 @@ records:
         passed, contract suite 52 passed, forge validate valid, end-to-end
         external-repo repro) was produced from the committed 540e35c tree
         and independently reproduced by Reviewer Iteration 3 (reviewer-003).
+  - id: resolution-003
+    role: resolution
+    execution:
+      id: claude-code-implementation-0049-resolution-003
+      context_id: claude-code-session-2026-08-27-resolution3
+    recorded_at: '2026-08-27T04:00:00Z'
+    scope:
+      - src/forge_cli/adapters/repository.py
+      - tests/unit/test_adapter_repository.py
+      - tests/integration/test_adapter_service.py
+      - tests/integration/test_adapter_publisher.py
+      - .forge/changes/CHG-0049-adapter-hook-executable-mode/tdd-evidence.yml
+      - .forge/changes/CHG-0049-adapter-hook-executable-mode/verification.md
+      - .forge/changes/CHG-0049-adapter-hook-executable-mode/manifest.yml
+      - .forge/changes/CHG-0049-adapter-hook-executable-mode/review.md
+    targets: [R-008]
+    revision:
+      id: chg-0049-resolution-003
+      immutable_ref:
+        type: git_commit
+        value: 3f7317a63989aa99647d6c043e2b605be1dfe47c
+      commit: 3f7317a63989aa99647d6c043e2b605be1dfe47c
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: review.md#external-review-pr-41-codex-r-008
+      statement: >-
+        Resolution of PR #41 external review (Codex) Finding R-008 (P1).
+        repository._snapshot_artifact's executable check changed from
+        `stat.S_IMODE(mode) & 0o111` (any execute bit) to
+        `& stat.S_IXUSR` (owner execute only): the Adapter installs and
+        runs the hook as the owning user, and POSIX permission selection
+        stops at the owner class, so a 0o655 hook (owner execute cleared)
+        is genuinely non-executable and must be re-materialized. The two
+        test-helper `_is_executable` functions in test_adapter_publisher.py
+        and test_adapter_service.py were aligned to `S_IXUSR` for
+        precision (their 0o755/0o644 inputs give an unchanged result). Two
+        regression tests added (TDD-006): a unit test that
+        snapshot_repository_artifacts reports a 0o655 file non-executable,
+        and an integration test that `forge adapter doctor` fails and
+        `forge adapter update` repairs a 0o655 installed hook
+        idempotently. RED genuinely verified: reverting the one-line
+        repository.py change makes both new tests fail
+        ("assert 'passed' == 'failed'" for the doctor check). This is the
+        only src/ change since the implementation subject ea01dc8
+        (git diff ea01dc8..3f7317a -- src is that one file). Verified from
+        the committed 3f7317a tree: pytest -q -> 807 passed (2 pre-existing
+        warnings), tests/contract -> 52 passed, forge validate -> valid,
+        git status --porcelain empty.

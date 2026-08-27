@@ -41,7 +41,7 @@ verification:
   status: passed
 review:
   status: active
-  iteration: 3
+  iteration: 4
   blockers: 0
   majors: 0
   minors: 0
@@ -73,6 +73,14 @@ review:
       reviewer_provenance: reviewer-003
       kind: resolution_verification
       status: passed
+      full_review_required: false
+      new_material_findings: 0
+      finding_classes: []
+    - id: review-004
+      revision: chg-0049-resolution-003
+      subject_provenance: resolution-003
+      kind: resolution_verification
+      status: pending
       full_review_required: false
       new_material_findings: 0
       finding_classes: []
