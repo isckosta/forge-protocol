@@ -3,7 +3,7 @@ forge:
   artifact: review
   schema: 1
 change: CHG-0049
-status: active
+status: complete
 ---
 
 # Review — CHG-0049 Adapter Hook Executable Mode
@@ -15,7 +15,15 @@ status: active
 - **Iteration 2** (Resolution Verification of `e7b6b45`): **REQUEST CHANGES**
   — R-004 (BLOCKER), R-005 (MAJOR), R-006 (MAJOR), R-007 (MAJOR, later
   found spurious — see below), O-1 (OBSERVATION). Resolution 2.
-- **Iteration 3** (Resolution Verification of Resolution 2): _pending._
+- **Iteration 3** (Resolution Verification of Resolution 2 `540e35c`):
+  **PASS**. R-001..R-006 each independently re-verified (full suite
+  805/0, contract 52/0, the three canonical YAMLs re-validated against
+  their schemas, historical revision cross-check matched
+  `verification.md`'s table, `git diff ea01dc8..540e35c -- src tests`
+  empty, provenance un-rewritten, end-to-end repro re-confirmed). One
+  non-blocking OBSERVATION (O-2), addressed post-PASS.
+
+**Overall: PASS** at Resolution 2 (`540e35c`) / provenance `ffdc249`.
 
 Both Reviewers independently confirmed the **implementation code is
 correct and has not regressed** — it has been byte-identical since
@@ -166,9 +174,40 @@ their own `chore(...)` commits.
   passed**; `forge validate` → valid; end-to-end external-repo repro
   re-confirmed.
 
-## Iteration 3 — Resolution Verification
+## Iteration 3 — Resolution Verification — PASS
 
-_Pending. A third independent Reviewer (distinct from the Implementation,
-reviewer-001, and reviewer-002) re-reviews the frozen Resolution 2
-revision: R-001..R-006 resolved, no Out-of-Scope Mutation, no regression,
-`resolution-002` provenance present._
+- Subject: frozen Resolution 2 `540e35c815e252f13791897bc5ff140d297e1006`
+  (`subject_provenance`: resolution-002); worktree at `ffdc249` (adds only
+  `resolution-002` to `provenance.yml`).
+- Reviewer: independent execution + context, isolated worktree, fresh
+  venv, no shared context with the Implementation, reviewer-001,
+  reviewer-002, or either Resolution (`reviewer_provenance`: reviewer-003).
+
+**Findings: none blocking.** R-001/R-004 (contract test) — full suite
+805/0, contract 52/0, `test_canonical_yaml_instances_...` passes;
+`manifest.yml`, `tdd-evidence.yml`, `provenance.yml` independently
+re-validated against their schemas. R-002/R-005 — `verification.md`'s
+per-revision table is accurate row-by-row against measurement; PASS
+asserted only for `540e35c`. R-003 — `tdd.status: exception` + honest
+`reason`, schema-valid. R-006 — `manifest.yml` review block internally
+consistent, both prior iteration entries present. No Out-of-Scope
+Mutation (`git diff ea01dc8..540e35c -- src tests` empty; `540e35c..ffdc249`
+is `provenance.yml` only). Provenance complete (6 records) and
+un-rewritten (C-026: the four pre-Resolution-2 records byte-identical
+between first commit `1338181d` and `ffdc249`). End-to-end external-repo
+behaviour re-confirmed.
+
+### O-2 · OBSERVATION (non-blocking) · addressed
+
+`manifest.yml` `review-002` carried `finding_classes: []` where every
+other repo Change populates it for a failed `resolution_verification`.
+Set to `[resolution_regression, unresolved_finding]` to match this
+review's own prose (R-004 was a Resolution 1 regression; R-002/R-005 an
+unresolved finding across Resolution 1). A non-blocking metadata
+alignment to already-reviewed content; no further review round.
+
+## Convergence
+
+One failed `resolution_verification` iteration (`review-002`,
+`new_material_findings > 0`). The Convergence Limit (2 consecutive scoped
+Resolution Verifications) was not reached; Iteration 3 passed.

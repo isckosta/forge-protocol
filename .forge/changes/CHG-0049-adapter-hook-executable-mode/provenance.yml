@@ -215,3 +215,45 @@ records:
         empty. The end-to-end external-repo repro (forge init + adapter
         install claude-code -> hook 0o755, executes, denies) still holds
         (code unchanged since ea01dc8).
+  - id: reviewer-003
+    role: review
+    execution:
+      id: a599e2483ece292b4
+      context_id: independent-review-context-a599e2483ece292b4
+    recorded_at: '2026-08-27T02:00:00Z'
+    revision:
+      id: chg-0049-resolution-002
+      immutable_ref:
+        type: git_commit
+        value: 540e35c815e252f13791897bc5ff140d297e1006
+      commit: 540e35c815e252f13791897bc5ff140d297e1006
+    source:
+      assurance: recorded
+      observed_by: operator
+      reference: review.md#iteration-3
+      statement: >-
+        Independent Resolution Verification Iteration 3 (standard profile,
+        fresh execution, isolated Git worktree at scratchpad/review-wt3
+        checked out at ffdc249 with reviewable subject 540e35c, fresh venv,
+        no shared context with the Implementation, reviewer-001,
+        reviewer-002, or either Resolution) returned PASS against 540e35c.
+        R-001..R-006 each independently re-verified: full suite 805 passed
+        / 0 failed, contract suite 52 passed / 0 failed,
+        test_canonical_yaml_instances_satisfy_their_declared_schemas
+        passes, and the three canonical YAMLs (manifest.yml,
+        tdd-evidence.yml, provenance.yml) were re-validated against their
+        declared schemas with an independent jsonschema script. Historical
+        cross-check at ea01dc8 (contract 51/1, cause = TDD-C ids) and
+        e7b6b45 (contract 51/1, cause = review.status in_progress) matched
+        verification.md's results table exactly. git diff ea01dc8..540e35c
+        -- src tests is empty (no code change, no regression;
+        adapter/doctor subset 333 passed). Provenance parsed-record
+        comparison at first-commit 1338181d vs ffdc249: the four prior
+        records byte-identical, only reviewer-002/resolution-002 added
+        (C-026 intact). End-to-end external-repo repro re-confirmed (hook
+        0o755, executes with deny, doctor fails on chmod 0644, update
+        repairs idempotently). One non-blocking OBSERVATION O-2
+        (review-002 finding_classes was empty where repo convention
+        populates it) -- addressed post-PASS by setting it to
+        [resolution_regression, unresolved_finding] to match the prose,
+        no re-review required for a non-blocking metadata alignment.
