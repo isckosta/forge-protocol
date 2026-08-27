@@ -11,8 +11,8 @@ records:
       id: chg-0049-plan-approval-001
       immutable_ref:
         type: git_commit
-        value: fb15d67b0081ff92e65bc433df67b148e1525dcf
-      commit: fb15d67b0081ff92e65bc433df67b148e1525dcf
+        value: fffc77d7ae69e6064616cc9493ea086a9f041043
+      commit: fffc77d7ae69e6064616cc9493ea086a9f041043
     source:
       assurance: recorded
       observed_by: operator
