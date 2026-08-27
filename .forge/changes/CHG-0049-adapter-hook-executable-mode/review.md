@@ -22,18 +22,20 @@ status: complete
   `verification.md`'s table, `git diff ea01dc8..540e35c -- src tests`
   empty, provenance un-rewritten, end-to-end repro re-confirmed). One
   non-blocking OBSERVATION (O-2), addressed post-PASS.
+- **External review (PR #41, Codex)**: R-008 (P1 / BLOCKER) — the
+  executable-bit check accepted any of `0o111` instead of the owner bit.
+  Resolution 3 (the only post-review code change). Iteration 4
+  (Resolution Verification of Resolution 3): _pending._
 
-**Overall: PASS** at Resolution 2 (`540e35c`) / provenance `ffdc249`.
+**Overall: PASS through Iteration 3; Iteration 4 pending on R-008.**
 
-Both Reviewers independently confirmed the **implementation code is
-correct and has not regressed** — it has been byte-identical since
-`ea01dc8` (`git diff ea01dc8..<resolution> -- src tests` is empty). Every
-Finding across both iterations was in the Change's own evidence artifacts
-(`tdd-evidence.yml`, `verification.md`, `manifest.yml`), not its code. The
-recurring root cause: `manifest.yml` fields were edited after the test
-suite was run and the suite was not re-run before freezing, so
-`verification.md` asserted a PASS that
-`tests/contract/test_protocol_contract.py` contradicted.
+Iterations 1–3 confirmed the code was byte-identical since `ea01dc8` and
+correct for its declared cases; the recurring finding there was
+`manifest.yml`/`tdd-evidence.yml` fields edited after the suite was run
+and not re-run, so `verification.md` asserted a PASS
+`tests/contract/test_protocol_contract.py` contradicted. R-008 is the
+first genuine code-correctness finding — from an external review surface,
+after Iteration 3 passed.
 
 ## Iteration 1 — REQUEST CHANGES
 
@@ -206,8 +208,48 @@ review's own prose (R-004 was a Resolution 1 regression; R-002/R-005 an
 unresolved finding across Resolution 1). A non-blocking metadata
 alignment to already-reviewed content; no further review round.
 
+## External Review — PR #41 (Codex) — R-008
+
+### R-008 · BLOCKER (P1) · `repository.py:_snapshot_artifact` — executable check must require the owner bit
+
+`stat.S_IMODE(mode) & 0o111` reports a file executable when *any* execute
+bit is set. A hook at `0o655` (`chmod u-x` on the published `0o755` —
+group/other execute set, owner not) is therefore misreported executable.
+Since the Adapter installs and runs the hook as the owning user, POSIX
+permission selection stops at the owner class and never consults
+group/other — the hook is *not* runnable — yet `doctor` passes and
+`adapter update` classifies the byte-current artifact as `UNCHANGED`,
+leaving the guard inoperative.
+
+**Resolution 3:** `repository._snapshot_artifact` now tests
+`& stat.S_IXUSR` (owner execute). The two test-helper `_is_executable`
+functions aligned to `S_IXUSR` for the same precision (result unchanged
+for the `0o755`/`0o644` files they check). +2 regression tests:
+`test_snapshot_requires_the_owner_execute_bit` (unit) and
+`test_doctor_and_update_treat_owner_execute_stripped_hook_as_broken`
+(integration: `0o655` → doctor fails → update repairs → idempotent).
+RED-verified by reverting the one-line change (`2 failed`); GREEN
+`807 passed` full suite, `52` contract.
+
+## Resolution 3 (revision _pending freeze_)
+
+- Target: R-008. Scope: `src/forge_cli/adapters/repository.py`,
+  `tests/unit/test_adapter_repository.py`,
+  `tests/integration/test_adapter_service.py`,
+  `tests/integration/test_adapter_publisher.py` (test-helper alignment),
+  plus the `tdd-evidence.yml` / `verification.md` / `manifest.yml` /
+  `review.md` evidence updates.
+- This is the sole `src/` change since `ea01dc8`.
+
+## Iteration 4 — Resolution Verification
+
+_Pending. An independent Reviewer (distinct from the Implementation and
+reviewer-001/002/003) re-reviews the frozen Resolution 3 revision: R-008
+resolved, the `& S_IXUSR` change correct and complete, no other `src/`
+delta, no regression, `resolution-003` provenance present._
+
 ## Convergence
 
-One failed `resolution_verification` iteration (`review-002`,
+One failed `resolution_verification` iteration to date (`review-002`,
 `new_material_findings > 0`). The Convergence Limit (2 consecutive scoped
-Resolution Verifications) was not reached; Iteration 3 passed.
+Resolution Verifications) has not been reached.

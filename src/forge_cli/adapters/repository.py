@@ -136,7 +136,11 @@ def _snapshot_artifact(root: Path, relative_path: str) -> RepositoryArtifactStat
         exists=True,
         current_digest=digest_content(raw),
         expected_digest=None,
+        # The Adapter installs and executes the hook as the owning user, so
+        # only the owner-execute bit (S_IXUSR) makes it runnable -- a file
+        # at e.g. 0o655 (group/other execute set, owner not) is NOT
+        # executable by its owner and must still be re-materialized.
         executable=(
-            supports_executable_bit() and bool(stat.S_IMODE(mode) & 0o111)
+            supports_executable_bit() and bool(stat.S_IMODE(mode) & stat.S_IXUSR)
         ),
     )

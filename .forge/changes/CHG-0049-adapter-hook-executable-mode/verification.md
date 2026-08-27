@@ -19,7 +19,7 @@ status: complete
 | AC-001 create lands executable (POSIX) | PASS | `test_executable_create_materializes_with_executable_mode` + in-test `subprocess` run of the script |
 | AC-002 update re-applies the bit | PASS | `test_executable_update_reapplies_mode_on_identical_content` |
 | AC-003 only the hook resource is executable | PASS | `test_only_the_hook_resource_is_marked_executable`, `test_claude_code_projection_renders_a_valid_repository_layout` |
-| AC-004 snapshot observes the bit | PASS | `tests/unit/test_adapter_repository.py` |
+| AC-004 snapshot observes the bit | PASS | `tests/unit/test_adapter_repository.py` (incl. `test_snapshot_requires_the_owner_execute_bit` — owner bit, not any of `0o111`; PR #41 R-008) |
 | AC-005 mode-only discrepancy → `update` | PASS | `test_executable_projection_repairs_mode_only_discrepancy`, `test_executable_projection_with_non_executable_disk_state_updates` |
 | AC-006 matching mode stays `unchanged` | PASS | same tests, second half; `test_non_executable_projection_ignores_disk_executable_bit` |
 | AC-007 `adapter update` repairs an install, idempotently | PASS | `test_update_repairs_non_executable_hook_idempotently`, `test_adapter_doctor_flags_and_update_repairs_non_executable_hook` |
@@ -31,41 +31,43 @@ status: complete
 
 ## Test Evidence
 
-> **Test-evidence history (two Review iterations).** The single test that
-> failed at every intermediate revision is
+> **Test-evidence history (three Review iterations).** The single test
+> that failed at each intermediate revision is
 > `tests/contract/test_protocol_contract.py::test_canonical_yaml_instances_satisfy_their_declared_schemas`,
 > which validates every canonical YAML instance against its declared
 > schema. `forge validate` does NOT run this check.
 >
-> | Revision | Full suite | Contract | Cause |
+> | Revision | Full suite | Contract | Note |
 > |---|---|---|---|
 > | `ea01dc8` (impl subject) | 804 / 1 fail | 51 / 1 fail | `tdd-evidence.yml` cycle ids `TDD-C1..C5` violate `^TDD-[0-9]{3,}[A-Z]?$` (Iter 1, R-001) |
 > | `e7b6b45` (Resolution 1) | 804 / 1 fail | 51 / 1 fail | ids fixed, but `manifest.yml` `review.status: in_progress` is not in the enum `[pending, active, passed, failed]` (Iter 2, R-004) |
-> | Resolution 2 (this revision) | **805 / 0** | **52 / 0** | `review.status` → `active`; `review.md` frontmatter → `active` |
+> | `540e35c` (Resolution 2) | 805 / 0 | 52 / 0 | `review.status` → `active`; PASS confirmed by Iteration 3 |
+> | Resolution 3 (this revision) | **807 / 0** | **52 / 0** | +2 tests for PR #41 Codex R-008 (owner-execute bit) |
 >
-> This artifact originally asserted PASS/805 against `ea01dc8` and then
-> against `e7b6b45`; both were false (Iter 1 R-002, Iter 2 R-005). The
-> numbers below are the Resolution-2 run and are accurate against the
-> Resolution-2 revision only.
+> This artifact asserted PASS/805 against `ea01dc8`, then `e7b6b45`; both
+> were false (Iter 1 R-002, Iter 2 R-005). The numbers below are the
+> Resolution 3 run and are accurate against the Resolution 3 revision
+> only.
 
-- Full suite: `.venv/bin/python -m pytest -q` → **805 passed, 2 warnings** in ~93s.
+- Full suite: `.venv/bin/python -m pytest -q` → **807 passed, 2 warnings** in ~95s.
   The 2 warnings are pre-existing and unrelated (`tests/unit/test_experience_capture.py`, FER RuntimeWarning).
-  Baseline after CHG-0048 was 786; this Change adds 19 tests.
+  Baseline after CHG-0048 was 786; this Change adds 21 tests.
 - Contract suite: `.venv/bin/python -m pytest tests/contract -q` → **52 passed**.
 - New / modified test files:
   `tests/unit/test_adapter_ownership.py` (+3),
   `tests/unit/test_adapter_planner.py` (+1),
-  `tests/unit/test_adapter_repository.py` (new, 2),
+  `tests/unit/test_adapter_repository.py` (new, 3),
   `tests/integration/test_adapter_publisher.py` (+3, plus 3 monkeypatch-fake signature updates),
-  `tests/integration/test_adapter_service.py` (+5, plus 1 check-id list update),
+  `tests/integration/test_adapter_service.py` (+6, plus 1 check-id list update),
   `tests/unit/test_claude_code_projection_bundle.py` (+1),
   `tests/unit/test_claude_code_skill_projection.py` (+1 assertion block),
   `tests/cli/test_doctor.py` (+2),
   `tests/cli/test_adapter_commands.py` (+1),
   `tests/unit/test_repository_hook_mode.py` (new, 1).
-- TDD RED evidence: `tdd-evidence.yml` (5 cycles; TDD-001/002 genuine RED-first, TDD-003/004/005
-  disclosed as plumbing/diagnostic implemented before their pytest assertions with RED
-  verified mechanically or by live command reproduction, per C-017).
+- TDD RED evidence: `tdd-evidence.yml` (6 cycles; `status: exception`). TDD-002 and TDD-006
+  are genuine RED-first(-verified); TDD-003/004/005 disclosed as plumbing/diagnostic
+  implemented before their pytest assertions with RED verified mechanically or by live
+  command reproduction; TDD-001's RED was a call-boundary `TypeError`. Per C-017.
 
 ## Forge Evidence
 
@@ -103,14 +105,20 @@ status: complete
 
 ## Conclusion
 
-All 11 Acceptance Criteria and the three testable Constraints pass. The
-implementation code has been byte-stable since `ea01dc8` and was audited for
-correctness by the Iteration 1 Reviewer and spot-checked by the Iteration 2
-Reviewer (no defect, no regression). Two Resolution rounds fixed only
-Change-local evidence artifacts: Resolution 1 (R-001 cycle-id rename, R-002
-evidence correction, R-003 `status: exception` TDD disclosure) and Resolution 2
-(R-004 `review.status` enum fix, R-005 evidence re-correction, R-006 counter
-reconciliation). At the Resolution 2 revision the full suite (805) and contract
-suite (52) are green and `forge validate` passes, and the fix is demonstrated
+All 11 Acceptance Criteria and the three testable Constraints pass.
+Resolution history:
+- **Resolution 1 / 2** — Change-local evidence artifacts only (no code):
+  R-001 cycle-id rename, R-002/R-005 evidence corrections, R-003
+  `status: exception` TDD disclosure, R-004 `review.status` enum fix,
+  R-006 counter reconciliation. Iteration 3 (reviewer-003) returned PASS
+  on Resolution 2 (`540e35c`).
+- **Resolution 3** (this revision) — the single post-review code change:
+  `repository._snapshot_artifact` now requires `stat.S_IXUSR` (owner
+  execute), not any of `0o111` (PR #41 external review, Codex R-008). A
+  hook at `0o655` is no longer misreported executable. +2 regression
+  tests (TDD-006, genuine RED-first-verified).
+
+At the Resolution 3 revision the full suite (**807**) and contract suite
+(**52**) are green, `forge validate` passes, and the fix is demonstrated
 end-to-end in a fresh external repository. Verification result: **PASS**
-(against the Resolution 2 revision).
+(against the Resolution 3 revision).

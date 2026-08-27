@@ -9,7 +9,7 @@ flow:
   current: standard
   escalations: []
 state:
-  current: complete
+  current: review
 artifacts:
   intent: complete
   discovery: complete
@@ -18,7 +18,7 @@ artifacts:
   plan: complete
   tdd_evidence: complete
   verification: complete
-  review: complete
+  review: active
   documentation: complete
 requirements:
   total: 7
@@ -26,7 +26,7 @@ requirements:
   verified: 7
 tdd:
   status: exception
-  cycles: 5
+  cycles: 6
   reason: >-
     Independent Review Iteration 1 R-003. TDD-002 (publisher chmod / atomic
     executable materialization) is a genuine behavioural RED-first cycle;
@@ -40,7 +40,7 @@ tdd:
 verification:
   status: passed
 review:
-  status: passed
+  status: active
   iteration: 3
   blockers: 0
   majors: 0

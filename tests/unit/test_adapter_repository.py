@@ -29,6 +29,19 @@ def test_snapshot_reports_executable_bit_per_regular_file(tmp_path: Path) -> Non
 
 
 @posix_only
+def test_snapshot_requires_the_owner_execute_bit(tmp_path: Path) -> None:
+    # 0o655: group/other execute set, owner NOT -- the owning user cannot
+    # execute it, so it must be reported non-executable (PR #41 Codex P1).
+    owner_stripped = tmp_path / "hook.sh"
+    owner_stripped.write_text("#!/bin/sh\nexit 0\n", encoding="utf-8")
+    owner_stripped.chmod(0o655)
+
+    snapshot = snapshot_repository_artifacts(tmp_path, ("hook.sh",))
+
+    assert snapshot.artifacts["hook.sh"].executable is False
+
+
+@posix_only
 def test_snapshot_reports_missing_file_as_non_executable(tmp_path: Path) -> None:
     snapshot = snapshot_repository_artifacts(tmp_path, ("absent.sh",))
 

@@ -1222,7 +1222,7 @@ posix_only = pytest.mark.skipif(
 
 
 def _is_executable(path: Path) -> bool:
-    return bool(_stat.S_IMODE(path.stat().st_mode) & 0o111)
+    return bool(_stat.S_IMODE(path.stat().st_mode) & _stat.S_IXUSR)
 
 
 @posix_only

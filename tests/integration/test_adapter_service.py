@@ -805,7 +805,7 @@ _HOOK = ".claude/skills/forge/hooks/check-manifest-edit.sh"
 
 
 def _executable(path: Path) -> bool:
-    return bool(_stat.S_IMODE(path.stat().st_mode) & 0o111)
+    return bool(_stat.S_IMODE(path.stat().st_mode) & _stat.S_IXUSR)
 
 
 @_posix_only
@@ -858,6 +858,27 @@ def test_update_repairs_non_executable_hook_idempotently(initialized_project: Pa
     second = service.update(initialized_project, "claude-code")
     assert second.mutated is False
     assert _executable(hook)
+
+
+@_posix_only
+def test_doctor_and_update_treat_owner_execute_stripped_hook_as_broken(
+    initialized_project: Path,
+) -> None:
+    # 0o655: the owner (who installs and runs the hook) cannot execute it,
+    # even though group/other can. doctor must fail and update must repair
+    # (PR #41 Codex P1).
+    service = _service()
+    service.install(initialized_project, "claude-code")
+    hook = initialized_project / _HOOK
+    hook.chmod(0o655)
+
+    result = service.doctor(initialized_project, "claude-code")
+    check = next(item for item in result.checks if item.id == "executable_artifacts")
+    assert check.status == "failed"
+
+    assert service.update(initialized_project, "claude-code").mutated is True
+    assert _executable(hook)
+    assert service.update(initialized_project, "claude-code").mutated is False
 
 
 def test_doctor_executable_check_is_inert_on_non_posix(

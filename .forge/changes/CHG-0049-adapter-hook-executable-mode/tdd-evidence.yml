@@ -22,8 +22,12 @@ reason: >-
   throwaway repo and against this repository's pre-chmod state. All GREEN
   tests exist, exercise real behaviour, and pass; the Independent Reviewer
   re-ran every touched-file test and the full suite. This is disclosed
-  under C-017 rather than recorded as clean compliance.
-cycle_count: 5
+  under C-017 rather than recorded as clean compliance. TDD-006 (added for
+  PR #41 Codex R-008, owner-execute bit) is a genuine RED-first-verified
+  cycle -- both new tests fail with the prior `& 0o111` code and pass with
+  the one-line `& stat.S_IXUSR` fix -- and does not lift the exception
+  standing from TDD-001/003/004/005.
+cycle_count: 6
 cycles:
 - id: TDD-001
   title: classify_artifact repairs a mode-only discrepancy for a projected-executable artifact
@@ -184,3 +188,46 @@ cycles:
     (codex) had its explicit check-id list updated to include the new
     executable_artifacts id -- a direct consequence of adding a check, not a
     behavior change.
+- id: TDD-006
+  title: The executable-bit check requires the OWNER execute bit, not any of 0o111
+  requirements:
+  - FR-003
+  - FR-006
+  origin: PR #41 external review (Codex), Finding R-008
+  behavior: >-
+    repository._snapshot_artifact reports RepositoryArtifactState.executable
+    only when the owner-execute bit (stat.S_IXUSR / 0o100) is set. A file at
+    0o655 -- group/other execute set, owner not -- is reported
+    non-executable, so `forge adapter doctor` fails and `forge adapter
+    update` classifies it as UPDATE (repair), because the owning user (who
+    installs and runs the hook) cannot execute it: POSIX permission
+    selection stops at the owner class and never falls through to
+    group/other for the owner.
+  red:
+    command: >-
+      git checkout src/forge_cli/adapters/repository.py (revert only the
+      one-line 0o111 -> S_IXUSR change), then .venv/bin/python -m pytest
+      tests/unit/test_adapter_repository.py::test_snapshot_requires_the_owner_execute_bit
+      tests/integration/test_adapter_service.py::test_doctor_and_update_treat_owner_execute_stripped_hook_as_broken -q
+    result: 2 failed
+    reason: >-
+      With the prior `stat.S_IMODE(mode) & 0o111` expression, a 0o655 hook
+      matches (0o655 & 0o111 == 0o011, truthy), so the snapshot reported it
+      executable, doctor's executable_artifacts check passed
+      ("assert 'passed' == 'failed'"), and adapter update would classify
+      the byte-current artifact as UNCHANGED -- leaving the enforcement hook
+      inoperative for its owner exactly as Codex R-008 described.
+  green:
+    command: >-
+      .venv/bin/python -m pytest tests/unit/test_adapter_repository.py
+      tests/integration/test_adapter_service.py
+      tests/integration/test_adapter_publisher.py -q
+    result: 72 passed
+  notes:
+  - >-
+    Genuine RED-first-verified cycle: the fix is a one-line change
+    (`& 0o111` -> `& stat.S_IXUSR`) in repository._snapshot_artifact; the
+    two test-helper `_is_executable` functions in test_adapter_service.py
+    and test_adapter_publisher.py were aligned to S_IXUSR for the same
+    precision (they only ever check 0o755/0o644 files, so their result is
+    unchanged). No other production code touched.
