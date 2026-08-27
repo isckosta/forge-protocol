@@ -383,3 +383,36 @@ records:
         0o100 raises AdapterRepositoryError from the mandatory digest read
         rather than yielding an executable verdict, doctor still fails safe
         -- pre-existing, orthogonal to R-008).
+  - id: verification-002
+    role: implementation
+    execution:
+      id: claude-code-implementation-0049-verification-002
+      context_id: claude-code-session-2026-08-27-verification2
+    recorded_at: '2026-08-27T05:30:00Z'
+    revision:
+      id: chg-0049-resolution-003
+      immutable_ref:
+        type: git_commit
+        value: 3f7317a63989aa99647d6c043e2b605be1dfe47c
+      commit: 3f7317a63989aa99647d6c043e2b605be1dfe47c
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: verification.md
+      content_digest:
+        algorithm: sha256
+        path: verification.md
+        value: a36b59d1247892112819a11cce4b9b2417309933704f46ccbe7b1ce3465483b5
+      statement: >-
+        verification.md's Result -- PASS -- is bound to the current sole
+        reviewed-and-passed subject, the Resolution 3 revision 3f7317a
+        (subject_provenance of review-004, the passing Iteration 4). This
+        supersedes verification-001 (bound to the pre-R-008 Resolution 2
+        revision 540e35c) as the subject moved forward by the single
+        post-review code fix. The only src/ delta between ea01dc8 and
+        3f7317a is the one-line repository._snapshot_artifact change
+        (0o111 -> S_IXUSR). Test/Forge Evidence recorded in verification.md
+        (full suite 807 passed, contract suite 52 passed, forge validate
+        valid, end-to-end external-repo repro including the 0o655 R-008
+        case) was produced from the committed 3f7317a tree and
+        independently reproduced by Reviewer Iteration 4 (reviewer-004).
