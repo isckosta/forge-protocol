@@ -3,7 +3,7 @@ forge:
   artifact: plan
   schema: 1
 change: CHG-0049
-status: pending
+status: approved
 ---
 
 # Plan — CHG-0049 Adapter Hook Executable Mode
@@ -143,12 +143,14 @@ kwarg — add the field inert first).
 
 ## Human Plan Authorization
 
-Pending. This Plan MUST NOT cross into Implementation until the human
-maintainer records an explicit C-077 Plan Decision here and in
-`provenance.yml`.
+This Plan is explicitly authorized by the human maintainer to proceed to
+Implementation under C-077.
 
 <!-- forge:plan-approval-confirmation -->
 
-_(awaiting recorded operator confirmation)_
+The user explicitly approved continuation of CHG-0049 to Implementation
+in the active chat session on 2026-08-26, via `AskUserQuestion`, after
+reviewing the Discovery diagnosis, DEC-001, the 9-item Plan summary, and
+the 12-scenario Test Design, selecting the option "Aprovar e prosseguir".
 
 <!-- forge:plan-approval-record -->

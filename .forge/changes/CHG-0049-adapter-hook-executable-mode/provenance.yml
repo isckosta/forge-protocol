@@ -1,0 +1,31 @@
+schema: forge/execution-provenance@2
+change: CHG-0049
+records:
+  - id: plan-approval-001
+    role: implementation
+    execution:
+      id: claude-code-implementation-0049-plan
+      context_id: claude-code-session-2026-08-26-plan
+    recorded_at: '2026-08-26T00:00:00Z'
+    revision:
+      id: chg-0049-plan-approval-001
+      immutable_ref:
+        type: git_commit
+        value: fb15d67b0081ff92e65bc433df67b148e1525dcf
+      commit: fb15d67b0081ff92e65bc433df67b148e1525dcf
+    source:
+      assurance: recorded
+      observed_by: operator
+      reference: plan.md#human-plan-authorization
+      content_digest:
+        algorithm: sha256
+        path: plan.md
+        value: 043f0d78d643ce72b102b30839f94229f30cdd3b43811959754e316abeccd232
+      statement: >-
+        The user explicitly approved continuation of CHG-0049 to
+        Implementation in the active chat session on 2026-08-26, via
+        AskUserQuestion, after reviewing the Discovery diagnosis (the
+        materialization pipeline carries no file mode), DEC-001 (the
+        Adapter projection is the source of truth for executability, no
+        installation-record schema change), the 9-item Plan summary, and
+        the 12-scenario Test Design, selecting "Aprovar e prosseguir".
