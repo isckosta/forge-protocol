@@ -12,7 +12,7 @@ generated_artifacts:
 - path: .claude/CLAUDE.md
   digest: b100acdfeef2732f61c2e8b6c207cb63de502d2a7eed24bc745f22e1ba7256b7
 - path: .claude/skills/forge/SKILL.md
-  digest: 010a9a574028c19c6b37a538890ce8564a92daf2a2d4ae8c2cb4109d91993aac
+  digest: b3afac7aa94fa1bbdc923d83ef907cc7f60fe1fe4f9e1a5dd49ae50d0978e883
 - path: .claude/skills/forge/hooks/check-manifest-edit.sh
   digest: 8b298eea51692425193295ddf67776d6699f5ae670fc094a96da37f814398348
 - path: .claude/skills/forge/references/artifact-structure.md
@@ -20,13 +20,13 @@ generated_artifacts:
 - path: .claude/skills/forge/references/decision-rules.md
   digest: ad2c38015c9b9fe8a9042487083be8c1e5218b448ca05612fe8a1730e485dbeb
 - path: .claude/skills/forge/references/engineering-contract.md
-  digest: a55d6ca9e5157d99c6041a8883ad1718f7a05bfbe633a73128933775b2f13f94
+  digest: 66c7d70d693e3b648a37c67880a46f461270289d83a7e330203e37c5d7706a0e
 - path: .claude/skills/forge/references/flows/fast.yml
-  digest: 09f8bb7d1ca5a4bebb770c8686b7f5b238ba6f505d868b046590a7aacae7cfcb
+  digest: 4266937a3f69b91989b1240510cf3f90e8c9f2140fcc30c726a34e935e06e113
 - path: .claude/skills/forge/references/flows/full.yml
-  digest: ca26fa3b93026d4a6dbd59a644c5086666657e9adac37a991d6518d15b45a1d7
+  digest: 01beeb2c8ee2c276d1a57f4c11db6d32311585f6f53b94f81360d6862cb9f69e
 - path: .claude/skills/forge/references/flows/standard.yml
-  digest: 6a65095d62ae62b71535e548bf773f1d1726c512f6f34b55a556cf0565b96c8e
+  digest: 4f90b95ba77588058cbd13faba6693c9b798c49416fa9dbf336ca72f8a9644ad
 limitations:
 - 'strict-review: capability skills cannot be enforced (FR-004)'
 - 'tdd-red-before-behavior: capability skills cannot be enforced (FR-004)'

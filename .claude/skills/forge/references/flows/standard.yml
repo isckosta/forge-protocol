@@ -59,5 +59,6 @@ escalation:
   automatic_downgrade: false
 review:
   required: true
-  strict: true
-  adversarial: true
+  profile: standard
+  strict: false
+  adversarial: false
