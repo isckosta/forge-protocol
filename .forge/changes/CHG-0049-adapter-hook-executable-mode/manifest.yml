@@ -1,0 +1,49 @@
+schema: forge/change@2
+protocol: 2
+change:
+  id: CHG-0049
+  title: Adapter Hook Executable Mode
+  kind: bugfix
+flow:
+  initial: standard
+  current: standard
+  escalations: []
+state:
+  current: plan
+artifacts:
+  intent: complete
+  discovery: complete
+  specification: complete
+  test_design: complete
+  plan: complete
+  tdd_evidence: active
+  verification: pending
+  review: pending
+  documentation: pending
+requirements:
+  total: 7
+  implemented: 0
+  verified: 0
+tdd:
+  status: pending
+verification:
+  status: pending
+review:
+  status: pending
+  iteration: 0
+  blockers: 0
+  majors: 0
+  minors: 0
+  observations: 0
+  iterations: []
+documentation:
+  impact_evaluated: false
+decisions:
+  - id: DEC-001
+    class: technical
+    materiality: material
+    status: resolved
+    authority: agent
+    owning_artifact: plan
+    discovered_in: discovery
+    resolved_via: autonomous_decision
