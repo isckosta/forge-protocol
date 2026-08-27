@@ -338,3 +338,48 @@ records:
         the committed 3f7317a tree: pytest -q -> 807 passed (2 pre-existing
         warnings), tests/contract -> 52 passed, forge validate -> valid,
         git status --porcelain empty.
+  - id: reviewer-004
+    role: review
+    execution:
+      id: a85c6a3fb69dfdd3d
+      context_id: independent-review-context-a85c6a3fb69dfdd3d
+    recorded_at: '2026-08-27T05:00:00Z'
+    revision:
+      id: chg-0049-resolution-003
+      immutable_ref:
+        type: git_commit
+        value: 3f7317a63989aa99647d6c043e2b605be1dfe47c
+      commit: 3f7317a63989aa99647d6c043e2b605be1dfe47c
+    source:
+      assurance: recorded
+      observed_by: operator
+      reference: review.md#iteration-4
+      statement: >-
+        Independent Resolution Verification Iteration 4 (standard profile,
+        fresh execution, isolated Git worktree at scratchpad/review-wt4
+        checked out at 941bffc with reviewable subject 3f7317a, fresh venv,
+        no shared context with the Implementation or reviewer-001/002/003)
+        returned PASS against 3f7317a for PR #41 Codex Finding R-008. The
+        Reviewer independently RED-verified the fix by reverting only the
+        repository.py expression to `& 0o111` (the two new tests fail with
+        "assert 'passed' == 'failed'" on the doctor check) and restoring
+        it (pass); confirmed via grep + reading service/planner/ownership/
+        publisher that repository._snapshot_artifact is the SOLE place an
+        on-disk st_mode is interpreted as executable-or-not and every
+        consumer routes through RepositoryArtifactState.executable, so the
+        one-line fix is complete; exercised the mode matrix
+        (0o755/0o744/0o711/0o540/0o500 -> executable; 0o655/0o644/0o600 ->
+        not); re-ran the full suite (807 passed), contract suite (52
+        passed), and a fresh external-repo end-to-end repro of the R-008
+        0o655 case plus 0o644 and 0o500. Confirmed git diff ea01dc8..3f7317a
+        -- src is repository.py only (one logical change), 3f7317a..941bffc
+        is provenance.yml + the pending review-004 manifest entry only, all
+        nine provenance records well-formed with real SHAs and no prior
+        record rewritten (C-026 intact), and the R-001..R-006 fixes still
+        hold at 3f7317a. Two non-blocking OBSERVATIONs: OBS-1 (review.blockers
+        0 while R-008's verification iteration is pending -- not the R-006
+        mistake, since review.status is active and review-004 is pending,
+        matching how Iteration 3 was recorded); OBS-2 (a hook at exactly
+        0o100 raises AdapterRepositoryError from the mandatory digest read
+        rather than yielding an executable verdict, doctor still fails safe
+        -- pre-existing, orthogonal to R-008).

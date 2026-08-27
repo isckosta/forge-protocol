@@ -120,5 +120,7 @@ Resolution history:
 
 At the Resolution 3 revision the full suite (**807**) and contract suite
 (**52**) are green, `forge validate` passes, and the fix is demonstrated
-end-to-end in a fresh external repository. Verification result: **PASS**
-(against the Resolution 3 revision).
+end-to-end in a fresh external repository (including the `0o655` R-008
+case). Independent Review Iteration 4 (reviewer-004) returned PASS on
+Resolution 3. Verification result: **PASS** (against the Resolution 3
+revision `3f7317a`).

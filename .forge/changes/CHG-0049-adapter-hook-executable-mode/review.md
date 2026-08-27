@@ -24,18 +24,28 @@ status: complete
   non-blocking OBSERVATION (O-2), addressed post-PASS.
 - **External review (PR #41, Codex)**: R-008 (P1 / BLOCKER) — the
   executable-bit check accepted any of `0o111` instead of the owner bit.
-  Resolution 3 (the only post-review code change). Iteration 4
-  (Resolution Verification of Resolution 3): _pending._
+  Resolution 3 (the only post-review code change).
+- **Iteration 4** (Resolution Verification of Resolution 3 `3f7317a`):
+  **PASS**. R-008 independently RED-verified (revert the one-liner → the 2
+  new tests fail) and confirmed complete (`_snapshot_artifact` is the sole
+  mode interpreter; all consumers route through
+  `RepositoryArtifactState.executable`); mode matrix exercised
+  (`0o744`/`0o711`/`0o540`/`0o500` executable, `0o655`/`0o644`/`0o600`
+  not); full suite 807/0, contract 52/0; `git diff ea01dc8..3f7317a -- src`
+  = `repository.py` only; provenance complete (9 records) and un-rewritten;
+  R-001..R-006 fixes intact; end-to-end repro of the `0o655` case
+  confirmed. Two non-blocking OBSERVATIONs (OBS-1, OBS-2).
 
-**Overall: PASS through Iteration 3; Iteration 4 pending on R-008.**
+**Overall: PASS** at Resolution 3 (`3f7317a`).
 
 Iterations 1–3 confirmed the code was byte-identical since `ea01dc8` and
 correct for its declared cases; the recurring finding there was
 `manifest.yml`/`tdd-evidence.yml` fields edited after the suite was run
 and not re-run, so `verification.md` asserted a PASS
-`tests/contract/test_protocol_contract.py` contradicted. R-008 is the
-first genuine code-correctness finding — from an external review surface,
-after Iteration 3 passed.
+`tests/contract/test_protocol_contract.py` contradicted. R-008 was the
+one genuine code-correctness finding — from an external review surface,
+after Iteration 3 passed — and is a one-line fix with regression tests,
+independently verified by Iteration 4.
 
 ## Iteration 1 — REQUEST CHANGES
 
@@ -241,12 +251,46 @@ RED-verified by reverting the one-line change (`2 failed`); GREEN
   `review.md` evidence updates.
 - This is the sole `src/` change since `ea01dc8`.
 
-## Iteration 4 — Resolution Verification
+## Iteration 4 — Resolution Verification — PASS
 
-_Pending. An independent Reviewer (distinct from the Implementation and
-reviewer-001/002/003) re-reviews the frozen Resolution 3 revision: R-008
-resolved, the `& S_IXUSR` change correct and complete, no other `src/`
-delta, no regression, `resolution-003` provenance present._
+- Subject: frozen Resolution 3 `3f7317a63989aa99647d6c043e2b605be1dfe47c`
+  (`subject_provenance`: resolution-003); worktree at `941bffc` (adds only
+  `resolution-003` provenance + the `pending` `review-004` entry).
+- Reviewer: independent execution + context, isolated worktree, fresh
+  venv, no shared context with the Implementation or
+  reviewer-001/002/003 (`reviewer_provenance`: reviewer-004).
+
+**Findings: none.** R-008's `& stat.S_IXUSR` fix in
+`repository._snapshot_artifact` was RED-verified by reverting it (the 2
+new tests fail), confirmed to be the only on-disk-mode interpretation in
+production code (`service._executable_artifacts_check`,
+`planner.plan_adapter`, `ownership.classify_artifact`, `publisher` all
+consume `RepositoryArtifactState.executable`), and exercised across a
+mode matrix. Full suite 807/0, contract 52/0. `git diff ea01dc8..3f7317a
+-- src` is `repository.py` only (one logical change); `3f7317a..941bffc`
+is review-control metadata only. All 9 provenance records well-formed,
+SHAs real, none rewritten (C-026 intact). R-001..R-006 fixes verified
+still in place at `3f7317a`. End-to-end external-repo repro re-confirmed
+for `0o755` (deny), `0o655` and `0o644` (doctor fails → update repairs →
+idempotent), and `0o500` (correctly executable).
+
+### OBS-1 (non-blocking)
+
+`manifest.yml` `review.blockers: 0` at `941bffc` while R-008's
+verification iteration was still `pending`. Not the R-006 mistake:
+`review.status` was `active` and `review-004.status: pending` (no PASS
+was asserted over an open blocker), matching how Iteration 3 was
+recorded. Now moot — `review-004` passed.
+
+### OBS-2 (non-blocking, pre-existing, out of scope)
+
+A hook at exactly `0o100` (owner-execute, no owner-read) makes
+`snapshot_repository_artifacts` raise `AdapterRepositoryError` from the
+mandatory content read (needed for the digest) rather than yielding an
+`executable` verdict. The `executable_artifacts` / `generated_drift`
+checks catch this and report `failed` with a repair remediation, so the
+behaviour fails safe. This is a pre-existing property of the
+digest-based snapshot, orthogonal to R-008; not addressed here.
 
 ## Convergence
 

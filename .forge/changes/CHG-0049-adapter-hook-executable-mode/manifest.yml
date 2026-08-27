@@ -9,7 +9,7 @@ flow:
   current: standard
   escalations: []
 state:
-  current: review
+  current: complete
 artifacts:
   intent: complete
   discovery: complete
@@ -18,7 +18,7 @@ artifacts:
   plan: complete
   tdd_evidence: complete
   verification: complete
-  review: active
+  review: complete
   documentation: complete
 requirements:
   total: 7
@@ -40,12 +40,12 @@ tdd:
 verification:
   status: passed
 review:
-  status: active
+  status: passed
   iteration: 4
   blockers: 0
   majors: 0
   minors: 0
-  observations: 2
+  observations: 4
   iterations:
     - id: review-001
       revision: chg-0049-implementation-001
@@ -79,8 +79,9 @@ review:
     - id: review-004
       revision: chg-0049-resolution-003
       subject_provenance: resolution-003
+      reviewer_provenance: reviewer-004
       kind: resolution_verification
-      status: pending
+      status: passed
       full_review_required: false
       new_material_findings: 0
       finding_classes: []
