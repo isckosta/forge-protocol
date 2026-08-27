@@ -10,6 +10,8 @@ until then.
 
 ## Unreleased
 
+## [0.1.0b2] - 2026-08-27
+
 ### Adapter Hook Executable Mode
 
 The Harness Adapter materialization pipeline now carries a per-artifact
