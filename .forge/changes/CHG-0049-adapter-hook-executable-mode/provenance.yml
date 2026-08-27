@@ -175,3 +175,43 @@ records:
         (code byte-identical, no regression; adapter/doctor subset 333
         passed) and that R-003 (tdd.status: exception + reason) was
         adequately resolved.
+  - id: resolution-002
+    role: resolution
+    execution:
+      id: claude-code-implementation-0049-resolution-002
+      context_id: claude-code-session-2026-08-27-resolution2
+    recorded_at: '2026-08-27T01:00:00Z'
+    scope:
+      - .forge/changes/CHG-0049-adapter-hook-executable-mode/manifest.yml
+      - .forge/changes/CHG-0049-adapter-hook-executable-mode/review.md
+      - .forge/changes/CHG-0049-adapter-hook-executable-mode/verification.md
+    targets: [R-004, R-005, R-006]
+    revision:
+      id: chg-0049-resolution-002
+      immutable_ref:
+        type: git_commit
+        value: 540e35c815e252f13791897bc5ff140d297e1006
+      commit: 540e35c815e252f13791897bc5ff140d297e1006
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: review.md#resolution-2
+      statement: >-
+        Resolution of Independent Review Iteration 2 findings R-004, R-005,
+        R-006. R-004: manifest.yml review.status and review.md frontmatter
+        status "in_progress" -> "active" (a valid change-v2 enum value),
+        restoring test_canonical_yaml_instances_satisfy_their_declared_schemas.
+        R-005: verification.md Test Evidence replaced with a per-revision
+        results table (ea01dc8 804/1, e7b6b45 804/1, resolution-002
+        805/52); PASS asserted only against this revision. R-006:
+        artifacts.review "pending" -> "active"; review-002 iteration entry
+        added (status failed, 3 findings). R-007 was a review-setup error,
+        not a defect (reviewer-002's worktree pre-dated commit 1338181d
+        which carries resolution-001). This Resolution touches only three
+        Change-local evidence Artifacts; git diff ea01dc8..540e35c has no
+        src/ or tests/ change. Verified from the committed 540e35c tree:
+        pytest -q -> 805 passed (2 pre-existing warnings), tests/contract
+        -> 52 passed, forge validate -> valid, git status --porcelain
+        empty. The end-to-end external-repo repro (forge init + adapter
+        install claude-code -> hook 0o755, executes, denies) still holds
+        (code unchanged since ea01dc8).
