@@ -31,21 +31,27 @@ status: complete
 
 ## Test Evidence
 
-> **Iteration 1 correction (Independent Review R-001/R-002).** The frozen
-> subject `ea01dc8` shipped `tdd-evidence.yml` with cycle ids `TDD-C1..C5`,
-> which violate `tdd-evidence.schema.json`'s `^TDD-[0-9]{3,}[A-Z]?$` and
-> broke `tests/contract/test_protocol_contract.py` — the real suite at
-> `ea01dc8` was **804 passed / 1 failed**, not 805, and this artifact
-> originally misstated it as PASS/805. `forge validate` does not check
-> canonical YAML against declared schemas; the contract test does. The
-> numbers below are the post-Resolution run (ids renamed to `TDD-001..005`).
+> **Test-evidence history (two Review iterations).** The single test that
+> failed at every intermediate revision is
+> `tests/contract/test_protocol_contract.py::test_canonical_yaml_instances_satisfy_their_declared_schemas`,
+> which validates every canonical YAML instance against its declared
+> schema. `forge validate` does NOT run this check.
+>
+> | Revision | Full suite | Contract | Cause |
+> |---|---|---|---|
+> | `ea01dc8` (impl subject) | 804 / 1 fail | 51 / 1 fail | `tdd-evidence.yml` cycle ids `TDD-C1..C5` violate `^TDD-[0-9]{3,}[A-Z]?$` (Iter 1, R-001) |
+> | `e7b6b45` (Resolution 1) | 804 / 1 fail | 51 / 1 fail | ids fixed, but `manifest.yml` `review.status: in_progress` is not in the enum `[pending, active, passed, failed]` (Iter 2, R-004) |
+> | Resolution 2 (this revision) | **805 / 0** | **52 / 0** | `review.status` → `active`; `review.md` frontmatter → `active` |
+>
+> This artifact originally asserted PASS/805 against `ea01dc8` and then
+> against `e7b6b45`; both were false (Iter 1 R-002, Iter 2 R-005). The
+> numbers below are the Resolution-2 run and are accurate against the
+> Resolution-2 revision only.
 
-- Full suite: `.venv/bin/python -m pytest -q` → **805 passed, 2 warnings** in ~93s
-  (post-Resolution; at frozen subject `ea01dc8` this was 804 passed / 1 failed — R-001).
+- Full suite: `.venv/bin/python -m pytest -q` → **805 passed, 2 warnings** in ~93s.
   The 2 warnings are pre-existing and unrelated (`tests/unit/test_experience_capture.py`, FER RuntimeWarning).
   Baseline after CHG-0048 was 786; this Change adds 19 tests.
-- Contract suite: `.venv/bin/python -m pytest tests/contract -q` → **52 passed**
-  (post-Resolution; 51 passed / 1 failed at `ea01dc8` — R-001).
+- Contract suite: `.venv/bin/python -m pytest tests/contract -q` → **52 passed**.
 - New / modified test files:
   `tests/unit/test_adapter_ownership.py` (+3),
   `tests/unit/test_adapter_planner.py` (+1),
@@ -97,9 +103,14 @@ status: complete
 
 ## Conclusion
 
-All 11 Acceptance Criteria and the three testable Constraints pass. After the
-Iteration 1 Resolution (R-001 cycle-id rename, R-002 evidence correction, R-003
-recorded as a `status: exception` TDD disclosure), the full suite (805) and
-contract suite (52) are green, `forge validate` passes, and the fix is
-demonstrated end-to-end in a fresh external repository. Verification result:
-**PASS** (against the Resolution revision, not the frozen subject `ea01dc8`).
+All 11 Acceptance Criteria and the three testable Constraints pass. The
+implementation code has been byte-stable since `ea01dc8` and was audited for
+correctness by the Iteration 1 Reviewer and spot-checked by the Iteration 2
+Reviewer (no defect, no regression). Two Resolution rounds fixed only
+Change-local evidence artifacts: Resolution 1 (R-001 cycle-id rename, R-002
+evidence correction, R-003 `status: exception` TDD disclosure) and Resolution 2
+(R-004 `review.status` enum fix, R-005 evidence re-correction, R-006 counter
+reconciliation). At the Resolution 2 revision the full suite (805) and contract
+suite (52) are green and `forge validate` passes, and the fix is demonstrated
+end-to-end in a fresh external repository. Verification result: **PASS**
+(against the Resolution 2 revision).
