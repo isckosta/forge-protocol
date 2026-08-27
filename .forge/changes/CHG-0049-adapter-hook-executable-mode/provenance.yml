@@ -139,3 +139,39 @@ records:
         pytest -q -> 805 passed (2 pre-existing warnings), tests/contract
         -> 52 passed, forge validate -> valid. Reviewable Git workspace
         confirmed clean (git status --porcelain empty) before this freeze.
+  - id: reviewer-002
+    role: review
+    execution:
+      id: aa8c6bdb085bef8af
+      context_id: independent-review-context-aa8c6bdb085bef8af
+    recorded_at: '2026-08-27T00:00:00Z'
+    revision:
+      id: chg-0049-resolution-001
+      immutable_ref:
+        type: git_commit
+        value: e7b6b459700ac76b74abff72de11d517c9ae5bd6
+      commit: e7b6b459700ac76b74abff72de11d517c9ae5bd6
+    source:
+      assurance: recorded
+      observed_by: operator
+      reference: review.md#iteration-2
+      statement: >-
+        Independent Resolution Verification Iteration 2 (standard profile,
+        fresh execution, isolated Git worktree at scratchpad/review-wt2
+        checked out at e7b6b45, fresh venv, no shared context with the
+        Implementation, reviewer-001, or the Resolution) returned REQUEST
+        CHANGES against e7b6b45 -- R-004 (BLOCKER: manifest.yml
+        review.status "in_progress" is not in change-v2.schema.json's
+        [pending, active, passed, failed], so
+        test_canonical_yaml_instances_satisfy_their_declared_schemas still
+        failed -- full suite 804/1, contract 51/1), R-005 (MAJOR:
+        verification.md re-asserted PASS/805 against e7b6b45 which was
+        actually 804/51-fail), R-006 (MAJOR: review.blockers 0 understated
+        an open blocking condition; artifacts.review "pending"
+        inconsistent with review.iteration 1), R-007 (MAJOR, spurious:
+        "no resolution-001 provenance" -- the reviewer's worktree pre-dated
+        commit 1338181d which contains it), and O-1 (OBSERVATION). The
+        Reviewer confirmed git diff ea01dc8..e7b6b45 -- src tests is empty
+        (code byte-identical, no regression; adapter/doctor subset 333
+        passed) and that R-003 (tdd.status: exception + reason) was
+        adequately resolved.
