@@ -62,3 +62,43 @@ records:
         this freeze; the subsequent provenance.yml append recording this
         record is review-control metadata, exempt from the freeze
         invariant.
+  - id: reviewer-001
+    role: review
+    execution:
+      id: a7a4af4b1d5c2189b
+      context_id: independent-review-context-a7a4af4b1d5c2189b
+    recorded_at: '2026-08-26T02:00:00Z'
+    revision:
+      id: chg-0049-implementation-001
+      immutable_ref:
+        type: git_commit
+        value: ea01dc8feb010e359139a50ae07904ef3b43eac1
+      commit: ea01dc8feb010e359139a50ae07904ef3b43eac1
+    source:
+      assurance: recorded
+      observed_by: operator
+      reference: review.md#iteration-1
+      statement: >-
+        Independent Review Iteration 1 (standard profile, fresh execution,
+        isolated Git worktree at scratchpad/review-wt checked out at
+        ea01dc8, fresh venv, no shared context with the Implementation)
+        returned REQUEST CHANGES against ea01dc8 -- R-001 (BLOCKER:
+        tdd-evidence.yml cycle ids TDD-C1..C5 violate
+        tdd-evidence.schema.json's ^TDD-[0-9]{3,}[A-Z]?$ pattern, failing
+        tests/contract/test_protocol_contract.py; the real suite at the
+        frozen subject was 804 passed / 1 failed, and the baseline 52177af
+        passes the same test), R-002 (MAJOR: verification.md asserted PASS
+        / "805 passed / 52 contract passed" when the frozen subject was
+        804/1-fail and 51/1-fail), and R-003 (MINOR: 3 of 5 TDD cycles
+        inverted RED-first and TDD-001 used a call-boundary TypeError RED
+        that the Change's own test-design "Valid RED" disqualifies). The
+        Reviewer independently rebuilt a venv and re-ran the full suite,
+        the contract suite, and the entire end-to-end behaviour
+        (materialize -> execute hook -> chmod 0644 -> doctor fails ->
+        update repairs -> second update no-op), and audited every touched
+        module (publisher chmod atomicity + rollback mode fidelity,
+        classify_artifact intent logic, planner gating, repository
+        snapshot, service._prepare field propagation, diagnostics ordering,
+        CON-001..004, scope vs subject) finding no code-correctness defect
+        within scope. Both blocking findings were in the Change's own
+        evidence artifacts, not its code.

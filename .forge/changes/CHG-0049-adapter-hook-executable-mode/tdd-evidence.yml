@@ -1,9 +1,31 @@
 schema: forge/tdd-evidence@1
 change: CHG-0049
-status: compliant
+status: exception
+reason: >-
+  Recorded TDD exception (Independent Review Iteration 1, Finding R-003).
+  Of five cycles, TDD-002 (publisher chmod / atomic executable
+  materialization -- the Change's most substantive behavioural logic) is a
+  genuine behavioural RED-first cycle (2 tests failed their executable-bit
+  assertion before the implementation existed). TDD-001 (classify_artifact
+  mode-aware decision) was RED-first but its RED was a
+  "TypeError: unexpected keyword argument" at the call boundary, which
+  this Change's own test-design.md "Valid RED" section explicitly
+  disqualifies -- the behavioural UPDATE-vs-UNCHANGED assertion only
+  became the failure reason after the parameter existed. TDD-003 (a
+  defaulted `executable` dataclass field + one call site), TDD-004
+  (reading st_mode into a defaulted snapshot field), and TDD-005 (the
+  `executable_artifacts` diagnostic) were implemented before their pytest
+  assertions were written; their RED was verified mechanically (the
+  referenced attribute/field did not exist on the prior revision) or, for
+  TDD-005, by direct live command reproduction of the motivating defect
+  ("forge adapter doctor returns all-PASS for a 0o644 hook") in a
+  throwaway repo and against this repository's pre-chmod state. All GREEN
+  tests exist, exercise real behaviour, and pass; the Independent Reviewer
+  re-ran every touched-file test and the full suite. This is disclosed
+  under C-017 rather than recorded as clean compliance.
 cycle_count: 5
 cycles:
-- id: TDD-C1
+- id: TDD-001
   title: classify_artifact repairs a mode-only discrepancy for a projected-executable artifact
   requirements:
   - FR-004
@@ -31,7 +53,7 @@ cycles:
     AdapterOperation.executable = projection.executable) was implemented in
     the same cycle and is covered by
     test_adapter_planner.py::test_executable_projection_repairs_mode_only_discrepancy.
-- id: TDD-C2
+- id: TDD-002
   title: publish_adapter_plan materializes a projected-executable artifact with mode 0o755 (POSIX), atomically
   requirements:
   - FR-001
@@ -62,7 +84,7 @@ cycles:
     only); three pre-existing monkeypatch fakes for _replace_file /
     _restore_bytes were updated to the new signatures -- a direct
     consequence of the signature change, not new behavior.
-- id: TDD-C3
+- id: TDD-003
   title: The Claude Code projection marks exactly check-manifest-edit.sh executable
   requirements:
   - FR-002
@@ -80,15 +102,15 @@ cycles:
       ProjectedArtifact.executable which did not exist.
     reason: >-
       This cycle is data-plumbing (a defaulted dataclass field plus one
-      call site), implemented alongside the TDD-C1/C2 model fields before
-      its assertion tests were written -- an inversion of the planned
+      call site), implemented alongside the TDD-001/TDD-002 model fields
+      before its assertion tests were written -- an inversion of the planned
       RED-first order, disclosed per C-017. RED verified mechanically: the
       attribute did not exist on the prior revision, so the assertions
       could not have been evaluated, let alone passed.
   green:
     command: .venv/bin/python -m pytest tests/unit/test_claude_code_projection_bundle.py tests/unit/test_claude_code_skill_projection.py -q
     result: 40 passed
-- id: TDD-C4
+- id: TDD-004
   title: The repository snapshot observes the on-disk executable bit (POSIX)
   requirements:
   - FR-003
@@ -105,8 +127,8 @@ cycles:
       an attribute that did not exist.
     reason: >-
       Observation-plumbing cycle (read st_mode in _snapshot_artifact, add a
-      defaulted field), implemented with the TDD-C1 model change before its
-      test was written -- same disclosed ordering inversion as TDD-C3. RED
+      defaulted field), implemented with the TDD-001 model change before its
+      test was written -- same disclosed ordering inversion as TDD-003. RED
       is mechanical: the field's absence makes the assertions unrunnable on
       the prior revision.
   green:
@@ -120,7 +142,7 @@ cycles:
     `forge adapter update` / plan would report the hook as a perpetual
     mode-repair UPDATE (caught by
     tests/cli/test_adapter_commands.py::test_adapter_install_then_doctor_succeeds_for_every_registered_adapter[claude-code]).
-- id: TDD-C5
+- id: TDD-005
   title: Forge diagnostics fail on a non-executable installed hook and pass when it is executable
   requirements:
   - FR-006

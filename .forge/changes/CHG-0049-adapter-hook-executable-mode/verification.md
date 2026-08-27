@@ -31,10 +31,21 @@ status: complete
 
 ## Test Evidence
 
-- Full suite: `.venv/bin/python -m pytest -q` → **805 passed, 2 warnings** in ~94s.
+> **Iteration 1 correction (Independent Review R-001/R-002).** The frozen
+> subject `ea01dc8` shipped `tdd-evidence.yml` with cycle ids `TDD-C1..C5`,
+> which violate `tdd-evidence.schema.json`'s `^TDD-[0-9]{3,}[A-Z]?$` and
+> broke `tests/contract/test_protocol_contract.py` — the real suite at
+> `ea01dc8` was **804 passed / 1 failed**, not 805, and this artifact
+> originally misstated it as PASS/805. `forge validate` does not check
+> canonical YAML against declared schemas; the contract test does. The
+> numbers below are the post-Resolution run (ids renamed to `TDD-001..005`).
+
+- Full suite: `.venv/bin/python -m pytest -q` → **805 passed, 2 warnings** in ~93s
+  (post-Resolution; at frozen subject `ea01dc8` this was 804 passed / 1 failed — R-001).
   The 2 warnings are pre-existing and unrelated (`tests/unit/test_experience_capture.py`, FER RuntimeWarning).
   Baseline after CHG-0048 was 786; this Change adds 19 tests.
-- Contract suite: `.venv/bin/python -m pytest tests/contract -q` → **52 passed**.
+- Contract suite: `.venv/bin/python -m pytest tests/contract -q` → **52 passed**
+  (post-Resolution; 51 passed / 1 failed at `ea01dc8` — R-001).
 - New / modified test files:
   `tests/unit/test_adapter_ownership.py` (+3),
   `tests/unit/test_adapter_planner.py` (+1),
@@ -46,13 +57,15 @@ status: complete
   `tests/cli/test_doctor.py` (+2),
   `tests/cli/test_adapter_commands.py` (+1),
   `tests/unit/test_repository_hook_mode.py` (new, 1).
-- TDD RED evidence: `tdd-evidence.yml` (5 cycles; TDD-C1/C2 genuine RED-first, TDD-C3/C4/C5
+- TDD RED evidence: `tdd-evidence.yml` (5 cycles; TDD-001/002 genuine RED-first, TDD-003/004/005
   disclosed as plumbing/diagnostic implemented before their pytest assertions with RED
   verified mechanically or by live command reproduction, per C-017).
 
 ## Forge Evidence
 
-- `.venv/bin/forge validate` → **Forge project is valid**.
+- `.venv/bin/forge validate` → **Forge project is valid** (note: `forge validate` does
+  not validate canonical YAML instances against their declared schemas — that is
+  `tests/contract/test_protocol_contract.py`, which is what caught R-001).
 - `.venv/bin/forge adapter plan claude-code` on this repository → every artifact `UNCHANGED`
   (idempotent) after the tracked hook was set `100755`.
 - `.venv/bin/forge adapter doctor claude-code` on this repository → all checks PASS, including
@@ -84,6 +97,9 @@ status: complete
 
 ## Conclusion
 
-All 11 Acceptance Criteria and the three testable Constraints pass. The full suite
-(805) and contract suite (52) are green, `forge validate` passes, and the fix is
-demonstrated end-to-end in a fresh external repository. Verification result: **PASS**.
+All 11 Acceptance Criteria and the three testable Constraints pass. After the
+Iteration 1 Resolution (R-001 cycle-id rename, R-002 evidence correction, R-003
+recorded as a `status: exception` TDD disclosure), the full suite (805) and
+contract suite (52) are green, `forge validate` passes, and the fix is
+demonstrated end-to-end in a fresh external repository. Verification result:
+**PASS** (against the Resolution revision, not the frozen subject `ea01dc8`).

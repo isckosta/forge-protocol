@@ -25,18 +25,37 @@ requirements:
   implemented: 7
   verified: 7
 tdd:
-  status: compliant
+  status: exception
   cycles: 5
+  reason: >-
+    Independent Review Iteration 1 R-003. TDD-002 (publisher chmod / atomic
+    executable materialization) is a genuine behavioural RED-first cycle;
+    TDD-001's RED was a call-boundary TypeError (disqualified by this
+    Change's own test-design "Valid RED"); TDD-003/004/005 (defaulted
+    dataclass fields and the new diagnostic) were implemented before their
+    pytest assertions, with RED verified mechanically or by live command
+    reproduction of the motivating defect. All GREEN tests exist, exercise
+    real behaviour, pass, and were re-run by the Independent Reviewer.
+    Disclosed under C-017; see tdd-evidence.yml `reason`.
 verification:
   status: passed
 review:
-  status: pending
-  iteration: 0
+  status: in_progress
+  iteration: 1
   blockers: 0
   majors: 0
   minors: 0
   observations: 0
-  iterations: []
+  iterations:
+    - id: review-001
+      revision: chg-0049-implementation-001
+      subject_provenance: implementation-subject-001
+      reviewer_provenance: reviewer-001
+      kind: initial_review
+      status: failed
+      full_review_required: false
+      new_material_findings: 3
+      finding_classes: []
 documentation:
   impact_evaluated: true
   update_required: true
