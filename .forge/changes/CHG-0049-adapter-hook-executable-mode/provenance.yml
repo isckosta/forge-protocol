@@ -29,3 +29,36 @@ records:
         Adapter projection is the source of truth for executability, no
         installation-record schema change), the 9-item Plan summary, and
         the 12-scenario Test Design, selecting "Aprovar e prosseguir".
+  - id: implementation-subject-001
+    role: implementation
+    execution:
+      id: claude-code-implementation-0049-subject-001
+      context_id: claude-code-session-2026-08-26-impl
+    recorded_at: '2026-08-26T01:00:00Z'
+    revision:
+      id: chg-0049-implementation-001
+      immutable_ref:
+        type: git_commit
+        value: ea01dc8feb010e359139a50ae07904ef3b43eac1
+      commit: ea01dc8feb010e359139a50ae07904ef3b43eac1
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: implementation-subject
+      statement: >-
+        Frozen CHG-0049 implementation subject (immutable per C-026 once
+        committed). Scope: src/forge_cli/adapters/{plan,planner,ownership,
+        publisher,repository,service,diagnostics}.py,
+        src/forge_cli/adapters/claude_code/{projection,driver}.py, the
+        chmod 100644->100755 of
+        .claude/skills/forge/hooks/check-manifest-edit.sh, CHANGELOG.md,
+        all new/modified tests (test_adapter_ownership, test_adapter_planner,
+        test_adapter_repository [new], test_adapter_publisher,
+        test_adapter_service, test_claude_code_projection_bundle,
+        test_claude_code_skill_projection, test_doctor,
+        test_adapter_commands, test_repository_hook_mode [new]), and all
+        CHG-0049 planning/verification/tdd Artifacts. Reviewable Git
+        workspace confirmed clean (git status --porcelain empty) before
+        this freeze; the subsequent provenance.yml append recording this
+        record is review-control metadata, exempt from the freeze
+        invariant.
