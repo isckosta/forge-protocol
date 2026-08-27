@@ -257,3 +257,35 @@ records:
         populates it) -- addressed post-PASS by setting it to
         [resolution_regression, unresolved_finding] to match the prose,
         no re-review required for a non-blocking metadata alignment.
+  - id: verification-001
+    role: implementation
+    execution:
+      id: claude-code-implementation-0049-verification-001
+      context_id: claude-code-session-2026-08-27-verification
+    recorded_at: '2026-08-27T02:30:00Z'
+    revision:
+      id: chg-0049-resolution-002
+      immutable_ref:
+        type: git_commit
+        value: 540e35c815e252f13791897bc5ff140d297e1006
+      commit: 540e35c815e252f13791897bc5ff140d297e1006
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: verification.md
+      content_digest:
+        algorithm: sha256
+        path: verification.md
+        value: 24ac1ec6a4be760d23d0e08466d1111ff091bf1ec1a548134250afd4b6618616
+      statement: >-
+        verification.md's Result -- PASS -- is bound to the sole reviewed
+        and passed subject, the Resolution 2 revision 540e35c
+        (subject_provenance of review-003, the passing Iteration 3). The
+        implementation code is byte-identical between the original
+        implementation subject ea01dc8 and 540e35c
+        (git diff ea01dc8..540e35c -- src tests is empty); the two
+        Resolution rounds touched only Change-local evidence Artifacts.
+        Test/Forge Evidence recorded in verification.md (full suite 805
+        passed, contract suite 52 passed, forge validate valid, end-to-end
+        external-repo repro) was produced from the committed 540e35c tree
+        and independently reproduced by Reviewer Iteration 3 (reviewer-003).
