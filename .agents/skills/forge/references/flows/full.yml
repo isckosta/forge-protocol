@@ -74,5 +74,6 @@ downgrade:
   automatic: false
 review:
   required: true
+  profile: strict
   strict: true
   adversarial: true

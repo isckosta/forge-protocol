@@ -10,19 +10,19 @@ publication:
   root: .agents/skills/forge
 generated_artifacts:
 - path: .agents/skills/forge/SKILL.md
-  digest: f3274a4e5278c3309d4696d0e3ee1f3d135a49a8c3391a2c09c8b4ce48057ce0
+  digest: 2196a5c27b09821b48906bf15256c0ea1880b02ea715eee97108182a9662e094
 - path: .agents/skills/forge/references/artifact-structure.md
   digest: 1ffa101eb46ba6f46793b423489dbbe940c3f7ce36a2ccbf3c46947b8f192c10
 - path: .agents/skills/forge/references/decision-rules.md
   digest: ad2c38015c9b9fe8a9042487083be8c1e5218b448ca05612fe8a1730e485dbeb
 - path: .agents/skills/forge/references/engineering-contract.md
-  digest: a55d6ca9e5157d99c6041a8883ad1718f7a05bfbe633a73128933775b2f13f94
+  digest: 66c7d70d693e3b648a37c67880a46f461270289d83a7e330203e37c5d7706a0e
 - path: .agents/skills/forge/references/flows/fast.yml
-  digest: 09f8bb7d1ca5a4bebb770c8686b7f5b238ba6f505d868b046590a7aacae7cfcb
+  digest: 4266937a3f69b91989b1240510cf3f90e8c9f2140fcc30c726a34e935e06e113
 - path: .agents/skills/forge/references/flows/full.yml
-  digest: ca26fa3b93026d4a6dbd59a644c5086666657e9adac37a991d6518d15b45a1d7
+  digest: 01beeb2c8ee2c276d1a57f4c11db6d32311585f6f53b94f81360d6862cb9f69e
 - path: .agents/skills/forge/references/flows/standard.yml
-  digest: 6a65095d62ae62b71535e548bf773f1d1726c512f6f34b55a556cf0565b96c8e
+  digest: 4f90b95ba77588058cbd13faba6693c9b798c49416fa9dbf336ca72f8a9644ad
 limitations:
 - 'strict-review: capability skills cannot be enforced (FR-009)'
 - 'tdd-red-before-behavior: capability skills cannot be enforced (FR-009)'

@@ -109,7 +109,7 @@ Interaction language: auto -- use the active chat's observed language if there i
 - RED must be executed.
 - RED must fail for the expected reason.
 - Completion requires Verification to pass.
-- Completion requires Strict Review to pass.
+- Completion requires Review to pass, at the `focused` profile: scoped to the actual diff, the regressions it could introduce, the Requirement(s) it targets, and any material Finding actually observed -- not an unrestricted search for any conceivable rejection ground.
 - Completion requires all blocking review threads on any active external review surface to be resolved.
 - Completion requires Documentation Impact to be evaluated.
 - Completion requires TDD compliance or an explicit, recorded exception.
@@ -134,7 +134,7 @@ Interaction language: auto -- use the active chat's observed language if there i
 - RED must be executed.
 - RED must fail for the expected reason.
 - Completion requires Verification to pass.
-- Completion requires Strict Review to pass.
+- Completion requires Review to pass, at the `standard` profile: genuine, evidence-based evaluation of Specification compliance, correctness, and implementation quality -- without the `strict` profile's added obligation to exhaustively search beyond the Change's own declared scope and evidence.
 - Completion requires all blocking review threads on any active external review surface to be resolved.
 - Completion requires Documentation Impact to be evaluated.
 - Completion requires required documentation to be updated.
