@@ -103,8 +103,17 @@ def classify_artifact(
     expected_digest: str | None,
     merge_result: str | None,
     desired_digest: str | None = None,
+    desired_executable: bool = False,
+    current_executable: bool = False,
 ) -> OwnershipDecision:
-    """Classify an artifact without reading or mutating filesystem state."""
+    """Classify an artifact without reading or mutating filesystem state.
+
+    ``desired_executable``/``current_executable`` let a Forge-owned artifact
+    whose content is already current but whose on-disk executable bit does
+    not match the projection be re-materialized (``update``) rather than
+    left ``unchanged``. Callers that do not model file mode (or platforms
+    where an executable bit is not meaningful) leave both ``False``.
+    """
 
     if not exists:
         return OwnershipDecision(
@@ -125,10 +134,14 @@ def classify_artifact(
                 safe_to_apply=False,
             )
 
+        content_is_current = (
+            desired_digest is not None and current_digest == desired_digest
+        )
+        mode_is_current = (not desired_executable) or current_executable
         return OwnershipDecision(
             intent=(
                 OperationIntent.UNCHANGED
-                if desired_digest is not None and current_digest == desired_digest
+                if content_is_current and mode_is_current
                 else OperationIntent.UPDATE
             ),
             safe_to_apply=True,

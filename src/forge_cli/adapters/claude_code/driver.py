@@ -58,6 +58,7 @@ class ClaudeCodeDriver:
                     path=(PurePosixPath(context.target) / resource.name).as_posix(),
                     ownership=OwnershipMode.FORGE_OWNED,
                     content=resource.content,
+                    executable=resource.executable,
                 )
                 for resource in bundle.resources
             ),

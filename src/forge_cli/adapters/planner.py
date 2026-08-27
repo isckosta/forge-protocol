@@ -18,6 +18,7 @@ from forge_cli.adapters.plan import (
     OperationIntent,
     OwnershipMode,
     digest_content,
+    supports_executable_bit,
 )
 from forge_cli.adapters.state import GeneratedArtifact
 
@@ -43,6 +44,7 @@ class ProjectedArtifact:
     content: str
     merge_result: str | None = None
     merge_strategy_id: str | None = None
+    executable: bool = False
 
 
 @dataclass(frozen=True)
@@ -51,6 +53,7 @@ class RepositoryArtifactState:
     exists: bool
     current_digest: str | None
     expected_digest: str | None
+    executable: bool = False
 
 
 def _limitation_text(limitation) -> str:
@@ -118,6 +121,10 @@ def plan_adapter(
         )
         merge_result = projection.merge_result if merge_is_proven else None
 
+        # An executable bit is only meaningful on POSIX; elsewhere the
+        # projection's executable flag must never drive a plan difference.
+        desired_executable = projection.executable and supports_executable_bit()
+
         decision = classify_artifact(
             ownership=projection.ownership,
             exists=state.exists,
@@ -125,6 +132,8 @@ def plan_adapter(
             expected_digest=state.expected_digest,
             merge_result=merge_result,
             desired_digest=digest_content(projection.content),
+            desired_executable=desired_executable,
+            current_executable=state.executable,
         )
 
         operation_content = decision.content if decision.content is not None else projection.content
@@ -141,6 +150,7 @@ def plan_adapter(
                 intent=decision.intent,
                 content=operation_content,
                 expected_current_digest=expected_current_digest,
+                executable=projection.executable,
             )
         )
 

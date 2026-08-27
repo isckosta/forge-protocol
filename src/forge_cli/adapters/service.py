@@ -19,7 +19,11 @@ from forge_cli.adapters.diagnostics import (
     diagnose_adapter,
     validate_adapter,
 )
-from forge_cli.adapters.driver import AdapterProjectionContext, HarnessDriver
+from forge_cli.adapters.driver import (
+    AdapterProjection,
+    AdapterProjectionContext,
+    HarnessDriver,
+)
 from forge_cli.adapters.manifest import is_protocol_compatible
 from forge_cli.adapters.ownership import (
     InvalidAdapterPublicationOwnershipError,
@@ -27,7 +31,12 @@ from forge_cli.adapters.ownership import (
     require_publication_root_ownership,
     require_recorded_publication_ownership,
 )
-from forge_cli.adapters.plan import AdapterPlan, OperationIntent, OwnershipMode
+from forge_cli.adapters.plan import (
+    AdapterPlan,
+    OperationIntent,
+    OwnershipMode,
+    supports_executable_bit,
+)
 from forge_cli.adapters.planner import (
     EffectiveAdapterConfiguration,
     RepositoryArtifactState,
@@ -500,6 +509,10 @@ class AdapterService:
                         )
                     )
 
+        checks.append(
+            self._executable_artifacts_check(root, projection, adapter_id)
+        )
+
         if projection is None:
             checks.append(
                 _warning_check(
@@ -682,6 +695,7 @@ class AdapterService:
                 exists=state.exists,
                 current_digest=state.current_digest,
                 expected_digest=expected_digests.get(state.path),
+                executable=state.executable,
             )
             for state in snapshot.artifacts.values()
         )
@@ -806,6 +820,72 @@ class AdapterService:
             installed_version=result.installed_version,
             current_version=result.current_version,
             mutated=mutated,
+        )
+
+    @staticmethod
+    def _executable_artifacts_check(
+        root: Path,
+        projection: AdapterProjection | None,
+        adapter_id: str,
+    ) -> AdapterCheck:
+        """Report a generated artifact the projection declares executable
+        that exists on disk without an executable bit (POSIX only)."""
+        if projection is None:
+            return _warning_check(
+                "executable_artifacts",
+                "W_FORGE_ADAPTER_EXECUTABLE_UNAVAILABLE",
+                "Executable-artifact modes cannot be checked until project "
+                "configuration and target are valid.",
+            )
+
+        executable_paths = tuple(
+            sorted(
+                artifact.path
+                for artifact in projection.artifacts
+                if artifact.executable
+            )
+        )
+        if not executable_paths:
+            return _passed_check(
+                "executable_artifacts",
+                "No generated artifact requires an executable mode.",
+            )
+        if not supports_executable_bit():
+            return _passed_check(
+                "executable_artifacts",
+                "Executable file modes are not modeled on this platform.",
+            )
+
+        try:
+            snapshot = snapshot_repository_artifacts(root, executable_paths)
+        except AdapterRepositoryError as error:
+            return _failed_check(
+                "executable_artifacts",
+                "E_FORGE_ADAPTER_INSTALLATION_INVALID",
+                f"Executable generated paths cannot be read safely: {error}",
+                f"Repair or remove the invalid installation record, then run "
+                f"`forge adapter install {adapter_id}`.",
+            )
+
+        offenders = tuple(
+            path
+            for path in executable_paths
+            if (state := snapshot.artifacts.get(path)) is not None
+            and state.exists
+            and not state.executable
+        )
+        if offenders:
+            return _failed_check(
+                "executable_artifacts",
+                "E_FORGE_ADAPTER_HOOK_NOT_EXECUTABLE",
+                "Generated artifacts that must be executable are not: "
+                f"{', '.join(offenders)}. The declared hook cannot run.",
+                f"Run `forge adapter update {adapter_id}` to re-materialize "
+                "the Adapter with correct file modes.",
+            )
+        return _passed_check(
+            "executable_artifacts",
+            "Generated artifacts that must be executable are executable.",
         )
 
     @staticmethod

@@ -1,0 +1,104 @@
+schema: forge/change@2
+protocol: 2
+change:
+  id: CHG-0049
+  title: Adapter Hook Executable Mode
+  kind: bugfix
+flow:
+  initial: standard
+  current: standard
+  escalations: []
+state:
+  current: complete
+artifacts:
+  intent: complete
+  discovery: complete
+  specification: complete
+  test_design: complete
+  plan: complete
+  tdd_evidence: complete
+  verification: complete
+  review: complete
+  documentation: complete
+requirements:
+  total: 7
+  implemented: 7
+  verified: 7
+tdd:
+  status: exception
+  cycles: 6
+  reason: >-
+    Independent Review Iteration 1 R-003. TDD-002 (publisher chmod / atomic
+    executable materialization) is a genuine behavioural RED-first cycle;
+    TDD-001's RED was a call-boundary TypeError (disqualified by this
+    Change's own test-design "Valid RED"); TDD-003/004/005 (defaulted
+    dataclass fields and the new diagnostic) were implemented before their
+    pytest assertions, with RED verified mechanically or by live command
+    reproduction of the motivating defect. All GREEN tests exist, exercise
+    real behaviour, pass, and were re-run by the Independent Reviewer.
+    Disclosed under C-017; see tdd-evidence.yml `reason`.
+verification:
+  status: passed
+review:
+  status: passed
+  iteration: 4
+  blockers: 0
+  majors: 0
+  minors: 0
+  observations: 4
+  iterations:
+    - id: review-001
+      revision: chg-0049-implementation-001
+      subject_provenance: implementation-subject-001
+      reviewer_provenance: reviewer-001
+      kind: initial_review
+      status: failed
+      full_review_required: false
+      new_material_findings: 3
+      finding_classes: []
+    - id: review-002
+      revision: chg-0049-resolution-001
+      subject_provenance: resolution-001
+      reviewer_provenance: reviewer-002
+      kind: resolution_verification
+      status: failed
+      full_review_required: false
+      new_material_findings: 3
+      finding_classes:
+        - resolution_regression
+        - unresolved_finding
+    - id: review-003
+      revision: chg-0049-resolution-002
+      subject_provenance: resolution-002
+      reviewer_provenance: reviewer-003
+      kind: resolution_verification
+      status: passed
+      full_review_required: false
+      new_material_findings: 0
+      finding_classes: []
+    - id: review-004
+      revision: chg-0049-resolution-003
+      subject_provenance: resolution-003
+      reviewer_provenance: reviewer-004
+      kind: resolution_verification
+      status: passed
+      full_review_required: false
+      new_material_findings: 0
+      finding_classes: []
+documentation:
+  impact_evaluated: true
+  update_required: true
+  reason: >-
+    CHANGELOG.md "## Unreleased" gained an "### Adapter Hook Executable
+    Mode" entry. No protocol/compatibility.md entry (no Protocol, schema,
+    Contract, or Flow change) and no new ADR (STANDARD; the one material
+    technical decision is recorded as DEC-001 in plan.md).
+decisions:
+  - id: DEC-001
+    class: technical
+    materiality: material
+    status: resolved
+    authority: agent
+    owning_artifact: plan
+    discovered_in: discovery
+    resolved_via: autonomous_decision

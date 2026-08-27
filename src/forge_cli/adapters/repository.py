@@ -2,12 +2,13 @@
 
 from __future__ import annotations
 
+import stat
 from dataclasses import dataclass
 from pathlib import Path, PurePosixPath
 from types import MappingProxyType
 from typing import Iterable, Mapping
 
-from forge_cli.adapters.plan import digest_content
+from forge_cli.adapters.plan import digest_content, supports_executable_bit
 from forge_cli.adapters.planner import RepositoryArtifactState
 from forge_cli.adapters.state import AdapterInstallationRecord, load_installation_record
 
@@ -124,7 +125,8 @@ def _snapshot_artifact(root: Path, relative_path: str) -> RepositoryArtifactStat
             f"Adapter artifact is not a regular file: {relative_path!r}."
         )
     try:
-        digest = digest_content(target.read_text(encoding="utf-8"))
+        raw = target.read_text(encoding="utf-8")
+        mode = target.stat().st_mode
     except (OSError, UnicodeError) as error:
         raise AdapterRepositoryError(
             f"Cannot safely read Adapter artifact: {relative_path!r}."
@@ -132,6 +134,13 @@ def _snapshot_artifact(root: Path, relative_path: str) -> RepositoryArtifactStat
     return RepositoryArtifactState(
         path=relative_path,
         exists=True,
-        current_digest=digest,
+        current_digest=digest_content(raw),
         expected_digest=None,
+        # The Adapter installs and executes the hook as the owning user, so
+        # only the owner-execute bit (S_IXUSR) makes it runnable -- a file
+        # at e.g. 0o655 (group/other execute set, owner not) is NOT
+        # executable by its owner and must still be re-materialized.
+        executable=(
+            supports_executable_bit() and bool(stat.S_IMODE(mode) & stat.S_IXUSR)
+        ),
     )

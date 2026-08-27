@@ -1,0 +1,233 @@
+schema: forge/tdd-evidence@1
+change: CHG-0049
+status: exception
+reason: >-
+  Recorded TDD exception (Independent Review Iteration 1, Finding R-003).
+  Of five cycles, TDD-002 (publisher chmod / atomic executable
+  materialization -- the Change's most substantive behavioural logic) is a
+  genuine behavioural RED-first cycle (2 tests failed their executable-bit
+  assertion before the implementation existed). TDD-001 (classify_artifact
+  mode-aware decision) was RED-first but its RED was a
+  "TypeError: unexpected keyword argument" at the call boundary, which
+  this Change's own test-design.md "Valid RED" section explicitly
+  disqualifies -- the behavioural UPDATE-vs-UNCHANGED assertion only
+  became the failure reason after the parameter existed. TDD-003 (a
+  defaulted `executable` dataclass field + one call site), TDD-004
+  (reading st_mode into a defaulted snapshot field), and TDD-005 (the
+  `executable_artifacts` diagnostic) were implemented before their pytest
+  assertions were written; their RED was verified mechanically (the
+  referenced attribute/field did not exist on the prior revision) or, for
+  TDD-005, by direct live command reproduction of the motivating defect
+  ("forge adapter doctor returns all-PASS for a 0o644 hook") in a
+  throwaway repo and against this repository's pre-chmod state. All GREEN
+  tests exist, exercise real behaviour, and pass; the Independent Reviewer
+  re-ran every touched-file test and the full suite. This is disclosed
+  under C-017 rather than recorded as clean compliance. TDD-006 (added for
+  PR #41 Codex R-008, owner-execute bit) is a genuine RED-first-verified
+  cycle -- both new tests fail with the prior `& 0o111` code and pass with
+  the one-line `& stat.S_IXUSR` fix -- and does not lift the exception
+  standing from TDD-001/003/004/005.
+cycle_count: 6
+cycles:
+- id: TDD-001
+  title: classify_artifact repairs a mode-only discrepancy for a projected-executable artifact
+  requirements:
+  - FR-004
+  behavior: >-
+    For a FORGE_OWNED artifact whose recorded and desired content digests
+    match but whose observed executable bit does not match the projection
+    (desired_executable and not current_executable), classify_artifact
+    returns UPDATE instead of UNCHANGED; when the mode already matches, or
+    the projection is not executable, it stays UNCHANGED.
+  red:
+    command: .venv/bin/python -m pytest tests/unit/test_adapter_ownership.py -q
+    result: 3 failed, 9 passed
+    reason: >-
+      classify_artifact had no desired_executable/current_executable
+      parameters, so the three new cases raised
+      "TypeError: classify_artifact() got an unexpected keyword argument
+      'desired_executable'" -- the mode-aware decision did not exist.
+  green:
+    command: .venv/bin/python -m pytest tests/unit/test_adapter_ownership.py tests/unit/test_adapter_planner.py tests/unit/test_adapter_plan.py -q
+    result: 24 passed
+  notes:
+  - >-
+    planner.plan_adapter wiring (desired_executable = projection.executable
+    and supports_executable_bit(); current_executable = state.executable;
+    AdapterOperation.executable = projection.executable) was implemented in
+    the same cycle and is covered by
+    test_adapter_planner.py::test_executable_projection_repairs_mode_only_discrepancy.
+- id: TDD-002
+  title: publish_adapter_plan materializes a projected-executable artifact with mode 0o755 (POSIX), atomically
+  requirements:
+  - FR-001
+  behavior: >-
+    A create or update operation carrying executable=True results in a file
+    whose mode includes the owner-execute bit on POSIX; the bit is set on
+    the temp file before os.replace so the target is never observable
+    present-but-non-executable; a non-executable sibling is untouched; on a
+    non-POSIX platform the publish still succeeds and writes correct
+    content.
+  red:
+    command: .venv/bin/python -m pytest tests/integration/test_adapter_publisher.py -q -k executable
+    result: 2 failed
+    reason: >-
+      _replace_file wrote via write_text + os.replace with no chmod, so the
+      materialized script landed 0o644;
+      test_executable_create_materializes_with_executable_mode and
+      test_executable_update_reapplies_mode_on_identical_content both failed
+      their _is_executable assertion, and the in-test subprocess execution
+      of the script would have failed EACCES.
+  green:
+    command: .venv/bin/python -m pytest tests/integration/test_adapter_publisher.py -q
+    result: 33 passed
+  notes:
+  - >-
+    Rollback fidelity: the applied-operations list now also carries the
+    original file mode, restored by _restore_bytes on rollback (POSIX
+    only); three pre-existing monkeypatch fakes for _replace_file /
+    _restore_bytes were updated to the new signatures -- a direct
+    consequence of the signature change, not new behavior.
+- id: TDD-003
+  title: The Claude Code projection marks exactly check-manifest-edit.sh executable
+  requirements:
+  - FR-002
+  behavior: >-
+    ClaudeCodeProjectionResource / ProjectedArtifact carry an executable
+    flag; generate_claude_code_skill_bundle sets it True only for the hook
+    resource; ClaudeCodeDriver.project propagates it.
+  red:
+    command: retroactive/mechanical -- see notes
+    result: >-
+      pre-change ClaudeCodeProjectionResource had no `executable` attribute;
+      test_only_the_hook_resource_is_marked_executable references
+      resource.executable and would have raised AttributeError, and
+      test_claude_code_skill_projection's new block asserts
+      ProjectedArtifact.executable which did not exist.
+    reason: >-
+      This cycle is data-plumbing (a defaulted dataclass field plus one
+      call site), implemented alongside the TDD-001/TDD-002 model fields
+      before its assertion tests were written -- an inversion of the planned
+      RED-first order, disclosed per C-017. RED verified mechanically: the
+      attribute did not exist on the prior revision, so the assertions
+      could not have been evaluated, let alone passed.
+  green:
+    command: .venv/bin/python -m pytest tests/unit/test_claude_code_projection_bundle.py tests/unit/test_claude_code_skill_projection.py -q
+    result: 40 passed
+- id: TDD-004
+  title: The repository snapshot observes the on-disk executable bit (POSIX)
+  requirements:
+  - FR-003
+  behavior: >-
+    snapshot_repository_artifacts reports RepositoryArtifactState.executable
+    True for an existing 0o755 regular file and False for a 0o644 one on
+    POSIX, and False for a missing file; service._prepare and service.doctor
+    propagate the observed bit into planning.
+  red:
+    command: retroactive/mechanical -- see notes
+    result: >-
+      pre-change RepositoryArtifactState had no `executable` field;
+      test_adapter_repository.py's assertions on state.executable reference
+      an attribute that did not exist.
+    reason: >-
+      Observation-plumbing cycle (read st_mode in _snapshot_artifact, add a
+      defaulted field), implemented with the TDD-001 model change before its
+      test was written -- same disclosed ordering inversion as TDD-003. RED
+      is mechanical: the field's absence makes the assertions unrunnable on
+      the prior revision.
+  green:
+    command: .venv/bin/python -m pytest tests/unit/test_adapter_repository.py -q
+    result: 2 passed
+  notes:
+  - >-
+    A real defect this cycle surfaced and fixed: service._prepare rebuilt
+    RepositoryArtifactState from the snapshot and dropped every field not
+    explicitly copied -- it now also copies executable, without which
+    `forge adapter update` / plan would report the hook as a perpetual
+    mode-repair UPDATE (caught by
+    tests/cli/test_adapter_commands.py::test_adapter_install_then_doctor_succeeds_for_every_registered_adapter[claude-code]).
+- id: TDD-005
+  title: Forge diagnostics fail on a non-executable installed hook and pass when it is executable
+  requirements:
+  - FR-006
+  - FR-007
+  behavior: >-
+    AdapterService.doctor emits an executable_artifacts check that fails
+    (code E_FORGE_ADAPTER_HOOK_NOT_EXECUTABLE, remediation naming
+    `forge adapter update claude-code`) when a projected-executable
+    installed artifact lacks the bit on POSIX, and passes otherwise;
+    `forge doctor` surfaces it as adapter:claude-code:executable_artifacts;
+    the tracked hook file is git mode 100755.
+  red:
+    command: >-
+      manual reproduction in a throwaway `forge init` + `forge adapter
+      install claude-code` project: chmod 0644 the hook -> `forge adapter
+      doctor claude-code` exit 2 with FAIL executable_artifacts; chmod back
+      -> PASS. Retroactive for the pytest/CLI assertions.
+    result: >-
+      before the check existed, `forge adapter doctor` returned all-PASS for
+      a project whose hook was 0o644 (the guard was silently inoperative --
+      the motivating defect); `git ls-files -s` reported 100644 for the
+      tracked hook (discovery.md).
+    reason: >-
+      The diagnostic (_CHECK_ORDER entry + _executable_artifacts_check) was
+      implemented and verified by live command reproduction in a scratch
+      repo before the pytest/CLI regression tests were written -- disclosed
+      per C-017. The behavioral RED (doctor accepts a broken hook) was
+      directly observed, not merely asserted, on both a scratch repo and
+      the pre-chmod state of this repository.
+  green:
+    command: >-
+      .venv/bin/python -m pytest tests/integration/test_adapter_service.py
+      tests/cli/test_doctor.py tests/cli/test_adapter_commands.py
+      tests/unit/test_adapter_diagnostics.py tests/unit/test_repository_hook_mode.py -q
+    result: all passed
+  notes:
+  - >-
+    tests/integration/test_adapter_service.py::test_doctor_is_deterministic_and_limitations_do_not_fail_an_intact_installation
+    (codex) had its explicit check-id list updated to include the new
+    executable_artifacts id -- a direct consequence of adding a check, not a
+    behavior change.
+- id: TDD-006
+  title: The executable-bit check requires the OWNER execute bit, not any of 0o111
+  requirements:
+  - FR-003
+  - FR-006
+  origin: PR #41 external review (Codex), Finding R-008
+  behavior: >-
+    repository._snapshot_artifact reports RepositoryArtifactState.executable
+    only when the owner-execute bit (stat.S_IXUSR / 0o100) is set. A file at
+    0o655 -- group/other execute set, owner not -- is reported
+    non-executable, so `forge adapter doctor` fails and `forge adapter
+    update` classifies it as UPDATE (repair), because the owning user (who
+    installs and runs the hook) cannot execute it: POSIX permission
+    selection stops at the owner class and never falls through to
+    group/other for the owner.
+  red:
+    command: >-
+      git checkout src/forge_cli/adapters/repository.py (revert only the
+      one-line 0o111 -> S_IXUSR change), then .venv/bin/python -m pytest
+      tests/unit/test_adapter_repository.py::test_snapshot_requires_the_owner_execute_bit
+      tests/integration/test_adapter_service.py::test_doctor_and_update_treat_owner_execute_stripped_hook_as_broken -q
+    result: 2 failed
+    reason: >-
+      With the prior `stat.S_IMODE(mode) & 0o111` expression, a 0o655 hook
+      matches (0o655 & 0o111 == 0o011, truthy), so the snapshot reported it
+      executable, doctor's executable_artifacts check passed
+      ("assert 'passed' == 'failed'"), and adapter update would classify
+      the byte-current artifact as UNCHANGED -- leaving the enforcement hook
+      inoperative for its owner exactly as Codex R-008 described.
+  green:
+    command: >-
+      .venv/bin/python -m pytest tests/unit/test_adapter_repository.py
+      tests/integration/test_adapter_service.py
+      tests/integration/test_adapter_publisher.py -q
+    result: 72 passed
+  notes:
+  - >-
+    Genuine RED-first-verified cycle: the fix is a one-line change
+    (`& 0o111` -> `& stat.S_IXUSR`) in repository._snapshot_artifact; the
+    two test-helper `_is_executable` functions in test_adapter_service.py
+    and test_adapter_publisher.py were aligned to S_IXUSR for the same
+    precision (they only ever check 0o755/0o644 files, so their result is
+    unchanged). No other production code touched.
