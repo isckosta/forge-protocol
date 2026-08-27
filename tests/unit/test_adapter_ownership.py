@@ -79,6 +79,61 @@ def test_recorded_equal_desired_file_is_unchanged() -> None:
     assert decision.safe_to_apply is True
 
 
+def test_executable_projection_with_non_executable_disk_state_updates() -> None:
+    module = ownership_module()
+    same = digest_content("same")
+
+    decision = module.classify_artifact(
+        ownership=OwnershipMode.FORGE_OWNED,
+        exists=True,
+        current_digest=same,
+        expected_digest=same,
+        desired_digest=same,
+        merge_result=None,
+        desired_executable=True,
+        current_executable=False,
+    )
+
+    assert decision.intent is OperationIntent.UPDATE
+    assert decision.safe_to_apply is True
+
+
+def test_executable_projection_with_executable_disk_state_is_unchanged() -> None:
+    module = ownership_module()
+    same = digest_content("same")
+
+    decision = module.classify_artifact(
+        ownership=OwnershipMode.FORGE_OWNED,
+        exists=True,
+        current_digest=same,
+        expected_digest=same,
+        desired_digest=same,
+        merge_result=None,
+        desired_executable=True,
+        current_executable=True,
+    )
+
+    assert decision.intent is OperationIntent.UNCHANGED
+
+
+def test_non_executable_projection_ignores_disk_executable_bit() -> None:
+    module = ownership_module()
+    same = digest_content("same")
+
+    decision = module.classify_artifact(
+        ownership=OwnershipMode.FORGE_OWNED,
+        exists=True,
+        current_digest=same,
+        expected_digest=same,
+        desired_digest=same,
+        merge_result=None,
+        desired_executable=False,
+        current_executable=False,
+    )
+
+    assert decision.intent is OperationIntent.UNCHANGED
+
+
 def test_unrecorded_equal_desired_file_conflicts_without_silent_adoption() -> None:
     module = ownership_module()
 

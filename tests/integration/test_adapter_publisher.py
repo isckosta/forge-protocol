@@ -662,12 +662,12 @@ def test_publication_failure_rolls_back_files_and_never_publishes_installation_r
     original_replace = publisher._replace_file
     calls = 0
 
-    def fail_second(path: Path, content: str) -> None:
+    def fail_second(path: Path, content: str, *, executable: bool = False) -> None:
         nonlocal calls
         calls += 1
         if calls == 2:
             raise OSError("simulated publication failure")
-        original_replace(path, content)
+        original_replace(path, content, executable=executable)
 
     monkeypatch.setattr(publisher, "_replace_file", fail_second)
 
@@ -1118,7 +1118,7 @@ def test_incomplete_rollback_reports_generic_publication_failure_and_target(
     def fail_record_write(path: Path, record: AdapterInstallationRecord) -> None:
         raise OSError("simulated record write failure")
 
-    def fail_restore(path: Path, content: bytes | None) -> None:
+    def fail_restore(path: Path, content: bytes | None, mode: int | None = None) -> None:
         raise OSError("simulated restore failure")
 
     monkeypatch.setattr(publisher, "_write_installation_record_atomically", fail_record_write)
@@ -1177,15 +1177,15 @@ def test_incomplete_rollback_preserves_late_conflict_as_the_public_cause(
     original_replace = publisher._replace_file
     original_restore = publisher._restore_bytes
 
-    def create_then_drift(path: Path, content: str) -> None:
-        original_replace(path, content)
+    def create_then_drift(path: Path, content: str, *, executable: bool = False) -> None:
+        original_replace(path, content, executable=executable)
         if path == created:
             updated.write_text("changed after planning", encoding="utf-8")
 
-    def fail_restore(path: Path, content: bytes | None) -> None:
+    def fail_restore(path: Path, content: bytes | None, mode: int | None = None) -> None:
         if path == created:
             raise OSError("simulated restore failure")
-        original_restore(path, content)
+        original_restore(path, content, mode)
 
     monkeypatch.setattr(publisher, "_replace_file", create_then_drift)
     monkeypatch.setattr(publisher, "_restore_bytes", fail_restore)
@@ -1208,3 +1208,129 @@ def test_incomplete_rollback_preserves_late_conflict_as_the_public_cause(
     ]
     assert "a-created.md" in str(error)
     assert created.exists()
+
+
+# --- CHG-0049: executable-artifact materialization -------------------------
+
+import os as _os
+import stat as _stat
+import subprocess as _subprocess
+
+posix_only = pytest.mark.skipif(
+    _os.name != "posix", reason="executable-bit materialization is POSIX-only"
+)
+
+
+def _is_executable(path: Path) -> bool:
+    return bool(_stat.S_IMODE(path.stat().st_mode) & 0o111)
+
+
+@posix_only
+def test_executable_create_materializes_with_executable_mode(tmp_path: Path) -> None:
+    publisher = publisher_module()
+    script = "#!/bin/sh\necho FORGE_OK\n"
+    plan = plan_adapter(
+        manifest=_manifest(),
+        effective_configuration=EffectiveAdapterConfiguration(1, ()),
+        projections=(
+            ProjectedArtifact(
+                path="hooks/check.sh",
+                ownership=OwnershipMode.FORGE_OWNED,
+                content=script,
+                executable=True,
+            ),
+            ProjectedArtifact(
+                path="SKILL.md",
+                ownership=OwnershipMode.FORGE_OWNED,
+                content="# skill\n",
+            ),
+        ),
+        repository_state=(),
+    )
+
+    publisher.publish_adapter_plan(
+        tmp_path,
+        plan,
+        _record(
+            ("SKILL.md", digest_content("# skill\n")),
+            ("hooks/check.sh", digest_content(script)),
+        ),
+    )
+
+    hook = tmp_path / "hooks/check.sh"
+    assert hook.read_text(encoding="utf-8") == script
+    assert _is_executable(hook)
+    # non-executable sibling must not have been made executable
+    assert not _is_executable(tmp_path / "SKILL.md")
+    # the materialized script runs without Permission denied
+    result = _subprocess.run([str(hook)], capture_output=True, text=True)
+    assert result.returncode == 0
+    assert result.stdout.strip() == "FORGE_OK"
+
+
+@posix_only
+def test_executable_update_reapplies_mode_on_identical_content(tmp_path: Path) -> None:
+    publisher = publisher_module()
+    script = "#!/bin/sh\nexit 0\n"
+    hook = tmp_path / "hooks/check.sh"
+    hook.parent.mkdir(parents=True)
+    hook.write_text(script, encoding="utf-8")
+    hook.chmod(0o644)
+    _write_prior_record(tmp_path, ("hooks/check.sh", digest_content(script)))
+
+    plan = plan_adapter(
+        manifest=_manifest(),
+        effective_configuration=EffectiveAdapterConfiguration(1, ()),
+        projections=(
+            ProjectedArtifact(
+                path="hooks/check.sh",
+                ownership=OwnershipMode.FORGE_OWNED,
+                content=script,
+                executable=True,
+            ),
+        ),
+        repository_state=(
+            RepositoryArtifactState(
+                path="hooks/check.sh",
+                exists=True,
+                current_digest=digest_content(script),
+                expected_digest=digest_content(script),
+                executable=False,
+            ),
+        ),
+    )
+    assert plan.operations[0].intent is OperationIntent.UPDATE
+
+    publisher.publish_adapter_plan(
+        tmp_path, plan, _record(("hooks/check.sh", digest_content(script)))
+    )
+
+    assert hook.read_text(encoding="utf-8") == script
+    assert _is_executable(hook)
+
+
+def test_executable_publish_does_not_fail_on_non_posix(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    publisher = publisher_module()
+    monkeypatch.setattr("forge_cli.adapters.publisher.supports_executable_bit", lambda: False)
+    script = "#!/bin/sh\nexit 0\n"
+    plan = plan_adapter(
+        manifest=_manifest(),
+        effective_configuration=EffectiveAdapterConfiguration(1, ()),
+        projections=(
+            ProjectedArtifact(
+                path="hooks/check.sh",
+                ownership=OwnershipMode.FORGE_OWNED,
+                content=script,
+                executable=True,
+            ),
+        ),
+        repository_state=(),
+    )
+
+    publisher.publish_adapter_plan(
+        tmp_path, plan, _record(("hooks/check.sh", digest_content(script)))
+    )
+
+    assert (tmp_path / "hooks/check.sh").read_text(encoding="utf-8") == script

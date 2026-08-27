@@ -44,6 +44,16 @@ def test_claude_code_projection_renders_a_valid_repository_layout() -> None:
         ".claude/skills/forge/references/flows/full.yml",
         ".claude/skills/forge/references/flows/standard.yml",
     )
+    by_path_artifact = {item.path: item for item in projection.artifacts}
+    assert by_path_artifact[
+        ".claude/skills/forge/hooks/check-manifest-edit.sh"
+    ].executable is True
+    assert all(
+        item.executable is False
+        for path, item in by_path_artifact.items()
+        if not path.endswith("check-manifest-edit.sh")
+    )
+
     skill = by_path[".claude/skills/forge/SKILL.md"]
     metadata = yaml.safe_load(skill.split("---", 2)[1])
     assert metadata["name"] == "forge"

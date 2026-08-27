@@ -84,3 +84,42 @@ def test_doctor_reports_non_git_environment_without_modifying_files(tmp_path: Pa
     assert result.exit_code == 2
     assert "FAIL git_repository" in result.stdout
     assert marker.read_text(encoding="utf-8") == "unchanged"
+
+
+import os as _os
+
+import pytest as _pytest
+
+_posix_only = _pytest.mark.skipif(
+    _os.name != "posix", reason="executable-bit checks are POSIX-only"
+)
+
+
+@_posix_only
+def test_doctor_flags_non_executable_claude_code_hook(tmp_path: Path, monkeypatch) -> None:
+    _init_git_repository(tmp_path)
+    monkeypatch.chdir(tmp_path)
+    runner.invoke(app, ["init"])
+    runner.invoke(app, ["adapter", "install", "claude-code"])
+    hook = tmp_path / ".claude/skills/forge/hooks/check-manifest-edit.sh"
+    hook.chmod(0o644)
+
+    result = runner.invoke(app, ["doctor"])
+
+    assert result.exit_code == 2
+    assert "FAIL adapter:claude-code:executable_artifacts" in result.stdout
+
+
+@_posix_only
+def test_doctor_passes_executable_check_for_fresh_claude_code_install(
+    tmp_path: Path, monkeypatch
+) -> None:
+    _init_git_repository(tmp_path)
+    monkeypatch.chdir(tmp_path)
+    runner.invoke(app, ["init"])
+    runner.invoke(app, ["adapter", "install", "claude-code"])
+
+    result = runner.invoke(app, ["doctor"])
+
+    assert result.exit_code == 0
+    assert "PASS adapter:claude-code:executable_artifacts" in result.stdout

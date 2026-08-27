@@ -10,6 +10,25 @@ until then.
 
 ## Unreleased
 
+### Adapter Hook Executable Mode
+
+The Harness Adapter materialization pipeline now carries a per-artifact
+executable flag from projection through planning, publication, and
+diagnostics. The Claude Code Adapter marks its `check-manifest-edit.sh`
+`PreToolUse` hook executable, so `forge adapter install` materializes it
+`0o755` on POSIX (previously `0o644`, which made the declared hook fail
+with `Permission denied` and silently disabled the guard). `plan_adapter`
+treats a content-current but non-executable projected-executable artifact
+as an `update`, so `forge adapter update` repairs an existing broken
+installation idempotently; the repository snapshot observes the on-disk
+bit. A new `executable_artifacts` Adapter diagnostic (surfaced by
+`forge adapter doctor` and `forge doctor`) fails when an installed
+must-be-executable artifact lacks the bit, with remediation naming
+`forge adapter update`. The tracked hook is now versioned `100755`.
+Behaviour is unchanged on non-POSIX platforms and for the Codex Adapter
+(which ships no hook); no installation-record schema change. See
+`.forge/changes/CHG-0049-adapter-hook-executable-mode/`.
+
 ### Proportional Review Profiles
 
 Introduced three canonical Review Profiles bound to Flow — `focused`

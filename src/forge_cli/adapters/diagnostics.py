@@ -14,8 +14,9 @@ _CHECK_ORDER = {
     "target": 2,
     "installation": 3,
     "generated_drift": 4,
-    "conformance": 5,
-    "limitations": 6,
+    "executable_artifacts": 5,
+    "conformance": 6,
+    "limitations": 7,
 }
 
 

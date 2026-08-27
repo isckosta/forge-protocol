@@ -36,6 +36,7 @@ class ClaudeCodeProjectionResource:
     name: str
     content: str
     digest: str
+    executable: bool = False
 
 
 @dataclass(frozen=True)
@@ -57,12 +58,15 @@ def _normalized(content: str) -> str:
     return content.rstrip() + "\n"
 
 
-def _resource(name: str, content: str) -> ClaudeCodeProjectionResource:
+def _resource(
+    name: str, content: str, *, executable: bool = False
+) -> ClaudeCodeProjectionResource:
     normalized = _normalized(content)
     return ClaudeCodeProjectionResource(
         name=name,
         content=normalized,
         digest=sha256(normalized.encode("utf-8")).hexdigest(),
+        executable=executable,
     )
 
 
@@ -329,7 +333,7 @@ def generate_claude_code_skill_bundle(
             if has_decision_rules
             else ()
         ),
-        _resource(_HOOK_RELATIVE_PATH, _hook_script_content()),
+        _resource(_HOOK_RELATIVE_PATH, _hook_script_content(), executable=True),
         _resource("CLAUDE.md", _claude_md_pointer(interaction_language)),
         *flow_resources,
     )

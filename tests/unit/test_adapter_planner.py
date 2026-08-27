@@ -1,6 +1,11 @@
 import importlib
+import os
 
 import pytest
+
+posix_only = pytest.mark.skipif(
+    os.name != "posix", reason="executable-bit planning is POSIX-only"
+)
 
 from forge_cli.adapters.capabilities import CapabilityRequirement, RequirementSource
 from forge_cli.adapters.manifest import AdapterManifest, IncompatibleAdapterProtocolError
@@ -97,6 +102,52 @@ def test_planner_classifies_repository_state_without_mutating_it() -> None:
     assert by_path[".tool/generated.md"].intent is OperationIntent.UPDATE
     assert user_state.current_digest == digest_content("user content")
     assert forge_state.current_digest == digest_content("old generated")
+
+
+@posix_only
+def test_executable_projection_repairs_mode_only_discrepancy() -> None:
+    planner = planner_module()
+    content = "#!/bin/sh\necho hi\n"
+    current = digest_content(content)
+
+    non_executable = planner.RepositoryArtifactState(
+        path=".tool/hook.sh",
+        exists=True,
+        current_digest=current,
+        expected_digest=current,
+        executable=False,
+    )
+    already_executable = planner.RepositoryArtifactState(
+        path=".tool/hook.sh",
+        exists=True,
+        current_digest=current,
+        expected_digest=current,
+        executable=True,
+    )
+    projection = planner.ProjectedArtifact(
+        path=".tool/hook.sh",
+        ownership=OwnershipMode.FORGE_OWNED,
+        content=content,
+        executable=True,
+    )
+
+    repair = planner.plan_adapter(
+        manifest=_manifest(),
+        effective_configuration=planner.EffectiveAdapterConfiguration(1, ()),
+        projections=(projection,),
+        repository_state=(non_executable,),
+    )
+    assert repair.operations[0].intent is OperationIntent.UPDATE
+    assert repair.operations[0].executable is True
+    assert repair.operations[0].content == content
+
+    stable = planner.plan_adapter(
+        manifest=_manifest(),
+        effective_configuration=planner.EffectiveAdapterConfiguration(1, ()),
+        projections=(projection,),
+        repository_state=(already_executable,),
+    )
+    assert stable.operations[0].intent is OperationIntent.UNCHANGED
 
 
 def test_shared_projection_requires_named_deterministic_merge_provenance() -> None:

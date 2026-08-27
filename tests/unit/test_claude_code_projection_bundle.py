@@ -232,6 +232,20 @@ def test_projection_bundle_includes_hook_script_and_frontmatter() -> None:
     assert "check-manifest-edit.sh" in frontmatter["hooks"]["PreToolUse"][0]["hooks"][0]["command"]
 
 
+def test_only_the_hook_resource_is_marked_executable() -> None:
+    """CHG-0049 FR-002: the Adapter projection is the source of truth for
+    which generated paths must be executable -- exactly the hook, nothing
+    else."""
+    projection = _projection_module()
+
+    bundle = projection.generate_claude_code_projection_bundle(_canonical_input())
+
+    executable = {
+        resource.name for resource in bundle.resources if resource.executable
+    }
+    assert executable == {"skills/forge/hooks/check-manifest-edit.sh"}
+
+
 def test_projection_bundle_hook_frontmatter_also_matches_edit_and_write() -> None:
     """CHG-0045 FR-006/TDD-009: the same guard must not be trivially
     bypassed by switching tools -- Edit/Write must be matched alongside

@@ -2,10 +2,21 @@
 
 from __future__ import annotations
 
+import os
 from dataclasses import dataclass
 from enum import StrEnum
 from hashlib import sha256
 from typing import Iterable
+
+
+def supports_executable_bit() -> bool:
+    """Executable file modes are only meaningful on POSIX platforms.
+
+    A single indirection so planning, publication, and diagnostics agree on
+    what "this platform models an executable bit" means -- and so a test can
+    exercise the non-POSIX path without patching ``os.name`` globally.
+    """
+    return os.name == "posix"
 
 
 class OwnershipMode(StrEnum):
@@ -35,6 +46,7 @@ class AdapterOperation:
     content_digest: str
     content: str | None = None
     expected_current_digest: str | None = None
+    executable: bool = False
 
     @classmethod
     def from_content(
@@ -45,6 +57,7 @@ class AdapterOperation:
         intent: OperationIntent,
         content: str,
         expected_current_digest: str | None = None,
+        executable: bool = False,
     ) -> "AdapterOperation":
         return cls(
             path=path,
@@ -53,6 +66,7 @@ class AdapterOperation:
             content_digest=digest_content(content),
             content=content,
             expected_current_digest=expected_current_digest,
+            executable=executable,
         )
 
 

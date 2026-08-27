@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import os
+import stat
 from dataclasses import dataclass
 from pathlib import Path, PurePosixPath
 import tempfile
@@ -14,6 +15,7 @@ from forge_cli.adapters.plan import (
     OperationIntent,
     OwnershipMode,
     digest_content,
+    supports_executable_bit,
 )
 from forge_cli.adapters.ownership import (
     InvalidAdapterPublicationOwnershipError,
@@ -121,11 +123,18 @@ def _safe_target(root: Path, relative_path: str) -> Path:
     return candidate
 
 
-def _replace_file(path: Path, content: str) -> None:
+_EXECUTABLE_MODE = 0o755
+
+
+def _replace_file(path: Path, content: str, *, executable: bool = False) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     temp_path = path.with_name(f".{path.name}.forge-tmp-{uuid4().hex}")
     try:
         temp_path.write_text(content, encoding="utf-8")
+        if executable and supports_executable_bit():
+            # Set the bit on the temp file before the rename so the target
+            # is never observable as present-but-non-executable.
+            os.chmod(temp_path, _EXECUTABLE_MODE)
         os.replace(temp_path, path)
     finally:
         if temp_path.exists():
@@ -142,7 +151,7 @@ def _reserve_create_target(path: Path) -> None:
         ) from exc
 
 
-def _restore_bytes(path: Path, content: bytes | None) -> None:
+def _restore_bytes(path: Path, content: bytes | None, mode: int | None = None) -> None:
     if content is None:
         if path.exists() or path.is_symlink():
             path.unlink()
@@ -154,6 +163,8 @@ def _restore_bytes(path: Path, content: bytes | None) -> None:
     try:
         with os.fdopen(fd, "wb") as stream:
             stream.write(content)
+        if mode is not None and supports_executable_bit():
+            os.chmod(temp_path, stat.S_IMODE(mode))
         os.replace(temp_path, path)
     finally:
         if temp_path.exists():
@@ -423,7 +434,7 @@ def _write_installation_record_atomically(
 def _rollback_publication(
     *,
     root: Path,
-    applied: list[tuple[str, bytes | None]],
+    applied: list[tuple[str, bytes | None, int | None]],
     installation_relative: str,
     prior_installation: bytes | None,
     installation_existed: bool,
@@ -433,7 +444,7 @@ def _rollback_publication(
     def record_failure(target: str, error: Exception) -> None:
         failures.append(AdapterRollbackFailure(target=target, error=error))
 
-    for relative_path, original in reversed(applied):
+    for relative_path, original, original_mode in reversed(applied):
         try:
             # Re-resolve immediately before use, same reason as everywhere
             # else in this module: a Path captured when the operation was
@@ -442,7 +453,7 @@ def _rollback_publication(
             # swapped for a symlink in between redirect the restore and leak
             # the original content to an attacker-controlled location.
             target = _safe_target(root, relative_path)
-            _restore_bytes(target, original)
+            _restore_bytes(target, original, original_mode)
         except Exception as exc:
             record_failure(relative_path, exc)
 
@@ -494,7 +505,7 @@ def publish_adapter_plan(
     prior_record, prior_installation = _load_prior_installation_record(installation_path)
     _validate_prior_record_authorizes_plan(plan, installation_record, prior_record)
 
-    applied: list[tuple[str, bytes | None]] = []
+    applied: list[tuple[str, bytes | None, int | None]] = []
     installation_existed = prior_record is not None
 
     if installation_existed and all(
@@ -528,14 +539,19 @@ def publish_adapter_plan(
                     raise AdapterPublicationConflictError(
                         f"Adapter update precondition changed before write: {operation.path}."
                     )
-                applied.append((operation.path, original))
-                _replace_file(target, operation.content or "")
+                original_mode = target.stat().st_mode
+                applied.append((operation.path, original, original_mode))
+                _replace_file(
+                    target, operation.content or "", executable=operation.executable
+                )
                 continue
 
             if operation.intent is OperationIntent.CREATE:
                 _reserve_create_target(target)
-                applied.append((operation.path, None))
-                _replace_file(target, operation.content or "")
+                applied.append((operation.path, None, None))
+                _replace_file(
+                    target, operation.content or "", executable=operation.executable
+                )
                 continue
 
             if operation.intent is OperationIntent.DELETE_GENERATED:
@@ -553,7 +569,8 @@ def publish_adapter_plan(
                     raise AdapterPublicationConflictError(
                         f"Adapter delete precondition changed before removal: {operation.path}."
                     )
-                applied.append((operation.path, original))
+                original_mode = target.stat().st_mode
+                applied.append((operation.path, original, original_mode))
                 target.unlink()
                 continue
 

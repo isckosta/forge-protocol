@@ -692,6 +692,7 @@ def test_doctor_is_deterministic_and_limitations_do_not_fail_an_intact_installat
         "target",
         "installation",
         "generated_drift",
+        "executable_artifacts",
         "conformance",
         "limitations",
     ]
@@ -789,3 +790,84 @@ def test_doctor_reports_unsafe_recorded_generated_paths_without_mutating(
     assert drift.code == "E_FORGE_ADAPTER_INSTALLATION_INVALID"
     assert "unsafe" in drift.message.lower()
     assert _tree_bytes_and_mtimes(initialized_project) == before
+
+
+# --- CHG-0049: executable hook materialization / diagnostics / repair -------
+
+import os as _os
+import stat as _stat
+
+_posix_only = pytest.mark.skipif(
+    _os.name != "posix", reason="executable-bit behaviour is POSIX-only"
+)
+
+_HOOK = ".claude/skills/forge/hooks/check-manifest-edit.sh"
+
+
+def _executable(path: Path) -> bool:
+    return bool(_stat.S_IMODE(path.stat().st_mode) & 0o111)
+
+
+@_posix_only
+def test_claude_code_install_materializes_hook_executable(initialized_project: Path) -> None:
+    _service().install(initialized_project, "claude-code")
+    assert _executable(initialized_project / _HOOK)
+
+
+@_posix_only
+def test_doctor_flags_non_executable_installed_hook(initialized_project: Path) -> None:
+    service = _service()
+    service.install(initialized_project, "claude-code")
+    (initialized_project / _HOOK).chmod(0o644)
+
+    result = service.doctor(initialized_project, "claude-code")
+
+    check = next(item for item in result.checks if item.id == "executable_artifacts")
+    assert check.status == "failed"
+    assert _HOOK in check.message
+    assert "forge adapter update claude-code" in check.remediation
+    assert result.passed is False
+
+
+@_posix_only
+def test_doctor_passes_executable_check_for_healthy_install(initialized_project: Path) -> None:
+    service = _service()
+    service.install(initialized_project, "claude-code")
+
+    result = service.doctor(initialized_project, "claude-code")
+
+    check = next(item for item in result.checks if item.id == "executable_artifacts")
+    assert check.status == "passed"
+
+
+@_posix_only
+def test_update_repairs_non_executable_hook_idempotently(initialized_project: Path) -> None:
+    service = _service()
+    service.install(initialized_project, "claude-code")
+    hook = initialized_project / _HOOK
+    hook.chmod(0o644)
+
+    first = service.update(initialized_project, "claude-code")
+    assert first.mutated is True
+    assert _executable(hook)
+    # installation record still parses / validates
+    load_installation_record(
+        initialized_project / ".forge/adapters/claude-code/installation.yml"
+    )
+
+    second = service.update(initialized_project, "claude-code")
+    assert second.mutated is False
+    assert _executable(hook)
+
+
+def test_doctor_executable_check_is_inert_on_non_posix(
+    initialized_project: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    service = _service()
+    service.install(initialized_project, "claude-code")
+    monkeypatch.setattr("forge_cli.adapters.service.supports_executable_bit", lambda: False)
+
+    result = service.doctor(initialized_project, "claude-code")
+
+    check = next(item for item in result.checks if item.id == "executable_artifacts")
+    assert check.status == "passed"

@@ -386,3 +386,37 @@ def test_adapter_install_then_doctor_succeeds_for_every_registered_adapter(
     reinstalled = runner.invoke(app, ["adapter", "install", adapter_id])
     assert reinstalled.exit_code == 0, reinstalled.output
     assert "No changes required." in reinstalled.stdout
+
+
+import os as _os
+
+_posix_only = pytest.mark.skipif(
+    _os.name != "posix", reason="executable-bit checks are POSIX-only"
+)
+
+
+@_posix_only
+def test_adapter_doctor_flags_and_update_repairs_non_executable_hook(
+    tmp_path: Path, monkeypatch
+) -> None:
+    """CHG-0049 FR-005/FR-006: `forge adapter doctor` reports a
+    non-executable installed hook, and `forge adapter update` repairs it."""
+    _initialize_project(tmp_path, monkeypatch)
+    assert runner.invoke(app, ["adapter", "install", "claude-code"]).exit_code == 0
+
+    hook = tmp_path / ".claude/skills/forge/hooks/check-manifest-edit.sh"
+    hook.chmod(0o644)
+
+    doctored = runner.invoke(app, ["adapter", "doctor", "claude-code"])
+    assert doctored.exit_code == 2
+    assert "FAIL executable_artifacts" in doctored.stdout
+    assert "check-manifest-edit.sh" in doctored.stdout
+    assert "forge adapter update claude-code" in doctored.stdout
+
+    updated = runner.invoke(app, ["adapter", "update", "claude-code"])
+    assert updated.exit_code == 0, updated.output
+    assert _os.access(hook, _os.X_OK)
+
+    healed = runner.invoke(app, ["adapter", "doctor", "claude-code"])
+    assert healed.exit_code == 0
+    assert "FAIL" not in healed.stdout
