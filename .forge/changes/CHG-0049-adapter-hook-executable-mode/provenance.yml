@@ -102,3 +102,40 @@ records:
         CON-001..004, scope vs subject) finding no code-correctness defect
         within scope. Both blocking findings were in the Change's own
         evidence artifacts, not its code.
+  - id: resolution-001
+    role: resolution
+    execution:
+      id: claude-code-implementation-0049-resolution-001
+      context_id: claude-code-session-2026-08-26-resolution
+    recorded_at: '2026-08-26T03:00:00Z'
+    scope:
+      - .forge/changes/CHG-0049-adapter-hook-executable-mode/tdd-evidence.yml
+      - .forge/changes/CHG-0049-adapter-hook-executable-mode/verification.md
+      - .forge/changes/CHG-0049-adapter-hook-executable-mode/manifest.yml
+      - .forge/changes/CHG-0049-adapter-hook-executable-mode/review.md
+    targets: [R-001, R-002, R-003]
+    revision:
+      id: chg-0049-resolution-001
+      immutable_ref:
+        type: git_commit
+        value: e7b6b459700ac76b74abff72de11d517c9ae5bd6
+      commit: e7b6b459700ac76b74abff72de11d517c9ae5bd6
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: review.md#resolution-1
+      statement: >-
+        Resolution of Independent Review Iteration 1 findings R-001, R-002,
+        R-003. R-001: tdd-evidence.yml cycle ids renamed TDD-C1..C5 ->
+        TDD-001..005 (plus the three prose back-references), restoring
+        tests/contract/test_protocol_contract.py. R-002: verification.md
+        Test/Forge Evidence and Conclusion corrected to state the
+        frozen-subject failure (804/1-fail, 51/1-fail) and attribute the
+        805/52 figures to the post-Resolution run. R-003: tdd-evidence.yml
+        and manifest.yml tdd.status compliant -> exception with a reason.
+        The Resolution touches only these four Change-local evidence
+        Artifacts -- git diff ea01dc8..e7b6b45 contains no src/ or tests/
+        change, so no behavioural regression is possible. Post-Resolution:
+        pytest -q -> 805 passed (2 pre-existing warnings), tests/contract
+        -> 52 passed, forge validate -> valid. Reviewable Git workspace
+        confirmed clean (git status --porcelain empty) before this freeze.
