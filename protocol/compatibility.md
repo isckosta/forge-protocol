@@ -167,6 +167,19 @@ integer, Schema field, Gate, lifecycle stage, or Markdown validator. User
 Stories are optional context; existing Requirements, Acceptance Criteria,
 historical Specifications, and `traceability.yml` semantics remain valid.
 
+### CHG-0050 — Semantic User Story slices
+
+CHG-0050 adds an explicit, kind-independent observable-behavior declaration
+to new Change manifests and Specifications. Behavioral Specifications must
+contain at least one stable `US-xxx` Story; technical Changes may omit Stories.
+The validator checks only this deterministic classification/identifier floor,
+preserves historical manifests without the marker, and does not judge Story
+quality heuristically. Stories use first-person form and own their Acceptance
+Criteria. `traceability.yml` may carry many-to-many Story links
+to Requirements, executable Tasks, and Verification evidence; from
+Implementation onward, every behavioral Story must have both Task and
+Verification links.
+
 ### CHG-0048 — Proportional Review Profiles
 
 CHG-0048 (RFC-0007, accepted for Protocol 2) decouples "Review is

@@ -280,12 +280,22 @@ its normative binding strength is defined by `protocol/contract/engineering.md`
 C-067–C-069. This section applies independently of declared Protocol
 version.
 
-The guidance supports optional User Stories as behavioral context between
-Discovery and Requirements, with stable identifiers and local Acceptance
-Scenarios. Requirements remain the authoritative contract: technical
-Requirements, Non-functional Requirements, and Constraints remain valid
-without a User Story. A Traceability Matrix is an index and does not replace
-the relationships recorded on the entities themselves.
+For a Change whose Specification declares observable behavior, the
+Specification MUST contain one or more stable `US-xxx` User Stories. Each
+Story is an independent, prioritized, verifiable outcome slice for a
+meaningful actor, written in first-person form (`Como..., quero..., para...`).
+Each Story carries its own Acceptance Criteria, which remain local to that
+Story.
+A purely technical Change MAY declare no observable behavior and omit User
+Stories; it MUST NOT manufacture a synthetic actor. This semantic declaration
+is independent of Change `kind`. Requirements remain the authoritative
+normative contract, and User Stories do not replace them. Stories and
+Requirements may relate many-to-many. Later executable work and Verification
+MAY reference Story identifiers through `traceability.yml` without duplicating
+their content. Once a behavioral Change reaches Implementation, every Story
+MUST have at least one executable Task and one Verification evidence reference
+in that traceability record. A Story mapping that is missing, incomplete, or
+points to a Story absent from the Specification is invalid.
 
 ## 42. Interaction Language Resolution
 

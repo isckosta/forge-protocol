@@ -101,7 +101,7 @@ def _frontmatter(artifact: str, change_id: str, status: str, title: str) -> str:
     )
 
 
-def _markdown(artifact: str, change_id: str, title: str, flow_id: str | None = None) -> str:
+def _markdown(artifact: str, change_id: str, title: str, flow_id: str | None = None, behavioral: bool = True) -> str:
     content = _frontmatter(artifact, change_id, "active" if artifact == "intent" else "pending", title)
     if artifact == "intent":
         if flow_id is None:
@@ -158,13 +158,26 @@ def _markdown(artifact: str, change_id: str, title: str, flow_id: str | None = N
             "State the expected outcome and the contract boundary in a few sentences.\n"
             "\n"
             "## Classification\n\n"
-            "Record the selected Flow and the semantic reason for it.\n"
+            "Record the selected Flow and the semantic reason for it.\n\n"
+            f"Behavior: {'behavioral' if behavioral else 'technical'}\n"
             "\n"
-            "## User Stories\n\n"
-            "User Stories are optional behavioral context. Include this section only when a meaningful actor, concrete capability, and outcome add information; otherwise remove it. Do not invent a persona to satisfy the template.\n"
-            "\n"
+            + (
+                "## User Stories\n\n"
+                "For a behavioral Change, this section MUST contain one or more independent, verifiable outcome slices.\n\n"
+                "### US-001 · <outcome title>\n"
+                "Como <ator>, quero <capacidade>, para <outcome de valor independente>.\n"
+                "Priority: <priority>\n"
+                "Requirements: FR-xxx, when applicable\n\n"
+                "#### Acceptance Criteria\n\n"
+                "##### AC-001\n"
+                "Given <initial condition>\n"
+                "When <action>\n"
+                "Then <observable result>\n\n"
+                if behavioral
+                else "User Stories are optional for technical Changes; omit this section and do not invent a persona.\n\n"
+            ) +
             "## Functional Requirements\n\n"
-            "Each requirement is an independent, verifiable contract. A Requirement without a User Story is valid.\n"
+            "Each requirement is an independent, verifiable contract. Requirements remain normative and may relate to multiple Stories or none. A Requirement without a User Story is valid.\n"
             "\n"
             "### FR-001 · <requirement title>\n"
             "Stories: <US identifiers, when applicable>\n"
@@ -381,7 +394,7 @@ def _manifest(
     manifest: dict[str, Any] = {
         "schema": "forge/change@2",
         "protocol": 2,
-        "change": {"id": change_id, "title": title, "kind": "feature"},
+        "change": {"id": change_id, "title": title, "kind": "feature", "observable_behavior": behavioral},
         "flow": {"initial": flow_id, "current": flow_id, "escalations": []},
         "state": {"current": "intent"},
         "artifacts": dict(artifact_statuses),
@@ -441,7 +454,7 @@ def render_scaffold(
             else:
                 raise ValueError(f"Unsupported YAML scaffold artifact: {stage_id}")
         else:
-            files[path] = _markdown(artifact, change_id, title, flow_id)
+            files[path] = _markdown(artifact, change_id, title, flow_id, behavioral)
         statuses[artifact] = "active" if artifact == "intent" else (
             "active" if artifact == "tdd_evidence" else "pending"
         )

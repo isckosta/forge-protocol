@@ -770,6 +770,118 @@ def _validate_all_delegated_authority(r:Path)->list[ValidationFinding]:
     for mpath in sorted(changes.glob("*/manifest.yml")):
         out.extend(_validate_delegated_authority(r,mpath))
     return out
+
+# --- CHG-0050: semantic User Story obligation -----------------------------
+_BEHAVIOR_RE = re.compile(r"^[ ]{0,3}Behavior:\s*(behavioral|technical)\s*$", re.MULTILINE)
+_USER_STORY_HEADING_RE = re.compile(r"^[ ]{0,3}###\s+(US-[0-9]{3,})(?:\s|·|$)", re.MULTILINE)
+
+def _markdown_without_fenced_code(markdown: str) -> str:
+    lines: list[str] = []
+    fenced = False
+    for line in markdown.splitlines():
+        if re.match(r"^[ ]{0,3}```", line):
+            fenced = not fenced
+            continue
+        if not fenced:
+            lines.append(line)
+    return "\n".join(lines)
+
+def _validate_user_story_contract(r: Path, mpath: Path, manifest: dict) -> list[ValidationFinding]:
+    change = manifest.get("change")
+    if not isinstance(change, dict) or "observable_behavior" not in change:
+        return []
+    observable = change.get("observable_behavior")
+    if not isinstance(observable, bool):
+        return [_finding(r, mpath, "change.observable_behavior must be a boolean when present; User Story applicability cannot be determined reliably.")]
+    specification_path = mpath.parent / "specification.md"
+    flow = manifest.get("flow")
+    flow_id = flow.get("current") if isinstance(flow, dict) else None
+    if not specification_path.is_file() and flow_id == "fast":
+        return []
+    try:
+        specification = _markdown_without_fenced_code(specification_path.read_text(encoding="utf-8"))
+    except OSError:
+        return [_finding(r, mpath, "A semantically classified Change must have a readable specification.md; validation fails closed.")]
+    declaration = _BEHAVIOR_RE.search(specification)
+    expected = "behavioral" if observable else "technical"
+    if declaration is None:
+        return [_finding(r, specification_path, "Specification Classification must declare Behavior: behavioral or Behavior: technical.")]
+    findings: list[ValidationFinding] = []
+    if declaration.group(1) != expected:
+        findings.append(_finding(r, specification_path, f"Specification Behavior: {declaration.group(1)} does not match manifest change.observable_behavior={observable!r}."))
+    ids = _USER_STORY_HEADING_RE.findall(specification)
+    duplicates = sorted({story_id for story_id in ids if ids.count(story_id) > 1})
+    if duplicates:
+        findings.append(_finding(r, specification_path, f"Specification contains duplicate User Story identifier(s): {', '.join(duplicates)}."))
+    if observable and not ids:
+        findings.append(_finding(r, specification_path, "A behavioral Change Specification must contain at least one stable US-xxx User Story."))
+    return findings
+
+def _validate_all_user_story_contracts(r: Path) -> list[ValidationFinding]:
+    changes = r / ".forge" / "changes"
+    if not changes.is_dir():
+        return []
+    findings: list[ValidationFinding] = []
+    for mpath in sorted(changes.glob("*/manifest.yml")):
+        manifest = _load_mapping(mpath)
+        if manifest is not None:
+            findings.extend(_validate_user_story_contract(r, mpath, manifest))
+    return findings
+
+_STORY_TRACEABILITY_STATES = {"implementation", "verification", "review", "complete"}
+
+def _validate_user_story_traceability(r: Path, mpath: Path, manifest: dict) -> list[ValidationFinding]:
+    change = manifest.get("change")
+    if not isinstance(change, dict) or change.get("observable_behavior") is not True:
+        return []
+    flow = manifest.get("flow")
+    flow_id = flow.get("current") if isinstance(flow, dict) else None
+    state = manifest.get("state")
+    current = state.get("current") if isinstance(state, dict) else None
+    if current not in _STORY_TRACEABILITY_STATES:
+        return []
+    specification_path = mpath.parent / "specification.md"
+    if flow_id == "fast" and not specification_path.is_file():
+        return []
+    try:
+        specification = _markdown_without_fenced_code(specification_path.read_text(encoding="utf-8"))
+    except OSError:
+        return [_finding(r, specification_path, "User Story traceability cannot be determined without a readable specification.md; validation fails closed.")]
+    story_ids = set(_USER_STORY_HEADING_RE.findall(specification))
+    traceability_path = mpath.parent / "traceability.yml"
+    traceability = _load_mapping(traceability_path)
+    if traceability is None:
+        return [_finding(r, traceability_path, "A behavioral Change in Implementation or beyond must provide traceability.yml with Task and Verification links for every User Story.")]
+    stories = traceability.get("stories")
+    if not isinstance(stories, dict):
+        return [_finding(r, traceability_path, "traceability.yml must contain a stories mapping for every User Story before Implementation can be completed.")]
+    findings: list[ValidationFinding] = []
+    for story_id in sorted(story_ids):
+        entry = stories.get(story_id)
+        if not isinstance(entry, dict):
+            findings.append(_finding(r, traceability_path, f"User Story {story_id} has no traceability entry."))
+            continue
+        tasks = entry.get("tasks")
+        verification = entry.get("verification")
+        if not isinstance(tasks, list) or not tasks or not all(isinstance(item, str) and item for item in tasks):
+            findings.append(_finding(r, traceability_path, f"User Story {story_id} must reference at least one executable Task."))
+        if not isinstance(verification, list) or not verification or not all(isinstance(item, str) and item for item in verification):
+            findings.append(_finding(r, traceability_path, f"User Story {story_id} must reference at least one Verification evidence item."))
+    for story_id in sorted(stories):
+        if story_id not in story_ids:
+            findings.append(_finding(r, traceability_path, f"Traceability story {story_id} is not present in specification.md."))
+    return findings
+
+def _validate_all_user_story_traceability(r: Path) -> list[ValidationFinding]:
+    changes = r / ".forge" / "changes"
+    if not changes.is_dir():
+        return []
+    findings: list[ValidationFinding] = []
+    for mpath in sorted(changes.glob("*/manifest.yml")):
+        manifest = _load_mapping(mpath)
+        if manifest is not None:
+            findings.extend(_validate_user_story_traceability(r, mpath, manifest))
+    return findings
 _PROFILE_RANK={"focused":0,"standard":1,"strict":2}
 def _validate_review_profile_floor(root:Path,path:Path,effective:dict)->list[ValidationFinding]:
     canonical=effective.get("canonical")if isinstance(effective,dict)else None
@@ -801,4 +913,6 @@ def validate_project(project_root:Path,protocol_root:Path)->ValidationResult:
     if pid==2:out.extend(_validate_protocol2_review_provenance(project_root))
     out.extend(_validate_all_unresolved_decisions(project_root))
     out.extend(_validate_all_delegated_authority(project_root))
+    out.extend(_validate_all_user_story_contracts(project_root))
+    out.extend(_validate_all_user_story_traceability(project_root))
     return ValidationResult(tuple(out))

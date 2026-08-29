@@ -53,6 +53,19 @@ steps when they need human input, change scope, or surface a blocker. This is
 a communication suggestion, not a technical enforcement mechanism.
 These instructions represent Forge requirements; they are not technical enforcement.
 
+### Behavioral User Stories
+
+- When a Change declares `change.observable_behavior: true`, treat each
+  `US-xxx` in its Specification as an independent implementation slice.
+- Before or during Implementation, decompose each Story into the Requirements,
+  Tasks, and Acceptance Criteria that deliver it; preserve those links in the
+  Change's `traceability.yml`.
+- Before advancing beyond Implementation, every Story MUST have at least one
+  executable Task and one Verification evidence reference. Do not mark the
+  Change complete with an implemented Story that lacks Verification evidence.
+- A technical Change may omit User Stories. Never invent a synthetic actor to
+  satisfy this workflow.
+
 When authoring `intent.md`, make it the structured declaration of why the
 Change exists and what must be true when it ends. Start with the Change
 identity heading (`# CHG-XXXX · <Change Title>`) and a one- or two-sentence

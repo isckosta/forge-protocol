@@ -8,7 +8,7 @@
   "properties": {
     "schema": {"const": "forge/change@2"},
     "protocol": {"const": 2},
-    "change": {"type": "object", "additionalProperties": false, "required": ["id", "title", "kind"], "properties": {"id": {"type": "string", "pattern": "^CHG-[0-9]{4,}$"}, "title": {"type": "string", "minLength": 1}, "kind": {"enum": ["feature", "bugfix", "refactor", "security", "performance", "migration", "documentation", "infrastructure", "chore"]}}},
+    "change": {"type": "object", "additionalProperties": false, "required": ["id", "title", "kind"], "properties": {"id": {"type": "string", "pattern": "^CHG-[0-9]{4,}$"}, "title": {"type": "string", "minLength": 1}, "kind": {"enum": ["feature", "bugfix", "refactor", "security", "performance", "migration", "documentation", "infrastructure", "chore"]}, "observable_behavior": {"type": "boolean"}}},
     "flow": {"type": "object", "additionalProperties": false, "required": ["initial", "current"], "properties": {"initial": {"enum": ["fast", "standard", "full"]}, "current": {"enum": ["fast", "standard", "full"]}, "escalations": {"type": "array", "items": {"type": "object", "additionalProperties": false, "required": ["from", "to", "reason"], "properties": {"from": {"enum": ["fast", "standard"]}, "to": {"enum": ["standard", "full"]}, "reason": {"type": "string", "minLength": 1}}}}}},
     "state": {"type": "object", "additionalProperties": false, "required": ["current"], "properties": {"current": {"type": "string", "minLength": 1}}},
     "artifacts": {"type": "object"},

@@ -232,11 +232,14 @@ def test_render_scaffold_specification_uses_traceable_contract_layout() -> None:
         "Specification Gate",
     ):
         assert f"## {heading}" in specification
-    assert "### US-001" not in specification
+    assert "### US-001" in specification
+    assert "Como <ator>, quero <capacidade>, para <outcome de valor independente>." in specification
+    assert "#### Acceptance Criteria" in specification
+    assert "##### AC-001" in specification
+    assert "Actor:" not in specification
     assert "### FR-001" in specification
     assert "#### Requirement" in specification
     assert "#### Acceptance" in specification
-    assert "Acceptance Criteria" not in specification
 
 
 def test_render_scaffold_specification_explains_optional_user_stories() -> None:
@@ -253,6 +256,7 @@ def test_render_scaffold_specification_explains_optional_user_stories() -> None:
     assert "User Stories are optional" in specification
     assert "Requirement without a User Story is valid" in specification
     assert "As a user" not in specification
+    assert "### US-001" not in specification
 
 
 def test_render_scaffold_test_design_uses_verification_design_contract_layout() -> None:

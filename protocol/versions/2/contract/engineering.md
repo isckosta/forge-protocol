@@ -223,7 +223,7 @@ No statement of delegated-Execution authority enforcement MAY represent Detectio
 C-060 through C-066 bind a Change only once it records a `role: delegated_task` provenance entry. C-063 additionally binds only where the delegate is itself a `role: delegated_task` record; a primary Execution's own direct, undelegated work never triggers it.
 
 ## C-067 — Canonical Artifact Structure is guidance, not a Gate condition
-`protocol/artifact-structure.md` defines canonical, non-binding guidance for the information architecture of human Forge Artifacts. Agents SHOULD follow it for their Artifact's type. Conformance to it MUST NOT be treated as a Gate condition, and MUST NOT be validated by `forge validate` beyond what a future Contract revision explicitly adds.
+`protocol/artifact-structure.md` defines canonical, non-binding guidance for the information architecture of human Forge Artifacts. Agents SHOULD follow it for their Artifact's type. Conformance to it MUST NOT be treated as a Gate condition, and MUST NOT be validated by `forge validate` beyond what a Contract rule explicitly adds. C-079 is the specific Contract-defined exception for behavioral User Story traceability.
 
 ## C-068 — Verification and Review SHOULD present outcome before evidence
 Verification SHOULD present its Result before supporting evidence. Review SHOULD present an aggregate Verdict before per-iteration detail. Both recommendations are defined in `protocol/artifact-structure.md`.
@@ -241,6 +241,21 @@ applicable Flow requirements, and admissible repository-native evidence.
 Manifest claims alone MUST NOT authorize merge. Material changes without
 governing Change provenance and materially ambiguous evidence MUST fail
 closed.
+
+## C-079 — Behavioral User Stories are traceable through Implementation
+When a Change manifest explicitly declares `change.observable_behavior: true`,
+its Specification MUST contain at least one stable `US-xxx` User Story. This
+rule is independent of Change `kind` and does not require User Stories for a
+Change that explicitly declares no observable behavior. Once such a Change
+enters Implementation or a later lifecycle state, every Story MUST have at
+least one executable Task and one Verification evidence reference in its
+`traceability.yml`; a traceability entry for a Story absent from the
+Specification is invalid. Core MUST enforce only this explicit,
+repository-native structure and MUST NOT heuristically judge Story prose
+quality. Changes whose Flow has no Specification stage, such as FAST Changes,
+are not required to create a Specification solely to satisfy this rule.
+This rule applies prospectively to manifests carrying the explicit marker;
+historical manifests without it remain valid.
 
 ## C-070 — Interaction language governs prose only
 Canonical identifiers — schema keys, Change and requirement identifiers, Gate names, and Contract rule identifiers — MUST remain invariant regardless of the configured interaction language. Interaction language MAY vary generated and human-authored prose; it MUST NOT vary any machine-readable identifier.

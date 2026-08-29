@@ -176,14 +176,20 @@ valid; new scaffolds use the more local `Acceptance` form without changing
 its contract meaning.
 
 **Conditional, present only when materially applicable:** User Stories
-(`US-xxx`), Acceptance Scenarios, Non-functional Requirements (`NFR-xxx`),
+(`US-xxx`) are required when the Specification declares observable behavior;
+they are omitted for genuinely technical Changes. Acceptance Scenarios,
+Non-functional Requirements (`NFR-xxx`),
 Security Requirements (`SEC-xxx` — or an explicit one-line `None` with
 reason, not silent omission, §2.5), Invariants (`INV-xxx`), Constraints
 (`CON-xxx`), and Unresolved Decisions (`DEC-xxx`, per `decision.yml`). User
 Stories are behavioral context for a meaningful actor, capability, and
 outcome; they do not replace Requirements and must not be invented for
 technical Changes. Requirements, NFRs, and Constraints may exist without a
-User Story, and relationships are many-to-many where applicable.
+User Story, and relationships are many-to-many where applicable. User Stories
+use first-person actor/capability/outcome prose and keep their Acceptance
+Criteria nearby. Story
+quality is reviewed semantically; the CLI only enforces the explicit
+classification and stable identifier floor.
 
 A Traceability Matrix MAY be included as an index connecting Discovery, User
 Stories, Requirements, and Acceptance. It MUST NOT become the only
