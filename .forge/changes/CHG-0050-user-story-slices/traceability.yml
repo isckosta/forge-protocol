@@ -1,0 +1,21 @@
+schema: forge/traceability@1
+change: CHG-0050
+requirements:
+  FR-001: {tasks: [T-001]}
+  FR-002: {tasks: [T-002]}
+  FR-003: {tasks: [T-001, T-002]}
+  FR-004: {tasks: [T-003]}
+  FR-005: {tasks: [T-004]}
+stories:
+  US-001:
+    requirements: [FR-001, FR-002, FR-003]
+    tasks: [T-001, T-002]
+    verification: [AC-001, AC-002]
+  US-002:
+    requirements: [FR-004]
+    tasks: [T-003]
+    verification: [AC-003]
+  US-003:
+    requirements: [FR-003, FR-005]
+    tasks: [T-004]
+    verification: [AC-004]
