@@ -23,7 +23,7 @@ flow:
         comparable-scope Review Profile proposal (RFC-0007). STANDARD's
         scaffold default was superseded before Specification began.
 state:
-  current: strict_review
+  current: complete
 artifacts:
   intent: complete
   discovery: complete
@@ -35,9 +35,9 @@ artifacts:
   tasks: complete
   tdd_evidence: complete
   verification: complete
-  review: pending
-  documentation: pending
-  knowledge_capture: pending
+  review: complete
+  documentation: complete
+  knowledge_capture: complete
 requirements:
   total: 7
   implemented: 7
@@ -76,7 +76,13 @@ review:
       new_material_findings: 0
       finding_classes: []
 documentation:
-  impact_evaluated: false
+  impact_evaluated: true
+  update_required: true
+  reason: >-
+    Updated: protocol/compatibility.md (### CHG-0050 entry -- RFC-0008
+    acceptance, additive schema changes, no Contract text change) and
+    CHANGELOG.md (Unreleased entry). No new ADR (RFC-0008 already
+    satisfies F-008 for this Change).
 decisions:
   - id: DEC-001
     class: architectural
