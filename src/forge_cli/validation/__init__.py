@@ -777,12 +777,17 @@ _USER_STORY_HEADING_RE = re.compile(r"^[ ]{0,3}###\s+(US-[0-9]{3,})(?:\s|·|$)",
 
 def _markdown_without_fenced_code(markdown: str) -> str:
     lines: list[str] = []
-    fenced = False
+    fence: tuple[str, int] | None = None
     for line in markdown.splitlines():
-        if re.match(r"^[ ]{0,3}(?:```|~~~)", line):
-            fenced = not fenced
+        match = re.match(r"^[ ]{0,3}(`{3,}|~{3,})", line)
+        if match:
+            delimiter = match.group(1)
+            if fence is None:
+                fence = (delimiter[0], len(delimiter))
+            elif delimiter[0] == fence[0] and len(delimiter) >= fence[1]:
+                fence = None
             continue
-        if not fenced:
+        if fence is None:
             lines.append(line)
     return "\n".join(lines)
 

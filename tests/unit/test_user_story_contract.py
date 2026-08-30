@@ -99,6 +99,18 @@ def test_tilde_fenced_code_example_is_not_counted_as_a_user_story(tmp_path: Path
     assert any("at least one stable US-xxx User Story" in finding.message for finding in findings)
 
 
+def test_mixed_fence_types_do_not_escape_a_fenced_code_block(tmp_path: Path) -> None:
+    _write_change(
+        tmp_path,
+        observable=True,
+        specification="## Classification\n\nBehavior: behavioral\n\n```md\n~~~\n### US-001 · Example\n~~~\n```\n",
+    )
+
+    findings = _validate_all_user_story_contracts(tmp_path)
+
+    assert any("at least one stable US-xxx User Story" in finding.message for finding in findings)
+
+
 def test_implementation_requires_each_story_to_have_tasks_and_verification(tmp_path: Path) -> None:
     change = _write_change(
         tmp_path,
