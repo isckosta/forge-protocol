@@ -3,7 +3,7 @@ forge:
   artifact: specification
   schema: 1
 change: CHG-0050
-status: pending
+status: complete
 ---
 
 # CHG-0050 · Specification
@@ -18,7 +18,7 @@ status: pending
 |---|---|
 | **Change** | CHG-0050 |
 | **Flow** | STANDARD |
-| **Status** | Draft |
+| **Status** | Complete |
 
 ## Summary
 
@@ -28,8 +28,6 @@ Acceptance Criteria. During Implementation and later states, each Story must
 trace to executable work and Verification evidence.
 
 ## Classification
-
-Record the selected Flow and the semantic reason for it.
 
 Behavior: behavioral
 
@@ -105,12 +103,6 @@ Priority: high
 When a Change declares `observable_behavior: true`, its Specification MUST
 contain at least one stable `US-xxx` User Story.
 
-#### Expected Behavior
-Describe important rules and consequences only when they add information.
-
-#### Boundary
-State an explicit limit only when the requirement needs one.
-
 #### Acceptance
 Covered by AC-001.
 
@@ -152,14 +144,6 @@ examples when identifying Behavior declarations and User Story headings.
 
 #### Acceptance
 Covered by AC-004.
-
-## Non-functional Requirements
-
-Add NFR-xxx entries only when applicable. They do not require a User Story.
-
-## Constraints
-
-Add CON-xxx entries only when they restrict the solution or Change.
 
 ## Traceability Matrix
 

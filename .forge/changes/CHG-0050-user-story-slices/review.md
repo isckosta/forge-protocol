@@ -3,7 +3,7 @@ forge:
   artifact: review
   schema: 1
 change: CHG-0050
-status: pending
+status: complete
 ---
 
 # CHG-0050 · Review
@@ -12,56 +12,66 @@ status: pending
 
 **REQUEST CHANGES**
 
-The independent Review of subject `0187da10f741470c41ba1c1f44b9705a614f0588`
-identified two MAJOR findings and one MINOR finding. A new Review is required
-after the resolution revision.
-
-MAJOR: lifecycle claims were inconsistent with the available Verification and
-Review evidence.
-
-MAJOR: Story traceability accepted arbitrary Task and Verification strings.
-
-MINOR: tilde-fenced Markdown examples were not excluded from Story detection.
+The independent Review of subject
+`85932c1eca9e10dc567a00a59b986a0f33ded18d` found four blocking findings.
+Implementation-level Story and evidence fixes passed review, but this Change
+is not merge-ready until governance and artifact issues are resolved.
 
 ## Review Summary
 
-Use the values already recorded in manifest.yml: review (iteration, blockers, majors, minors) — do not hand-count separately.
-
 | | |
 |---|---|
-| **Iterations** | <n> |
-| **Current Subject** | <sha> |
-| **Open Blockers** | <n> |
-| **Open Majors** | <n> |
-| **Open Minors** | <n> |
-| **Final Iteration** | <n> |
-| **Result** | PENDING |
+| **Iterations** | 1 |
+| **Current Subject** | 85932c1eca9e10dc567a00a59b986a0f33ded18d |
+| **Open Blockers** | 1 |
+| **Open Majors** | 3 |
+| **Open Minors** | 0 |
+| **Final Iteration** | 1 |
+| **Result** | REQUEST CHANGES |
 
 ## Current Subject
 
-Reference the frozen subject recorded in provenance.yml by id; do not invent a new freeze concept.
-
-| | |
-|---|---|
-| **Subject SHA** | <sha> |
-| **Frozen** | <Yes/No> |
-| **Iteration** | <n> |
-
-## Reviewer Independence
-
-Reference the reviewer's provenance.yml record by id as evidence of a distinct Execution and Execution Context from the Implementation or Resolution under review — not a bare declaration.
+The review evaluated the clean repository state at the subject commit above.
+No repository-native subject or reviewer provenance exists yet, so the review
+cannot authorize completion.
 
 ## Open Findings
 
-List only findings still open, using the Rxxx id (no Change-id prefix). Use `No open findings.` instead of an empty table when there are none.
-
 | Finding | Severity | Status | Iteration |
 |---|---|---|---|
+| R001 | BLOCKER | Open | 1 |
+| R002 | MAJOR | Open | 1 |
+| R003 | MAJOR | Open | 1 |
+| R004 | MAJOR | Open | 1 |
 
-## Iteration 1 — PENDING
+## Findings
 
-Record Strict Review findings. Each finding needs a stable Rxxx id, one of BLOCKER, MAJOR, MINOR, or OBSERVATION, evidence (required for BLOCKER and MAJOR), and a Required Resolution stated as the property that must hold — not a prescribed implementation.
+### R001 · BLOCKER
+
+Merge Readiness and Review are not satisfied: there is no real frozen subject,
+`provenance.yml`, or independent reviewer provenance, and the external review
+thread remains unresolved.
+
+### R002 · MAJOR
+
+The governing Change artifacts must remain consistent with repository reality.
+The artifacts were corrected in the current working revision but require a new
+frozen review subject after those corrections.
+
+### R003 · MAJOR
+
+The material Protocol change requires RFC coverage under F-008. RFC-0008 now
+records the decision as Proposed; human approval remains required.
+
+### R004 · MAJOR
+
+No valid RED/GREEN TDD evidence was captured before implementation. The
+exception is disclosed, but it is not evidence of TDD compliance and requires
+governance disposition.
 
 ## Conclusion
 
-State the effect of the Verdict. Do not declare Completion while gates later in the Flow remain outstanding.
+The implementation fixes for Story traceability, STANDARD scaffolding, and
+fenced evidence parsing are sound according to the independent review. The
+Change remains blocked by provenance, human approval, review-thread, and TDD
+governance requirements.

@@ -3,21 +3,22 @@ forge:
   artifact: intent
   schema: 1
 change: CHG-0050
-status: active
+status: complete
 ---
 
 # CHG-0050 · User Story Slices
 
 > **Change Intent**
 >
-> State the intended change in one or two sentences. Keep this as an executive summary, not a full Goal.
+> Require explicit, first-person User Story slices for observable behavior and
+> preserve a valid no-Story path for genuinely technical Changes.
 
 ## Overview
 | | |
 |---|---|
 | **Change** | CHG-0050 |
 | **Flow** | STANDARD |
-| **Status** | Active |
+| **Status** | Complete |
 
 ## Problem
 

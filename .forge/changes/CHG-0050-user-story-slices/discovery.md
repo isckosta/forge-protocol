@@ -3,7 +3,7 @@ forge:
   artifact: discovery
   schema: 1
 change: CHG-0050
-status: pending
+status: complete
 ---
 
 # Discovery — CHG-0050 User Story Slices

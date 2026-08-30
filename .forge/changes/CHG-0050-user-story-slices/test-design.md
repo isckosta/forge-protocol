@@ -20,7 +20,9 @@ status: complete
 
 ## Test Strategy
 
-Describe how this Change will be demonstrated before Implementation. Group scenarios into Layers only when that adds clarity (e.g. Domain, API, Persistence, CLI, Harness, Manual Acceptance); a single Layer is valid for a small Change.
+This Change is demonstrated with focused unit and contract tests covering
+classification, Story identity, traceability, scaffold output, and Markdown
+evidence boundaries.
 
 | Layer | Scope | Method |
 |---|---|---|
@@ -28,7 +30,8 @@ Describe how this Change will be demonstrated before Implementation. Group scena
 
 ## Coverage Map
 
-List every Requirement this Change must verify before Implementation, with the Scenario that covers it. Include a Story column only when User Stories apply; a Requirement without a User Story is valid.
+The following map covers every Requirement in this Change. Requirements remain
+normative and are not replaced by User Stories.
 
 | Requirement | Scenario | Method |
 |---|---|---|
@@ -128,11 +131,12 @@ An inner fence with language metadata closes an outer example and creates a fals
 
 ## Manual Acceptance
 
-Use `Type: Manual Acceptance` for a property that depends on human or real-Harness interaction and cannot reasonably be checked by tooling. A Manual Acceptance scenario still needs Preconditions, explicit operator instructions, observable Evidence, and a Failure Condition; it MUST NOT be presented as an automated guarantee.
+No manual acceptance is required; all defined properties are repository-testable.
 
 ## Valid RED
 
-When TDD applies, RED is valid only when the test fails for the expected behavioral reason. A RED caused by a syntax error, a broken import, an invalid fixture, missing configuration, or unrelated infrastructure unavailability is not valid evidence and must be fixed and re-run before it counts.
+No valid RED/GREEN cycle was captured for this Change. The exception is
+disclosed in `tdd-evidence.yml` and does not claim TDD compliance.
 
 ## Requirement Coverage
 
@@ -150,4 +154,6 @@ No mandatory Requirement remains without a verification strategy. The Change has
 
 ## Test Design Gate
 
-Record that every mandatory Requirement has a verification strategy, critical scenarios have a clear Purpose, Failure Conditions are defined, automated and Manual Acceptance are separated, valid RED is defined when TDD applies, and no Requirement remains without known coverage.
+Every mandatory Requirement has a verification strategy, each scenario has a
+Purpose, Evidence, and Failure Condition, and no Requirement remains without
+known coverage.
