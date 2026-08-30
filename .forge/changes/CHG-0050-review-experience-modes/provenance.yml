@@ -37,7 +37,7 @@ records:
       content_digest:
         algorithm: sha256
         path: plan.md
-        value: 226dfcb933e46f893f0333788b165f7d4f749ab17c88f0c7dc14711851351491
+        value: 96a4fd17d7eebb44d1f9cf3635fa2890f1d2803253bc25b4ed3891819e77a915
       statement: The user explicitly approved continuation of CHG-0050 to Implementation in the active session on 2026-08-30, via AskUserQuestion, after reviewing the Architecture (DEC-001, DEC-002), the Test Strategy (14 TDD cases), and the 11-item Plan summary, selecting "Aprovar e prosseguir".
   - id: implementation-subject-001
     role: implementation
@@ -116,3 +116,39 @@ records:
       observed_by: operator
       reference: review.md#iteration-2
       statement: "Independent Strict Review Iteration 2 (Resolution Verification, strict profile, fresh execution, isolated Git worktree at .claude/worktrees/agent-a55345cff0321b96f, no shared context with the Resolution Execution or with Iteration 1's Reviewer) returned REQUEST CHANGES against 86a4f25 -- R-001, R-002, and R-004 all independently re-verified as genuinely fixed, including a live end-to-end reproduction of R-001's exact crash on both commits and a temporary revert-and-restore of its one-line fix to confirm the regression test's own validity. Two new non-blocking MINOR findings within the Resolution Delta itself: R-005 (resolution-001's declared scope omitted provenance.yml, which the commit actually modified -- non-material, no C-048 escalation) and R-006 (the new tdd-evidence.yml cycle collided with test-strategy.md's pre-existing TDD-011 identifier). No Out-of-Scope Mutation (full_review_required: false). Full suite (857 passed) and forge validate (PASS) both independently reproduced against the Resolution commit."
+  - id: verification-001
+    role: implementation
+    execution:
+      id: claude-code-implementation-0050-verification-001
+      context_id: claude-code-session-2026-08-30-verification-001
+    recorded_at: '2026-08-30T06:00:00Z'
+    revision:
+      id: chg-0050-resolution-001
+      immutable_ref:
+        type: git_commit
+        value: 86a4f25812adc6a5766ee12dc0b2abdf715c4d89
+      commit: 86a4f25812adc6a5766ee12dc0b2abdf715c4d89
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: verification.md
+      statement: "verification.md's PASS result (856 passed full suite at the original implementation subject, 857 passed after resolution-001's fix, forge validate PASS) remains accurate against reviewer-002's frozen, passed subject (resolution-001, commit 86a4f25) -- the sole reviewed and passed implementation revision for this Change. The subsequent Strict Review Iteration 2 closure and Documentation Impact/Knowledge Capture additions (commits e5d5200/ddc8566) are non-executable review-control metadata and documentation, separately anchored by reviewer-002 and documentation-001, and do not invalidate any recorded Test/Forge Evidence."
+  - id: documentation-001
+    role: implementation
+    execution:
+      id: claude-code-implementation-0050-documentation-001
+      context_id: claude-code-session-2026-08-30-documentation-001
+    recorded_at: '2026-08-30T07:00:00Z'
+    scope:
+      - .forge/changes/CHG-0050-review-experience-modes/knowledge-capture.md
+    revision:
+      id: chg-0050-documentation-001
+      immutable_ref:
+        type: git_commit
+        value: ddc856680d8156cda2d92fe1b8f5e243c8750206
+      commit: ddc856680d8156cda2d92fe1b8f5e243c8750206
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: manifest.yml#documentation
+      statement: "Knowledge Capture (Flow FULL, knowledge_capture stage, scheduled after strict_review and documentation) for CHG-0050. Added knowledge-capture.md recording four durable lessons (per-Flow install-time Adapter projection cannot read per-Change manifest state; the never-below-floor guarantee is structural, not merely tested; an unvalidated project-configuration value reaching an unguarded lookup is a real crash risk in a safe-to-run-anytime diagnostic command; C-026's provenance append-only rule has a sharp edge once an iteration has already passed). No other file touched. Full suite re-verified (857 passed) after the addition. Reviewable Git workspace confirmed clean before this freeze."
