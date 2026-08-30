@@ -128,6 +128,49 @@ def test_review_status_reports_stopped_as_incomplete(tmp_path: Path, monkeypatch
     assert "BLOCKER: 1" in result.stdout
 
 
+def test_review_status_does_not_crash_on_an_invalid_project_flow_override_profile(
+    tmp_path: Path, monkeypatch
+) -> None:
+    """CHG-0050 Resolution R001 (Strict Review Iteration 1, MAJOR): an
+    invalid `.forge/flows/<flow>.yml` `review.profile` override (already
+    rejected by `forge validate` as E_FORGE_REVIEW_PROFILE_BELOW_FLOOR,
+    or simply an unrecognized string) must not crash review-status with
+    an unhandled KeyError -- it is a read-only diagnostic command and
+    must degrade the same way adjacent configuration errors already do."""
+    _base_project(tmp_path, monkeypatch)
+    _write_manifest(
+        tmp_path,
+        "CHG-9005-bad-override",
+        {
+            "status": "pending",
+            "iteration": 0,
+            "blockers": 0,
+            "majors": 0,
+            "minors": 0,
+            "observations": 0,
+            "mode": "recommended",
+            "iterations": [],
+        },
+    )
+    flow_dir = tmp_path / ".forge" / "flows"
+    flow_dir.mkdir(parents=True, exist_ok=True)
+    (flow_dir / "standard.yml").write_text(
+        "schema: forge/project-flow@1\n"
+        "flow:\n"
+        "  canonical: standard\n"
+        "  enabled: true\n"
+        "review:\n"
+        "  profile: super-strict\n",
+        encoding="utf-8",
+    )
+
+    result = runner.invoke(app_module.app, ["change", "review-status", "CHG-9005-bad-override"])
+
+    assert result.exit_code == 0, result.output
+    assert not isinstance(result.exception, KeyError)
+    assert "Review not yet started" in result.stdout
+
+
 def test_forge_validate_accepts_stopped_phase_with_non_passed_status(tmp_path: Path, monkeypatch) -> None:
     """CHG-0050 TDD-014 (FR-007, AC-018)."""
     _base_project(tmp_path, monkeypatch)

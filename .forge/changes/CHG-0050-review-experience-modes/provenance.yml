@@ -56,3 +56,20 @@ records:
       observed_by: self
       reference: implementation-subject
       statement: Frozen CHG-0050 implementation subject (immutable per C-026 once committed) -- protocol_resolution/__init__.py (resolve_effective_review_profile, PROFILE_RANK), validation/__init__.py (compute_review_profile_floor extraction, _validate_review_current_phase), two Protocol 2 schemas (change-v2, project), change_scaffolding.py/change_cli.py (review.mode seeding, review-status command), the new adapters/review_experience.py module, both Adapters' projection.py (mode-resolution line, shared phase section), protocol/compatibility.md, CHANGELOG.md, all new/modified tests, and all CHG-0050 planning/design/verification Artifacts including DEC-004's Implementation-time correction. Reviewable Git workspace confirmed clean before freeze (git status --porcelain=v1 empty).
+  - id: reviewer-001
+    role: review
+    execution:
+      id: a9c707c9110126514
+      context_id: independent-review-context-a9c707c9110126514
+    recorded_at: '2026-08-30T00:00:00Z'
+    revision:
+      id: chg-0050-implementation-001
+      immutable_ref:
+        type: git_commit
+        value: 817cda3913d789da3a8d6d0ba28f1b4d47d1fd3a
+      commit: 817cda3913d789da3a8d6d0ba28f1b4d47d1fd3a
+    source:
+      assurance: recorded
+      observed_by: operator
+      reference: review.md#iteration-1
+      statement: "Independent Strict Review Iteration 1 (strict profile, fresh execution, isolated Git worktree at .claude/worktrees/agent-a9c707c9110126514, no shared context with the Implementation) returned REQUEST CHANGES against 817cda39 -- R-001 (MAJOR, forge change review-status crashed with an unhandled KeyError on an invalid project-flow-override profile) and R-002 (MINOR, compute_review_profile_floor did not eliminate the duplication Architecture claimed it removed), plus R-003/R-004 (OBSERVATION). R-001 was independently reproduced live (a super-strict override, exit 1, raw traceback) before being reported. The full suite (856 passed) and forge validate (PASS) were both independently re-run, not trusted from verification.md's claim; the Adapter-projection independence-block invariance (DEC-004) was independently re-derived from a from-scratch before/after diff of generated text at the parent and target commits."

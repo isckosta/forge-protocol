@@ -233,7 +233,7 @@ def review_status(slug: Annotated[str, typer.Argument(metavar="SLUG")]) -> None:
             profile = resolve_effective_review_profile(floor, mode)
             typer.echo(f"Resolved profile: {profile}")
         except (UnsupportedProtocolVersionError, InvalidProjectConfigurationError,
-                UnknownCanonicalFlowError, InvalidProjectFlowConfigurationError, OSError):
+                UnknownCanonicalFlowError, InvalidProjectFlowConfigurationError, OSError, KeyError):
             pass
 
     if not phase and not iterations:

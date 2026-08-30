@@ -1,8 +1,22 @@
 schema: forge/tdd-evidence@1
 change: CHG-0050
 status: compliant
-cycle_count: 10
+cycle_count: 11
 cycles:
+- id: TDD-011
+  title: "Resolution (Strict Review Iteration 1, R001, MAJOR): review-status must not crash with an unhandled KeyError on an invalid project-flow-override profile"
+  requirements:
+  - FR-006
+  behavior: An independent Strict Reviewer reproduced a live crash -- an invalid `.forge/flows/<flow>.yml` review.profile override (e.g. "super-strict") reached PROFILE_RANK[floor] unguarded inside resolve_effective_review_profile via review_status()'s call chain, raising an unhandled KeyError instead of degrading the way the adjacent try/except already does for other configuration errors. Per C-018, the defect is proven with a regression test before the fix.
+  red:
+    command: .venv/bin/python -m pytest tests/cli/test_change_review_status.py -q -k invalid_project_flow_override
+    result: "1 failed: Result KeyError('super-strict'), exit_code 1"
+    reason: review_status()'s try/except around profile resolution did not catch KeyError.
+  green:
+    command: .venv/bin/python -m pytest tests/cli/test_change_review_status.py -q
+    result: 6 passed
+  notes:
+  - Also resolved R002 (MINOR, non-blocking) in the same Resolution scope -- extracted the duplicated canonical-profile derivation shared by compute_review_profile_floor and _validate_review_profile_floor into one _canonical_review_profile helper; behavior-preserving (TDD-001's tests pass unchanged). Also corrected R004 (OBSERVATION) -- test-strategy.md's TDD-010 prose overstated "byte-identical" when the scaffold always writes review.mode explicitly.
 - id: TDD-001
   title: compute_review_profile_floor extraction is behavior-preserving
   requirements:

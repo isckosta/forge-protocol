@@ -253,15 +253,21 @@ unchanged from today's scaffold shape in every other respect.
 #### Scenario
 Given a Forge-initialized repository with no `review.preferred_mode`
 When `forge change new some-slug` runs
-Then the created `manifest.yml` has `review.mode: recommended` (or
-omits it) and is otherwise byte-identical to a pre-CHG-0050 scaffold
+Then the created `manifest.yml` explicitly carries `review.mode:
+recommended` (the shipped scaffold always writes it, rather than
+omitting it — AC-001/AC-008's "or omits it" alternative is satisfied
+by every *consumer*'s interpretation, not by the scaffold's own
+output) and every other field is unchanged from a pre-CHG-0050
+scaffold
 
 #### Evidence
 CLI integration test; diff against the existing scaffold fixture used
-by today's `forge change new` tests.
+by today's `forge change new` tests, confirming only `review.mode` is
+new and no other field's shape changed.
 
 #### Failure Condition
-Any unrelated field in the generated manifest changes shape.
+Any field other than `review.mode` changes shape in the generated
+manifest.
 
 ### TDD-011 · An existing Change's `review.mode` is not retroactively overridden
 Requirements: FR-003

@@ -771,21 +771,20 @@ def _validate_all_delegated_authority(r:Path)->list[ValidationFinding]:
         out.extend(_validate_delegated_authority(r,mpath))
     return out
 _PROFILE_RANK=PROFILE_RANK
-def compute_review_profile_floor(effective:dict)->str:
-    """CHG-0050: the Review Profile floor a Change's Flow (plus any valid, already-floor-checked project override) requires."""
+def _canonical_review_profile(effective:dict)->str:
     canonical=effective.get("canonical")if isinstance(effective,dict)else None
     canonical_flow=canonical.get("flow")if isinstance(canonical,dict)else None
     canonical_review=canonical_flow.get("review")if isinstance(canonical_flow,dict)else None
-    canonical_profile=canonical_review.get("profile","strict")if isinstance(canonical_review,dict)else"strict"
+    return canonical_review.get("profile","strict")if isinstance(canonical_review,dict)else"strict"
+def compute_review_profile_floor(effective:dict)->str:
+    """CHG-0050: the Review Profile floor a Change's Flow (plus any valid, already-floor-checked project override) requires."""
+    canonical_profile=_canonical_review_profile(effective)
     project=effective.get("project")if isinstance(effective,dict)else None
     project_review=project.get("review")if isinstance(project,dict)else None
     if not isinstance(project_review,dict)or"profile"not in project_review:return canonical_profile
     return project_review["profile"]
 def _validate_review_profile_floor(root:Path,path:Path,effective:dict)->list[ValidationFinding]:
-    canonical=effective.get("canonical")if isinstance(effective,dict)else None
-    canonical_flow=canonical.get("flow")if isinstance(canonical,dict)else None
-    canonical_review=canonical_flow.get("review")if isinstance(canonical_flow,dict)else None
-    canonical_profile=canonical_review.get("profile","strict")if isinstance(canonical_review,dict)else"strict"
+    canonical_profile=_canonical_review_profile(effective)
     project=effective.get("project")if isinstance(effective,dict)else None
     project_review=project.get("review")if isinstance(project,dict)else None
     if not isinstance(project_review,dict)or"profile"not in project_review:return[]
