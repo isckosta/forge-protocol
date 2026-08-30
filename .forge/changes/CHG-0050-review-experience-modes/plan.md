@@ -67,18 +67,13 @@ status: approved
 
 9. Update `_gate_instructions` in
    `src/forge_cli/adapters/claude_code/projection.py:92-122` and
-   `codex/projection.py:71-101` to append, per Flow, a mode-resolution
-   line computed from that Flow's own floor
-   (`review_experience.render_mode_resolution_line`), and once, after
-   the per-Flow loop, the shared phase-vocabulary section
-   (`review_experience.render_review_experience_section`) — corrected
-   per DEC-004 from the original per-Change-field framing, since
-   `_gate_instructions` has no specific Change in scope. Keep the
-   existing `review_independence.py` import/usage unchanged and
-   unconditional. RED: extend
-   `tests/unit/test_claude_code_projection_gates.py` and
+   `codex/projection.py:71-101` to read `manifest.review.mode`/
+   `current_phase`, call `resolve_effective_review_profile`, and append
+   `review_experience.py`'s text — keeping the existing
+   `review_independence.py` import/usage unchanged and unconditional.
+   RED: extend `tests/unit/test_claude_code_projection_gates.py` and
    `test_codex_projection_gates.py` (TDD-012), including the
-   byte-identical-independence-block assertion.
+   byte-identical-independence-block assertion across mode values.
 
 10. Add `forge change review-status {slug}` to
     `src/forge_cli/change_cli.py`: reads the named Change's
