@@ -100,10 +100,10 @@ this boundary. An Implementation-time discovery that diverges from
 this Plan belongs in Verification, a new Decision record, or a
 documented re-Plan — never a silent edit to the items above.
 
-<a id="forge-plan-approval-confirmation"></a>
+<!-- forge:plan-approval-confirmation -->
 ## Plan Approval Confirmation
 
-<a id="forge-plan-approval-record"></a>
+<!-- forge:plan-approval-record -->
 **Approved.** The human maintainer (operator, this repository's Git
 user) explicitly approved this Plan for Implementation in the active
 chat session on 2026-08-30, via `AskUserQuestion`, after reviewing the
