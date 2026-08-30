@@ -14,12 +14,10 @@ status: complete
 
 ## Summary
 
-All four Acceptance Criteria are covered by focused tests and the repository
+All five Acceptance Criteria are covered by focused tests and the repository
 validation command. No manual evidence is required.
 
 ## Acceptance Coverage
-
-Reference each AC-xxx by id; do not reproduce its full text here.
 
 | Acceptance | Requirement | Result | Evidence |
 |---|---|---|---|
@@ -27,6 +25,7 @@ Reference each AC-xxx by id; do not reproduce its full text here.
 | AC-002 | FR-002 | PASS | `tests/unit/test_user_story_contract.py` |
 | AC-003 | FR-004 | PASS | `tests/unit/test_user_story_contract.py` |
 | AC-004 | FR-005 | PASS | `tests/unit/test_user_story_contract.py` |
+| AC-005 | FR-003 | PASS | `tests/unit/test_user_story_contract.py` |
 
 ## Test Evidence
 

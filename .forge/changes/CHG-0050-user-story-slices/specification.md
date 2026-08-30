@@ -80,7 +80,7 @@ repository-native inequívoca, para evitar que exemplos em código sejam
 interpretados como User Stories reais.
 
 Priority: medium
-Requirements: FR-005
+Requirements: FR-003, FR-005
 
 #### Acceptance Criteria
 
@@ -89,6 +89,12 @@ Requirements: FR-005
 Given um exemplo indentado ou fenced contendo `### US-001`
 When a Specification for validada
 Then o exemplo não deve satisfazer a obrigação de User Story.
+
+##### AC-005
+
+Given duas User Stories na mesma Specification
+When seus identificadores forem validados
+Then cada identificador deve ser estável e único.
 
 ## Functional Requirements
 
@@ -153,7 +159,7 @@ This matrix is an index only; entity-local relationships remain authoritative.
 |---|---|---|
 | US-001 | FR-001, FR-002, FR-003 | AC-001, AC-002 |
 | US-002 | FR-004 | AC-003 |
-| US-003 | FR-003, FR-005 | AC-004 |
+| US-003 | FR-003, FR-005 | AC-004, AC-005 |
 
 ## Compatibility Statement
 

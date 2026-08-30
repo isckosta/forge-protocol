@@ -18,4 +18,4 @@ stories:
   US-003:
     requirements: [FR-003, FR-005]
     tasks: [T-004]
-    verification: [AC-004]
+    verification: [AC-004, AC-005]

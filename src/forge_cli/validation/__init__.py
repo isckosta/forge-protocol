@@ -774,6 +774,19 @@ def _validate_all_delegated_authority(r:Path)->list[ValidationFinding]:
 # --- CHG-0050: semantic User Story obligation -----------------------------
 _BEHAVIOR_RE = re.compile(r"^[ ]{0,3}Behavior:\s*(behavioral|technical)\s*$", re.MULTILINE)
 _USER_STORY_HEADING_RE = re.compile(r"^[ ]{0,3}###\s+(US-[0-9]{3,})(?:\s|·|$)", re.MULTILINE)
+_ACCEPTANCE_HEADING_RE = re.compile(r"^[ ]{0,3}#{4,5}\s+(AC-[0-9]{3,})\b", re.MULTILINE)
+
+def _story_acceptance_ids(markdown: str) -> dict[str, set[str]]:
+    headings = list(_USER_STORY_HEADING_RE.finditer(markdown))
+    result: dict[str, set[str]] = {}
+    for index, heading in enumerate(headings):
+        end = headings[index + 1].start() if index + 1 < len(headings) else len(markdown)
+        story_id = heading.group(1)
+        result[story_id] = {
+            match.group(1)
+            for match in _ACCEPTANCE_HEADING_RE.finditer(markdown, heading.end(), end)
+        }
+    return result
 
 def _markdown_without_fenced_code(markdown: str) -> str:
     lines: list[str] = []
@@ -863,7 +876,8 @@ def _validate_user_story_traceability(r: Path, mpath: Path, manifest: dict) -> l
     except OSError:
         task_text = ""
     completed_tasks = set(re.findall(r"^[ ]{0,3}-\s*\[[xX]\]\s+(T-[0-9]{3,})\b", task_text, re.MULTILINE))
-    acceptance_ids = set(re.findall(r"^[ ]{0,3}#{4,5}\s+(AC-[0-9]{3,})\b", specification, re.MULTILINE))
+    story_acceptance = _story_acceptance_ids(specification)
+    acceptance_ids = set().union(*story_acceptance.values()) if story_acceptance else set()
     try:
         verification_text = _markdown_without_fenced_code((mpath.parent / "verification.md").read_text(encoding="utf-8"))
     except OSError:
@@ -898,7 +912,10 @@ def _validate_user_story_traceability(r: Path, mpath: Path, manifest: dict) -> l
                     re.MULTILINE,
                 )
             }
-            missing = [item for item in verification if item not in acceptance_ids or item not in passing]
+            missing = [
+                item for item in verification
+                if item not in story_acceptance.get(story_id, set()) or item not in passing
+            ]
             if missing:
                 findings.append(_finding(r, traceability_path, f"User Story {story_id} references Verification item(s) without passing repository-native evidence: {', '.join(missing)}."))
     for story_id in sorted(stories):
