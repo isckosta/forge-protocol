@@ -39,3 +39,20 @@ records:
         path: plan.md
         value: 226dfcb933e46f893f0333788b165f7d4f749ab17c88f0c7dc14711851351491
       statement: The user explicitly approved continuation of CHG-0050 to Implementation in the active session on 2026-08-30, via AskUserQuestion, after reviewing the Architecture (DEC-001, DEC-002), the Test Strategy (14 TDD cases), and the 11-item Plan summary, selecting "Aprovar e prosseguir".
+  - id: implementation-subject-001
+    role: implementation
+    execution:
+      id: claude-code-implementation-0050-subject-001
+      context_id: claude-code-session-2026-08-30-subject-001
+    recorded_at: '2026-08-30T00:00:00Z'
+    revision:
+      id: chg-0050-implementation-001
+      immutable_ref:
+        type: git_commit
+        value: 817cda3913d789da3a8d6d0ba28f1b4d47d1fd3a
+      commit: 817cda3913d789da3a8d6d0ba28f1b4d47d1fd3a
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: implementation-subject
+      statement: Frozen CHG-0050 implementation subject (immutable per C-026 once committed) -- protocol_resolution/__init__.py (resolve_effective_review_profile, PROFILE_RANK), validation/__init__.py (compute_review_profile_floor extraction, _validate_review_current_phase), two Protocol 2 schemas (change-v2, project), change_scaffolding.py/change_cli.py (review.mode seeding, review-status command), the new adapters/review_experience.py module, both Adapters' projection.py (mode-resolution line, shared phase section), protocol/compatibility.md, CHANGELOG.md, all new/modified tests, and all CHG-0050 planning/design/verification Artifacts including DEC-004's Implementation-time correction. Reviewable Git workspace confirmed clean before freeze (git status --porcelain=v1 empty).
