@@ -73,3 +73,29 @@ records:
       observed_by: operator
       reference: review.md#iteration-1
       statement: "Independent Strict Review Iteration 1 (strict profile, fresh execution, isolated Git worktree at .claude/worktrees/agent-a9c707c9110126514, no shared context with the Implementation) returned REQUEST CHANGES against 817cda39 -- R-001 (MAJOR, forge change review-status crashed with an unhandled KeyError on an invalid project-flow-override profile) and R-002 (MINOR, compute_review_profile_floor did not eliminate the duplication Architecture claimed it removed), plus R-003/R-004 (OBSERVATION). R-001 was independently reproduced live (a super-strict override, exit 1, raw traceback) before being reported. The full suite (856 passed) and forge validate (PASS) were both independently re-run, not trusted from verification.md's claim; the Adapter-projection independence-block invariance (DEC-004) was independently re-derived from a from-scratch before/after diff of generated text at the parent and target commits."
+  - id: resolution-001
+    role: resolution
+    execution:
+      id: claude-code-implementation-0050-resolution-001
+      context_id: claude-code-session-2026-08-30-resolution-001
+    recorded_at: '2026-08-30T04:00:00Z'
+    scope:
+      - src/forge_cli/change_cli.py
+      - src/forge_cli/validation/__init__.py
+      - tests/cli/test_change_review_status.py
+      - .forge/changes/CHG-0050-review-experience-modes/manifest.yml
+      - .forge/changes/CHG-0050-review-experience-modes/review.md
+      - .forge/changes/CHG-0050-review-experience-modes/tdd-evidence.yml
+      - .forge/changes/CHG-0050-review-experience-modes/test-strategy.md
+    targets: [R-001, R-002, R-004]
+    revision:
+      id: chg-0050-resolution-001
+      immutable_ref:
+        type: git_commit
+        value: 86a4f25812adc6a5766ee12dc0b2abdf715c4d89
+      commit: 86a4f25812adc6a5766ee12dc0b2abdf715c4d89
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: review.md#resolution
+      statement: Resolution of Strict Review Iteration 1 (reviewer-001) findings R-001 and R-002, plus the R-004 documentation-accuracy correction. R-001 fixed by adding KeyError to review_status()'s existing except tuple, with a regression test (TDD-011) reproducing the live crash as valid RED before the fix. R-002 fixed by extracting the shared _canonical_review_profile helper. R-003 evaluated and explicitly left unfixed as a disclosed, pre-existing limitation. Re-ran full suite (857 passed) and forge validate (PASS) after the fix. Reviewable Git workspace confirmed clean before this freeze.
