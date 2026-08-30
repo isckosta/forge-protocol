@@ -10,10 +10,18 @@ status: pending
 
 ## Verdict
 
-**PENDING**
+**REQUEST CHANGES**
 
-Review remains pending until an independent Review Execution records the final
-subject and reviewer provenance for this Change.
+The independent Review of subject `0187da10f741470c41ba1c1f44b9705a614f0588`
+identified two MAJOR findings and one MINOR finding. A new Review is required
+after the resolution revision.
+
+MAJOR: lifecycle claims were inconsistent with the available Verification and
+Review evidence.
+
+MAJOR: Story traceability accepted arbitrary Task and Verification strings.
+
+MINOR: tilde-fenced Markdown examples were not excluded from Story detection.
 
 ## Review Summary
 

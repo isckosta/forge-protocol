@@ -33,17 +33,53 @@ List every Requirement this Change must verify before Implementation, with the S
 | Requirement | Scenario | Method |
 |---|---|---|
 | FR-001 | TD-001 | Automated |
+| FR-002 | TD-002 | Automated |
+| FR-003 | TD-003 | Automated |
+| FR-004 | TD-004 | Automated |
+| FR-005 | TD-005 | Automated |
 
 ## Layer A · <name>
 
-### TD-001 · <Scenario title>
+### TD-001 · Behavioral Story floor
 Requirements: FR-001
-Stories: <US identifiers, when applicable>
-Type: <Unit | Integration | Domain Integration | Manual Acceptance>
-Priority: <priority, when used>
+Stories: US-001
+Type: Unit
+Priority: high
 
 #### Purpose
-State the property this scenario proves, not the test's name. A weak Purpose restates the mechanism; a strong one explains the consequence a wrong Implementation would cause.
+Behavioral Specifications require a stable User Story.
+
+### TD-002 · Story traceability
+Requirements: FR-002
+Stories: US-001
+Type: Unit
+
+#### Purpose
+Every Story traces to completed executable work and passing Verification.
+
+### TD-003 · Stable identity
+Requirements: FR-003
+Stories: US-001, US-003
+Type: Unit
+
+#### Purpose
+Story identifiers are unique and stable.
+
+### TD-004 · Technical exemption
+Requirements: FR-004
+Stories: US-002
+Type: Unit
+
+#### Purpose
+Technical and FAST Changes do not require synthetic Stories.
+
+### TD-005 · Markdown evidence boundary
+Requirements: FR-005
+Stories: US-003
+Type: Unit
+
+#### Purpose
+Indented and fenced examples are not treated as real Story headings.
 
 #### Preconditions
 State only the initial state this scenario actually depends on. Omit this section when there is none.

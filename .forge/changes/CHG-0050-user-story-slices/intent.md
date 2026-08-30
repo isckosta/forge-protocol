@@ -21,20 +21,27 @@ status: active
 
 ## Problem
 
-Describe the problematic domain or user behavior, who or what it affects, and why the current behavior is insufficient.
+User Stories currently exist as optional Specification content and do not
+reliably survive decomposition into executable work and Verification.
 
 ## Goal
 
-State the concrete objective of the Change without prescribing implementation. Add a short numbered list when multiple properties must hold.
+Make observable behavior require stable first-person User Stories, local
+Acceptance Criteria, and repository-native traceability through implementation
+and Verification, while preserving technical and historical Changes.
 
 ## Scope
 
-Describe the business, operational, or conceptual areas this Change covers. Do not list files or functions.
+Specification structure, Change manifests, traceability schema, Core
+validation, scaffolds, and Adapter workflow guidance.
 
 ## Out of Scope
 
-State what this Change explicitly does not cover. Use this boundary to prevent opportunistic expansion.
+Heuristic assessment of Story prose quality and retroactive rewriting of
+historical Changes.
 
 ## Success Criteria
 
-Describe the high-level reality that must exist when the Change is complete. Do not turn this into a test plan.
+Behavioral Specifications cannot omit stable User Stories; each Story can be
+traced to completed executable work and passing Verification evidence; FAST
+and technical Changes remain valid without a Specification Story section.

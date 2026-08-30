@@ -23,7 +23,10 @@ Reference each AC-xxx by id; do not reproduce its full text here.
 
 | Acceptance | Requirement | Result | Evidence |
 |---|---|---|---|
-| AC-001 | FR-001 | PENDING | <evidence> |
+| AC-001 | FR-001 | PASS | `tests/unit/test_user_story_contract.py` |
+| AC-002 | FR-002 | PASS | `tests/unit/test_user_story_contract.py` |
+| AC-003 | FR-004 | PASS | `tests/unit/test_user_story_contract.py` |
+| AC-004 | FR-005 | PASS | `tests/unit/test_user_story_contract.py` |
 
 ## Requirement Coverage
 

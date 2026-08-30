@@ -779,7 +779,7 @@ def _markdown_without_fenced_code(markdown: str) -> str:
     lines: list[str] = []
     fenced = False
     for line in markdown.splitlines():
-        if re.match(r"^[ ]{0,3}```", line):
+        if re.match(r"^[ ]{0,3}(?:```|~~~)", line):
             fenced = not fenced
             continue
         if not fenced:
@@ -849,6 +849,17 @@ def _validate_user_story_traceability(r: Path, mpath: Path, manifest: dict) -> l
         return [_finding(r, specification_path, "User Story traceability cannot be determined without a readable specification.md; validation fails closed.")]
     story_ids = set(_USER_STORY_HEADING_RE.findall(specification))
     traceability_path = mpath.parent / "traceability.yml"
+    tasks_path = mpath.parent / "tasks.md"
+    try:
+        task_text = tasks_path.read_text(encoding="utf-8")
+    except OSError:
+        task_text = ""
+    completed_tasks = set(re.findall(r"^[ ]{0,3}-\s*\[[xX]\]\s+(T-[0-9]{3,})\b", task_text, re.MULTILINE))
+    acceptance_ids = set(re.findall(r"^[ ]{0,3}#{4,5}\s+(AC-[0-9]{3,})\b", specification, re.MULTILINE))
+    try:
+        verification_text = (mpath.parent / "verification.md").read_text(encoding="utf-8")
+    except OSError:
+        verification_text = ""
     traceability = _load_mapping(traceability_path)
     if traceability is None:
         return [_finding(r, traceability_path, "A behavioral Change in Implementation or beyond must provide traceability.yml with Task and Verification links for every User Story.")]
@@ -865,8 +876,15 @@ def _validate_user_story_traceability(r: Path, mpath: Path, manifest: dict) -> l
         verification = entry.get("verification")
         if not isinstance(tasks, list) or not tasks or not all(isinstance(item, str) and item for item in tasks):
             findings.append(_finding(r, traceability_path, f"User Story {story_id} must reference at least one executable Task."))
+        elif any(item not in completed_tasks for item in tasks):
+            missing = ", ".join(item for item in tasks if item not in completed_tasks)
+            findings.append(_finding(r, traceability_path, f"User Story {story_id} references Task(s) without completed repository-native evidence: {missing}."))
         if not isinstance(verification, list) or not verification or not all(isinstance(item, str) and item for item in verification):
             findings.append(_finding(r, traceability_path, f"User Story {story_id} must reference at least one Verification evidence item."))
+        else:
+            missing = [item for item in verification if item not in acceptance_ids or not re.search(rf"\|\s*{re.escape(item)}\s*\|[^\n]*\|\s*PASS\s*\|", verification_text)]
+            if missing:
+                findings.append(_finding(r, traceability_path, f"User Story {story_id} references Verification item(s) without passing repository-native evidence: {', '.join(missing)}."))
     for story_id in sorted(stories):
         if story_id not in story_ids:
             findings.append(_finding(r, traceability_path, f"Traceability story {story_id} is not present in specification.md."))

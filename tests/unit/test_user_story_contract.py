@@ -87,6 +87,18 @@ def test_indented_code_example_is_not_counted_as_a_user_story(tmp_path: Path) ->
     assert any("at least one stable US-xxx User Story" in finding.message for finding in findings)
 
 
+def test_tilde_fenced_code_example_is_not_counted_as_a_user_story(tmp_path: Path) -> None:
+    _write_change(
+        tmp_path,
+        observable=True,
+        specification="## Classification\n\nBehavior: behavioral\n\n~~~md\n### US-001 · Example\n~~~\n",
+    )
+
+    findings = _validate_all_user_story_contracts(tmp_path)
+
+    assert any("at least one stable US-xxx User Story" in finding.message for finding in findings)
+
+
 def test_implementation_requires_each_story_to_have_tasks_and_verification(tmp_path: Path) -> None:
     change = _write_change(
         tmp_path,
@@ -106,6 +118,8 @@ def test_implementation_requires_each_story_to_have_tasks_and_verification(tmp_p
         "stories:\n  US-001:\n    tasks: [T-001]\n    verification: [AC-001]\n",
         encoding="utf-8",
     )
+    (change / "tasks.md").write_text("- [x] T-001 Implement first\n", encoding="utf-8")
+    (change / "verification.md").write_text("| AC-001 | FR-001 | PASS | test |\n", encoding="utf-8")
 
     messages = [finding.message for finding in _validate_all_user_story_traceability(tmp_path)]
 
@@ -128,6 +142,8 @@ def test_story_traceability_rejects_orphan_story_and_missing_verification(tmp_pa
         "stories:\n  US-001:\n    tasks: [T-001]\n  US-999:\n    tasks: [T-999]\n    verification: [AC-999]\n",
         encoding="utf-8",
     )
+    (change / "tasks.md").write_text("- [x] T-001 Implement first\n", encoding="utf-8")
+    (change / "verification.md").write_text("| AC-001 | FR-001 | PENDING | test |\n", encoding="utf-8")
 
     messages = [finding.message for finding in _validate_all_user_story_traceability(tmp_path)]
 
