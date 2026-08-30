@@ -1,6 +1,6 @@
 # RFC-0008 — Review Experience Modes
 
-Status: Proposed for Protocol 2
+Status: Accepted for Protocol 2
 
 ## Summary
 
@@ -269,10 +269,15 @@ Change's floor.
 
 ## Acceptance record
 
-Proposed in this active chat session on 2026-08-30, following
-CHG-0048/RFC-0007's precedent of proposal and acceptance as the human
-maintainer's explicit act. The maintainer's resolution of Discovery's
-OQ-2 (schema-tracked phase observability, point 4) is recorded here
-and in `.forge/changes/CHG-0050-review-experience-modes/discovery.md`
-as the RFC's own accepted design point, decided before this RFC's text
-was finalized.
+Proposed and accepted in the same active chat session on 2026-08-30,
+following the pattern of `docs/rfcs/0007-proportional-review-profiles.md`
+(proposal and acceptance as distinct commits). The maintainer's
+resolution of Discovery's OQ-2 (schema-tracked phase observability,
+point 4) is recorded here and in
+`.forge/changes/CHG-0050-review-experience-modes/discovery.md` as the
+RFC's own accepted design point, decided before this RFC's text was
+finalized. The maintainer then explicitly accepted this RFC as a whole,
+via `AskUserQuestion`, before any schema, CLI, or Adapter code is
+changed. `CHG-0050`'s own `provenance.yml` records the acceptance as
+repository-native evidence (`rfc-acceptance-001`), per the same
+evidentiary standard C-077 applies to Plan authorization.
