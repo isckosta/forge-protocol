@@ -1,0 +1,67 @@
+schema: forge/change@2
+protocol: 2
+change:
+  id: CHG-0050
+  title: Review Experience Modes
+  kind: feature
+flow:
+  initial: standard
+  current: full
+  escalations:
+    - from: standard
+      to: full
+      reason: >-
+        Discovery found this Change introduces a new persistent schema
+        surface (per-Change review mode plus a cross-Change developer
+        preference), a new Harness-observability contract projected
+        into at least two Adapters (claude_code, codex), and a new
+        default-visible developer experience for every Forge-enabled
+        repository -- matching fast.yml's own disqualifiers
+        (architectural_change, major_public_contract_change) and
+        Contract F-008's precedent for architectural knowledge that
+        outlives a single Change, exactly as CHG-0048 found for its
+        comparable-scope Review Profile proposal (RFC-0007). STANDARD's
+        scaffold default was superseded before Specification began.
+state:
+  current: specification
+artifacts:
+  intent: complete
+  discovery: complete
+  specification: pending
+  specification_review: pending
+  architecture: pending
+  test_strategy: pending
+  plan: pending
+  tasks: pending
+  tdd_evidence: active
+  verification: pending
+  review: pending
+  documentation: pending
+  knowledge_capture: pending
+requirements:
+  total: 0
+  implemented: 0
+  verified: 0
+tdd:
+  status: pending
+verification:
+  status: pending
+review:
+  status: pending
+  iteration: 0
+  blockers: 0
+  majors: 0
+  minors: 0
+  observations: 0
+  iterations: []
+documentation:
+  impact_evaluated: false
+decisions:
+  - id: DEC-001
+    class: architectural
+    materiality: material
+    status: resolved
+    authority: agent
+    owning_artifact: architecture
+    discovered_in: discovery
+    resolved_via: evidence
