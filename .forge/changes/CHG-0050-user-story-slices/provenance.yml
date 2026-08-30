@@ -24,3 +24,24 @@ records:
         algorithm: sha256
         path: plan.md
         value: f83e60670d98b08ebf4062afd95d3d150615ba944386b9410d6e066ff254f682
+  - id: review-ebb9275-01a0503f
+    role: review
+    execution:
+      id: 01a04ea1-5d0d-7481-962d-b9a34c750825
+      context_id: 01a0503f-cadb-7ad2-81ec-ed4b8adc32e8
+    recorded_at: '2026-08-30T01:32:14Z'
+    revision:
+      id: ebb9275109e91d22634d51c320598d295b8e6204
+      immutable_ref:
+        type: git_commit
+        value: ebb9275109e91d22634d51c320598d295b8e6204
+      commit: ebb9275109e91d22634d51c320598d295b8e6204
+    source:
+      assurance: recorded
+      observed_by: self
+      harness: Codex
+      reference: review.md#independent-review-ebb9275
+      statement: >-
+        Review independente do sujeito ebb9275 retornou REQUEST CHANGES,
+        identificando bloqueios de provenance, cronologia de autorização,
+        fluxo, rastreabilidade e TDD.
