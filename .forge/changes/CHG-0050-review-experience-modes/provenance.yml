@@ -1,0 +1,20 @@
+schema: forge/execution-provenance@2
+change: CHG-0050
+records:
+  - id: rfc-acceptance-001
+    role: implementation
+    execution:
+      id: claude-code-implementation-0050-rfc
+      context_id: claude-code-session-2026-08-30-rfc
+    recorded_at: '2026-08-30T00:00:00Z'
+    revision:
+      id: chg-0050-rfc-acceptance-001
+      immutable_ref:
+        type: git_commit
+        value: c4201ba14b58060d39ef3757d065618ad16d0321
+      commit: c4201ba14b58060d39ef3757d065618ad16d0321
+    source:
+      assurance: recorded
+      observed_by: operator
+      reference: docs/rfcs/0008-review-experience-modes.md#acceptance-record
+      statement: The user explicitly accepted RFC-0008 (Review Experience Modes) in the active chat session on 2026-08-30, via AskUserQuestion, after also resolving Discovery's Open Question OQ-2 (schema-tracked review.current_phase over projection-only observability) in the same session. This acceptance is the F-008-required RFC authorizing this Change's schema/CLI/Adapter work.
