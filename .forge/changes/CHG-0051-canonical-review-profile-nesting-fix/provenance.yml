@@ -1,0 +1,20 @@
+schema: forge/execution-provenance@2
+change: CHG-0051
+records:
+  - id: implementation-subject-001
+    role: implementation
+    execution:
+      id: claude-code-implementation-0051-subject-001
+      context_id: claude-code-session-2026-08-30-0051-subject-001
+    recorded_at: '2026-08-30T00:00:00Z'
+    revision:
+      id: chg-0051-implementation-001
+      immutable_ref:
+        type: git_commit
+        value: 976053afa41238a4ac286ac54410086cf8942bba
+      commit: 976053afa41238a4ac286ac54410086cf8942bba
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: implementation-subject
+      statement: Frozen CHG-0051 implementation subject (immutable per C-026 once committed) -- one-line fix in src/forge_cli/validation/__init__.py's _validate_review_profile_floor, one new regression test in tests/unit/test_validation_review_profile.py, CHANGELOG.md, and all CHG-0051 planning/design/verification Artifacts. Reviewable Git workspace confirmed clean before freeze.
