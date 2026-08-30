@@ -10,7 +10,7 @@ status: complete
 
 ## Verdict
 
-**PASS.** Iteration 1 (`focused` profile, FAST Flow): the fix is real, correctly scoped, and independently reproduced end-to-end (RED against the parent commit for the claimed reason, GREEN and full suite on the fixed commit, `forge validate` PASS, no sibling call site repeating the broken pattern). Two non-blocking findings (R-001 MINOR, R-002 OBSERVATION) recorded and accepted, not fixed — see below for why.
+**PASS**. Iteration 1 (`focused` profile, FAST Flow): the fix is real, correctly scoped, and independently reproduced end-to-end (RED against the parent commit for the claimed reason, GREEN and full suite on the fixed commit, `forge validate` PASS, no sibling call site repeating the broken pattern). Two non-blocking findings (R-001 MINOR, R-002 OBSERVATION) recorded and accepted, not fixed — see below for why.
 
 ## Review Summary
 

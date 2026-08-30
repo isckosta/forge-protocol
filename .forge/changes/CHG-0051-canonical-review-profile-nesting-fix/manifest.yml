@@ -18,6 +18,7 @@ artifacts:
   verification: complete
   review: complete
   documentation_impact: complete
+  documentation: complete
 requirements:
   total: 1
   implemented: 1
