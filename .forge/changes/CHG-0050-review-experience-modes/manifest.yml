@@ -31,7 +31,7 @@ artifacts:
   specification_review: complete
   architecture: complete
   test_strategy: complete
-  plan: pending
+  plan: active
   tasks: pending
   tdd_evidence: active
   verification: pending
