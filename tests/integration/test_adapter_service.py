@@ -180,6 +180,32 @@ def test_install_projects_protocol2_skill_with_reviewer_resolver_independence(
     assert "subject_provenance" in skill
 
 
+def test_install_projects_the_effective_not_merely_canonical_review_profile(
+    protocol2_project: Path,
+) -> None:
+    """Codex PR #44 review (P2): when a project-flow override validly
+    raises review.profile above the canonical value, the generated skill
+    must describe the *effective* floor -- otherwise Harness instructions
+    understate the assurance the project actually requires."""
+    override_path = protocol2_project / ".forge" / "flows" / "fast.yml"
+    override_path.write_text(
+        "schema: forge/project-flow@1\nflow:\n  canonical: fast\n  enabled: true\n"
+        "review:\n  profile: strict\n",
+        encoding="utf-8",
+    )
+
+    _service().install(protocol2_project, "codex")
+
+    skill = (protocol2_project / ".agents/skills/forge/SKILL.md").read_text(encoding="utf-8")
+    fast_start = skill.index("### Flow `fast` gate obligations")
+    next_heading = skill.index("### ", fast_start + 1)
+    fast_section = skill[fast_start:next_heading]
+
+    assert "Completion requires Strict Review to pass." in fast_section
+    assert "`focused` profile" not in fast_section
+    assert "This Flow's Review Profile floor is `strict`" in fast_section
+
+
 def test_target_precedence_reports_explicit_configuration_then_evidence(
     initialized_project: Path,
 ) -> None:

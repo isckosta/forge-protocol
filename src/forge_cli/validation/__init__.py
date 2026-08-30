@@ -773,34 +773,53 @@ def _validate_all_delegated_authority(r:Path)->list[ValidationFinding]:
 _PROFILE_RANK=PROFILE_RANK
 def _canonical_review_profile(effective:dict)->str:
     canonical=effective.get("canonical")if isinstance(effective,dict)else None
-    canonical_flow=canonical.get("flow")if isinstance(canonical,dict)else None
-    canonical_review=canonical_flow.get("review")if isinstance(canonical_flow,dict)else None
+    canonical_review=canonical.get("review")if isinstance(canonical,dict)else None
     return canonical_review.get("profile","strict")if isinstance(canonical_review,dict)else"strict"
 def compute_review_profile_floor(effective:dict)->str:
-    """CHG-0050: the Review Profile floor a Change's Flow (plus any valid, already-floor-checked project override) requires."""
+    """CHG-0050: the safe Review Profile floor a Change's Flow requires.
+
+    Never ranks below the canonical floor, even when a project-flow
+    override is itself invalid (already-rejected by
+    _validate_review_profile_floor as E_FORGE_REVIEW_PROFILE_BELOW_FLOOR)
+    -- Codex PR #44 review (P2): callers of this function (forge change
+    review-status, Adapter projection) must not surface a below-floor
+    value just because the stored configuration is misconfigured.
+    """
     canonical_profile=_canonical_review_profile(effective)
     project=effective.get("project")if isinstance(effective,dict)else None
     project_review=project.get("review")if isinstance(project,dict)else None
     if not isinstance(project_review,dict)or"profile"not in project_review:return canonical_profile
-    return project_review["profile"]
+    project_profile=project_review["profile"]
+    if _PROFILE_RANK.get(project_profile,-1)<_PROFILE_RANK.get(canonical_profile,0):return canonical_profile
+    return project_profile
 def _validate_review_profile_floor(root:Path,path:Path,effective:dict)->list[ValidationFinding]:
     canonical_profile=_canonical_review_profile(effective)
     project=effective.get("project")if isinstance(effective,dict)else None
     project_review=project.get("review")if isinstance(project,dict)else None
     if not isinstance(project_review,dict)or"profile"not in project_review:return[]
-    project_profile=compute_review_profile_floor(effective)
+    project_profile=project_review["profile"]
     if _PROFILE_RANK.get(project_profile,-1)<_PROFILE_RANK.get(canonical_profile,0):
         return[ValidationFinding("E_FORGE_REVIEW_PROFILE_BELOW_FLOOR",str(path.relative_to(root)),
             f"Project Flow declares review.profile={project_profile!r}, weaker than the canonical floor {canonical_profile!r} for this Flow.",path)]
     return[]
 def _validate_review_current_phase(manifest:dict)->list[ValidationFinding]:
-    """CHG-0050 FR-004: review.current_phase must be consistent with review.status."""
+    """CHG-0050 FR-004: review.current_phase must be consistent with review.status.
+
+    Checked both directions (Codex PR #44 review, P2): 'converged' requires
+    'passed', and -- the direction originally missing -- 'passed' requires
+    'converged' (not 'stopped', 'findings_recorded', or any other
+    non-converged phase silently coexisting with a passed status).
+    """
     review=manifest.get("review")if isinstance(manifest,dict)else None
     if not isinstance(review,dict):return[]
     phase=review.get("current_phase")
-    if phase=="converged"and review.get("status")!="passed":
+    status=review.get("status")
+    if phase=="converged"and status!="passed":
         return[ValidationFinding("E_FORGE_REVIEW_PHASE_STATUS_MISMATCH","",
-            f"review.current_phase is 'converged' but review.status is {review.get('status')!r}, not 'passed'.")]
+            f"review.current_phase is 'converged' but review.status is {status!r}, not 'passed'.")]
+    if status=="passed"and phase is not None and phase!="converged":
+        return[ValidationFinding("E_FORGE_REVIEW_PHASE_STATUS_MISMATCH","",
+            f"review.status is 'passed' but review.current_phase is {phase!r}, not 'converged'.")]
     return[]
 def _validate_all_review_current_phase(r:Path)->list[ValidationFinding]:
     out:list[ValidationFinding]=[];changes=r/".forge/changes"

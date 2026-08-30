@@ -66,8 +66,10 @@ def test_profile_floor_accepts_a_stricter_than_canonical_project_override(tmp_pa
 
 
 def test_compute_review_profile_floor_returns_canonical_profile_without_override() -> None:
+    """review: is a top-level sibling of flow:, matching real Flow files
+    (protocol/flows/*.yml) -- not nested inside flow: (CHG-0051)."""
     effective = {
-        "canonical": {"flow": {"id": "standard", "review": {"profile": "standard"}}},
+        "canonical": {"flow": {"id": "standard"}, "review": {"profile": "standard"}},
         "project": {},
     }
 
@@ -76,11 +78,28 @@ def test_compute_review_profile_floor_returns_canonical_profile_without_override
 
 def test_compute_review_profile_floor_returns_project_override_profile() -> None:
     effective = {
-        "canonical": {"flow": {"id": "fast", "review": {"profile": "focused"}}},
+        "canonical": {"flow": {"id": "fast"}, "review": {"profile": "focused"}},
         "project": {"review": {"profile": "strict"}},
     }
 
     assert validation.compute_review_profile_floor(effective) == "strict"
+
+
+def test_compute_review_profile_floor_clamps_a_weaker_than_canonical_override() -> None:
+    """Codex PR #44 review (P2): an invalid, weaker-than-canonical project
+    override (already rejected by forge validate as
+    E_FORGE_REVIEW_PROFILE_BELOW_FLOOR) must not make
+    compute_review_profile_floor -- and therefore `forge change
+    review-status` and Adapter projection, both built on it -- report a
+    profile below the Change's real canonical floor. The never-below-floor
+    guarantee must hold even when the stored configuration is itself
+    invalid, not only for the resolve_effective_review_profile step."""
+    effective = {
+        "canonical": {"flow": {"id": "standard"}, "review": {"profile": "standard"}},
+        "project": {"review": {"profile": "focused"}},
+    }
+
+    assert validation.compute_review_profile_floor(effective) == "standard"
 
 
 def test_profile_floor_is_silent_when_project_declares_no_profile_override(tmp_path: Path) -> None:

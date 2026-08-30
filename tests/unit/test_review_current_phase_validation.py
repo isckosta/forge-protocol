@@ -27,3 +27,29 @@ def test_converged_phase_with_non_passed_status_is_flagged() -> None:
 
     assert len(findings) == 1
     assert "converged" in findings[0].message
+
+
+def test_passed_status_with_stopped_phase_is_flagged() -> None:
+    """Codex PR #44 review (P2): the reverse direction was previously
+    unchecked -- a manifest could claim review.status: passed while
+    current_phase: stopped (or any other non-converged phase), silently
+    contradicting the phase's own non-completion signal (FR-007)."""
+    manifest = {
+        "review": {"status": "passed", "current_phase": "stopped", "iterations": [{"id": "review-001"}]},
+    }
+
+    findings = validation._validate_review_current_phase(manifest)
+
+    assert len(findings) == 1
+    assert "stopped" in findings[0].message
+
+
+def test_passed_status_with_findings_recorded_phase_is_flagged() -> None:
+    """Codex PR #44 review (P2), reverse direction, a second non-converged phase."""
+    manifest = {
+        "review": {"status": "passed", "current_phase": "findings_recorded", "iterations": [{"id": "review-001"}]},
+    }
+
+    findings = validation._validate_review_current_phase(manifest)
+
+    assert len(findings) == 1

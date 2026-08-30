@@ -64,7 +64,7 @@ from forge_cli.protocol_resolution import (
     resolve_effective_flow,
 )
 from forge_cli.adapters.validation import ConformanceRequirements, validate_conformance
-from forge_cli.validation import render_decision_rules_reference
+from forge_cli.validation import compute_review_profile_floor, render_decision_rules_reference
 from forge_cli.experience.capture import event_from_conformance
 from forge_cli.experience.recorder import ExperienceRecorder
 
@@ -774,7 +774,17 @@ class AdapterService:
                 raise AdapterFlowConfigurationError(
                     f"Duplicate enabled canonical Flow: {canonical_id}."
                 )
-            flows[canonical_id] = yaml.safe_dump(canonical, sort_keys=False, allow_unicode=True)
+            projected = dict(canonical)
+            if isinstance(canonical.get("review"), dict):
+                # CHG-0050/Codex P2: project the *effective* Review Profile
+                # floor (canonical + any valid, floor-checked project-flow
+                # override), not just the canonical one -- otherwise a
+                # project that legitimately strengthens its floor gets
+                # Harness instructions describing a weaker requirement than
+                # it actually enforces.
+                projected["review"] = dict(canonical["review"])
+                projected["review"]["profile"] = compute_review_profile_floor(effective)
+            flows[canonical_id] = yaml.safe_dump(projected, sort_keys=False, allow_unicode=True)
         return tuple(sorted(flows.items()))
 
     @staticmethod

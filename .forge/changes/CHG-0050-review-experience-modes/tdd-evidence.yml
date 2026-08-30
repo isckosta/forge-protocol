@@ -1,8 +1,50 @@
 schema: forge/tdd-evidence@1
 change: CHG-0050
 status: compliant
-cycle_count: 11
+cycle_count: 14
 cycles:
+- id: TDD-015
+  title: "Resolution (Codex PR #44 review, P2): compute_review_profile_floor clamps an invalid, weaker-than-canonical project override"
+  requirements:
+  - FR-002
+  behavior: An invalid project-flow override (already rejected by forge validate as E_FORGE_REVIEW_PROFILE_BELOW_FLOOR) must not make compute_review_profile_floor -- and therefore forge change review-status and Adapter projection, both built on it -- report a profile below the Change's real canonical floor. _validate_review_profile_floor is refactored to read the raw project override directly (not via compute_review_profile_floor) so its own weaker-override detection is unaffected by the new clamp.
+  red:
+    command: .venv/bin/python -m pytest tests/unit/test_validation_review_profile.py -q -k clamps_a_weaker_than_canonical_override
+    result: "1 failed: assert 'focused' == 'standard'"
+    reason: compute_review_profile_floor returned the raw (invalid, weaker) project override verbatim.
+  green:
+    command: .venv/bin/python -m pytest tests/unit/test_validation_review_profile.py -q
+    result: 6 passed
+  notes:
+  - In the same cycle, applied CHG-0051's canonical-review-profile-nesting fix to this branch's own _canonical_review_profile (reads canonical.get("review") directly, not canonical["flow"]["review"]) and corrected the two hand-built test fixtures that had matched the bug's wrong nesting instead of real Flow files.
+- id: TDD-016
+  title: "Resolution (Codex PR #44 review, P2): _validate_review_current_phase checks both directions"
+  requirements:
+  - FR-004
+  - FR-007
+  behavior: "review.status: passed with a non-converged current_phase (e.g. stopped, findings_recorded) is now flagged -- the reverse of the already-checked converged-requires-passed direction. Closes a real gap: a manifest could previously claim status: passed while current_phase: stopped, silently defeating that phase's non-completion signal."
+  red:
+    command: .venv/bin/python -m pytest tests/unit/test_review_current_phase_validation.py -q -k passed_status
+    result: "2 failed: assert 0 == 1 (no finding raised for status:passed + current_phase:stopped/findings_recorded)"
+    reason: _validate_review_current_phase only checked the converged-requires-passed direction.
+  green:
+    command: .venv/bin/python -m pytest tests/unit/test_review_current_phase_validation.py -q
+    result: 5 passed
+  notes: []
+- id: TDD-017
+  title: "Resolution (Codex PR #44 review, P2): Adapter projection reflects the effective, not merely canonical, Review Profile floor"
+  requirements:
+  - FR-005
+  behavior: "AdapterService._effective_flows only yaml-dumped effective['canonical'] into the per-Flow content _gate_instructions parses, discarding any project-flow profile override entirely -- so a project that validly raised e.g. FAST's floor from focused to strict got Harness instructions still describing focused. Fixed by projecting compute_review_profile_floor(effective)'s clamped, effective profile into the dumped review.profile field."
+  red:
+    command: .venv/bin/python -m pytest tests/integration/test_adapter_service.py -q -k effective_not_merely_canonical
+    result: "1 failed: assert 'Completion requires Strict Review to pass.' in fast_section (still showed the focused-profile instruction)"
+    reason: "_effective_flows dumped effective['canonical'] verbatim, never consulting effective['project']."
+  green:
+    command: .venv/bin/python -m pytest tests/integration/test_adapter_service.py -q
+    result: 37 passed
+  notes:
+  - This also fixes the pre-existing (CHG-0048) REVIEW_PROFILE_INSTRUCTION line for the same reason, since both lines are read from the same per-Flow review_profile variable in _gate_instructions -- not a separate, independently-introduced change.
 - id: TDD-011
   title: "Resolution (Strict Review Iteration 1, R001, MAJOR): review-status must not crash with an unhandled KeyError on an invalid project-flow-override profile"
   requirements:
