@@ -152,3 +152,22 @@ records:
       observed_by: self
       reference: manifest.yml#documentation
       statement: "Knowledge Capture (Flow FULL, knowledge_capture stage, scheduled after strict_review and documentation) for CHG-0050. Added knowledge-capture.md recording four durable lessons (per-Flow install-time Adapter projection cannot read per-Change manifest state; the never-below-floor guarantee is structural, not merely tested; an unvalidated project-configuration value reaching an unguarded lookup is a real crash risk in a safe-to-run-anytime diagnostic command; C-026's provenance append-only rule has a sharp edge once an iteration has already passed). No other file touched. Full suite re-verified (857 passed) after the addition. Reviewable Git workspace confirmed clean before this freeze."
+  - id: plan-restoration-001
+    role: implementation
+    execution:
+      id: claude-code-implementation-0050-plan-restoration-001
+      context_id: claude-code-session-2026-08-30-plan-restoration-001
+    recorded_at: '2026-08-30T08:00:00Z'
+    scope:
+      - .forge/changes/CHG-0050-review-experience-modes/plan.md
+    revision:
+      id: chg-0050-plan-restoration-001
+      immutable_ref:
+        type: git_commit
+        value: c24aa905997f6d9b8393fa1d1e1c7228c4c45da2
+      commit: c24aa905997f6d9b8393fa1d1e1c7228c4c45da2
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: review.md#post-review-correction
+      statement: "Per C-069, restored plan.md's item 9 byte-for-byte to its originally human-approved wording (matching commit 153b0d9), reverting a direct Implementation-time edit that had absorbed DEC-004's mechanism correction into the approved Plan text itself. DEC-004 remains recorded in architecture.md and manifest.yml's decisions[], not in plan.md. plan-approval-001's content digest is unaffected (it already matched, and continues to match, this restored content). No production code, test, or other Artifact touched by this commit."
