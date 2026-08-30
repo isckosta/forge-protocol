@@ -171,3 +171,28 @@ records:
       observed_by: self
       reference: review.md#post-review-correction
       statement: "Per C-069, restored plan.md's item 9 byte-for-byte to its originally human-approved wording (matching commit 153b0d9), reverting a direct Implementation-time edit that had absorbed DEC-004's mechanism correction into the approved Plan text itself. DEC-004 remains recorded in architecture.md and manifest.yml's decisions[], not in plan.md. plan-approval-001's content digest is unaffected (it already matched, and continues to match, this restored content). No production code, test, or other Artifact touched by this commit."
+  - id: resolution-002
+    role: resolution
+    execution:
+      id: claude-code-implementation-0050-resolution-002
+      context_id: claude-code-session-2026-08-30-resolution-002
+    recorded_at: '2026-08-30T09:00:00Z'
+    scope:
+      - src/forge_cli/adapters/service.py
+      - src/forge_cli/validation/__init__.py
+      - tests/integration/test_adapter_service.py
+      - tests/unit/test_review_current_phase_validation.py
+      - tests/unit/test_validation_review_profile.py
+      - .forge/changes/CHG-0050-review-experience-modes/tdd-evidence.yml
+    targets: [R-007, R-008, R-009]
+    revision:
+      id: chg-0050-resolution-002
+      immutable_ref:
+        type: git_commit
+        value: 082b81ab98ed54d602843284dff59c1457f339a6
+      commit: 082b81ab98ed54d602843284dff59c1457f339a6
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: review.md#external-review-surface---codex-automated-pr-review-github-pr-44
+      statement: "Resolution of three MAJOR findings (R-007, R-008, R-009) reported by Codex's automated review of open GitHub PR #44 (external review surface, C-027) against the already-passed Iteration 2 subject. R-007: compute_review_profile_floor now clamps an invalid, weaker-than-canonical project override to the canonical floor; _validate_review_profile_floor reads the raw override directly so its own detection is unaffected. R-008: _validate_review_current_phase now also flags status: passed paired with a non-converged phase. R-009: AdapterService._effective_flows now projects the effective (not merely canonical) Review Profile into per-Flow Adapter content, also incidentally resolving the previously-disclosed R-003. Also applied CHG-0051's canonical-review-profile-nesting fix to this branch's independently-extracted copy of the same logic. Each finding reproduced as valid RED before its fix. Re-ran full suite (861 passed) and forge validate (PASS) after the fix. Reviewable Git workspace confirmed clean before this freeze."

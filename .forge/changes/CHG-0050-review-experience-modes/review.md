@@ -3,30 +3,30 @@ forge:
   artifact: review
   schema: 1
 change: CHG-0050
-status: complete
+status: active
 ---
 
 # CHG-0050 · Review
 
 ## Verdict
 
-**PASS**. Iteration 1: REQUEST CHANGES — R-001 (MAJOR) and R-002 (MINOR) found and resolved; R-003 (OBSERVATION) accepted/disclosed, R-004 (OBSERVATION) corrected. Iteration 2 (Resolution Verification): R-001/R-002/R-004 independently re-verified as genuinely and durably fixed (including a live before/after reproduction of the R-001 crash and a temporary revert-and-restore of its one-line fix); two further non-blocking findings within the Resolution Delta itself (R-005 MINOR, R-006 MINOR) were found and evaluated. Fixing either would require touching a non-review-control-metadata file (`tdd-evidence.yml`, or `provenance.yml`'s already-committed `resolution-001` record, both outside the `manifest.yml`/`provenance.yml`/`review.md` exception C-026 grants after a subject freeze) — doing so post-freeze would itself invalidate the already-passed Iteration 2 subject and require a new Resolution and a third independent iteration, disproportionate to two non-blocking findings (C-039). Both are recorded and accepted, disclosed limitations instead, per the same standard as R-003. Neither R-005 nor R-006 is a BLOCKER/MAJOR under `protocol/versions/2/policies/review.yml`'s `blocking: [blocker, major]`, so no further iteration is required. No Out-of-Scope Mutation triggering C-048 (`full_review_required: false`). Strict Review for CHG-0050 is closed.
+**PENDING** (Iteration 3 in progress). Iteration 1: REQUEST CHANGES — R-001 (MAJOR) and R-002 (MINOR) found and resolved; R-003 (OBSERVATION) accepted/disclosed, R-004 (OBSERVATION) corrected. Iteration 2 (Resolution Verification): R-001/R-002/R-004 independently re-verified as fixed; R-005/R-006 (MINOR, non-blocking) accepted, disclosed, not fixed (C-026/C-039). After Iteration 2 passed, Codex's automated review of the open GitHub PR (an external review surface, C-027) found three further real, reproducible correctness defects (R-007/R-008/R-009, elevated to MAJOR — see "External Review Surface" below); all three are fixed in `resolution-002` (commit `082b81a`). Iteration 3 (Resolution Verification of `resolution-002`) is in progress.
 
 ## Review Summary
 
 | | |
 |---|---|
-| **Iterations** | 2 |
-| **Current Subject** | `86a4f25812adc6a5766ee12dc0b2abdf715c4d89` (Iteration 2's reviewed, passed subject) |
+| **Iterations** | 3 (Iteration 3 in progress) |
+| **Current Subject** | `082b81ab98ed54d602843284dff59c1457f339a6` (`resolution-002`, pending Iteration 3) |
 | **Open Blockers** | 0 |
-| **Open Majors** | 0 |
+| **Open Majors** | 0 (R-007/R-008/R-009 fixed, pending independent re-verification) |
 | **Open Minors** | 2 (R-005, R-006 — accepted, disclosed, non-blocking) |
-| **Final Iteration** | 2 (PASS) |
-| **Result** | PASS |
+| **Final Iteration** | pending |
+| **Result** | pending |
 
 ## Reviewer Independence
 
-`provenance.yml`'s `reviewer-001` (Execution `a9c707c9110126514`) and `reviewer-002` (Execution `a55345cff0321b96f`) records — each a fresh agent invocation in its own isolated Git worktree, sharing no Execution or Execution Context with the Implementation, the Resolution, or each other.
+`provenance.yml`'s `reviewer-001` (Execution `a9c707c9110126514`) and `reviewer-002` (Execution `a55345cff0321b96f`) records — each a fresh agent invocation in its own isolated Git worktree, sharing no Execution or Execution Context with the Implementation, the Resolution, or each other. Iteration 3's reviewer will be a third, independent Execution, sharing none of the above.
 
 ## Open Findings
 
@@ -120,4 +120,40 @@ While fixing an unrelated `forge-merge-readiness` gap (MR-008), it emerged that 
 
 ## Resolution (Iteration 2 findings)
 
-R-005 and R-006 were both non-blocking MINOR findings discovered within the Resolution Delta itself (not unrelated latent findings under C-050, and not requiring escalation under C-048). Unlike Iteration 1's findings, fixing either would require mutating an already-committed provenance record (R-005) or editing a non-review-control-metadata file after its subject was already reviewed and passed (R-006) — both of which C-026 itself forbids or would invalidate. Both are therefore recorded and accepted as disclosed limitations rather than fixed, consistent with `blocking: [blocker, major]` (neither blocks) and C-039 (proportionality: a third independent iteration for two cosmetic/record-keeping findings is not warranted). Strict Review for CHG-0050 is closed.
+R-005 and R-006 were both non-blocking MINOR findings discovered within the Resolution Delta itself (not unrelated latent findings under C-050, and not requiring escalation under C-048). Unlike Iteration 1's findings, fixing either would require mutating an already-committed provenance record (R-005) or editing a non-review-control-metadata file after its subject was already reviewed and passed (R-006) — both of which C-026 itself forbids or would invalidate. Both are therefore recorded and accepted as disclosed limitations rather than fixed, consistent with `blocking: [blocker, major]` (neither blocks) and C-039 (proportionality: a third independent iteration for two cosmetic/record-keeping findings is not warranted).
+
+## External Review Surface — Codex automated PR review (GitHub PR #44)
+
+After Strict Review closed with PASS, Codex's automated review of the open GitHub PR (an active external review surface, C-027) posted three findings against the merged/passed subject. Each is real, reproducible, and was missed by both independent Strict Review iterations above.
+
+### R-007 · MAJOR — `compute_review_profile_floor` did not clamp an invalid, weaker-than-canonical project override
+
+An invalid project-flow override (e.g. `focused` under a canonical `standard` floor — already rejected by `forge validate` as `E_FORGE_REVIEW_PROFILE_BELOW_FLOOR`) made `compute_review_profile_floor` return the invalid value verbatim. `forge change review-status` calls this helper directly, without re-running the floor validator, so it could print a resolved profile below the Change's real canonical floor for a misconfigured project — a direct violation of FR-002's own never-below-floor guarantee, on the specific path where the stored configuration is itself invalid.
+
+**Resolution**: `compute_review_profile_floor` now clamps to the canonical floor whenever the project override's rank is lower. `_validate_review_profile_floor` was refactored to read the raw project override directly (not through `compute_review_profile_floor`) so its own below-floor detection is unaffected by the new clamp — verified by an unchanged `tests/unit/test_validation_review_profile.py` suite. See `tdd-evidence.yml`'s `TDD-015`.
+
+### R-008 · MAJOR — `_validate_review_current_phase` only checked one direction
+
+`review.status: passed` paired with a non-converged `current_phase` (`stopped`, `findings_recorded`, ...) passed validation silently — the reverse of the already-checked `converged`-requires-`passed` direction. This is a real gap against FR-007's own guarantee: a manifest could claim `status: passed` while `current_phase: stopped` contradicted it, and nothing caught the contradiction.
+
+**Resolution**: `_validate_review_current_phase` now also flags `status: passed` with any non-`None`, non-`converged` phase. See `tdd-evidence.yml`'s `TDD-016`.
+
+### R-009 · MAJOR — Adapter projection reflected the canonical Review Profile, not the effective one
+
+`AdapterService._effective_flows` yaml-dumped only `effective["canonical"]` into the per-Flow content `_gate_instructions` parses, discarding any project-flow profile override before it ever reached the Adapter layer. A project that validly raised a Flow's floor above canonical (e.g. FAST from `focused` to `strict`) still received Harness instructions describing the weaker canonical value — for both the pre-existing (CHG-0048) profile instruction and this Change's own new mode-resolution line, since both read the same per-Flow `review_profile` variable.
+
+**Resolution**: `_effective_flows` now projects `compute_review_profile_floor(effective)`'s clamped, effective profile into the dumped `review.profile` field before handing it to `_gate_instructions`. See `tdd-evidence.yml`'s `TDD-017`. This also resolves R-003 (previously accepted as a disclosed limitation in Iteration 2) as a side effect of the same fix — R-003 is superseded, not separately re-verified.
+
+### Classification
+
+Elevated to MAJOR (not MINOR/OBSERVATION like R-003/R-005/R-006): each finding is a genuine correctness defect undermining a guarantee this Change explicitly advertises (never-below-floor, `stopped` carries no authority, Adapter instructions match actual requirements), not a documentation-accuracy or record-keeping gap. All three are fixed, not disclosed-and-accepted.
+
+In the same Resolution scope, CHG-0051's canonical-review-profile-nesting fix (the same root cause as R-007, independently discovered and already fixed on a separate branch/PR for `main`) was applied to this branch's own `_canonical_review_profile`, since this branch extracted that logic before the fix existed.
+
+## Iteration 3 — pending (Resolution Verification)
+
+**Reviewer**: independent review pending — will be a fresh agent invocation, isolated Git worktree, sharing no Execution or Execution Context with the Implementation, Iteration 1's Reviewer, Iteration 2's Reviewer, or the Resolution Execution that produced `resolution-002`.
+
+**Commit reviewed**: `082b81ab98ed54d602843284dff59c1457f339a6` (frozen Resolution revision, `resolution-002`).
+
+**Baseline for diff**: `aece3063bcd60289e152057af42cad0abcd7b84f` (Iteration 2's passed subject, after the post-Review corrections above).

@@ -23,7 +23,7 @@ flow:
         comparable-scope Review Profile proposal (RFC-0007). STANDARD's
         scaffold default was superseded before Specification began.
 state:
-  current: complete
+  current: strict_review
 artifacts:
   intent: complete
   discovery: complete
@@ -35,7 +35,7 @@ artifacts:
   tasks: complete
   tdd_evidence: complete
   verification: complete
-  review: complete
+  review: active
   documentation: complete
   knowledge_capture: complete
 requirements:
@@ -44,12 +44,12 @@ requirements:
   verified: 7
 tdd:
   status: compliant
-  cycles: 11
+  cycles: 14
 verification:
   status: passed
 review:
-  status: passed
-  iteration: 2
+  status: active
+  iteration: 3
   blockers: 0
   majors: 0
   minors: 2
@@ -75,6 +75,12 @@ review:
       full_review_required: false
       new_material_findings: 0
       finding_classes: []
+    - id: review-003
+      revision: chg-0050-resolution-002
+      subject_provenance: resolution-002
+      kind: resolution_verification
+      status: active
+      profile: strict
 documentation:
   impact_evaluated: true
   update_required: true
