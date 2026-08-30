@@ -3,7 +3,7 @@ forge:
   artifact: verification
   schema: 1
 change: CHG-0050
-status: pending
+status: complete
 ---
 
 # CHG-0050 · Verification
@@ -34,11 +34,14 @@ Omit this section when Acceptance Coverage already expresses per-Requirement cov
 
 ## Test Evidence
 
-Record commands, exit status, and a short summary — not full logs. When `tdd-evidence.yml` already records RED and GREEN for a TDD-xxx cycle, reference it by id instead of renarrating the sequence.
+* `.venv/bin/pytest -q tests/unit/test_user_story_contract.py tests/contract/test_protocol_contract.py tests/unit/test_change_scaffolding.py` — exit 0, 110 tests passed.
+* `forge validate` — exit 0, `Forge project is valid`.
+* `git diff --check` — exit 0.
 
 ## Forge Evidence
 
-Record only what the command actually guarantees.
+`forge validate` guarantees repository contract validity for the checked-out
+workspace; it does not prove product-level behavior beyond the covered tests.
 
 ## Manual Evidence
 
@@ -50,4 +53,6 @@ Record confirmed compatibility impact and any real limitation. Do not pad this s
 
 ## Conclusion
 
-State the outcome for the implemented scope. Do not imply Completion when Result is FAIL or SKIPPED, or when Review remains pending.
+The implemented Story contract, classification, scaffold support, and
+repository-native traceability checks are verified. Completion and merge
+remain blocked by independent Review and Forge governance gates.

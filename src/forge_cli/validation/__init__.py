@@ -859,7 +859,7 @@ def _validate_user_story_traceability(r: Path, mpath: Path, manifest: dict) -> l
     traceability_path = mpath.parent / "traceability.yml"
     tasks_path = mpath.parent / "tasks.md"
     try:
-        task_text = tasks_path.read_text(encoding="utf-8")
+        task_text = _markdown_without_fenced_code(tasks_path.read_text(encoding="utf-8"))
     except OSError:
         task_text = ""
     completed_tasks = set(re.findall(r"^[ ]{0,3}-\s*\[[xX]\]\s+(T-[0-9]{3,})\b", task_text, re.MULTILINE))
@@ -890,7 +890,15 @@ def _validate_user_story_traceability(r: Path, mpath: Path, manifest: dict) -> l
         if not isinstance(verification, list) or not verification or not all(isinstance(item, str) and item for item in verification):
             findings.append(_finding(r, traceability_path, f"User Story {story_id} must reference at least one Verification evidence item."))
         else:
-            missing = [item for item in verification if item not in acceptance_ids or not re.search(rf"\|\s*{re.escape(item)}\s*\|[^\n]*\|\s*PASS\s*\|", verification_text)]
+            passing = {
+                match.group(1)
+                for match in re.finditer(
+                    r"^[ ]{0,3}\|\s*(AC-[0-9]{3,})\s*\|[^\n|]*\|\s*PASS\s*\|",
+                    verification_text,
+                    re.MULTILINE,
+                )
+            }
+            missing = [item for item in verification if item not in acceptance_ids or item not in passing]
             if missing:
                 findings.append(_finding(r, traceability_path, f"User Story {story_id} references Verification item(s) without passing repository-native evidence: {', '.join(missing)}."))
     for story_id in sorted(stories):

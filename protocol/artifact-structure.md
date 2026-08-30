@@ -298,8 +298,10 @@ hand, which Plan item produced which Task. The same pattern already
 applied to Specification (`CHG-0037`) and Test Design (`CHG-0038`)
 applies here: evolve the existing, stable shape rather than replace it
 with an incompatible one. `Tasks` only exists as a Flow stage in FULL
-(`protocol/flows/full.yml`); FAST and STANDARD have no `tasks.md`, so
-this guidance is scoped to FULL scaffolds only.
+(`protocol/flows/full.yml`). Behavioral STANDARD scaffolds additionally
+materialize `tasks.md` and `traceability.yml` as conditional support artifacts
+because C-079 requires Story-to-work traceability once Implementation starts;
+technical Changes and FAST Changes without Stories do not receive them.
 
 **Conditional, present only when the relationship actually exists:** a
 compact inline metadata line beneath a Task —

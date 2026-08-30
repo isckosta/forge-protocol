@@ -62,7 +62,7 @@ def test_allocate_change_number_scans_existing_canonical_directories(tmp_path: P
         (
             "standard",
             True,
-            {"intent.md", "discovery.md", "specification.md", "test-design.md", "plan.md", "tdd-evidence.yml", "verification.md", "review.md", "manifest.yml"},
+                {"intent.md", "discovery.md", "specification.md", "test-design.md", "plan.md", "tasks.md", "traceability.yml", "tdd-evidence.yml", "verification.md", "review.md", "manifest.yml"},
         ),
         (
             "full",
@@ -459,6 +459,33 @@ def test_render_scaffold_tasks_overview_and_status_are_compact() -> None:
     assert tasks.rstrip().endswith("No task has started.")
     last_heading = [line for line in tasks.splitlines() if line.startswith("## ")][-1]
     assert last_heading == "## Status"
+
+
+def test_render_behavioral_standard_scaffold_includes_story_traceability_support() -> None:
+    plan = render_scaffold(
+        change_id="CHG-0042",
+        slug="standard-story-traceability",
+        flow_id="standard",
+        flow_data=_canonical_flow("standard"),
+        behavioral=True,
+    )
+
+    assert "tasks.md" in plan.files
+    assert "traceability.yml" in plan.files
+    assert "forge/traceability@1" in plan.files["traceability.yml"]
+
+
+def test_render_technical_standard_scaffold_omits_story_traceability_support() -> None:
+    plan = render_scaffold(
+        change_id="CHG-0042",
+        slug="standard-technical-traceability",
+        flow_id="standard",
+        flow_data=_canonical_flow("standard"),
+        behavioral=False,
+    )
+
+    assert "tasks.md" not in plan.files
+    assert "traceability.yml" not in plan.files
 
 
 def test_render_scaffold_verification_uses_result_first_coverage_layout() -> None:

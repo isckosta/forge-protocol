@@ -17,6 +17,8 @@ artifacts:
   specification: complete
   test_design: complete
   plan: complete
+  tasks: complete
+  traceability: complete
   tdd_evidence: complete
   verification: complete
   review: failed
@@ -27,7 +29,7 @@ requirements:
   verified: 5
 tdd:
   status: exception
-  reason: "This Change formalizes and verifies repository behavior and does not introduce a new product behavior cycle."
+  reason: "No valid RED/GREEN cycle was captured before implementation; this disclosed exception does not claim TDD compliance."
 verification:
   status: passed
 review:

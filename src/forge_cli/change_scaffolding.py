@@ -459,6 +459,22 @@ def render_scaffold(
             "active" if artifact == "tdd_evidence" else "pending"
         )
 
+    # STANDARD has no standalone Tasks stage, but behavioral Changes still
+    # need an executable Story traceability surface once Implementation starts.
+    if behavioral and flow_id == "standard":
+        files["tasks.md"] = _markdown("tasks", change_id, title, flow_id, behavioral)
+        files["traceability.yml"] = yaml.safe_dump(
+            {
+                "schema": "forge/traceability@1",
+                "change": change_id,
+                "requirements": {},
+                "stories": {},
+            },
+            sort_keys=False,
+        )
+        statuses["tasks"] = "pending"
+        statuses["traceability"] = "pending"
+
     if flow_id == "fast":
         statuses["documentation_impact"] = "pending"
     else:

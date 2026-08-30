@@ -3,7 +3,7 @@ forge:
   artifact: plan
   schema: 1
 change: CHG-0050
-status: pending
+status: complete
 ---
 
 # Plan — CHG-0050 User Story Slices
@@ -14,6 +14,9 @@ status: pending
    and passing Acceptance evidence; update the traceability schema and tests.
 3. Update Protocol Contract, artifact guidance, and Codex/Claude workflow
    resources; verify the complete focused contract suite.
+
+All Plan items are implemented. The Plan/Implementation authority gate is a
+separate Forge governance requirement and is not implied by this status.
 
 ## Implementation Boundary
 

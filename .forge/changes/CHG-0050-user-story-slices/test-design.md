@@ -3,7 +3,7 @@ forge:
   artifact: test_design
   schema: 1
 change: CHG-0050
-status: pending
+status: complete
 ---
 
 # CHG-0050 · Test Design
@@ -16,7 +16,7 @@ status: pending
 |---|---|
 | **Change** | CHG-0050 |
 | **Flow** | STANDARD |
-| **Status** | Draft |
+| **Status** | Complete |
 
 ## Test Strategy
 
@@ -24,7 +24,7 @@ Describe how this Change will be demonstrated before Implementation. Group scena
 
 | Layer | Scope | Method |
 |---|---|---|
-| Layer A | <scope> | Automated |
+| Layer A | Story contract, traceability, scaffold, and Markdown evidence boundaries | Automated |
 
 ## Coverage Map
 
@@ -38,7 +38,7 @@ List every Requirement this Change must verify before Implementation, with the S
 | FR-004 | TD-004 | Automated |
 | FR-005 | TD-005 | Automated |
 
-## Layer A · <name>
+## Layer A · Story contract and traceability
 
 ### TD-001 · Behavioral Story floor
 Requirements: FR-001
@@ -47,7 +47,16 @@ Type: Unit
 Priority: high
 
 #### Purpose
-Behavioral Specifications require a stable User Story.
+Behavioral Specifications require a stable User Story, while technical Changes remain exempt.
+
+#### Scenario
+Given a Change with `observable_behavior: true`, when its Specification is validated, then it declares `Behavior: behavioral` and contains a stable `US-xxx` heading.
+
+#### Evidence
+Focused unit tests pass for behavioral, technical, historical, and FAST cases.
+
+#### Failure Condition
+An absent, duplicated, mismatched, indented, or fenced Story identifier is accepted.
 
 ### TD-002 · Story traceability
 Requirements: FR-002
@@ -57,6 +66,15 @@ Type: Unit
 #### Purpose
 Every Story traces to completed executable work and passing Verification.
 
+#### Scenario
+Given a behavioral Change in Implementation or later, when traceability is validated, then every Story links to a completed Task and passing Acceptance evidence.
+
+#### Evidence
+Focused tests cover missing links, fenced task examples, fenced verification examples, and failed result rows.
+
+#### Failure Condition
+Documentation examples, incomplete tasks, or non-PASS result rows satisfy traceability.
+
 ### TD-003 · Stable identity
 Requirements: FR-003
 Stories: US-001, US-003
@@ -64,6 +82,15 @@ Type: Unit
 
 #### Purpose
 Story identifiers are unique and stable.
+
+#### Scenario
+Given Story headings, when the Specification is parsed, then stable `US-xxx` identifiers are collected and duplicates are rejected.
+
+#### Evidence
+The contract suite asserts duplicate detection and many-to-many traceability fixtures.
+
+#### Failure Condition
+The same stable identifier appears more than once without a finding.
 
 ### TD-004 · Technical exemption
 Requirements: FR-004
@@ -73,6 +100,15 @@ Type: Unit
 #### Purpose
 Technical and FAST Changes do not require synthetic Stories.
 
+#### Scenario
+Given a technical Change or a FAST Change without a Specification, when validated, then no synthetic Story is required.
+
+#### Evidence
+Technical and FAST exemption tests pass.
+
+#### Failure Condition
+The validator requires an artificial persona Story.
+
 ### TD-005 · Markdown evidence boundary
 Requirements: FR-005
 Stories: US-003
@@ -81,22 +117,14 @@ Type: Unit
 #### Purpose
 Indented and fenced examples are not treated as real Story headings.
 
-#### Preconditions
-State only the initial state this scenario actually depends on. Omit this section when there is none.
-
 #### Scenario
-Given <initial condition>
-When <action>
-Then <observable result>
+Given Story-shaped text inside indentation or a fenced Markdown example, when parsed, then only headings outside examples count.
 
 #### Evidence
-State what observable material will exist to support the result: exit code, persisted row, emitted event, HTTP status, log, snapshot, test result, or manual observation.
+Mixed fence, tilde fence, and fence-info regression tests pass.
 
 #### Failure Condition
-State what invalidates this scenario as evidence, including a false positive, not only what a failing assertion looks like.
-
-#### Boundary
-State what this scenario does not prove, only when it could reasonably be mistaken for proving more. Omit when there is no such risk.
+An inner fence with language metadata closes an outer example and creates a false Story.
 
 ## Manual Acceptance
 
@@ -111,10 +139,14 @@ When TDD applies, RED is valid only when the test fails for the expected behavio
 | Requirement | Automated | Manual | Status |
 |---|---|---|---|
 | FR-001 | TD-001 | — | Covered |
+| FR-002 | TD-002 | — | Covered |
+| FR-003 | TD-003 | — | Covered |
+| FR-004 | TD-004 | — | Covered |
+| FR-005 | TD-005 | — | Covered |
 
 ## Coverage Gaps
 
-State explicitly that no mandatory Requirement remains without a verification strategy, or list each gap. A critical Requirement that cannot be verified is a Specification problem, not an Implementation problem.
+No mandatory Requirement remains without a verification strategy. The Change has no manual acceptance gap.
 
 ## Test Design Gate
 
