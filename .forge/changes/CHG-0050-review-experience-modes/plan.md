@@ -3,7 +3,7 @@ forge:
   artifact: plan
   schema: 1
 change: CHG-0050
-status: active
+status: approved
 ---
 
 # Plan — CHG-0050 Review Experience Modes
@@ -103,7 +103,13 @@ documented re-Plan — never a silent edit to the items above.
 <a id="forge-plan-approval-confirmation"></a>
 ## Plan Approval Confirmation
 
-**Pending.** This Plan is not yet approved for Implementation. The
-11 items above, DEC-001 (Architecture, Flow escalation), and DEC-002
-(Architecture, `review-status` mechanism) are presented for the human
-maintainer's explicit Plan Decision before any Implementation begins.
+<a id="forge-plan-approval-record"></a>
+**Approved.** The human maintainer (operator, this repository's Git
+user) explicitly approved this Plan for Implementation in the active
+chat session on 2026-08-30, via `AskUserQuestion`, after reviewing the
+11 items above, DEC-001 (Flow escalation to FULL), and DEC-002
+(`review-status`'s direct-manifest-read mechanism), selecting "Aprovar
+e prosseguir". This confirmation is recorded per C-077 as `DEC-003` in
+`manifest.yml` (`class: technical`, `owning_artifact: plan`,
+`authority: human`, `status: resolved`, `resolved_via:
+human_decision`) and in `provenance.yml`'s `plan-approval-001` record.
