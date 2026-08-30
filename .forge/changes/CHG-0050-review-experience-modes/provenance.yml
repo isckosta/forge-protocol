@@ -213,3 +213,20 @@ records:
       observed_by: operator
       reference: review.md#iteration-3
       statement: "Independent Strict Review Iteration 3 (Resolution Verification, strict profile, fresh execution, isolated Git worktree, no shared context with the Resolution Execution or with Iteration 1/2's Reviewers) returned PASS against 082b81a -- R-007, R-008, and R-009 all independently reproduced RED-before/GREEN-after against the parent commit (aece3063), and R-007/R-009 additionally verified end-to-end against a real forge init project with a project-flow override, confirming forge validate still correctly rejects a weaker override after the clamp, and that Adapter-generated Harness instructions now reflect the effective (not merely canonical) profile for both claude_code and codex. No Out-of-Scope Mutation (full_review_required: false); diff matched resolution-002's declared scope exactly. Full suite (861 passed) and forge validate (PASS) both independently reproduced."
+  - id: verification-002
+    role: implementation
+    execution:
+      id: claude-code-implementation-0050-verification-002
+      context_id: claude-code-session-2026-08-30-verification-002
+    recorded_at: '2026-08-30T11:00:00Z'
+    revision:
+      id: chg-0050-resolution-002
+      immutable_ref:
+        type: git_commit
+        value: 082b81ab98ed54d602843284dff59c1457f339a6
+      commit: 082b81ab98ed54d602843284dff59c1457f339a6
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: verification.md
+      statement: "verification.md's PASS result remains accurate against reviewer-003's frozen, passed subject (resolution-002, commit 082b81a) -- the final reviewed and passed implementation revision for this Change, superseding verification-001's binding to resolution-001 now that resolution-002 has itself passed independent Resolution Verification (Iteration 3). Full suite (861 passed) and forge validate (PASS) confirmed against this exact revision by both the Resolution (self) and reviewer-003 (independently)."
