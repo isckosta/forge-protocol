@@ -1,6 +1,6 @@
 # RFC-0008 — Behavioral User Story Slices
 
-Status: Proposed for Protocol 2
+Status: Accepted for Protocol 2
 
 ## Summary
 
@@ -32,6 +32,6 @@ or FAST Changes without a Specification stage.
 
 ## Approval
 
-This RFC records the material Protocol decision required by F-008. It is not
-approved by an agent; a human authority must record approval before the Change
-may cross the Plan/Implementation governance boundary.
+This RFC records the material Protocol decision required by F-008. Approval
+was explicitly confirmed by the human operator in the Change Plan and its
+repository-native provenance record.

@@ -1,0 +1,26 @@
+schema: forge/execution-provenance@2
+change: CHG-0050
+records:
+  - id: plan-approval-be837ed
+    role: implementation
+    execution:
+      id: execution-plan-approval-be837ed
+      context_id: context-plan-approval-be837ed
+    recorded_at: '2026-08-29T21:00:00Z'
+    revision:
+      id: be837ed7f86df751eb8835765aabf82c307c8a4b
+      immutable_ref:
+        type: git_commit
+        value: be837ed7f86df751eb8835765aabf82c307c8a4b
+      commit: be837ed7f86df751eb8835765aabf82c307c8a4b
+    source:
+      assurance: recorded
+      observed_by: operator
+      reference: plan.md#approval-record
+      statement: >-
+        Aprovação humana explícita recebida do operador para prosseguir com a
+        implementação e a resolução dos achados desta Change.
+      content_digest:
+        algorithm: sha256
+        path: plan.md
+        value: a2351320b8fffe242aa32bf8287a4202384ee8961424c8673a294d278a788d34
