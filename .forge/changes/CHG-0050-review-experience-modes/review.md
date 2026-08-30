@@ -3,30 +3,30 @@ forge:
   artifact: review
   schema: 1
 change: CHG-0050
-status: active
+status: complete
 ---
 
 # CHG-0050 · Review
 
 ## Verdict
 
-**PENDING** (Iteration 3 in progress). Iteration 1: REQUEST CHANGES — R-001 (MAJOR) and R-002 (MINOR) found and resolved; R-003 (OBSERVATION) accepted/disclosed, R-004 (OBSERVATION) corrected. Iteration 2 (Resolution Verification): R-001/R-002/R-004 independently re-verified as fixed; R-005/R-006 (MINOR, non-blocking) accepted, disclosed, not fixed (C-026/C-039). After Iteration 2 passed, Codex's automated review of the open GitHub PR (an external review surface, C-027) found three further real, reproducible correctness defects (R-007/R-008/R-009, elevated to MAJOR — see "External Review Surface" below); all three are fixed in `resolution-002` (commit `082b81a`). Iteration 3 (Resolution Verification of `resolution-002`) is in progress.
+**PASS**. Iteration 1: REQUEST CHANGES — R-001 (MAJOR) and R-002 (MINOR) found and resolved; R-003 (OBSERVATION) accepted/disclosed, R-004 (OBSERVATION) corrected. Iteration 2 (Resolution Verification): R-001/R-002/R-004 independently re-verified as fixed; R-005/R-006 (MINOR, non-blocking) accepted, disclosed, not fixed (C-026/C-039). After Iteration 2 passed, Codex's automated review of the open GitHub PR (an external review surface, C-027) found three further real, reproducible correctness defects (R-007/R-008/R-009, elevated to MAJOR — see "External Review Surface" below); all three were fixed in `resolution-002` (commit `082b81a`). Iteration 3 (Resolution Verification of `resolution-002`): all three independently reproduced RED-before/GREEN-after, R-007/R-009 additionally verified end-to-end against a real `forge init` project, no Out-of-Scope Mutation, no new findings. Strict Review for CHG-0050 is closed.
 
 ## Review Summary
 
 | | |
 |---|---|
-| **Iterations** | 3 (Iteration 3 in progress) |
-| **Current Subject** | `082b81ab98ed54d602843284dff59c1457f339a6` (`resolution-002`, pending Iteration 3) |
+| **Iterations** | 3 |
+| **Current Subject** | `082b81ab98ed54d602843284dff59c1457f339a6` (`resolution-002`, Iteration 3's reviewed, passed subject) |
 | **Open Blockers** | 0 |
-| **Open Majors** | 0 (R-007/R-008/R-009 fixed, pending independent re-verification) |
+| **Open Majors** | 0 |
 | **Open Minors** | 2 (R-005, R-006 — accepted, disclosed, non-blocking) |
-| **Final Iteration** | pending |
-| **Result** | pending |
+| **Final Iteration** | 3 (PASS) |
+| **Result** | PASS |
 
 ## Reviewer Independence
 
-`provenance.yml`'s `reviewer-001` (Execution `a9c707c9110126514`) and `reviewer-002` (Execution `a55345cff0321b96f`) records — each a fresh agent invocation in its own isolated Git worktree, sharing no Execution or Execution Context with the Implementation, the Resolution, or each other. Iteration 3's reviewer will be a third, independent Execution, sharing none of the above.
+`provenance.yml`'s `reviewer-001` (Execution `a9c707c9110126514`), `reviewer-002` (Execution `a55345cff0321b96f`), and `reviewer-003` (Execution `a75fefa6bdb33fcb9`) records — each a fresh agent invocation in its own isolated Git worktree, sharing no Execution or Execution Context with the Implementation, the Resolution(s), or each other.
 
 ## Open Findings
 
@@ -150,10 +150,26 @@ Elevated to MAJOR (not MINOR/OBSERVATION like R-003/R-005/R-006): each finding i
 
 In the same Resolution scope, CHG-0051's canonical-review-profile-nesting fix (the same root cause as R-007, independently discovered and already fixed on a separate branch/PR for `main`) was applied to this branch's own `_canonical_review_profile`, since this branch extracted that logic before the fix existed.
 
-## Iteration 3 — pending (Resolution Verification)
+## Iteration 3 — PASS (Resolution Verification)
 
-**Reviewer**: independent review pending — will be a fresh agent invocation, isolated Git worktree, sharing no Execution or Execution Context with the Implementation, Iteration 1's Reviewer, Iteration 2's Reviewer, or the Resolution Execution that produced `resolution-002`.
+**Reviewer**: Independent Reviewer execution (fresh agent invocation, isolated Git worktree, no shared context with the Resolution Execution that produced `resolution-002` or with Iteration 1/2's Reviewer Executions), per C-026. `kind: resolution_verification`, scoped per C-047 to R-007, R-008, R-009, defects within the Resolution Delta, and Out-of-Scope Mutation.
 
 **Commit reviewed**: `082b81ab98ed54d602843284dff59c1457f339a6` (frozen Resolution revision, `resolution-002`).
 
 **Baseline for diff**: `aece3063bcd60289e152057af42cad0abcd7b84f` (Iteration 2's passed subject, after the post-Review corrections above).
+
+R-007, R-008, and R-009 were each independently reproduced as valid RED against the parent commit and confirmed GREEN on the fixed commit. R-007 and R-009 were additionally verified end-to-end against a real `forge init` project with a project-flow profile override: `compute_review_profile_floor` correctly clamps a weaker override to canonical while `forge validate` still independently rejects that same weaker override (confirming the clamp did not silently disable the write-path's own rejection); `forge adapter install` for both `claude_code` and `codex` now generates Harness instructions reflecting the effective, project-raised profile, not the canonical one. The diff matched `resolution-002`'s declared scope exactly (no Out-of-Scope Mutation, unlike Iteration 2's own disclosed R-005 gap). No new findings.
+
+### Checked and found sound (Iteration 3)
+
+- `082b81a` confirmed a direct child of `aece3063`; `git diff --stat` matches `resolution-002`'s declared scope exactly.
+- R-007: clamp behavior confirmed live; `_validate_review_profile_floor`'s own below-floor rejection confirmed still firing (reads the raw override directly, not through the now-clamping helper).
+- R-008: both non-converged phases (`stopped`, `findings_recorded`) confirmed flagged when paired with `status: passed`; original `converged`-requires-`passed` direction confirmed unregressed.
+- R-009: end-to-end `forge adapter install` run confirmed both the pre-existing profile instruction and the new mode-resolution line reflect the effective profile for both Adapters.
+- Full suite (861 passed) and `forge validate` (PASS) independently reproduced.
+- `tdd-evidence.yml`'s `cycle_count: 14` matches its 14 listed cycles; no new identifier collisions beyond the already-disclosed R-006.
+- Only `manifest.yml`/`provenance.yml`/`review.md` touched after the `082b81a` freeze (commit `7620b20`), matching the C-026 exception exactly.
+
+## Conclusion
+
+`resolution-002` genuinely and correctly fixes R-007, R-008, and R-009 within its declared scope, with no Out-of-Scope Mutation and no regression to `forge validate`'s own below-floor rejection. Strict Review for CHG-0050 is closed with a PASS across three iterations.

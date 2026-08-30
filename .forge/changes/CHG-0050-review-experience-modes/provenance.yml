@@ -196,3 +196,20 @@ records:
       observed_by: self
       reference: review.md#external-review-surface---codex-automated-pr-review-github-pr-44
       statement: "Resolution of three MAJOR findings (R-007, R-008, R-009) reported by Codex's automated review of open GitHub PR #44 (external review surface, C-027) against the already-passed Iteration 2 subject. R-007: compute_review_profile_floor now clamps an invalid, weaker-than-canonical project override to the canonical floor; _validate_review_profile_floor reads the raw override directly so its own detection is unaffected. R-008: _validate_review_current_phase now also flags status: passed paired with a non-converged phase. R-009: AdapterService._effective_flows now projects the effective (not merely canonical) Review Profile into per-Flow Adapter content, also incidentally resolving the previously-disclosed R-003. Also applied CHG-0051's canonical-review-profile-nesting fix to this branch's independently-extracted copy of the same logic. Each finding reproduced as valid RED before its fix. Re-ran full suite (861 passed) and forge validate (PASS) after the fix. Reviewable Git workspace confirmed clean before this freeze."
+  - id: reviewer-003
+    role: review
+    execution:
+      id: a75fefa6bdb33fcb9
+      context_id: independent-review-context-a75fefa6bdb33fcb9
+    recorded_at: '2026-08-30T10:00:00Z'
+    revision:
+      id: chg-0050-resolution-002
+      immutable_ref:
+        type: git_commit
+        value: 082b81ab98ed54d602843284dff59c1457f339a6
+      commit: 082b81ab98ed54d602843284dff59c1457f339a6
+    source:
+      assurance: recorded
+      observed_by: operator
+      reference: review.md#iteration-3
+      statement: "Independent Strict Review Iteration 3 (Resolution Verification, strict profile, fresh execution, isolated Git worktree, no shared context with the Resolution Execution or with Iteration 1/2's Reviewers) returned PASS against 082b81a -- R-007, R-008, and R-009 all independently reproduced RED-before/GREEN-after against the parent commit (aece3063), and R-007/R-009 additionally verified end-to-end against a real forge init project with a project-flow override, confirming forge validate still correctly rejects a weaker override after the clamp, and that Adapter-generated Harness instructions now reflect the effective (not merely canonical) profile for both claude_code and codex. No Out-of-Scope Mutation (full_review_required: false); diff matched resolution-002's declared scope exactly. Full suite (861 passed) and forge validate (PASS) both independently reproduced."
