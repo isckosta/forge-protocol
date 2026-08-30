@@ -309,8 +309,9 @@ compact inline metadata line beneath a Task —
 — referencing the Plan item, Requirement(s), User Story(ies), and/or
 Test Strategy case(s) it implements. `TDD-xxx` is the correct
 convention here (Test Strategy, FULL's own pre-Implementation
-verification Artifact); `TD-xxx` is Test Design's convention and only
-exists in FAST/STANDARD Changes, which never have a `tasks.md`. Not
+verification Artifact); `TD-xxx` is Test Design's convention. In STANDARD,
+the conditional `tasks.md` is a support artifact rather than a Flow stage.
+Not
 every Task carries every reference kind, and a Task with none of them
 is still valid — forcing a reference that does not exist would misstate
 the Change's real traceability rather than clarify it.

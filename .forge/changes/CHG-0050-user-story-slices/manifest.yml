@@ -16,7 +16,7 @@ artifacts:
   discovery: complete
   specification: complete
   test_design: complete
-  plan: complete
+  plan: approved
   tasks: complete
   traceability: complete
   tdd_evidence: complete
@@ -44,3 +44,13 @@ documentation:
   impact_evaluated: true
   update_required: true
   reason: "Protocol, schema, validator, scaffold, and adapter workflow documentation were updated."
+decisions:
+  - id: DEC-001
+    class: technical
+    materiality: material
+    status: resolved
+    authority: human
+    owning_artifact: plan
+    discovered_in: plan
+    resolved_via: human_decision
+    invalidates: []

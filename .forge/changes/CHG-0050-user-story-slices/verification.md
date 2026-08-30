@@ -30,7 +30,7 @@ Reference each AC-xxx by id; do not reproduce its full text here.
 
 ## Test Evidence
 
-* `.venv/bin/pytest -q tests/unit/test_user_story_contract.py tests/contract/test_protocol_contract.py tests/unit/test_change_scaffolding.py` — exit 0, 110 tests passed.
+* `.venv/bin/pytest -q tests/unit/test_user_story_contract.py tests/contract/test_protocol_contract.py tests/unit/test_change_scaffolding.py` — exit 0, 114 tests passed.
 * `forge validate` — exit 0, `Forge project is valid`.
 * `git diff --check` — exit 0.
 

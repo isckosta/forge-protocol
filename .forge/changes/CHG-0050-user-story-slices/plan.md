@@ -3,7 +3,7 @@ forge:
   artifact: plan
   schema: 1
 change: CHG-0050
-status: complete
+status: approved
 ---
 
 # Plan — CHG-0050 User Story Slices
@@ -17,6 +17,13 @@ status: complete
 
 All Plan items are implemented. The Plan/Implementation authority gate is a
 separate Forge governance requirement and is not implied by this status.
+
+<!-- forge:plan-approval-confirmation -->
+## Registro de aprovação
+
+<!-- forge:plan-approval-record -->
+Aprovação humana explícita foi recebida do operador para prosseguir com a
+implementação e a resolução dos achados desta Change.
 
 ## Implementation Boundary
 
