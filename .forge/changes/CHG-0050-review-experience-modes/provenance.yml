@@ -18,3 +18,24 @@ records:
       observed_by: operator
       reference: docs/rfcs/0008-review-experience-modes.md#acceptance-record
       statement: The user explicitly accepted RFC-0008 (Review Experience Modes) in the active chat session on 2026-08-30, via AskUserQuestion, after also resolving Discovery's Open Question OQ-2 (schema-tracked review.current_phase over projection-only observability) in the same session. This acceptance is the F-008-required RFC authorizing this Change's schema/CLI/Adapter work.
+  - id: plan-approval-001
+    role: implementation
+    execution:
+      id: claude-code-implementation-0050-plan
+      context_id: claude-code-session-2026-08-30-plan
+    recorded_at: '2026-08-30T00:00:00Z'
+    revision:
+      id: chg-0050-plan-approval-001
+      immutable_ref:
+        type: git_commit
+        value: 153b0d93907e5827de62181ee64870b8af53c985
+      commit: 153b0d93907e5827de62181ee64870b8af53c985
+    source:
+      assurance: recorded
+      observed_by: operator
+      reference: plan.md#approval-record
+      content_digest:
+        algorithm: sha256
+        path: plan.md
+        value: 226dfcb933e46f893f0333788b165f7d4f749ab17c88f0c7dc14711851351491
+      statement: The user explicitly approved continuation of CHG-0050 to Implementation in the active session on 2026-08-30, via AskUserQuestion, after reviewing the Architecture (DEC-001, DEC-002), the Test Strategy (14 TDD cases), and the 11-item Plan summary, selecting "Aprovar e prosseguir".
