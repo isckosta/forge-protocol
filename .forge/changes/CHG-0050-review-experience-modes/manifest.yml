@@ -23,12 +23,12 @@ flow:
         comparable-scope Review Profile proposal (RFC-0007). STANDARD's
         scaffold default was superseded before Specification began.
 state:
-  current: specification
+  current: architecture
 artifacts:
   intent: complete
   discovery: complete
-  specification: pending
-  specification_review: pending
+  specification: complete
+  specification_review: complete
   architecture: pending
   test_strategy: pending
   plan: pending
@@ -39,7 +39,7 @@ artifacts:
   documentation: pending
   knowledge_capture: pending
 requirements:
-  total: 0
+  total: 7
   implemented: 0
   verified: 0
 tdd:
