@@ -779,13 +779,16 @@ def _markdown_without_fenced_code(markdown: str) -> str:
     lines: list[str] = []
     fence: tuple[str, int] | None = None
     for line in markdown.splitlines():
-        match = re.match(r"^[ ]{0,3}(`{3,}|~{3,})", line)
+        match = re.match(r"^[ ]{0,3}(`{3,}|~{3,})(.*)$", line)
+        if match and fence is not None:
+            delimiter = match.group(1)
+            if (delimiter[0] == fence[0] and len(delimiter) >= fence[1]
+                    and not match.group(2).strip()):
+                fence = None
+            continue
         if match:
             delimiter = match.group(1)
-            if fence is None:
-                fence = (delimiter[0], len(delimiter))
-            elif delimiter[0] == fence[0] and len(delimiter) >= fence[1]:
-                fence = None
+            fence = (delimiter[0], len(delimiter))
             continue
         if fence is None:
             lines.append(line)
@@ -862,7 +865,7 @@ def _validate_user_story_traceability(r: Path, mpath: Path, manifest: dict) -> l
     completed_tasks = set(re.findall(r"^[ ]{0,3}-\s*\[[xX]\]\s+(T-[0-9]{3,})\b", task_text, re.MULTILINE))
     acceptance_ids = set(re.findall(r"^[ ]{0,3}#{4,5}\s+(AC-[0-9]{3,})\b", specification, re.MULTILINE))
     try:
-        verification_text = (mpath.parent / "verification.md").read_text(encoding="utf-8")
+        verification_text = _markdown_without_fenced_code((mpath.parent / "verification.md").read_text(encoding="utf-8"))
     except OSError:
         verification_text = ""
     traceability = _load_mapping(traceability_path)

@@ -111,6 +111,42 @@ def test_mixed_fence_types_do_not_escape_a_fenced_code_block(tmp_path: Path) -> 
     assert any("at least one stable US-xxx User Story" in finding.message for finding in findings)
 
 
+def test_fence_info_does_not_close_an_open_fence(tmp_path: Path) -> None:
+    _write_change(
+        tmp_path,
+        observable=True,
+        specification="## Classification\n\nBehavior: behavioral\n\n```md\n```python\n### US-001 · Example\n```\n",
+    )
+
+    findings = _validate_all_user_story_contracts(tmp_path)
+
+    assert any("at least one stable US-xxx User Story" in finding.message for finding in findings)
+
+
+def test_fenced_verification_example_is_not_evidence(tmp_path: Path) -> None:
+    change = _write_change(
+        tmp_path,
+        observable=True,
+        specification="## Classification\n\nBehavior: behavioral\n\n### US-001 · First\n\n#### Acceptance Criteria\n##### AC-001\n",
+    )
+    manifest = change / "manifest.yml"
+    manifest.write_text(
+        manifest.read_text(encoding="utf-8").replace("  observable_behavior: true\n", "  observable_behavior: true\nstate:\n  current: implementation\n"),
+        encoding="utf-8",
+    )
+    (change / "tasks.md").write_text("- [x] T-001 Implement first\n", encoding="utf-8")
+    (change / "verification.md").write_text("```md\n| AC-001 | FR-001 | PASS | example |\n```\n", encoding="utf-8")
+    (change / "traceability.yml").write_text(
+        "schema: forge/traceability@1\nchange: CHG-0050\nrequirements: {}\n"
+        "stories:\n  US-001:\n    tasks: [T-001]\n    verification: [AC-001]\n",
+        encoding="utf-8",
+    )
+
+    findings = _validate_all_user_story_traceability(tmp_path)
+
+    assert any("without passing repository-native evidence" in finding.message for finding in findings)
+
+
 def test_implementation_requires_each_story_to_have_tasks_and_verification(tmp_path: Path) -> None:
     change = _write_change(
         tmp_path,
