@@ -9,14 +9,14 @@ flow:
   current: fast
   escalations: []
 state:
-  current: strict_review
+  current: complete
 artifacts:
   intent: complete
   inspection: complete
   test_design: complete
   tdd_evidence: complete
   verification: complete
-  review: pending
+  review: complete
   documentation_impact: complete
 requirements:
   total: 1
@@ -28,13 +28,23 @@ tdd:
 verification:
   status: passed
 review:
-  status: pending
-  iteration: 0
+  status: passed
+  iteration: 1
   blockers: 0
   majors: 0
-  minors: 0
-  observations: 0
-  iterations: []
+  minors: 1
+  observations: 1
+  iterations:
+    - id: review-001
+      revision: chg-0051-implementation-001
+      subject_provenance: implementation-subject-001
+      reviewer_provenance: reviewer-001
+      kind: initial_review
+      status: passed
+      profile: focused
+      full_review_required: false
+      new_material_findings: 0
+      finding_classes: []
 documentation:
   impact_evaluated: true
   update_required: true
