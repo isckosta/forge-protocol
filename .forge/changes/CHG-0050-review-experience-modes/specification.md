@@ -207,40 +207,52 @@ Given a `manifest.yml` that omits `review.current_phase` and has an empty `revie
 When `forge validate` runs
 Then it passes with no consistency finding — an absent phase before any Review Iteration exists is the valid initial state, not an inconsistency
 
-### FR-005 · Adapter projection of mode, resolved profile, and phase
+### FR-005 · Adapter projection of the mode-to-profile table and phase vocabulary
 Stories: US-001, US-003
 
 #### Requirement
-`src/forge_cli/adapters/claude_code/projection.py` and
-`codex/projection.py` MUST project, per Change, the selected
-`review.mode`, the resolved effective profile (FR-002), and
-`review.current_phase` (when present) into their generated Harness
-instructions, alongside the existing Flow gate instructions. The
-shared Reviewer/Resolver-independence and Convergence-Limit
-instruction blocks (`review_independence.py`) MUST remain
-byte-for-byte unchanged and mode-invariant.
+`_gate_instructions` in `src/forge_cli/adapters/claude_code/projection.py`
+and `codex/projection.py` runs once per canonical Flow at `forge
+adapter install` time, with no specific Change in scope — it MUST NOT
+be designed as if it could read a particular Change's live
+`manifest.review.mode`/`current_phase` (Implementation-time correction
+to this Requirement's original framing; see `DEC-004`). Instead, for
+each Flow it projects, when `protocol_id >= 2`, a per-Flow line stating
+that Flow's Review Profile floor (FR-002's `floor`) and the concrete
+profile `thorough` resolves to for that floor (via
+`resolve_effective_review_profile(floor, "thorough")`); and, once,
+after the per-Flow loop (mirroring how the shared independence section
+is appended once today), a single shared, Flow-invariant "Review
+Experience Modes" section explaining the `review.mode` vocabulary, the
+`review.current_phase` vocabulary and its human labels, and pointing
+at `forge change review-status <slug>` for a given Change's actual
+live selection and phase. The shared Reviewer/Resolver-independence
+and Convergence-Limit instruction blocks (`review_independence.py`)
+MUST remain byte-for-byte unchanged and mode-invariant.
 
 #### Boundary
 Projection is instructional text generation; it MUST NOT alter
 `forge validate`'s own independent enforcement of independence,
 evidence, severity, or convergence rules (mirrors RFC-0007 decision
-point 10's existing separation of concerns).
+point 10's existing separation of concerns). Projection MUST NOT claim
+to know any specific Change's live `review.mode`/`current_phase` value
+— only `forge change review-status` (FR-006) reads a specific Change.
 
 #### Acceptance
 AC-013
-Given a Change with `review.mode: thorough` on a FAST Flow
-When the `claude_code` Adapter projects its gate instructions
-Then the generated text states the resolved effective profile is `standard`, not `focused`
+Given the FAST Flow (floor `focused`)
+When the `claude_code` Adapter projects its FAST gate instructions
+Then the generated text states the floor is `focused` and that `thorough` resolves to `standard` for this Flow
 
 AC-014
-Given a Change with `review.current_phase: resolving`
-When either Adapter projects its instructions
-Then the generated text reflects that phase using the human-facing label (e.g. "Resolution")
+Given either Adapter's projected instructions for `protocol_id >= 2`
+When the shared Review Experience Modes section is rendered
+Then it lists all six `current_phase` values with their human-facing labels (Discovery/Findings/Resolution/Re-review/Converged/Stopped) and names `forge change review-status`
 
 AC-015
-Given any `review.mode` value
+Given any Flow and `protocol_id`
 When either Adapter projects Reviewer/Resolver independence or Convergence Limit instructions
-Then the generated text is identical to today's mode-less output for those specific blocks
+Then the generated text is identical to today's output for those specific blocks — unaffected by the new per-Flow mode-resolution line or the shared Review Experience Modes section
 
 ### FR-006 · `forge change review-status` CLI command
 Stories: US-003

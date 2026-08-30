@@ -297,6 +297,36 @@ def test_projection_review_profile_is_derived_fresh_not_cached() -> None:
     assert "`focused` profile" not in second
 
 
+def test_projection_renders_mode_resolution_line_per_flow_floor() -> None:
+    """CHG-0050 TDD-012 (FR-005, AC-013)."""
+    skill = _protocol_2_skill_content((("fast", _flow_with_profile("focused")),))
+    assert "This Flow's Review Profile floor is `focused`" in skill
+    assert "`thorough` resolves to `standard`" in skill
+
+
+def test_projection_renders_shared_review_experience_section_once() -> None:
+    """CHG-0050 TDD-012 (FR-005, AC-014)."""
+    skill = _protocol_2_skill_content((
+        ("fast", _flow_with_profile("focused")),
+        ("full", _flow_with_profile("strict")),
+    ))
+    assert skill.count("### Review Experience Modes") == 1
+    for label in ("Discovery", "Findings", "Resolution", "Re-review", "Converged", "Stopped"):
+        assert label in skill
+    assert "forge change review-status" in skill
+
+
+def test_projection_independence_block_is_unaffected_by_review_experience_section() -> None:
+    """CHG-0050 TDD-012 (FR-005, AC-015)."""
+    skill = _protocol_2_skill_content((("full", _flow_with_profile("strict")),))
+    independence_start = skill.index("### Reviewer/Resolver independence")
+    next_heading = skill.index("### ", independence_start + 1)
+    independence_block = skill[independence_start:next_heading]
+
+    assert "Review Experience Modes" not in independence_block
+    assert independence_block.count("### ") == 1
+
+
 def test_projection_uses_fixed_strict_review_instruction_under_protocol_1_even_with_a_profile() -> None:
     """CHG-0048 Iteration 1 R-001: Protocol 1's Contract has no Review
     Profile concept (C-022/C-023 there are unconditionally adversarial).

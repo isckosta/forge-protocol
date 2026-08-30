@@ -36,8 +36,8 @@ manifest that sets none of the three new fields (NFR-001).
 | FR-003 | `.forge/forge.yml` `review.preferred_mode` field | `protocol/schemas/project.schema.json` | New optional enum property under `properties.review` (sibling of the existing locked `strict`) |
 | FR-001, FR-003 | `_manifest()` | `src/forge_cli/change_scaffolding.py:373-406` | New `review_mode: str = "recommended"` parameter; sets `manifest["review"]["mode"]` |
 | FR-003 | `new_change()` / `_active_flow()` | `src/forge_cli/change_cli.py:54-150` | Read `configuration.get("review", {}).get("preferred_mode", "recommended")` and pass it through to `render_scaffold`/`_manifest` |
-| FR-005 | `review_experience.py` (new module) | `src/forge_cli/adapters/review_experience.py` | Mode/profile/phase instruction text, imported by both Adapters — sibling of the existing `review_independence.py` |
-| FR-005 | `_gate_instructions` | `src/forge_cli/adapters/claude_code/projection.py:92-122`, `codex/projection.py:71-101` | Read `manifest.review.mode`/`current_phase`, call `resolve_effective_review_profile`, append `review_experience.py` text |
+| FR-005 | `review_experience.py` (new module) | `src/forge_cli/adapters/review_experience.py` | Per-Flow mode-resolution line + one shared phase-vocabulary section, imported by both Adapters — sibling of the existing `review_independence.py` |
+| FR-005 | `_gate_instructions` | `src/forge_cli/adapters/claude_code/projection.py:92-122`, `codex/projection.py:71-101` | Per Flow, append `review_experience.render_mode_resolution_line(floor)`; once after the loop, append `render_review_experience_section()` (see DEC-004 — corrected from the original per-Change framing) |
 | FR-006 | `review_status()` | `src/forge_cli/change_cli.py` (new command) | New read-only subcommand |
 
 ## Data Flow
@@ -91,6 +91,36 @@ with `discovered_in: architecture`. **Authority**: agent
 within Specification's own stated boundary (FR-006's Acceptance
 Criteria constrain behavior, not mechanism), not a reduction of any
 Contract or product-facing guarantee.
+
+## DEC-004
+
+**Decision**: `_gate_instructions` (both Adapters) does not, and
+cannot, read a specific Change's `manifest.review.mode`/
+`current_phase` — it runs once per canonical Flow at `forge adapter
+install` time, before any specific Change exists. Corrected design:
+per-Flow, project a mode-to-profile resolution line computed purely
+from that Flow's own floor (`resolve_effective_review_profile(floor,
+"thorough")`); once, after the per-Flow loop, project one shared,
+Flow-invariant section explaining the `review.mode`/`current_phase`
+vocabulary and pointing at `forge change review-status <slug>` for any
+specific Change's live value.
+
+**Reasoning**: discovered while implementing FR-005 (Plan item 9) —
+the original Architecture text assumed `_gate_instructions` had a
+Change in scope, mirroring how `REVIEW_PROFILE_INSTRUCTION` already
+works today; it does not, because `review.profile` is Flow-static
+(known at install time) while `review.mode`/`current_phase` are
+per-Change (unknown at install time). This is a non-material
+correction to FR-005's mechanism, not its outcome: the Harness still
+learns the mode vocabulary, the resolved-profile consequence, and the
+phase vocabulary from Adapter-projected text, and still gets a
+per-Change live view — through `forge change review-status` (FR-006)
+instead of through the static projection.
+
+**Class**: technical, owned by `plan` (Decision Rules). **Materiality**:
+non_material (mechanism-only; RFC-0008's guarantees and Specification's
+Acceptance Criteria are updated to match, not weakened). **Authority**:
+agent (`resolved_via: evidence`).
 
 ## Schema Changes (concrete)
 

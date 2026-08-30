@@ -289,39 +289,42 @@ project preference changes.
 
 ## Layer C · Adapters
 
-### TDD-012 · Adapter projection includes mode/profile/phase text; independence/convergence blocks stay byte-identical
+### TDD-012 · Adapter projection includes the mode-resolution table and phase vocabulary; independence/convergence blocks stay byte-identical
 Requirements: FR-005
 
 #### Purpose
-Prove AC-013, AC-014, and — most importantly — AC-015: the one
-guarantee this Change must not accidentally weaken is that
-independence and Convergence Limit instructions are identical
-regardless of mode.
+Prove AC-013/AC-014 (the projected text is real, not aspirational) and
+— most importantly — AC-015: the one guarantee this Change must not
+accidentally weaken is that independence and Convergence Limit
+instructions are unaffected by the new projected content. (Corrected
+per `DEC-004`: `_gate_instructions` projects per-Flow floor/thorough
+values and one shared phase-vocabulary section, not a specific
+Change's live `review.mode`/`current_phase` — see `architecture.md`.)
 
 #### Scenario
-Given a Change with `review.mode: thorough` on a FAST Flow and
-`review.current_phase: resolving`
+Given the FAST Flow (floor `focused`)
 When `claude_code/projection.py` and `codex/projection.py` each
-project their gate instructions
-Then the output states the resolved profile is `standard` (not
-`focused`) and reflects the phase using its human label; and given the
-same Change projected under `review.mode: recommended` and
-`review.mode: fast`
-When the independence and Convergence Limit blocks specifically are
-extracted from each output
-Then they are byte-identical across all three mode values
+project their FAST gate instructions
+Then the output states the floor is `focused` and that `thorough`
+resolves to `standard`; and given `protocol_id >= 2`
+When the shared Review Experience Modes section is rendered
+Then it names all six phase values with their human labels and names
+`forge change review-status`; and when the independence and
+Convergence Limit blocks specifically are extracted from the
+projected output before and after this Change's projection changes
+Then they are byte-identical
 
 #### Evidence
 Existing `tests/unit/test_claude_code_projection_gates.py` and
-`test_codex_projection_gates.py`, extended with mode/phase fixtures;
+`test_codex_projection_gates.py`, extended with Flow-floor fixtures;
 direct string-equality assertion on the independence/convergence
 substrings.
 
 #### Failure Condition
-Any byte difference in the independence/convergence blocks across
-modes, or a resolved profile in the projected text that does not match
-`resolve_effective_review_profile`'s actual return value for that
-input.
+Any byte difference in the independence/convergence blocks from
+today's output, or a resolved `thorough` value in the projected text
+that does not match `resolve_effective_review_profile`'s actual return
+value for that Flow's floor.
 
 ## Manual Acceptance
 

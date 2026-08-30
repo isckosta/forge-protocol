@@ -377,6 +377,7 @@ def _manifest(
     flow_id: str,
     artifact_statuses: Mapping[str, str],
     behavioral: bool,
+    review_mode: str = "recommended",
 ) -> str:
     manifest: dict[str, Any] = {
         "schema": "forge/change@2",
@@ -399,6 +400,7 @@ def _manifest(
             "majors": 0,
             "minors": 0,
             "observations": 0,
+            "mode": review_mode,
             "iterations": [],
         },
         "documentation": {"impact_evaluated": False},
@@ -413,6 +415,7 @@ def render_scaffold(
     flow_id: str,
     flow_data: Mapping[str, Any],
     behavioral: bool = True,
+    review_mode: str = "recommended",
 ) -> ScaffoldPlan:
     validate_slug(slug)
     title = _title(slug)
@@ -456,6 +459,7 @@ def render_scaffold(
         flow_id=flow_id,
         artifact_statuses=statuses,
         behavioral=behavioral,
+        review_mode=review_mode,
     )
     return ScaffoldPlan(files=files)
 

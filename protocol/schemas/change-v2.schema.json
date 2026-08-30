@@ -26,6 +26,8 @@
         "majors": {"type": "integer", "minimum": 0},
         "minors": {"type": "integer", "minimum": 0},
         "observations": {"type": "integer", "minimum": 0},
+        "mode": {"enum": ["recommended", "fast", "thorough"]},
+        "current_phase": {"enum": ["scanning", "findings_recorded", "resolving", "re_reviewing", "converged", "stopped"]},
         "iterations": {
           "type": "array",
           "items": {

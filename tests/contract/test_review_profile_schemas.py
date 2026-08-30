@@ -47,6 +47,102 @@ def test_change_v2_review_iteration_rejects_invalid_profile() -> None:
         validator.validate(document)
 
 
+@pytest.mark.parametrize("mode", ["recommended", "fast", "thorough"])
+def test_change_v2_review_accepts_mode(mode: str) -> None:
+    """CHG-0050 TDD-004 (FR-001)."""
+    validator = _validator("change-v2.schema.json")
+    document = _minimal_change_v2_document()
+    document["review"]["mode"] = mode
+
+    validator.validate(document)
+
+
+def test_change_v2_review_omitting_mode_still_validates() -> None:
+    """CHG-0050 TDD-005 (FR-001, AC-001)."""
+    validator = _validator("change-v2.schema.json")
+    document = _minimal_change_v2_document()
+
+    validator.validate(document)
+
+
+def test_change_v2_review_rejects_invalid_mode() -> None:
+    """CHG-0050 TDD-004 (FR-001)."""
+    validator = _validator("change-v2.schema.json")
+    document = _minimal_change_v2_document()
+    document["review"]["mode"] = "aggressive"
+
+    with pytest.raises(ValidationError):
+        validator.validate(document)
+
+
+@pytest.mark.parametrize(
+    "phase",
+    ["scanning", "findings_recorded", "resolving", "re_reviewing", "converged", "stopped"],
+)
+def test_change_v2_review_accepts_current_phase(phase: str) -> None:
+    """CHG-0050 TDD-008 (FR-004)."""
+    validator = _validator("change-v2.schema.json")
+    document = _minimal_change_v2_document()
+    document["review"]["current_phase"] = phase
+
+    validator.validate(document)
+
+
+def test_change_v2_review_omitting_current_phase_still_validates() -> None:
+    """CHG-0050 TDD-006 (FR-004, AC-012b)."""
+    validator = _validator("change-v2.schema.json")
+    document = _minimal_change_v2_document()
+
+    validator.validate(document)
+
+
+def test_change_v2_review_rejects_invalid_current_phase() -> None:
+    """CHG-0050 TDD-008 (FR-004, AC-012)."""
+    validator = _validator("change-v2.schema.json")
+    document = _minimal_change_v2_document()
+    document["review"]["current_phase"] = "not_a_real_value"
+
+    with pytest.raises(ValidationError):
+        validator.validate(document)
+
+
+@pytest.mark.parametrize("mode", ["recommended", "fast", "thorough"])
+def test_project_schema_accepts_review_preferred_mode(mode: str) -> None:
+    """CHG-0050 TDD-004 note (FR-003): project schema accepts review.preferred_mode."""
+    validator = _validator("project.schema.json")
+    document = _minimal_project_document()
+    document["review"]["preferred_mode"] = mode
+
+    validator.validate(document)
+
+
+def test_project_schema_omitting_preferred_mode_still_validates() -> None:
+    """CHG-0050 (FR-003, AC-008)."""
+    validator = _validator("project.schema.json")
+    document = _minimal_project_document()
+
+    validator.validate(document)
+
+
+def test_project_schema_rejects_invalid_preferred_mode() -> None:
+    """CHG-0050 (FR-003)."""
+    validator = _validator("project.schema.json")
+    document = _minimal_project_document()
+    document["review"]["preferred_mode"] = "aggressive"
+
+    with pytest.raises(ValidationError):
+        validator.validate(document)
+
+
+def test_project_schema_review_strict_is_untouched() -> None:
+    """CHG-0050 RFC-0008 SS3: the existing locked review.strict field keeps its meaning."""
+    validator = _validator("project.schema.json")
+    document = _minimal_project_document()
+
+    validator.validate(document)
+    assert document["review"]["strict"] is True
+
+
 @pytest.mark.parametrize("profile", ["focused", "standard", "strict"])
 def test_policy_review_v2_accepts_profile(profile: str) -> None:
     validator = _validator("policy-review-v2.schema.json")
@@ -132,6 +228,18 @@ def _minimal_change_v2_document() -> dict:
             "iterations": [{"id": "review-001", "revision": "chg-9999-001", "status": "pending"}],
         },
         "documentation": {"impact_evaluated": False},
+    }
+
+
+def _minimal_project_document() -> dict:
+    return {
+        "schema": "forge/project@1",
+        "project": {"name": "fixture"},
+        "forge": {"protocol": 2},
+        "flows": {"default": "standard", "allow_fast": True, "auto_escalation": True},
+        "testing": {"approach": "tdd_first"},
+        "review": {"strict": True},
+        "documentation": {"impact_evaluation": "required"},
     }
 
 

@@ -204,6 +204,35 @@ def test_render_scaffold_manifest_matches_change_schema() -> None:
     assert "decisions" not in manifest
 
 
+def test_render_scaffold_manifest_defaults_review_mode_to_recommended() -> None:
+    """CHG-0050 TDD-010 (FR-001, FR-003, AC-008)."""
+    plan = render_scaffold(
+        change_id="CHG-0022",
+        slug="api-v2-fix",
+        flow_id="standard",
+        flow_data=_canonical_flow("standard"),
+        behavioral=True,
+    )
+    manifest = yaml.safe_load(plan.files["manifest.yml"])
+
+    assert manifest["review"]["mode"] == "recommended"
+
+
+def test_render_scaffold_manifest_uses_the_requested_review_mode() -> None:
+    """CHG-0050 TDD-009 (FR-003, AC-007)."""
+    plan = render_scaffold(
+        change_id="CHG-0022",
+        slug="api-v2-fix",
+        flow_id="standard",
+        flow_data=_canonical_flow("standard"),
+        behavioral=True,
+        review_mode="thorough",
+    )
+    manifest = yaml.safe_load(plan.files["manifest.yml"])
+
+    assert manifest["review"]["mode"] == "thorough"
+
+
 def test_render_scaffold_specification_uses_traceable_contract_layout() -> None:
     plan = render_scaffold(
         change_id="CHG-0037",

@@ -65,6 +65,24 @@ def test_profile_floor_accepts_a_stricter_than_canonical_project_override(tmp_pa
     assert result.findings == ()
 
 
+def test_compute_review_profile_floor_returns_canonical_profile_without_override() -> None:
+    effective = {
+        "canonical": {"flow": {"id": "standard", "review": {"profile": "standard"}}},
+        "project": {},
+    }
+
+    assert validation.compute_review_profile_floor(effective) == "standard"
+
+
+def test_compute_review_profile_floor_returns_project_override_profile() -> None:
+    effective = {
+        "canonical": {"flow": {"id": "fast", "review": {"profile": "focused"}}},
+        "project": {"review": {"profile": "strict"}},
+    }
+
+    assert validation.compute_review_profile_floor(effective) == "strict"
+
+
 def test_profile_floor_is_silent_when_project_declares_no_profile_override(tmp_path: Path) -> None:
     _write_valid_project_configuration(tmp_path)
     flow_dir = tmp_path / ".forge" / "flows"

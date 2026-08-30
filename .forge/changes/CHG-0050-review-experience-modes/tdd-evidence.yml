@@ -1,5 +1,144 @@
 schema: forge/tdd-evidence@1
 change: CHG-0050
-status: active
-cycle_count: 0
-cycles: []
+status: compliant
+cycle_count: 10
+cycles:
+- id: TDD-001
+  title: compute_review_profile_floor extraction is behavior-preserving
+  requirements:
+  - FR-002
+  behavior: Extracts the floor-computation logic already inline inside _validate_review_profile_floor into a standalone, reusable function returning the canonical or project-override profile.
+  red:
+    command: .venv/bin/python -m pytest tests/unit/test_validation_review_profile.py -q
+    result: 2 failed, 3 passed
+    reason: "AttributeError: module 'forge_cli.validation' has no attribute 'compute_review_profile_floor' -- the function did not exist yet."
+  green:
+    command: .venv/bin/python -m pytest tests/unit/test_validation_review_profile.py -q
+    result: 5 passed
+  notes:
+  - _validate_review_profile_floor was refactored to call the new function instead of duplicating its logic; existing floor-validator tests re-ran unchanged.
+- id: TDD-002
+  title: resolve_effective_review_profile never ranks below the floor; thorough steps up one rank capped at strict
+  requirements:
+  - FR-002
+  behavior: recommended/fast always resolve to exactly the Flow-derived floor; thorough resolves one PROFILE_RANK step above the floor, capped at strict.
+  red:
+    command: .venv/bin/python -m pytest tests/unit/test_protocol_resolution_review_mode.py -q
+    result: "ImportError: cannot import name 'resolve_effective_review_profile' from 'forge_cli.protocol_resolution'"
+    reason: The function did not exist yet.
+  green:
+    command: .venv/bin/python -m pytest tests/unit/test_protocol_resolution_review_mode.py tests/unit/test_validation_review_profile.py -q
+    result: 14 passed
+  notes:
+  - PROFILE_RANK was moved from validation/__init__.py to protocol_resolution/__init__.py (validation already imports from protocol_resolution, so the reverse import would be circular); validation keeps a local alias for its existing call sites.
+- id: TDD-003
+  title: change-v2.schema.json accepts review.mode/review.current_phase and rejects invalid values
+  requirements:
+  - FR-001
+  - FR-004
+  behavior: The review object gains two optional enum properties; omission still validates; an out-of-enum value is rejected.
+  red:
+    command: .venv/bin/python -m pytest tests/contract/test_review_profile_schemas.py -q -k "mode or current_phase"
+    result: 9 failed, 4 passed
+    reason: "Additional properties are not allowed ('mode'/'current_phase' was unexpected) -- confirmed by temporarily stashing the schema edit and re-running."
+  green:
+    command: .venv/bin/python -m pytest tests/contract/test_review_profile_schemas.py -q
+    result: 31 passed
+  notes: []
+- id: TDD-004
+  title: _validate_review_current_phase flags only converged-with-non-passed-status
+  requirements:
+  - FR-004
+  behavior: No finding for converged+passed or for an absent phase with no iterations yet; exactly one finding for converged with a non-passed status. Wired into validate_project's per-manifest loop.
+  red:
+    command: .venv/bin/python -m pytest tests/unit/test_review_current_phase_validation.py -q
+    result: "AttributeError: module 'forge_cli.validation' has no attribute '_validate_review_current_phase'"
+    reason: The function did not exist yet.
+  green:
+    command: .venv/bin/python -m pytest tests/unit/test_review_current_phase_validation.py -q
+    result: 3 passed
+  notes:
+  - Confirmed forge validate still passes against this repository's own .forge/ (no existing Change sets current_phase, so the new check is silent for all of them).
+- id: TDD-005
+  title: project.schema.json accepts review.preferred_mode; review.strict is untouched
+  requirements:
+  - FR-003
+  behavior: The project review object gains one optional enum property, sibling of the existing locked strict; strict's own value/meaning is unaffected.
+  red:
+    command: .venv/bin/python -m pytest tests/contract/test_review_profile_schemas.py -q -k "preferred_mode or review_strict"
+    result: 3 failed, 3 passed
+    reason: "Additional properties are not allowed ('preferred_mode' was unexpected)."
+  green:
+    command: .venv/bin/python -m pytest tests/contract/test_review_profile_schemas.py -q
+    result: 37 passed
+  notes: []
+- id: TDD-006
+  title: Scaffold manifest carries review.mode, defaulting to recommended
+  requirements:
+  - FR-001
+  - FR-003
+  behavior: _manifest()/render_scaffold() accept a review_mode parameter (default recommended) and write manifest.review.mode.
+  red:
+    command: .venv/bin/python -m pytest tests/unit/test_change_scaffolding.py -q -k review_mode
+    result: 1 failed (KeyError 'mode'), 1 failed (TypeError unexpected keyword argument 'review_mode')
+    reason: The field/parameter did not exist yet.
+  green:
+    command: .venv/bin/python -m pytest tests/unit/test_change_scaffolding.py -q
+    result: 66 passed
+  notes: []
+- id: TDD-007
+  title: forge change new seeds review.mode from review.preferred_mode; an existing Change's mode is never retroactively overridden
+  requirements:
+  - FR-003
+  behavior: new_change()/_active_flow() read .forge/forge.yml's review.preferred_mode (default recommended) and pass it through to render_scaffold; nothing re-reads project configuration for an already-scaffolded Change.
+  red:
+    command: .venv/bin/python -m pytest tests/cli/test_change_review_mode_scaffolding.py -q
+    result: 1 failed, 2 passed
+    reason: "AssertionError: assert 'recommended' == 'thorough' -- the CLI did not yet read the project preference."
+  green:
+    command: .venv/bin/python -m pytest tests/cli/test_change_review_mode_scaffolding.py tests/cli/test_cli_contract.py -q
+    result: 13 passed
+  notes: []
+- id: TDD-008
+  title: Both Adapters project a per-Flow mode-resolution line and one shared phase-vocabulary section; independence block unaffected
+  requirements:
+  - FR-005
+  behavior: "_gate_instructions projects, per Flow, that Flow's floor and its thorough-resolved value; once, after the per-Flow loop, a shared Review Experience Modes section naming all six phase labels and forge change review-status. Corrected mid-cycle per DEC-004: the original Plan/Architecture text assumed a specific Change's manifest.review.mode/current_phase were readable here; they are not, since this function runs once per Flow at forge adapter install time with no Change in scope."
+  red:
+    command: .venv/bin/python -m pytest tests/unit/test_claude_code_projection_gates.py -q -k "mode_resolution or review_experience or independence_block_is_unaffected"
+    result: 2 failed, 2 passed
+    reason: The projected text did not exist yet (the third, independence-unaffected assertion was vacuously true before the feature existed and became meaningful only after GREEN).
+  green:
+    command: .venv/bin/python -m pytest tests/unit/test_claude_code_projection_gates.py -q
+    result: 27 passed
+  notes:
+  - New shared module src/forge_cli/adapters/review_experience.py (PHASE_LABELS, render_mode_resolution_line, render_review_experience_section), sibling of review_independence.py.
+- id: TDD-009
+  title: Codex Adapter parity for the mode-resolution line and shared phase-vocabulary section
+  requirements:
+  - FR-005
+  behavior: Same projection behavior as TDD-008, mirrored in the Codex Adapter from the same shared review_experience.py module.
+  red:
+    command: .venv/bin/python -m pytest tests/unit/test_codex_projection_gates.py -q -k "mode_resolution or review_experience_section or independence_block_is_unaffected"
+    result: 2 failed, 1 passed
+    reason: The projected text did not exist yet in the Codex Adapter.
+  green:
+    command: .venv/bin/python -m pytest tests/unit/test_codex_projection_gates.py -q
+    result: 20 passed
+  notes:
+  - Both Adapters import the identical review_experience.py helpers -- no independently authored copy of this text exists.
+- id: TDD-010
+  title: forge change review-status reports mode/profile/phase/findings/next-step; freshly-scaffolded and nonexistent Changes handled explicitly; stopped is a non-authoritative observability state
+  requirements:
+  - FR-006
+  - FR-007
+  behavior: New read-only CLI command resolves and prints a Change's mode, effective profile, phase (or "Review not yet started"), Finding counts, and a next-step hint derived directly from manifest state (DEC-002 -- no merge_readiness call). A stopped phase is reported as incomplete, never as converged, and forge validate accepts it alongside a non-passed status.
+  red:
+    command: .venv/bin/python -m pytest tests/cli/test_change_review_status.py -q
+    result: 3 failed (No such command 'review-status'), 2 passed (trivially -- nonexistent-Change and forge-validate-accepts-stopped cases needed no new code)
+    reason: The command did not exist yet.
+  green:
+    command: .venv/bin/python -m pytest tests/cli/test_change_review_status.py -q
+    result: 5 passed
+  notes:
+  - The two RED-trivial cases (AC-017's nonexistent-Change error, AC-018's forge validate acceptance) were already correct by construction of prior cycles (Typer's own command-not-found handling; TDD-004's narrowly-scoped consistency check) -- recorded here per C-016, not claimed as new behavior this cycle introduced.
