@@ -1,0 +1,55 @@
+schema: forge/change@2
+protocol: 2
+change:
+  id: CHG-0051
+  title: Canonical Review Profile Nesting Fix
+  kind: bugfix
+flow:
+  initial: fast
+  current: fast
+  escalations: []
+state:
+  current: complete
+artifacts:
+  intent: complete
+  inspection: complete
+  test_design: complete
+  tdd_evidence: complete
+  verification: complete
+  review: complete
+  documentation_impact: complete
+  documentation: complete
+requirements:
+  total: 1
+  implemented: 1
+  verified: 1
+tdd:
+  status: compliant
+  cycles: 1
+verification:
+  status: passed
+review:
+  status: passed
+  iteration: 1
+  blockers: 0
+  majors: 0
+  minors: 1
+  observations: 1
+  iterations:
+    - id: review-001
+      revision: chg-0051-implementation-001
+      subject_provenance: implementation-subject-001
+      reviewer_provenance: reviewer-001
+      kind: initial_review
+      status: passed
+      profile: focused
+      full_review_required: false
+      new_material_findings: 0
+      finding_classes: []
+documentation:
+  impact_evaluated: true
+  update_required: true
+  reason: >-
+    Updated: CHANGELOG.md (Unreleased entry). No protocol/compatibility.md
+    entry needed -- no schema, Contract, or CLI surface changed, only a
+    private function's internal correctness.

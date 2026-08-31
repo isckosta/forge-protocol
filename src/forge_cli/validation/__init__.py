@@ -773,8 +773,7 @@ def _validate_all_delegated_authority(r:Path)->list[ValidationFinding]:
 _PROFILE_RANK={"focused":0,"standard":1,"strict":2}
 def _validate_review_profile_floor(root:Path,path:Path,effective:dict)->list[ValidationFinding]:
     canonical=effective.get("canonical")if isinstance(effective,dict)else None
-    canonical_flow=canonical.get("flow")if isinstance(canonical,dict)else None
-    canonical_review=canonical_flow.get("review")if isinstance(canonical_flow,dict)else None
+    canonical_review=canonical.get("review")if isinstance(canonical,dict)else None
     canonical_profile=canonical_review.get("profile","strict")if isinstance(canonical_review,dict)else"strict"
     project=effective.get("project")if isinstance(effective,dict)else None
     project_review=project.get("review")if isinstance(project,dict)else None
