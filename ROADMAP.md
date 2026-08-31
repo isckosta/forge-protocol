@@ -10,7 +10,7 @@ The chat remains the runtime. The repository remains durable memory. Forge remai
 
 ## Current position
 
-Forge already has the core Foundation: FULL, STANDARD, and FAST Flows; TDD-first behavioral development; Verification; adversarial Strict Review; repository-native Change state; bootstrap CLI; generic Harness Adapter Core; and a concrete Codex Adapter.
+Forge already has the core Foundation: FULL, STANDARD, and FAST Flows; TDD-first behavioral development; Verification; proportional Review profiles with Flow-defined assurance floors and user-facing Review Experience Modes; repository-native Change state; bootstrap CLI; generic Harness Adapter Core; and concrete Codex and Claude Code Adapters.
 
 The remaining work is primarily contract stabilization, productization, external validation, Harness-independence proof, and release engineering.
 
@@ -35,8 +35,8 @@ These percentages are directional only. Release readiness is determined by the g
 2. **Repository is durable memory.** Normal Forge operation must not require a hosted Forge backend, account, or remote database.
 3. **Protocol is authoritative.** Harness projections are derived representations, never a competing source of truth.
 4. **TDD-first remains a behavioral invariant.** Reasonably testable behavioral Changes establish valid RED before production behavior.
-5. **Strict Review remains adversarial.** Completion requires Verification, Review, and reconciliation of blocking external review threads when an external review surface exists.
-6. **FAST reduces ceremony, not quality.** Quality invariants remain consistent across Flows.
+5. **Review remains mandatory and proportional.** Each Flow defines a minimum Review profile: FAST uses `focused`, STANDARD uses `standard`, and FULL uses `strict`. Projects and user-facing Review Experience Modes may increase rigor, but never reduce it below the Flow floor. Verification, Review, and reconciliation of blocking external review threads remain Completion requirements where applicable.
+6. **FAST reduces ceremony and Review breadth, not correctness authority.** Focused Review narrows the required search posture while preserving blocking severity, evidence, independence, Resolution, and Completion invariants.
 7. **Harness independence must be demonstrated.** A second real Harness Adapter is required before the Adapter Core is considered proven for v1.
 
 # Roadmap to v1
@@ -61,7 +61,7 @@ external adoption.
 - reconcile FULL, STANDARD, and FAST semantics;
 - freeze lifecycle terminology and Gate names;
 - freeze TDD-first semantics and justified exception rules;
-- freeze Verification, Strict Review, and Completion semantics;
+- freeze Verification, Review, and Completion semantics;
 - freeze external blocking-review-thread reconciliation semantics;
 - freeze ownership modes: `forge_owned`, `user_owned`, and `shared`;
 - freeze Adapter capability, limitation, repository-authority, and derived-projection semantics;
@@ -78,7 +78,7 @@ external adoption.
 - canonical Flows have no contradictory Gates;
 - compatibility and deprecation policies are documented;
 - v1 semantics are frozen except for release-blocking corrections;
-- Strict Review passes with zero blocker/major findings.
+- required Review passes with zero blocker/major findings.
 
 ## Adapter CLI & Codex Installation UX
 
@@ -223,14 +223,14 @@ Exercise Forge against at least:
 - a monorepo;
 - an existing/legacy repository.
 
-Validation should cover FAST bugfix, STANDARD feature, FULL feature, Strict Review remediation, Adapter drift, and user-owned collision behavior where applicable.
+Validation should cover FAST bugfix, STANDARD feature, FULL feature, Review remediation, Adapter drift, and user-owned collision behavior where applicable.
 
 ### Golden path
 
 Status: the STANDARD/Codex slice of this section is done, via `CHG-0014`
 (`docs/getting-started.md`, `examples/golden-path-standard/`,
 `tests/golden_path/`). The External validation matrix and FAST/FULL/
-Strict-Review-remediation/Adapter-drift examples below remain open.
+Review-remediation/Adapter-drift examples below remain open.
 
 Create `docs/getting-started.md` with a first successful Change as the primary onboarding path:
 
@@ -362,7 +362,7 @@ Additional prereleases are evidence-driven, not deadline-driven.
 - migration policy exists and current-state/no-op migration is testable;
 - release documentation is complete;
 - all v1 blocker/major findings are closed;
-- final Verification and Strict Review pass;
+- final Verification and strict Review pass;
 - Protocol compatibility contract is frozen.
 
 # Release gates
@@ -393,7 +393,7 @@ A documented migration and compatibility model exists before stable repository s
 
 ## Gate G — Review integrity
 
-All release-blocking findings and blocking external review threads are reconciled. Verification and Strict Review pass on the release-candidate revision.
+All release-blocking findings and blocking external review threads are reconciled. Verification and strict Review pass on the release-candidate revision.
 
 # Explicitly deferred beyond v1
 
