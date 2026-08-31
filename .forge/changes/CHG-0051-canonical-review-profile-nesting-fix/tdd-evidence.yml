@@ -1,0 +1,19 @@
+schema: forge/tdd-evidence@1
+change: CHG-0051
+status: compliant
+cycle_count: 1
+cycles:
+- id: TDD-001
+  title: "_validate_review_profile_floor reads a canonical Flow's review.profile from the correct top-level location, not nested under flow"
+  requirements:
+  - FR-001
+  behavior: A project-flow override that raises a Flow's profile above its real canonical floor but below strict (FAST -> standard) is accepted, not rejected against a phantom strict floor. Regression test uses this repository's own real protocol/flows/fast.yml via resolve_effective_flow/validate_project, per C-018 (bugfixes prove the defect first) and TD-001/TD-002 (test-design.md).
+  red:
+    command: .venv/bin/python -m pytest tests/unit/test_validation_review_profile.py -q -k above_the_real_canonical_floor
+    result: "1 failed: E_FORGE_REVIEW_PROFILE_BELOW_FLOOR fired against fast.yml's real 'focused' floor, comparing 'standard' against a wrongly-computed 'strict' floor"
+    reason: "_validate_review_profile_floor read effective['canonical']['flow']['review'] instead of effective['canonical']['review']; real Flow files declare review: as a top-level sibling of flow:, so canonical_flow.get('review') was always None and fell through to the 'strict' default."
+  green:
+    command: .venv/bin/python -m pytest tests/unit/test_validation_review_profile.py -q
+    result: 4 passed
+  notes:
+  - One-line nesting-depth fix (canonical.get("review") instead of canonical_flow.get("review")); no other logic changed. TD-002 (real-file coverage across all three canonical Flows) is satisfied by this same test, which already loads protocol/flows/fast.yml through the real resolve_effective_flow/validate_project path rather than a hand-built fixture.

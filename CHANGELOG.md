@@ -25,6 +25,19 @@ validated for status consistency; a new `forge change review-status
 <slug>` command reports a Change's live mode, resolved profile, phase,
 and outstanding Finding counts. See `docs/rfcs/0008-review-experience-modes.md`.
 
+### Canonical Review Profile Nesting Fix
+
+Fixed `_validate_review_profile_floor` (`forge validate`'s
+`E_FORGE_REVIEW_PROFILE_BELOW_FLOOR` check, shipped in 0.1.0b2) reading
+a canonical Flow's `review.profile` from the wrong nesting level
+(`flow.review` instead of the real top-level `review`), which silently
+treated every Flow's canonical floor as `strict` regardless of its
+actual value. A project-flow override that legitimately raised a
+Flow's profile above its real floor but below `strict` (e.g. FAST's
+override set to `standard`) was incorrectly rejected as "weaker than
+floor." No schema or CLI surface changed; this is a one-line
+correctness fix.
+
 ## [0.1.0b2] - 2026-08-27
 
 ### Adapter Hook Executable Mode

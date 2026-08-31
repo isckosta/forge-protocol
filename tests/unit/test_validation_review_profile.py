@@ -65,6 +65,27 @@ def test_profile_floor_accepts_a_stricter_than_canonical_project_override(tmp_pa
     assert result.findings == ()
 
 
+def test_profile_floor_accepts_an_override_above_the_real_canonical_floor_but_below_strict(
+    tmp_path: Path,
+) -> None:
+    """CHG-0051 TD-001/TD-002: FAST's real canonical floor is `focused` (see
+    protocol/flows/fast.yml). A project override of `standard` is stricter
+    than that real floor and must be accepted -- but the canonical profile
+    was being read from the wrong nesting level (effective["canonical"]["flow"]["review"]
+    instead of effective["canonical"]["review"]), which is always None for
+    real Flow files and silently defaults to "strict". That defect made
+    every canonical floor look like `strict` regardless of the actual Flow,
+    so this override was wrongly rejected as "weaker than floor" against a
+    phantom `strict` floor instead of the real `focused` one."""
+    _write_valid_project_configuration(tmp_path)
+    _write_project_flow_override(tmp_path, "fast", "standard")
+
+    result = validation.validate_project(tmp_path, PROTOCOL_ROOT)
+
+    assert result.passed is True, result.findings
+    assert result.findings == ()
+
+
 def test_compute_review_profile_floor_returns_canonical_profile_without_override() -> None:
     """review: is a top-level sibling of flow:, matching real Flow files
     (protocol/flows/*.yml) -- not nested inside flow: (CHG-0051)."""
