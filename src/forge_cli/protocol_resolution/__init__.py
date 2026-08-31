@@ -31,6 +31,24 @@ class CanonicalArtifactStructureUnavailableError(ProtocolResolutionError):
 
 _ALLOWED_PROJECT_FLOW_KEYS = {"schema", "flow", "review", "testing"}
 
+PROFILE_RANK = {"focused": 0, "standard": 1, "strict": 2}
+_PROFILE_ORDER = ("focused", "standard", "strict")
+
+
+def resolve_effective_review_profile(floor: str, mode: str) -> str:
+    """CHG-0050/RFC-0008: resolve a Review Experience Mode to an effective
+    Review Profile that never ranks below ``floor``.
+
+    ``recommended`` and ``fast`` both resolve to exactly ``floor`` --
+    there is no code path here that can return a profile ranked lower.
+    ``thorough`` resolves one profile rank above ``floor``, capped at
+    ``strict``.
+    """
+    floor_rank = PROFILE_RANK[floor]
+    if mode != "thorough":
+        return floor
+    return _PROFILE_ORDER[min(floor_rank + 1, len(_PROFILE_ORDER) - 1)]
+
 
 @dataclass(frozen=True)
 class EffectiveContract:

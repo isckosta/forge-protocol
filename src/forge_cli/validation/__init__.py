@@ -7,7 +7,7 @@ import subprocess
 from typing import Any
 import yaml
 from forge_cli.configuration import InvalidProjectConfigurationError, UnsupportedProtocolVersionError, load_project_configuration
-from forge_cli.protocol_resolution import CanonicalContractUnavailableError, InvalidProjectFlowConfigurationError, UnknownCanonicalFlowError, resolve_effective_contract, resolve_effective_flow
+from forge_cli.protocol_resolution import CanonicalContractUnavailableError, InvalidProjectFlowConfigurationError, PROFILE_RANK, UnknownCanonicalFlowError, resolve_effective_contract, resolve_effective_flow
 @dataclass(frozen=True)
 class ValidationFinding:
     code:str; artifact:str; message:str; path:Path|None=None
@@ -770,11 +770,30 @@ def _validate_all_delegated_authority(r:Path)->list[ValidationFinding]:
     for mpath in sorted(changes.glob("*/manifest.yml")):
         out.extend(_validate_delegated_authority(r,mpath))
     return out
-_PROFILE_RANK={"focused":0,"standard":1,"strict":2}
-def _validate_review_profile_floor(root:Path,path:Path,effective:dict)->list[ValidationFinding]:
+_PROFILE_RANK=PROFILE_RANK
+def _canonical_review_profile(effective:dict)->str:
     canonical=effective.get("canonical")if isinstance(effective,dict)else None
     canonical_review=canonical.get("review")if isinstance(canonical,dict)else None
-    canonical_profile=canonical_review.get("profile","strict")if isinstance(canonical_review,dict)else"strict"
+    return canonical_review.get("profile","strict")if isinstance(canonical_review,dict)else"strict"
+def compute_review_profile_floor(effective:dict)->str:
+    """CHG-0050: the safe Review Profile floor a Change's Flow requires.
+
+    Never ranks below the canonical floor, even when a project-flow
+    override is itself invalid (already-rejected by
+    _validate_review_profile_floor as E_FORGE_REVIEW_PROFILE_BELOW_FLOOR)
+    -- Codex PR #44 review (P2): callers of this function (forge change
+    review-status, Adapter projection) must not surface a below-floor
+    value just because the stored configuration is misconfigured.
+    """
+    canonical_profile=_canonical_review_profile(effective)
+    project=effective.get("project")if isinstance(effective,dict)else None
+    project_review=project.get("review")if isinstance(project,dict)else None
+    if not isinstance(project_review,dict)or"profile"not in project_review:return canonical_profile
+    project_profile=project_review["profile"]
+    if _PROFILE_RANK.get(project_profile,-1)<_PROFILE_RANK.get(canonical_profile,0):return canonical_profile
+    return project_profile
+def _validate_review_profile_floor(root:Path,path:Path,effective:dict)->list[ValidationFinding]:
+    canonical_profile=_canonical_review_profile(effective)
     project=effective.get("project")if isinstance(effective,dict)else None
     project_review=project.get("review")if isinstance(project,dict)else None
     if not isinstance(project_review,dict)or"profile"not in project_review:return[]
@@ -783,6 +802,35 @@ def _validate_review_profile_floor(root:Path,path:Path,effective:dict)->list[Val
         return[ValidationFinding("E_FORGE_REVIEW_PROFILE_BELOW_FLOOR",str(path.relative_to(root)),
             f"Project Flow declares review.profile={project_profile!r}, weaker than the canonical floor {canonical_profile!r} for this Flow.",path)]
     return[]
+def _validate_review_current_phase(manifest:dict)->list[ValidationFinding]:
+    """CHG-0050 FR-004: review.current_phase must be consistent with review.status.
+
+    Checked both directions (Codex PR #44 review, P2): 'converged' requires
+    'passed', and -- the direction originally missing -- 'passed' requires
+    'converged' (not 'stopped', 'findings_recorded', or any other
+    non-converged phase silently coexisting with a passed status).
+    """
+    review=manifest.get("review")if isinstance(manifest,dict)else None
+    if not isinstance(review,dict):return[]
+    phase=review.get("current_phase")
+    status=review.get("status")
+    if phase=="converged"and status!="passed":
+        return[ValidationFinding("E_FORGE_REVIEW_PHASE_STATUS_MISMATCH","",
+            f"review.current_phase is 'converged' but review.status is {status!r}, not 'passed'.")]
+    if status=="passed"and phase is not None and phase!="converged":
+        return[ValidationFinding("E_FORGE_REVIEW_PHASE_STATUS_MISMATCH","",
+            f"review.status is 'passed' but review.current_phase is {phase!r}, not 'converged'.")]
+    return[]
+def _validate_all_review_current_phase(r:Path)->list[ValidationFinding]:
+    out:list[ValidationFinding]=[];changes=r/".forge/changes"
+    if not changes.is_dir():return out
+    for mpath in sorted(changes.glob("*/manifest.yml")):
+        m=_load_mapping(mpath)
+        if m is None:continue
+        rel=str(mpath.relative_to(r))
+        for f in _validate_review_current_phase(m):
+            out.append(ValidationFinding(f.code,rel,f.message,mpath))
+    return out
 def validate_project(project_root:Path,protocol_root:Path)->ValidationResult:
     f=project_root/".forge"
     if not f.is_dir():return ValidationResult((ValidationFinding("E_FORGE_NOT_INITIALIZED",".forge/","Forge is not initialized. Run `forge init` from this Git repository.",f),))
@@ -800,4 +848,5 @@ def validate_project(project_root:Path,protocol_root:Path)->ValidationResult:
     if pid==2:out.extend(_validate_protocol2_review_provenance(project_root))
     out.extend(_validate_all_unresolved_decisions(project_root))
     out.extend(_validate_all_delegated_authority(project_root))
+    out.extend(_validate_all_review_current_phase(project_root))
     return ValidationResult(tuple(out))

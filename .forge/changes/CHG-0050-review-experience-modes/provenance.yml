@@ -1,0 +1,232 @@
+schema: forge/execution-provenance@2
+change: CHG-0050
+records:
+  - id: rfc-acceptance-001
+    role: implementation
+    execution:
+      id: claude-code-implementation-0050-rfc
+      context_id: claude-code-session-2026-08-30-rfc
+    recorded_at: '2026-08-30T00:00:00Z'
+    revision:
+      id: chg-0050-rfc-acceptance-001
+      immutable_ref:
+        type: git_commit
+        value: c4201ba14b58060d39ef3757d065618ad16d0321
+      commit: c4201ba14b58060d39ef3757d065618ad16d0321
+    source:
+      assurance: recorded
+      observed_by: operator
+      reference: docs/rfcs/0008-review-experience-modes.md#acceptance-record
+      statement: The user explicitly accepted RFC-0008 (Review Experience Modes) in the active chat session on 2026-08-30, via AskUserQuestion, after also resolving Discovery's Open Question OQ-2 (schema-tracked review.current_phase over projection-only observability) in the same session. This acceptance is the F-008-required RFC authorizing this Change's schema/CLI/Adapter work.
+  - id: plan-approval-001
+    role: implementation
+    execution:
+      id: claude-code-implementation-0050-plan
+      context_id: claude-code-session-2026-08-30-plan
+    recorded_at: '2026-08-30T00:00:00Z'
+    revision:
+      id: chg-0050-plan-approval-001
+      immutable_ref:
+        type: git_commit
+        value: 153b0d93907e5827de62181ee64870b8af53c985
+      commit: 153b0d93907e5827de62181ee64870b8af53c985
+    source:
+      assurance: recorded
+      observed_by: operator
+      reference: plan.md#approval-record
+      content_digest:
+        algorithm: sha256
+        path: plan.md
+        value: 96a4fd17d7eebb44d1f9cf3635fa2890f1d2803253bc25b4ed3891819e77a915
+      statement: The user explicitly approved continuation of CHG-0050 to Implementation in the active session on 2026-08-30, via AskUserQuestion, after reviewing the Architecture (DEC-001, DEC-002), the Test Strategy (14 TDD cases), and the 11-item Plan summary, selecting "Aprovar e prosseguir".
+  - id: implementation-subject-001
+    role: implementation
+    execution:
+      id: claude-code-implementation-0050-subject-001
+      context_id: claude-code-session-2026-08-30-subject-001
+    recorded_at: '2026-08-30T00:00:00Z'
+    revision:
+      id: chg-0050-implementation-001
+      immutable_ref:
+        type: git_commit
+        value: 817cda3913d789da3a8d6d0ba28f1b4d47d1fd3a
+      commit: 817cda3913d789da3a8d6d0ba28f1b4d47d1fd3a
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: implementation-subject
+      statement: Frozen CHG-0050 implementation subject (immutable per C-026 once committed) -- protocol_resolution/__init__.py (resolve_effective_review_profile, PROFILE_RANK), validation/__init__.py (compute_review_profile_floor extraction, _validate_review_current_phase), two Protocol 2 schemas (change-v2, project), change_scaffolding.py/change_cli.py (review.mode seeding, review-status command), the new adapters/review_experience.py module, both Adapters' projection.py (mode-resolution line, shared phase section), protocol/compatibility.md, CHANGELOG.md, all new/modified tests, and all CHG-0050 planning/design/verification Artifacts including DEC-004's Implementation-time correction. Reviewable Git workspace confirmed clean before freeze (git status --porcelain=v1 empty).
+  - id: reviewer-001
+    role: review
+    execution:
+      id: a9c707c9110126514
+      context_id: independent-review-context-a9c707c9110126514
+    recorded_at: '2026-08-30T00:00:00Z'
+    revision:
+      id: chg-0050-implementation-001
+      immutable_ref:
+        type: git_commit
+        value: 817cda3913d789da3a8d6d0ba28f1b4d47d1fd3a
+      commit: 817cda3913d789da3a8d6d0ba28f1b4d47d1fd3a
+    source:
+      assurance: recorded
+      observed_by: operator
+      reference: review.md#iteration-1
+      statement: "Independent Strict Review Iteration 1 (strict profile, fresh execution, isolated Git worktree at .claude/worktrees/agent-a9c707c9110126514, no shared context with the Implementation) returned REQUEST CHANGES against 817cda39 -- R-001 (MAJOR, forge change review-status crashed with an unhandled KeyError on an invalid project-flow-override profile) and R-002 (MINOR, compute_review_profile_floor did not eliminate the duplication Architecture claimed it removed), plus R-003/R-004 (OBSERVATION). R-001 was independently reproduced live (a super-strict override, exit 1, raw traceback) before being reported. The full suite (856 passed) and forge validate (PASS) were both independently re-run, not trusted from verification.md's claim; the Adapter-projection independence-block invariance (DEC-004) was independently re-derived from a from-scratch before/after diff of generated text at the parent and target commits."
+  - id: resolution-001
+    role: resolution
+    execution:
+      id: claude-code-implementation-0050-resolution-001
+      context_id: claude-code-session-2026-08-30-resolution-001
+    recorded_at: '2026-08-30T04:00:00Z'
+    scope:
+      - src/forge_cli/change_cli.py
+      - src/forge_cli/validation/__init__.py
+      - tests/cli/test_change_review_status.py
+      - .forge/changes/CHG-0050-review-experience-modes/manifest.yml
+      - .forge/changes/CHG-0050-review-experience-modes/review.md
+      - .forge/changes/CHG-0050-review-experience-modes/tdd-evidence.yml
+      - .forge/changes/CHG-0050-review-experience-modes/test-strategy.md
+    targets: [R-001, R-002, R-004]
+    revision:
+      id: chg-0050-resolution-001
+      immutable_ref:
+        type: git_commit
+        value: 86a4f25812adc6a5766ee12dc0b2abdf715c4d89
+      commit: 86a4f25812adc6a5766ee12dc0b2abdf715c4d89
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: review.md#resolution
+      statement: Resolution of Strict Review Iteration 1 (reviewer-001) findings R-001 and R-002, plus the R-004 documentation-accuracy correction. R-001 fixed by adding KeyError to review_status()'s existing except tuple, with a regression test (TDD-011) reproducing the live crash as valid RED before the fix. R-002 fixed by extracting the shared _canonical_review_profile helper. R-003 evaluated and explicitly left unfixed as a disclosed, pre-existing limitation. Re-ran full suite (857 passed) and forge validate (PASS) after the fix. Reviewable Git workspace confirmed clean before this freeze.
+  - id: reviewer-002
+    role: review
+    execution:
+      id: a55345cff0321b96f
+      context_id: independent-review-context-a55345cff0321b96f
+    recorded_at: '2026-08-30T05:00:00Z'
+    revision:
+      id: chg-0050-resolution-001
+      immutable_ref:
+        type: git_commit
+        value: 86a4f25812adc6a5766ee12dc0b2abdf715c4d89
+      commit: 86a4f25812adc6a5766ee12dc0b2abdf715c4d89
+    source:
+      assurance: recorded
+      observed_by: operator
+      reference: review.md#iteration-2
+      statement: "Independent Strict Review Iteration 2 (Resolution Verification, strict profile, fresh execution, isolated Git worktree at .claude/worktrees/agent-a55345cff0321b96f, no shared context with the Resolution Execution or with Iteration 1's Reviewer) returned REQUEST CHANGES against 86a4f25 -- R-001, R-002, and R-004 all independently re-verified as genuinely fixed, including a live end-to-end reproduction of R-001's exact crash on both commits and a temporary revert-and-restore of its one-line fix to confirm the regression test's own validity. Two new non-blocking MINOR findings within the Resolution Delta itself: R-005 (resolution-001's declared scope omitted provenance.yml, which the commit actually modified -- non-material, no C-048 escalation) and R-006 (the new tdd-evidence.yml cycle collided with test-strategy.md's pre-existing TDD-011 identifier). No Out-of-Scope Mutation (full_review_required: false). Full suite (857 passed) and forge validate (PASS) both independently reproduced against the Resolution commit."
+  - id: verification-001
+    role: implementation
+    execution:
+      id: claude-code-implementation-0050-verification-001
+      context_id: claude-code-session-2026-08-30-verification-001
+    recorded_at: '2026-08-30T06:00:00Z'
+    revision:
+      id: chg-0050-resolution-001
+      immutable_ref:
+        type: git_commit
+        value: 86a4f25812adc6a5766ee12dc0b2abdf715c4d89
+      commit: 86a4f25812adc6a5766ee12dc0b2abdf715c4d89
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: verification.md
+      statement: "verification.md's PASS result (856 passed full suite at the original implementation subject, 857 passed after resolution-001's fix, forge validate PASS) remains accurate against reviewer-002's frozen, passed subject (resolution-001, commit 86a4f25) -- the sole reviewed and passed implementation revision for this Change. The subsequent Strict Review Iteration 2 closure and Documentation Impact/Knowledge Capture additions (commits e5d5200/ddc8566) are non-executable review-control metadata and documentation, separately anchored by reviewer-002 and documentation-001, and do not invalidate any recorded Test/Forge Evidence."
+  - id: documentation-001
+    role: implementation
+    execution:
+      id: claude-code-implementation-0050-documentation-001
+      context_id: claude-code-session-2026-08-30-documentation-001
+    recorded_at: '2026-08-30T07:00:00Z'
+    scope:
+      - .forge/changes/CHG-0050-review-experience-modes/knowledge-capture.md
+    revision:
+      id: chg-0050-documentation-001
+      immutable_ref:
+        type: git_commit
+        value: ddc856680d8156cda2d92fe1b8f5e243c8750206
+      commit: ddc856680d8156cda2d92fe1b8f5e243c8750206
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: manifest.yml#documentation
+      statement: "Knowledge Capture (Flow FULL, knowledge_capture stage, scheduled after strict_review and documentation) for CHG-0050. Added knowledge-capture.md recording four durable lessons (per-Flow install-time Adapter projection cannot read per-Change manifest state; the never-below-floor guarantee is structural, not merely tested; an unvalidated project-configuration value reaching an unguarded lookup is a real crash risk in a safe-to-run-anytime diagnostic command; C-026's provenance append-only rule has a sharp edge once an iteration has already passed). No other file touched. Full suite re-verified (857 passed) after the addition. Reviewable Git workspace confirmed clean before this freeze."
+  - id: plan-restoration-001
+    role: implementation
+    execution:
+      id: claude-code-implementation-0050-plan-restoration-001
+      context_id: claude-code-session-2026-08-30-plan-restoration-001
+    recorded_at: '2026-08-30T08:00:00Z'
+    scope:
+      - .forge/changes/CHG-0050-review-experience-modes/plan.md
+    revision:
+      id: chg-0050-plan-restoration-001
+      immutable_ref:
+        type: git_commit
+        value: c24aa905997f6d9b8393fa1d1e1c7228c4c45da2
+      commit: c24aa905997f6d9b8393fa1d1e1c7228c4c45da2
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: review.md#post-review-correction
+      statement: "Per C-069, restored plan.md's item 9 byte-for-byte to its originally human-approved wording (matching commit 153b0d9), reverting a direct Implementation-time edit that had absorbed DEC-004's mechanism correction into the approved Plan text itself. DEC-004 remains recorded in architecture.md and manifest.yml's decisions[], not in plan.md. plan-approval-001's content digest is unaffected (it already matched, and continues to match, this restored content). No production code, test, or other Artifact touched by this commit."
+  - id: resolution-002
+    role: resolution
+    execution:
+      id: claude-code-implementation-0050-resolution-002
+      context_id: claude-code-session-2026-08-30-resolution-002
+    recorded_at: '2026-08-30T09:00:00Z'
+    scope:
+      - src/forge_cli/adapters/service.py
+      - src/forge_cli/validation/__init__.py
+      - tests/integration/test_adapter_service.py
+      - tests/unit/test_review_current_phase_validation.py
+      - tests/unit/test_validation_review_profile.py
+      - .forge/changes/CHG-0050-review-experience-modes/tdd-evidence.yml
+    targets: [R-007, R-008, R-009]
+    revision:
+      id: chg-0050-resolution-002
+      immutable_ref:
+        type: git_commit
+        value: 082b81ab98ed54d602843284dff59c1457f339a6
+      commit: 082b81ab98ed54d602843284dff59c1457f339a6
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: review.md#external-review-surface---codex-automated-pr-review-github-pr-44
+      statement: "Resolution of three MAJOR findings (R-007, R-008, R-009) reported by Codex's automated review of open GitHub PR #44 (external review surface, C-027) against the already-passed Iteration 2 subject. R-007: compute_review_profile_floor now clamps an invalid, weaker-than-canonical project override to the canonical floor; _validate_review_profile_floor reads the raw override directly so its own detection is unaffected. R-008: _validate_review_current_phase now also flags status: passed paired with a non-converged phase. R-009: AdapterService._effective_flows now projects the effective (not merely canonical) Review Profile into per-Flow Adapter content, also incidentally resolving the previously-disclosed R-003. Also applied CHG-0051's canonical-review-profile-nesting fix to this branch's independently-extracted copy of the same logic. Each finding reproduced as valid RED before its fix. Re-ran full suite (861 passed) and forge validate (PASS) after the fix. Reviewable Git workspace confirmed clean before this freeze."
+  - id: reviewer-003
+    role: review
+    execution:
+      id: a75fefa6bdb33fcb9
+      context_id: independent-review-context-a75fefa6bdb33fcb9
+    recorded_at: '2026-08-30T10:00:00Z'
+    revision:
+      id: chg-0050-resolution-002
+      immutable_ref:
+        type: git_commit
+        value: 082b81ab98ed54d602843284dff59c1457f339a6
+      commit: 082b81ab98ed54d602843284dff59c1457f339a6
+    source:
+      assurance: recorded
+      observed_by: operator
+      reference: review.md#iteration-3
+      statement: "Independent Strict Review Iteration 3 (Resolution Verification, strict profile, fresh execution, isolated Git worktree, no shared context with the Resolution Execution or with Iteration 1/2's Reviewers) returned PASS against 082b81a -- R-007, R-008, and R-009 all independently reproduced RED-before/GREEN-after against the parent commit (aece3063), and R-007/R-009 additionally verified end-to-end against a real forge init project with a project-flow override, confirming forge validate still correctly rejects a weaker override after the clamp, and that Adapter-generated Harness instructions now reflect the effective (not merely canonical) profile for both claude_code and codex. No Out-of-Scope Mutation (full_review_required: false); diff matched resolution-002's declared scope exactly. Full suite (861 passed) and forge validate (PASS) both independently reproduced."
+  - id: verification-002
+    role: implementation
+    execution:
+      id: claude-code-implementation-0050-verification-002
+      context_id: claude-code-session-2026-08-30-verification-002
+    recorded_at: '2026-08-30T11:00:00Z'
+    revision:
+      id: chg-0050-resolution-002
+      immutable_ref:
+        type: git_commit
+        value: 082b81ab98ed54d602843284dff59c1457f339a6
+      commit: 082b81ab98ed54d602843284dff59c1457f339a6
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: verification.md
+      statement: "verification.md's PASS result remains accurate against reviewer-003's frozen, passed subject (resolution-002, commit 082b81a) -- the final reviewed and passed implementation revision for this Change, superseding verification-001's binding to resolution-001 now that resolution-002 has itself passed independent Resolution Verification (Iteration 3). Full suite (861 passed) and forge validate (PASS) confirmed against this exact revision by both the Resolution (self) and reviewer-003 (independently)."

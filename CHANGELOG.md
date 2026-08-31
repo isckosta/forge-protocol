@@ -10,6 +10,21 @@ until then.
 
 ## Unreleased
 
+### Review Experience Modes
+
+Added a developer-facing Review Experience Mode layer over the
+existing Review Profile model: `review.mode` (`recommended` | `fast` |
+`thorough`, default `recommended`) is selectable per Change and, via
+`.forge/forge.yml`'s new `review.preferred_mode`, as a persistent
+project preference. `recommended`/`fast` always resolve to the
+Change's existing Flow-derived Review Profile floor; `thorough`
+resolves one profile rank higher (capped at `strict`) -- a mode can
+never resolve below the floor. Review's Discovery/Findings/Resolution/
+Re-review phases are now schema-tracked (`review.current_phase`) and
+validated for status consistency; a new `forge change review-status
+<slug>` command reports a Change's live mode, resolved profile, phase,
+and outstanding Finding counts. See `docs/rfcs/0008-review-experience-modes.md`.
+
 ### Canonical Review Profile Nesting Fix
 
 Fixed `_validate_review_profile_floor` (`forge validate`'s

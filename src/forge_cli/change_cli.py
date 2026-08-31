@@ -25,8 +25,11 @@ from forge_cli.protocol_resolution import (
     InvalidProjectFlowConfigurationError,
     UnknownCanonicalFlowError,
     resolve_effective_flow,
+    resolve_effective_review_profile,
 )
 from forge_cli.merge_readiness import MergeReadinessRequest, evaluate_merge_readiness
+from forge_cli.validation import compute_review_profile_floor
+from forge_cli.adapters.review_experience import PHASE_LABELS
 
 
 DOMAIN_ERROR_EXIT_CODE = 2
@@ -51,7 +54,7 @@ def _root() -> Path:
     raise AssertionError("unreachable")
 
 
-def _active_flow(root: Path) -> tuple[str, dict]:
+def _active_flow(root: Path) -> tuple[str, dict, str]:
     try:
         configuration = load_project_configuration(root / ".forge" / "forge.yml")
     except UnsupportedProtocolVersionError as error:
@@ -59,6 +62,7 @@ def _active_flow(root: Path) -> tuple[str, dict]:
     except InvalidProjectConfigurationError as error:
         _fail(error.code, str(error))
 
+    review_mode = configuration.get("review", {}).get("preferred_mode", "recommended")
     default = configuration["flows"]["default"]
     project_path = root / ".forge" / "flows" / f"{default}.yml"
     if not project_path.is_file():
@@ -83,7 +87,7 @@ def _active_flow(root: Path) -> tuple[str, dict]:
         _fail("E_FORGE_UNKNOWN_CANONICAL_FLOW", str(error))
     except (InvalidProjectFlowConfigurationError, OSError) as error:
         _fail("E_FORGE_INVALID_PROJECT_FLOW", str(error))
-    return effective["canonical"]["flow"]["id"], effective["canonical"]
+    return effective["canonical"]["flow"]["id"], effective["canonical"], review_mode
 
 
 @change_app.command(
@@ -115,7 +119,7 @@ def new_change(
         _fail("E_FORGE_NOT_INITIALIZED", "Forge is not initialized. Run `forge init` first.")
     if changes_root.is_symlink() or (changes_root.exists() and not changes_root.is_dir()):
         _fail("E_FORGE_CHANGE_INVALID_PATH", "Change destination path is unsafe.")
-    flow_id, flow_data = _active_flow(root)
+    flow_id, flow_data, review_mode = _active_flow(root)
     number = allocate_change_number(changes_root)
     change_id = f"CHG-{number:04d}"
     target = changes_root / f"{change_id}-{slug}"
@@ -126,6 +130,7 @@ def new_change(
             flow_id=flow_id,
             flow_data=flow_data,
             behavioral=not non_behavioral,
+            review_mode=review_mode,
         )
     except ValueError as error:
         _fail("E_FORGE_CHANGE_INVALID_PATH", str(error))
@@ -184,3 +189,77 @@ def merge_check(
         raise typer.Exit(code=2)
     typer.echo("MERGE BLOCKED")
     raise typer.Exit(code=1)
+
+
+def _resolve_change_directory(root: Path, slug: str) -> Path:
+    changes_root = root / ".forge" / "changes"
+    exact = changes_root / slug
+    if exact.is_dir():
+        return exact
+    _fail("E_FORGE_CHANGE_NOT_FOUND", f"No Change found at {(changes_root / slug).relative_to(root)}.")
+    raise AssertionError("unreachable")
+
+
+@change_app.command(
+    "review-status",
+    help="Report a Change's Review mode, resolved profile, phase, and outstanding Findings.",
+)
+def review_status(slug: Annotated[str, typer.Argument(metavar="SLUG")]) -> None:
+    """Read-only report of a Change's Review Experience Mode state (CHG-0050, FR-006)."""
+    root = _root()
+    change_dir = _resolve_change_directory(root, slug)
+    try:
+        manifest = yaml.safe_load((change_dir / "manifest.yml").read_text(encoding="utf-8")) or {}
+    except (OSError, yaml.YAMLError) as error:
+        _fail("E_FORGE_CHANGE_INVALID_MANIFEST", str(error))
+        raise AssertionError("unreachable")
+
+    review = manifest.get("review") if isinstance(manifest.get("review"), dict) else {}
+    flow_id = (manifest.get("flow") or {}).get("current")
+    mode = review.get("mode", "recommended")
+    phase = review.get("current_phase")
+    iterations = review.get("iterations") or []
+
+    typer.echo(f"Forge Review Status: {manifest.get('change', {}).get('id', slug)}")
+    typer.echo(f"Mode: {mode}")
+
+    if flow_id:
+        try:
+            configuration = load_project_configuration(root / ".forge" / "forge.yml")
+            effective = resolve_effective_flow(
+                resolve_protocol_root(), root, flow_id, configuration["forge"]["protocol"]
+            )
+            floor = compute_review_profile_floor(effective)
+            profile = resolve_effective_review_profile(floor, mode)
+            typer.echo(f"Resolved profile: {profile}")
+        except (UnsupportedProtocolVersionError, InvalidProjectConfigurationError,
+                UnknownCanonicalFlowError, InvalidProjectFlowConfigurationError, OSError, KeyError):
+            pass
+
+    if not phase and not iterations:
+        typer.echo("Phase: Review not yet started")
+    else:
+        label = PHASE_LABELS.get(phase, phase or "unknown")
+        typer.echo(f"Phase: {label}")
+
+    blockers = review.get("blockers", 0)
+    majors = review.get("majors", 0)
+    minors = review.get("minors", 0)
+    observations = review.get("observations", 0)
+    typer.echo(f"Findings: BLOCKER: {blockers}, MAJOR: {majors}, MINOR: {minors}, OBSERVATION: {observations}")
+
+    if review.get("status") == "passed":
+        typer.echo("Next step: none -- Review has converged.")
+    elif phase == "stopped":
+        typer.echo(
+            "Next step: this Change is not complete -- processing was stopped with "
+            f"{blockers} BLOCKER, {majors} MAJOR Finding(s) outstanding."
+        )
+    elif blockers or majors:
+        typer.echo("Next step: Resolution -- unresolved blocking Findings remain.")
+    elif phase == "resolving":
+        typer.echo("Next step: Re-review -- targeted at the Resolution's declared scope.")
+    elif not phase and not iterations:
+        typer.echo("Next step: begin Review.")
+    else:
+        typer.echo("Next step: continue Review.")

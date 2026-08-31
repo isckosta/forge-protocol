@@ -17,6 +17,7 @@
       "required": ["strict"],
       "properties": {
         "strict": {"const": true},
+        "preferred_mode": {"enum": ["recommended", "fast", "thorough"]},
         "convergence": {
           "type": "object",
           "additionalProperties": false,

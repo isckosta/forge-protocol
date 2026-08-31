@@ -197,6 +197,43 @@ satisfies F-008 for this Change) and
 `.forge/changes/CHG-0048-proportional-review-profiles/architecture.md`
 for the component-level design.
 
+### CHG-0050 — Review Experience Modes
+
+CHG-0050 (RFC-0008, accepted for Protocol 2) adds a developer-facing
+UX layer over CHG-0048's Review Profile model: three named Review
+Experience Modes (`recommended`, default; `fast`; `thorough`),
+selectable per Change (`manifest.yml` `review.mode`) and as a
+persistent project preference (`.forge/forge.yml` `review.preferred_mode`).
+`recommended`/`fast` always resolve to exactly the Change's existing
+Flow-derived Review Profile floor; `thorough` resolves one profile
+rank higher, capped at `strict` -- there is no code path by which a
+mode can resolve below the floor. A new, schema-tracked
+`review.current_phase` field (`scanning | findings_recorded |
+resolving | re_reviewing | converged | stopped`) makes Review's
+Discovery/Findings/Resolution/Re-review phases observable and
+Core-validated for status consistency; `stopped` records that a
+developer ended further processing and carries no Completion or
+approval authority (C-035 is unmodified). A new `forge change
+review-status <slug>` command reports a Change's live mode, resolved
+profile, phase, and outstanding Finding counts.
+
+All schema changes (`review.mode`, `review.current_phase` on
+`change-v2.schema.json`; `review.preferred_mode` on
+`project.schema.json`) are additive and optional; a manifest or project
+file that predates them is interpreted exactly as before (`recommended`
+mode, no phase tracked), so no historical Change's recorded Review is
+invalidated or reinterpreted. No Engineering Contract text changes:
+the never-below-floor guarantee is a structural property of the new
+`resolve_effective_review_profile` function, not a new invariant.
+`protocol/schemas/policy-review.schema.json` (Protocol 1) is untouched
+-- Review Experience Modes, like the Review Profiles they sit on top
+of, are a Protocol 2 concept only. See
+`docs/rfcs/0008-review-experience-modes.md` for the full design (no
+separate ADR: this RFC already satisfies F-008 for this Change) and
+`.forge/changes/CHG-0050-review-experience-modes/architecture.md` for
+the component-level design, including `DEC-004`'s correction of the
+Adapter-projection mechanism from a per-Change to a per-Flow design.
+
 ## Schema catalog
 
 `schemas/catalog.yml` is the portable list of schemas shipped by the distribution. Catalog presence does not imply that every schema is normative for every Protocol version. Applicability is defined by the selected Protocol contract and the artifact's own identifier. Cross-field semantic constraints that JSON Schema cannot express remain deterministic Core validation responsibilities.

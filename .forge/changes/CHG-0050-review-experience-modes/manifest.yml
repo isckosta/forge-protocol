@@ -1,0 +1,128 @@
+schema: forge/change@2
+protocol: 2
+change:
+  id: CHG-0050
+  title: Review Experience Modes
+  kind: feature
+flow:
+  initial: standard
+  current: full
+  escalations:
+    - from: standard
+      to: full
+      reason: >-
+        Discovery found this Change introduces a new persistent schema
+        surface (per-Change review mode plus a cross-Change developer
+        preference), a new Harness-observability contract projected
+        into at least two Adapters (claude_code, codex), and a new
+        default-visible developer experience for every Forge-enabled
+        repository -- matching fast.yml's own disqualifiers
+        (architectural_change, major_public_contract_change) and
+        Contract F-008's precedent for architectural knowledge that
+        outlives a single Change, exactly as CHG-0048 found for its
+        comparable-scope Review Profile proposal (RFC-0007). STANDARD's
+        scaffold default was superseded before Specification began.
+state:
+  current: complete
+artifacts:
+  intent: complete
+  discovery: complete
+  specification: complete
+  specification_review: complete
+  architecture: complete
+  test_strategy: complete
+  plan: approved
+  tasks: complete
+  tdd_evidence: complete
+  verification: complete
+  review: complete
+  documentation: complete
+  knowledge_capture: complete
+requirements:
+  total: 7
+  implemented: 7
+  verified: 7
+tdd:
+  status: compliant
+  cycles: 14
+verification:
+  status: passed
+review:
+  status: passed
+  iteration: 3
+  blockers: 0
+  majors: 0
+  minors: 2
+  observations: 1
+  iterations:
+    - id: review-001
+      revision: chg-0050-implementation-001
+      subject_provenance: implementation-subject-001
+      reviewer_provenance: reviewer-001
+      kind: initial_review
+      status: failed
+      profile: strict
+      full_review_required: false
+      new_material_findings: 1
+      finding_classes: []
+    - id: review-002
+      revision: chg-0050-resolution-001
+      subject_provenance: resolution-001
+      reviewer_provenance: reviewer-002
+      kind: resolution_verification
+      status: passed
+      profile: strict
+      full_review_required: false
+      new_material_findings: 0
+      finding_classes: []
+    - id: review-003
+      revision: chg-0050-resolution-002
+      subject_provenance: resolution-002
+      reviewer_provenance: reviewer-003
+      kind: resolution_verification
+      status: passed
+      profile: strict
+      full_review_required: false
+      new_material_findings: 0
+      finding_classes: []
+documentation:
+  impact_evaluated: true
+  update_required: true
+  reason: >-
+    Updated: protocol/compatibility.md (### CHG-0050 entry -- RFC-0008
+    acceptance, additive schema changes, no Contract text change) and
+    CHANGELOG.md (Unreleased entry). No new ADR (RFC-0008 already
+    satisfies F-008 for this Change).
+decisions:
+  - id: DEC-001
+    class: architectural
+    materiality: material
+    status: resolved
+    authority: agent
+    owning_artifact: architecture
+    discovered_in: discovery
+    resolved_via: evidence
+  - id: DEC-002
+    class: technical
+    materiality: non_material
+    status: resolved
+    authority: agent
+    owning_artifact: plan
+    discovered_in: architecture
+    resolved_via: evidence
+  - id: DEC-003
+    class: technical
+    materiality: material
+    status: resolved
+    authority: human
+    owning_artifact: plan
+    discovered_in: plan
+    resolved_via: human_decision
+  - id: DEC-004
+    class: technical
+    materiality: non_material
+    status: resolved
+    authority: agent
+    owning_artifact: plan
+    discovered_in: plan
+    resolved_via: evidence

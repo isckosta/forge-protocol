@@ -196,6 +196,40 @@ def test_projection_matches_claude_code_profile_instruction_text() -> None:
         assert shared[profile] in content
 
 
+def test_projection_renders_mode_resolution_line_per_flow_floor() -> None:
+    """CHG-0050 TDD-012 (FR-005, AC-013, Codex parity)."""
+    content = _content(_flow_with_profile("focused"), protocol_id=2)
+    assert "This Flow's Review Profile floor is `focused`" in content
+    assert "`thorough` resolves to `standard`" in content
+
+
+def test_projection_renders_shared_review_experience_section_once() -> None:
+    """CHG-0050 TDD-012 (FR-005, AC-014, Codex parity)."""
+    bundle = generate_codex_skill_bundle(
+        contract_content="contract",
+        flows=(
+            ("fast", _flow_with_profile("focused")),
+            ("full", _flow_with_profile("strict")),
+        ),
+        protocol_id=2,
+    )
+    skill = next(resource.content for resource in bundle.resources if resource.name == "SKILL.md")
+    assert skill.count("### Review Experience Modes") == 1
+    for label in ("Discovery", "Findings", "Resolution", "Re-review", "Converged", "Stopped"):
+        assert label in skill
+    assert "forge change review-status" in skill
+
+
+def test_projection_independence_block_is_unaffected_by_review_experience_section() -> None:
+    """CHG-0050 TDD-012 (FR-005, AC-015, Codex parity)."""
+    content = _content(_flow_with_profile("strict"), protocol_id=2)
+    independence_start = content.index("### Reviewer/Resolver independence")
+    next_heading = content.find("### ", independence_start + 1)
+    independence_block = content[independence_start:] if next_heading == -1 else content[independence_start:next_heading]
+
+    assert "Review Experience Modes" not in independence_block
+
+
 def test_projection_uses_fixed_strict_review_instruction_under_protocol_1_even_with_a_profile() -> None:
     """CHG-0048 Iteration 1 R-001 (Codex parity): Protocol 1 has no Review
     Profile concept -- a Protocol 1 project must never receive a scoped

@@ -16,6 +16,10 @@ from forge_cli.adapters.review_independence import (
     REVIEWER_RESOLVER_INDEPENDENCE_POINTER,
     render_reviewer_resolver_independence_section,
 )
+from forge_cli.adapters.review_experience import (
+    render_mode_resolution_line,
+    render_review_experience_section,
+)
 
 
 @dataclass(frozen=True)
@@ -86,6 +90,7 @@ def _interaction_language_line(interaction_language: str) -> str:
 def _gate_instructions(flows: Iterable[tuple[str, str]], protocol_id: int) -> str:
     sections: list[str] = []
     independence_applies = False
+    review_experience_applies = False
     for flow_id, content in sorted(flows, key=lambda item: item[0]):
         data = yaml.safe_load(content) or {}
         review = data.get("review") or {}
@@ -120,6 +125,8 @@ def _gate_instructions(flows: Iterable[tuple[str, str]], protocol_id: int) -> st
         if "review_passed" in required:
             if protocol_id >= 2:
                 lines.append(REVIEW_PROFILE_INSTRUCTION.get(review_profile, REVIEW_PROFILE_INSTRUCTION["strict"]))
+                lines.append(render_mode_resolution_line(review_profile))
+                review_experience_applies = True
             else:
                 lines.append(REVIEW_PROFILE_INSTRUCTION["strict"])
         if "blocking_review_threads_resolved" in required:
@@ -142,6 +149,8 @@ def _gate_instructions(flows: Iterable[tuple[str, str]], protocol_id: int) -> st
             sections.append("\n".join((f"### Flow `{flow_id}` gate obligations", "", *lines)))
     if independence_applies:
         sections.append(render_reviewer_resolver_independence_section().lstrip("\n"))
+    if review_experience_applies:
+        sections.append(render_review_experience_section().lstrip("\n"))
     return "\n\n".join(sections)
 
 
