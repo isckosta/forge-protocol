@@ -22,3 +22,20 @@ records:
         path: plan.md
         value: 02296a799eec7d6b9971662ba8e49eac6cd5afe8dc5d72fdf45ea6c36ee62221
       statement: "The user explicitly approved continuation of CHG-0052 to Implementation in the active session on 2026-09-01, via AskUserQuestion, after reviewing the Intent, the Discovery, the Specification (FR-001-FR-006, NFR-001), the Test Design (TD-001-TD-007), and the 4-item Plan summary, selecting \"Aprovar e prosseguir\"."
+  - id: implementation-subject-001
+    role: implementation
+    execution:
+      id: claude-code-implementation-0052-subject-001
+      context_id: claude-code-session-2026-09-01-subject-001
+    recorded_at: '2026-09-01T00:00:00Z'
+    revision:
+      id: chg-0052-implementation-001
+      immutable_ref:
+        type: git_commit
+        value: 2ff4c5402390aad8a114fa5c44d2c2477b4b4760
+      commit: 2ff4c5402390aad8a114fa5c44d2c2477b4b4760
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: implementation-subject
+      statement: Frozen CHG-0052 implementation subject (immutable per C-026 once committed) -- includes capabilities/investigate/CAPABILITY.md, tests/capabilities/test_investigate_capability.py, CHANGELOG.md, and all CHG-0052 planning/design/verification Artifacts. Reviewable Git workspace confirmed clean before freeze (git status --porcelain empty).

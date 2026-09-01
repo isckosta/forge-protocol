@@ -16,4 +16,4 @@ cycles:
       result: 20 passed
     notes:
       - No change to src/forge_cli/capabilities/loader.py, src/forge_cli/capabilities/model.py, capabilities/README.md, or capabilities/capability.md -- confirmed via git diff --stat against those four paths (empty).
-      - One intermediate iteration: the first CAPABILITY.md draft did not name "lifecycle" as an explicitly denied authority (test_boundary_denial_fragments_are_present[lifecycle] failed); a sentence was added to Behavior enumerating every FR-004 boundary explicitly, after which the full suite passed.
+      - "One intermediate iteration: the first CAPABILITY.md draft did not name \"lifecycle\" as an explicitly denied authority (test_boundary_denial_fragments_are_present[lifecycle] failed); a sentence was added to Behavior enumerating every FR-004 boundary explicitly, after which the full suite passed."
