@@ -184,8 +184,9 @@ AC-005 — `## Applicability` cobre, em prosa verificável, cada categoria
 de situação listada no Requirement, e contém a exclusão explícita para
 causa já estabelecida.
 
-### FR-006 · No new registry, executor, lifecycle, Gate, or Harness coupling
+### FR-006 · No new registry, executor, lifecycle, Gate, or Harness coupling (revised per specification-drift.md)
 Origin: pedido original — seção "Architecture" (lista de proibições); Discovery — ausência de registry/executor hoje
+Revision: `specification-drift.md` — a Codex review de PR #47 encontrou que a proibição literal abaixo tornava impossível corrigir uma alegação factualmente falsa que esta própria Change introduz em `capabilities/README.md`; a proibição é corrigida (superseded, não deletada) para preservar sua intenção real (não redesenhar a fundação, não introduzir os mecanismos listados) sem proibir uma correção de acurácia pontual e não-arquitetural.
 
 #### Requirement
 Nenhum arquivo desta Change SHALL introduzir: `CapabilityRegistry`,
@@ -193,16 +194,28 @@ Nenhum arquivo desta Change SHALL introduzir: `CapabilityRegistry`,
 composition runtime, estado próprio da capability, novo lifecycle, novo
 Gate, novo Protocol version, um comando `/investigate`, um `SKILL.md`
 específico de Claude/Codex/Cursor, ou qualquer adapter de Harness. Esta
-Change SHALL NOT alterar `capabilities/README.md`,
-`capabilities/capability.md`, `loader.py`, ou `model.py`.
+Change SHALL NOT alterar o contrato arquitetural de
+`capabilities/README.md` (suas seções "What a Forge Capability
+is"/"is not", Responsibilities, Architectural boundaries, e o diagrama
+de relação) nem `capabilities/capability.md` em nenhuma parte, e
+SHALL NOT alterar `loader.py` ou `model.py`. Esta Change MAY corrigir,
+no mínimo texto necessário, uma alegação de status factualmente
+incorreta em `capabilities/README.md` que a própria entrega desta
+Change torna falsa (o parágrafo introdutório que descreve `investigate`
+como trabalho futuro) — uma correção de acurácia, não uma mudança de
+contrato.
 
 #### Acceptance
 AC-006 — busca por `CapabilityRegistry`, `CapabilityExecutor`,
 `/investigate`, `SKILL.md` relacionado a investigate, e qualquer menção
 a Claude/Codex/Cursor no diff desta Change não retorna nenhuma
-ocorrência fora deste próprio `specification.md`/`intent.md`/`plan.md`;
-`capabilities/README.md`, `capabilities/capability.md`, `loader.py` e
-`model.py` permanecem byte-idênticos ao estado pré-Change.
+ocorrência fora deste próprio `specification.md`/`intent.md`/`plan.md`/
+`specification-drift.md`; `capabilities/capability.md`, `loader.py` e
+`model.py` permanecem byte-idênticos ao estado pré-Change; o diff de
+`capabilities/README.md` é limitado ao parágrafo de status introdutório,
+e todas as demais seções (What a Forge Capability is/is not,
+Responsibilities, Architectural boundaries, o diagrama de relação, e
+"Adding a future Capability") permanecem byte-idênticas.
 
 ## Non-functional Requirements
 
@@ -214,10 +227,12 @@ deste repositório (`forge-protocol`) além do próprio contrato de
 
 ## Constraints
 
-### CON-001 · Scope boundary
-Não alterar `capabilities/README.md` ou `capabilities/capability.md`;
-não introduzir nenhuma das classes/mecanismos listados em FR-006; não
-criar um `SKILL.md` de `investigate`; não implementar qualquer correção
+### CON-001 · Scope boundary (revised per specification-drift.md)
+Não alterar o contrato arquitetural de `capabilities/README.md` além do
+parágrafo de status introdutório (correção de acurácia, FR-006); não
+alterar `capabilities/capability.md` em nenhuma parte; não introduzir
+nenhuma das classes/mecanismos listados em FR-006; não criar um
+`SKILL.md` de `investigate`; não implementar qualquer correção
 automática do problema que uma futura investigação real encontrar.
 
 ## Traceability Matrix
@@ -234,14 +249,16 @@ autoritativas.
 | Seção "Applicability" do pedido original | FR-005 | AC-005 |
 | Seção "Architecture" (lista de proibições) | FR-006 | AC-006 |
 
-## Compatibility Statement
+## Compatibility Statement (revisado per specification-drift.md)
 
 Nenhum artefato de Change existente, Schema, Protocol integer, Flow
-Gate, ou Harness Adapter é afetado. `capabilities/README.md` e
-`capabilities/capability.md` permanecem inalterados; a fundação já
-antecipa esta Change textualmente (`ADR-0019`, Consequences). O loader e
-o modelo existentes permanecem inalterados — `investigate` é apenas um
-novo dado consumido por eles.
+Gate, ou Harness Adapter é afetado. `capabilities/capability.md`
+permanece inalterado; a fundação já antecipa esta Change textualmente
+(`ADR-0019`, Consequences). `capabilities/README.md` recebe uma única
+correção de acurácia (o parágrafo de status introdutório, que descrevia
+`investigate` como trabalho futuro) — seu contrato arquitetural
+permanece inalterado. O loader e o modelo existentes permanecem
+inalterados — `investigate` é apenas um novo dado consumido por eles.
 
 ## Specification Gate
 
@@ -252,12 +269,14 @@ Boundary explícito onde necessário; os limites do pedido original
 estão cobertos; nenhum Requirement introduz as classes/mecanismos
 explicitamente fora de escopo.
 
-## Out of Scope
+## Out of Scope (revisado per specification-drift.md)
 
-Qualquer mudança em `capabilities/README.md` ou
-`capabilities/capability.md`; `CapabilityRegistry`, `CapabilityExecutor`,
-discovery automático, dependency graph, composition runtime, estado
-próprio de capability, novo lifecycle, novo Gate, nova versão de
-Protocol; `/investigate`; `SKILL.md` de Claude/Codex/Cursor; adapters de
-Harness; qualquer implementação de correção para o problema que uma
-futura investigação real encontrar.
+Qualquer mudança no contrato arquitetural de `capabilities/README.md`
+além do parágrafo de status introdutório (correção de acurácia,
+FR-006), ou qualquer mudança em `capabilities/capability.md`;
+`CapabilityRegistry`, `CapabilityExecutor`, discovery automático,
+dependency graph, composition runtime, estado próprio de capability,
+novo lifecycle, novo Gate, nova versão de Protocol; `/investigate`;
+`SKILL.md` de Claude/Codex/Cursor; adapters de Harness; qualquer
+implementação de correção para o problema que uma futura investigação
+real encontrar.

@@ -9,7 +9,7 @@ flow:
   current: standard
   escalations: []
 state:
-  current: complete
+  current: strict_review
 artifacts:
   intent: complete
   discovery: complete
@@ -18,7 +18,7 @@ artifacts:
   plan: approved
   tdd_evidence: complete
   verification: complete
-  review: complete
+  review: active
   documentation: complete
 requirements:
   total: 6
@@ -30,7 +30,7 @@ tdd:
 verification:
   status: passed
 review:
-  status: passed
+  status: active
   iteration: 3
   blockers: 0
   majors: 0

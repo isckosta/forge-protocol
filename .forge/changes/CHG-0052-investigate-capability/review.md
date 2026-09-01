@@ -3,42 +3,58 @@ forge:
   artifact: review
   schema: 1
 change: CHG-0052
-status: complete
+status: active
 ---
 
 # CHG-0052 · Review
 
 ## Verdict
 
-**PASS.** Iteration 1: REQUEST CHANGES — R-001 (BLOCKER), resolved. Iteration 2 (Resolution Verification): REQUEST CHANGES — R-002 (BLOCKER), resolved. Iteration 3 (Resolution Verification) returned **PASS** against `deee80048ec3e71072229c1d83e1acdfb45d88f4` (reviewed via follow-up provenance-recording commit `d517e1d0611fbef274918e38b6f1e740b8c2650e`), no new finding. No BLOCKER or MAJOR finding survives in the final revision. Strict Review for CHG-0052 is closed.
+**PENDING (reopened).** Iteration 1: REQUEST CHANGES — R-001 (BLOCKER), resolved. Iteration 2 (Resolution Verification): REQUEST CHANGES — R-002 (BLOCKER), resolved. Iteration 3 (Resolution Verification): **PASS** against `deee80048ec3e71072229c1d83e1acdfb45d88f4`, no new finding — Strict Review closed and the Change reached `state: complete`. After Completion, an external, independent reviewer (Codex, GitHub PR #47) found R-003 (see below): `capabilities/README.md`'s status paragraph became factually false as a direct consequence of this Change's own delivery. Per `specification-drift.md`, Review is reopened for this narrowly-scoped delta; Iteration 4 (Resolution Verification) is pending independent verification of the fix.
 
 ## Review Summary
 
 | | |
 |---|---|
-| **Iterations** | 3 |
-| **Current Subject** | `deee80048ec3e71072229c1d83e1acdfb45d88f4` |
-| **Open Blockers** | 0 |
+| **Iterations** | 4 |
+| **Current Subject** | pending Iteration 4 freeze |
+| **Open Blockers** | 0 (R-003 resolved, pending independent verification) |
 | **Open Majors** | 0 |
 | **Open Minors** | 0 |
-| **Final Iteration** | 3 |
-| **Result** | PASS |
+| **Final Iteration** | 4 |
+| **Result** | Pending Resolution Verification |
 
 ## Current Subject
 
 | | |
 |---|---|
-| **Subject SHA** | `deee80048ec3e71072229c1d83e1acdfb45d88f4` |
-| **Frozen** | Yes |
-| **Iteration** | 3 |
+| **Subject SHA** | pending Iteration 4 freeze |
+| **Frozen** | No — Resolution applied, not yet frozen for Iteration 4 |
+| **Iteration** | 4 |
 
 ## Reviewer Independence
 
-`provenance.yml`'s `reviewer-001` record: fresh agent Execution (`a56241cebb2e58ebd`), isolated Git worktree `/home/isckosta/forge-protocol/.claude/worktrees/agent-a56241cebb2e58ebd`, no shared context with the Implementation Execution that produced the subject commit, per C-026. `reviewer-002` record: fresh agent Execution (`ad504272a98650142`), isolated Git worktree `/home/isckosta/forge-protocol/.claude/worktrees/agent-ad504272a98650142`, no shared context with Iteration 1's Reviewer Execution or with the Resolution Execution under review, per C-026. `reviewer-003` record: fresh agent Execution (`a5149613f7d9027e4`), isolated Git worktree `/home/isckosta/forge-protocol/.claude/worktrees/agent-a5149613f7d9027e4`, no shared context with any prior Implementation, Resolution, or Reviewer execution, per C-026.
+`provenance.yml`'s `reviewer-001` record: fresh agent Execution (`a56241cebb2e58ebd`), isolated Git worktree `/home/isckosta/forge-protocol/.claude/worktrees/agent-a56241cebb2e58ebd`, no shared context with the Implementation Execution that produced the subject commit, per C-026. `reviewer-002` record: fresh agent Execution (`ad504272a98650142`), isolated Git worktree `/home/isckosta/forge-protocol/.claude/worktrees/agent-ad504272a98650142`, no shared context with Iteration 1's Reviewer Execution or with the Resolution Execution under review, per C-026. `reviewer-003` record: fresh agent Execution (`a5149613f7d9027e4`), isolated Git worktree `/home/isckosta/forge-protocol/.claude/worktrees/agent-a5149613f7d9027e4`, no shared context with any prior Implementation, Resolution, or Reviewer execution, per C-026. `reviewer-004` (pending): a fourth fresh agent Execution, distinct from all prior Implementation/Resolution/Reviewer executions, required per C-026.
 
 ## Open Findings
 
-No open findings.
+| Finding | Severity | Status | Iteration |
+|---|---|---|---|
+| R-003 | BLOCKER | Resolved, pending independent verification | 4 |
+
+## R-003 · BLOCKER — `capabilities/README.md`'s status paragraph became factually false once `investigate` was delivered
+
+**Source**: external, independent reviewer (Codex, GitHub PR #47, inline comment on `CHANGELOG.md:16` anchored to `capabilities/README.md:3-5`, severity P2) — found after this Change's own internal Strict Review had already passed (Iteration 3) and `manifest.yml` had reached `state: complete`.
+
+**Finding**: `capabilities/README.md:3-6` states: "No concrete Capability exists yet — this document defines the abstraction so that the first real Capability (`investigate`, in a later Change) has a place to live without requiring the foundation to be redesigned." This Change's entire purpose is to deliver that first concrete Capability — once `capabilities/investigate/CAPABILITY.md` exists, that sentence is a false statement about the present state of the repository, not a design choice under discussion. Independently re-read against the actual file and confirmed literally true at the Iteration 3 subject (`deee8004`).
+
+**Root cause**: `specification.md`'s FR-006/`CON-001` (this Change's own scope boundary, self-derived from the original request's Architecture boundary list) over-read "do not redesign the foundation" as "do not touch any byte of the foundation's documentation," which the original request never actually required and which blocked a legitimate accuracy correction. See `specification-drift.md` for the full analysis.
+
+**Required Resolution**: correct `capabilities/README.md`'s status paragraph to state the present reality (that `investigate` now exists, introduced by this Change) using the minimum text change needed, without altering any other part of `capabilities/README.md`'s architectural contract or touching `capabilities/capability.md` at all; revise `specification.md`'s FR-006/`CON-001`/Out of Scope/Compatibility Statement (superseded, not deleted) to reflect the corrected boundary.
+
+## Resolution (of R-003)
+
+`specification-drift.md` added, documenting Root Cause/Evidence/Final decision. `specification.md`'s FR-006, `CON-001`, Out of Scope, and Compatibility Statement revised in place (marked "revised per specification-drift.md") to narrow the prohibition to the architectural contract, explicitly permitting this one accuracy correction. `capabilities/README.md`'s introductory status paragraph rewritten to state that `investigate` now exists (introduced by this Change) — no other line of the file changed. Full suite (882 passed) and `forge validate` re-verified. Pending: freeze of this Resolution and independent Resolution Verification (Iteration 4).
 
 ## Iteration 1 — REQUEST CHANGES
 
@@ -118,4 +134,4 @@ R-002 fixed by committing the already-drafted `reviewer-001`/`resolution-001` `p
 
 ## Conclusion
 
-Iteration 1 found R-001 (BLOCKER, fixed). Iteration 2 (Resolution Verification) found R-002 (BLOCKER, fixed) — a provenance-recording completeness defect, not a defect in `capabilities/investigate/CAPABILITY.md` itself. Iteration 3 (Resolution Verification) returned PASS with no new finding. Strict Review is closed; Completion may proceed.
+Iteration 1 found R-001 (BLOCKER, fixed). Iteration 2 (Resolution Verification) found R-002 (BLOCKER, fixed) — a provenance-recording completeness defect, not a defect in `capabilities/investigate/CAPABILITY.md` itself. Iteration 3 (Resolution Verification) returned PASS with no new finding; Strict Review closed and the Change reached Completion. Review was subsequently reopened after Completion when an external, independent reviewer (Codex, PR #47) found R-003 — `capabilities/README.md`'s status paragraph had become factually false as a direct consequence of this Change's own delivery, blocked from correction by this Change's own over-broad self-imposed scope boundary (`specification-drift.md`). R-003 is fixed; Completion is pending Iteration 4's independent Resolution Verification.
