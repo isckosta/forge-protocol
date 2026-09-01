@@ -39,6 +39,23 @@ records:
       observed_by: self
       reference: verification.md
       statement: "verification.md's PASS result (882 passed full suite, forge validate PASS, all six Functional Requirements and NFR-001 verified against the real capabilities/investigate/CAPABILITY.md and the real, unmodified loader) remains accurate against the final passed Review subject, commit deee8004 -- the sole content-bearing commit reached after R-001's fix; nothing under capabilities/, src/, or tests/ changed between the original implementation subject (2ff4c54) and this final subject."
+  - id: verification-002
+    role: implementation
+    execution:
+      id: claude-code-implementation-0052-verification-002
+      context_id: claude-code-session-2026-09-01-verification-002
+    recorded_at: '2026-09-01T01:20:00Z'
+    revision:
+      id: chg-0052-resolution-003
+      immutable_ref:
+        type: git_commit
+        value: 3ad7906b6c0ad7164985f0f4c4f32d8a376b720b
+      commit: 3ad7906b6c0ad7164985f0f4c4f32d8a376b720b
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: verification.md
+      statement: "verification.md's PASS result remains accurate against the new final passed Review subject, commit 3ad7906 (Iteration 4's frozen subject, after R-003's fix) -- independently confirmed (reviewer-004): 882 passed full suite, forge validate PASS, capabilities/investigate/CAPABILITY.md and its tests byte-identical to the original implementation subject (2ff4c54). Only capabilities/README.md's status paragraph and this Change's own Specification/specification-drift documents changed between deee8004 and 3ad7906 -- no Functional Requirement's verified behavior is affected."
   - id: implementation-subject-001
     role: implementation
     execution:
@@ -171,3 +188,20 @@ records:
       observed_by: self
       reference: review.md#resolution-of-r-003
       statement: "R-003 resolved: capabilities/README.md's introductory status paragraph rewritten to state investigate now exists (introduced by this Change), no other line changed. specification.md's FR-006/CON-001/Out of Scope/Compatibility Statement revised (superseded, not deleted) per specification-drift.md to narrow the prohibition to the architectural contract, explicitly permitting this one accuracy correction; capabilities/capability.md untouched. Full suite (882 passed) and forge validate re-verified before freeze. Reviewable Git workspace confirmed clean before freeze."
+  - id: reviewer-004
+    role: review
+    execution:
+      id: a44e69e7d2f371740
+      context_id: independent-review-context-a44e69e7d2f371740
+    recorded_at: '2026-09-01T01:15:00Z'
+    revision:
+      id: chg-0052-resolution-003
+      immutable_ref:
+        type: git_commit
+        value: 3ad7906b6c0ad7164985f0f4c4f32d8a376b720b
+      commit: 3ad7906b6c0ad7164985f0f4c4f32d8a376b720b
+    source:
+      assurance: recorded
+      observed_by: operator
+      reference: review.md#iteration-4-resolution-verification
+      statement: "Independent Resolution Verification Iteration 4 (fresh agent execution, isolated git worktree, no shared context with any prior Implementation, Resolution, or Reviewer execution) returned PASS against 3ad7906 (reviewed via its follow-up provenance-recording commit 9e35588, review-control metadata only) -- R-003 confirmed genuinely resolved: git diff deee8004..HEAD -- capabilities/README.md confined to the introductory status paragraph only, full file read and confirmed accurate (no overclaim/underclaim); git diff deee8004..HEAD -- capabilities/capability.md empty; specification.md's revised FR-006/CON-001/Out of Scope/Compatibility Statement still forbid every original mechanism and still forbid any change to capabilities/capability.md, narrowing only to the one accuracy correction; Resolution Delta (deee8004..3ad7906) confined exactly to its declared scope (capabilities/README.md, specification.md, specification-drift.md) plus exempt metadata; capabilities/investigate/CAPABILITY.md and its tests byte-identical to the original Iteration 1 subject (2ff4c54). forge validate PASS; pytest tests/capabilities/ tests/unit/test_adapter_capabilities.py -q -> 53 passed; tests/contract/ -q -> 71 passed; full suite -q -> 882 passed, 2 pre-existing unrelated warnings. No new finding (no R-004). Workspace clean throughout."
