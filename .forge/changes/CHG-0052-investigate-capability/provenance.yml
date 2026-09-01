@@ -148,4 +148,26 @@ records:
       assurance: recorded
       observed_by: operator
       reference: review.md#iteration-3-resolution-verification
-      statement: "Independent Resolution Verification Iteration 3 (fresh agent execution, isolated Git worktree at .claude/worktrees/agent-a5149613f7d9027e4, no shared context with any prior Implementation, Resolution, or Reviewer execution) returned PASS against deee8004 (reviewed via its follow-up provenance-recording commit d517e1d0611fbef274918e38b6f1e740b8c2650e, an identical content diff plus the resolution-002 provenance record itself -- review-control metadata only) -- R-002 independently confirmed fixed: provenance.yml's reviewer-001/resolution-001/reviewer-002/resolution-002 records all real, committed, and bound to correct/ancestor commit SHAs (git cat-file -e + git merge-base --is-ancestor); manifest.yml's review.iterations[] entries resolve to real records with status/kind/finding_classes matching review.md's narration. Reviewable-content stability independently confirmed: git diff 2ff4c54..d517e1d -- capabilities/ src/ tests/ empty; capabilities/investigate/CAPABILITY.md and tests/capabilities/test_investigate_capability.py byte-identical to the Iteration 1 subject. forge validate PASS (mechanical C-026 Resolution Delta check independently reproduced by hand: both R-001's and R-002's deltas confined exactly to their declared scope, zero Out-of-Scope Mutation). pytest tests/contract/ -q -> 71 passed; tests/capabilities/ tests/unit/test_adapter_capabilities.py -q -> 53 passed; full suite -q -> 882 passed, 2 pre-existing unrelated warnings. No new finding (no R-003). Workspace clean throughout."
+      statement: "Independent Resolution Verification Iteration 3 (fresh agent execution, isolated Git worktree at .claude/worktrees/agent-a5149613f7d9027e4, no shared context with any prior Implementation, Resolution, or Reviewer execution) returned PASS against deee8004 (reviewed via its follow-up provenance-recording commit d517e1d0611fbef274918e38b6f1e740b8c2650e, an identical content diff plus the resolution-002 provenance record itself -- review-control metadata only) -- R-002 independently confirmed fixed: provenance.yml's reviewer-001/resolution-001/reviewer-002/resolution-002 records all real, committed, and bound to correct/ancestor commit SHAs (git cat-file -e + git merge-base --is-ancestor); manifest.yml's review.iterations[] entries resolve to real records with status/kind/finding_classes matching review.md's narration. Reviewable-content stability independently confirmed: git diff 2ff4c54..d517e1d -- capabilities/ src/ tests/ empty; capabilities/investigate/CAPABILITY.md and tests/capabilities/test_investigate_capability.py byte-identical to the Iteration 1 subject. forge validate PASS (mechanical C-026 Resolution Delta check independently reproduced by hand: both R-001's and R-002's deltas confined exactly to their declared scope, zero Out-of-Scope Mutation). pytest tests/contract/ -q -> 71 passed; tests/capabilities/ tests/unit/test_adapter_capabilities.py -q -> 53 passed; full suite -q -> 882 passed, 2 pre-existing unrelated warnings. No new finding (no R-003 at that point). Workspace clean throughout."
+  - id: resolution-003
+    role: resolution
+    execution:
+      id: claude-code-implementation-0052-resolution-003
+      context_id: claude-code-session-2026-09-01-resolution-003
+    recorded_at: '2026-09-01T01:00:00Z'
+    scope:
+      - capabilities/README.md
+      - .forge/changes/CHG-0052-investigate-capability/specification.md
+      - .forge/changes/CHG-0052-investigate-capability/specification-drift.md
+    targets: [R-003]
+    revision:
+      id: chg-0052-resolution-003
+      immutable_ref:
+        type: git_commit
+        value: 3ad7906b6c0ad7164985f0f4c4f32d8a376b720b
+      commit: 3ad7906b6c0ad7164985f0f4c4f32d8a376b720b
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: review.md#resolution-of-r-003
+      statement: "R-003 resolved: capabilities/README.md's introductory status paragraph rewritten to state investigate now exists (introduced by this Change), no other line changed. specification.md's FR-006/CON-001/Out of Scope/Compatibility Statement revised (superseded, not deleted) per specification-drift.md to narrow the prohibition to the architectural contract, explicitly permitting this one accuracy correction; capabilities/capability.md untouched. Full suite (882 passed) and forge validate re-verified before freeze. Reviewable Git workspace confirmed clean before freeze."

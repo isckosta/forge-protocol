@@ -69,6 +69,13 @@ review:
       full_review_required: false
       new_material_findings: 0
       finding_classes: []
+    - id: review-004
+      revision: chg-0052-resolution-003
+      subject_provenance: resolution-003
+      kind: resolution_verification
+      status: pending
+      profile: standard
+      full_review_required: false
 documentation:
   impact_evaluated: true
   update_required: true
