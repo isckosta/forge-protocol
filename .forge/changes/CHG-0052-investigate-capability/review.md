@@ -3,42 +3,42 @@ forge:
   artifact: review
   schema: 1
 change: CHG-0052
-status: active
+status: complete
 ---
 
 # CHG-0052 · Review
 
 ## Verdict
 
-**PENDING.** Iteration 1: REQUEST CHANGES — R-001 (BLOCKER), resolved. Iteration 2 (Resolution Verification): REQUEST CHANGES — R-002 (BLOCKER), resolved.
+**PASS.** Iteration 1: REQUEST CHANGES — R-001 (BLOCKER), resolved. Iteration 2 (Resolution Verification): REQUEST CHANGES — R-002 (BLOCKER), resolved. Iteration 3 (Resolution Verification) returned **PASS** against `deee80048ec3e71072229c1d83e1acdfb45d88f4` (reviewed via follow-up provenance-recording commit `d517e1d0611fbef274918e38b6f1e740b8c2650e`), no new finding. No BLOCKER or MAJOR finding survives in the final revision. Strict Review for CHG-0052 is closed.
 
 ## Review Summary
 
 | | |
 |---|---|
-| **Iterations** | 2 |
-| **Current Subject** | `ae730c297ea0b0cb31f1e1eec37df9cfe0477e94` (pending re-freeze after R-002 fix) |
+| **Iterations** | 3 |
+| **Current Subject** | `deee80048ec3e71072229c1d83e1acdfb45d88f4` |
 | **Open Blockers** | 0 |
 | **Open Majors** | 0 |
 | **Open Minors** | 0 |
-| **Final Iteration** | 2 |
-| **Result** | Pending Resolution Verification (Iteration 3) |
+| **Final Iteration** | 3 |
+| **Result** | PASS |
 
 ## Current Subject
 
 | | |
 |---|---|
-| **Subject SHA** | `ae730c297ea0b0cb31f1e1eec37df9cfe0477e94` |
-| **Frozen** | Yes (Iteration 2 subject; superseded pending R-002 fix freeze) |
-| **Iteration** | 2 |
+| **Subject SHA** | `deee80048ec3e71072229c1d83e1acdfb45d88f4` |
+| **Frozen** | Yes |
+| **Iteration** | 3 |
 
 ## Reviewer Independence
 
-`provenance.yml`'s `reviewer-001` record: fresh agent Execution (`a56241cebb2e58ebd`), isolated Git worktree `/home/isckosta/forge-protocol/.claude/worktrees/agent-a56241cebb2e58ebd`, no shared context with the Implementation Execution that produced the subject commit, per C-026. `reviewer-002` record: fresh agent Execution (`ad504272a98650142`), isolated Git worktree `/home/isckosta/forge-protocol/.claude/worktrees/agent-ad504272a98650142`, no shared context with Iteration 1's Reviewer Execution or with the Resolution Execution under review, per C-026.
+`provenance.yml`'s `reviewer-001` record: fresh agent Execution (`a56241cebb2e58ebd`), isolated Git worktree `/home/isckosta/forge-protocol/.claude/worktrees/agent-a56241cebb2e58ebd`, no shared context with the Implementation Execution that produced the subject commit, per C-026. `reviewer-002` record: fresh agent Execution (`ad504272a98650142`), isolated Git worktree `/home/isckosta/forge-protocol/.claude/worktrees/agent-ad504272a98650142`, no shared context with Iteration 1's Reviewer Execution or with the Resolution Execution under review, per C-026. `reviewer-003` record: fresh agent Execution (`a5149613f7d9027e4`), isolated Git worktree `/home/isckosta/forge-protocol/.claude/worktrees/agent-a5149613f7d9027e4`, no shared context with any prior Implementation, Resolution, or Reviewer execution, per C-026.
 
 ## Open Findings
 
-No open findings — R-001 and R-002 both resolved (see each Iteration's Resolution below); resolved revision pending independent Resolution Verification (Iteration 3).
+No open findings.
 
 ## Iteration 1 — REQUEST CHANGES
 
@@ -106,8 +106,16 @@ At commit `ae730c29`, the committed `provenance.yml` contained only `plan-approv
 
 ## Resolution (of Iteration 2)
 
-R-002 fixed by committing the already-drafted `reviewer-001`/`resolution-001` `provenance.yml` records (unchanged content — they were correct, only uncommitted) and by adding `manifest.yml`'s `review.iterations[]` entries (`review-001`, `review-002`) referencing them by id, matching the `CHG-0050` precedent shape. The resolved revision is frozen and referenced by `provenance.yml`'s `resolution-002` record, pending independent Resolution Verification (Iteration 3).
+R-002 fixed by committing the already-drafted `reviewer-001`/`resolution-001` `provenance.yml` records (unchanged content — they were correct, only uncommitted) and by adding `manifest.yml`'s `review.iterations[]` entries (`review-001`, `review-002`) referencing them by id, matching the `CHG-0050` precedent shape. The resolved revision is frozen and referenced by `provenance.yml`'s `resolution-002` record (commit `deee80048ec3e71072229c1d83e1acdfb45d88f4`, followed by a metadata-only provenance-recording commit `d517e1d0611fbef274918e38b6f1e740b8c2650e`).
+
+## Iteration 3 — PASS (Resolution Verification)
+
+**Reviewer**: Independent Reviewer execution (fresh agent invocation, isolated Git worktree at `/home/isckosta/forge-protocol/.claude/worktrees/agent-a5149613f7d9027e4`, no shared context with any prior Implementation, Resolution, or Reviewer execution), per C-026. Classified as a **Resolution Verification** under C-047: scope bounded to R-002, defects within the Resolution Delta, and Out-of-Scope Mutation.
+
+**Commit reviewed**: `deee80048ec3e71072229c1d83e1acdfb45d88f4` (frozen Resolution revision; reviewed via its follow-up provenance-recording commit `d517e1d0611fbef274918e38b6f1e740b8c2650e`, an identical content diff plus the `resolution-002` provenance record itself — review-control metadata only, per the same pattern as `CHG-0051`'s Iteration 1).
+
+**Independently verified**: Reviewable-content stability — `git diff 2ff4c54..d517e1d -- capabilities/ src/ tests/` empty; `capabilities/investigate/CAPABILITY.md` and `tests/capabilities/test_investigate_capability.py` byte-identical to the Iteration 1 subject. `provenance.yml`'s four records (`reviewer-001`, `resolution-001`, `reviewer-002`, `resolution-002`) all real, committed, and bound to correct/ancestor commit SHAs (`git cat-file -e` + `git merge-base --is-ancestor`). `manifest.yml`'s `review.iterations[]` entries resolve to real records with `status`/`kind`/`finding_classes` matching this document's own narration. `forge validate` PASS — the mechanical C-026 Resolution Delta check independently reproduced by hand: both R-001's and R-002's deltas confined exactly to their declared `scope`, zero Out-of-Scope Mutation. `pytest tests/contract/ -q` → 71 passed; `tests/capabilities/ tests/unit/test_adapter_capabilities.py -q` → 53 passed; full suite `-q` → **882 passed**, 2 pre-existing unrelated warnings. No new finding. Workspace clean throughout.
 
 ## Conclusion
 
-Iteration 1 found R-001 (BLOCKER, fixed). Iteration 2 (Resolution Verification) found R-002 (BLOCKER, fixed) — a provenance-recording completeness defect, not a defect in `capabilities/investigate/CAPABILITY.md` itself. Completion remains outstanding until an independent Resolution Verification of the re-frozen revision returns PASS.
+Iteration 1 found R-001 (BLOCKER, fixed). Iteration 2 (Resolution Verification) found R-002 (BLOCKER, fixed) — a provenance-recording completeness defect, not a defect in `capabilities/investigate/CAPABILITY.md` itself. Iteration 3 (Resolution Verification) returned PASS with no new finding. Strict Review is closed; Completion may proceed.

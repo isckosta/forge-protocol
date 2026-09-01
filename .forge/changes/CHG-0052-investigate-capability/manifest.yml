@@ -9,16 +9,16 @@ flow:
   current: standard
   escalations: []
 state:
-  current: strict_review
+  current: complete
 artifacts:
-  intent: active
+  intent: complete
   discovery: complete
   specification: complete
   test_design: complete
   plan: approved
   tdd_evidence: complete
   verification: complete
-  review: pending
+  review: complete
   documentation: complete
 requirements:
   total: 6
@@ -30,8 +30,8 @@ tdd:
 verification:
   status: passed
 review:
-  status: active
-  iteration: 2
+  status: passed
+  iteration: 3
   blockers: 0
   majors: 0
   minors: 0
@@ -59,6 +59,16 @@ review:
       new_material_findings: 1
       finding_classes:
         - resolution_regression
+    - id: review-003
+      revision: chg-0052-resolution-002
+      subject_provenance: resolution-002
+      reviewer_provenance: reviewer-003
+      kind: resolution_verification
+      status: passed
+      profile: standard
+      full_review_required: false
+      new_material_findings: 0
+      finding_classes: []
 documentation:
   impact_evaluated: true
   update_required: true

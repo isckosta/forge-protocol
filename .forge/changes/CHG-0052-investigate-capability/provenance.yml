@@ -115,3 +115,20 @@ records:
       observed_by: self
       reference: review.md#resolution-of-iteration-2
       statement: R-002 resolved by committing the reviewer-001/resolution-001 provenance.yml records (content unchanged -- they were correct, only previously uncommitted), adding resolution-001's required scope/targets, and adding manifest.yml's review.iterations[] entries (review-001, review-002) referencing them by id, matching the CHG-0050 precedent shape. Only review-control metadata paths (provenance.yml, review.md, manifest.yml) touched -- no reviewable file (capabilities/, src/, tests/) changed, confirmed via git diff --stat. Resolution Execution distinct from Iteration 2's Reviewer Execution (ad504272a98650142), per C-026's Resolver-independence requirement.
+  - id: reviewer-003
+    role: review
+    execution:
+      id: a5149613f7d9027e4
+      context_id: independent-review-context-a5149613f7d9027e4
+    recorded_at: '2026-09-01T00:45:00Z'
+    revision:
+      id: chg-0052-resolution-002
+      immutable_ref:
+        type: git_commit
+        value: deee80048ec3e71072229c1d83e1acdfb45d88f4
+      commit: deee80048ec3e71072229c1d83e1acdfb45d88f4
+    source:
+      assurance: recorded
+      observed_by: operator
+      reference: review.md#iteration-3-resolution-verification
+      statement: "Independent Resolution Verification Iteration 3 (fresh agent execution, isolated Git worktree at .claude/worktrees/agent-a5149613f7d9027e4, no shared context with any prior Implementation, Resolution, or Reviewer execution) returned PASS against deee8004 (reviewed via its follow-up provenance-recording commit d517e1d0611fbef274918e38b6f1e740b8c2650e, an identical content diff plus the resolution-002 provenance record itself -- review-control metadata only) -- R-002 independently confirmed fixed: provenance.yml's reviewer-001/resolution-001/reviewer-002/resolution-002 records all real, committed, and bound to correct/ancestor commit SHAs (git cat-file -e + git merge-base --is-ancestor); manifest.yml's review.iterations[] entries resolve to real records with status/kind/finding_classes matching review.md's narration. Reviewable-content stability independently confirmed: git diff 2ff4c54..d517e1d -- capabilities/ src/ tests/ empty; capabilities/investigate/CAPABILITY.md and tests/capabilities/test_investigate_capability.py byte-identical to the Iteration 1 subject. forge validate PASS (mechanical C-026 Resolution Delta check independently reproduced by hand: both R-001's and R-002's deltas confined exactly to their declared scope, zero Out-of-Scope Mutation). pytest tests/contract/ -q -> 71 passed; tests/capabilities/ tests/unit/test_adapter_capabilities.py -q -> 53 passed; full suite -q -> 882 passed, 2 pre-existing unrelated warnings. No new finding (no R-003). Workspace clean throughout."
