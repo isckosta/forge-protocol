@@ -20,8 +20,25 @@ records:
       content_digest:
         algorithm: sha256
         path: plan.md
-        value: 02296a799eec7d6b9971662ba8e49eac6cd5afe8dc5d72fdf45ea6c36ee62221
+        value: 12634c8018da5c8518dc27470c6a7473789f3b9e2b4911992f101b7bdc5e4f81
       statement: "The user explicitly approved continuation of CHG-0052 to Implementation in the active session on 2026-09-01, via AskUserQuestion, after reviewing the Intent, the Discovery, the Specification (FR-001-FR-006, NFR-001), the Test Design (TD-001-TD-007), and the 4-item Plan summary, selecting \"Aprovar e prosseguir\"."
+  - id: verification-001
+    role: implementation
+    execution:
+      id: claude-code-implementation-0052-verification-001
+      context_id: claude-code-session-2026-09-01-verification-001
+    recorded_at: '2026-09-01T00:50:00Z'
+    revision:
+      id: chg-0052-resolution-002
+      immutable_ref:
+        type: git_commit
+        value: deee80048ec3e71072229c1d83e1acdfb45d88f4
+      commit: deee80048ec3e71072229c1d83e1acdfb45d88f4
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: verification.md
+      statement: "verification.md's PASS result (882 passed full suite, forge validate PASS, all six Functional Requirements and NFR-001 verified against the real capabilities/investigate/CAPABILITY.md and the real, unmodified loader) remains accurate against the final passed Review subject, commit deee8004 -- the sole content-bearing commit reached after R-001's fix; nothing under capabilities/, src/, or tests/ changed between the original implementation subject (2ff4c54) and this final subject."
   - id: implementation-subject-001
     role: implementation
     execution:
