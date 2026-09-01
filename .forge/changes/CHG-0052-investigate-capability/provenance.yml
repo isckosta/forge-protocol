@@ -93,3 +93,25 @@ records:
       observed_by: operator
       reference: review.md#iteration-2-resolution-verification
       statement: "Independent Resolution Verification Iteration 2 (fresh agent execution, isolated Git worktree at .claude/worktrees/agent-ad504272a98650142, no shared context with the Resolution Execution or Iteration 1's Reviewer Execution) returned REQUEST CHANGES against ae730c29 -- R-001 independently confirmed fixed (Resolution Delta scoped exactly to provenance.yml/review.md/tdd-evidence.yml; YAML reparsed correctly; pytest tests/contract/ -q -> 71 passed; full suite pytest -q -> 882 passed, 2 warnings; forge validate PASS; no resolution regression). New finding R-002 (BLOCKER): review.md cited provenance.yml records (reviewer-001, resolution-001) not present in the committed ae730c29 tree, and manifest.yml's review block was never updated to record the Iteration -- an uncommitted-edit sequencing slip, not a defect in capabilities/investigate/CAPABILITY.md."
+  - id: resolution-002
+    role: resolution
+    execution:
+      id: claude-code-implementation-0052-resolution-002
+      context_id: claude-code-session-2026-09-01-resolution-002
+    recorded_at: '2026-09-01T00:35:00Z'
+    scope:
+      - .forge/changes/CHG-0052-investigate-capability/provenance.yml
+      - .forge/changes/CHG-0052-investigate-capability/review.md
+      - .forge/changes/CHG-0052-investigate-capability/manifest.yml
+    targets: [R-002]
+    revision:
+      id: chg-0052-resolution-002
+      immutable_ref:
+        type: git_commit
+        value: deee80048ec3e71072229c1d83e1acdfb45d88f4
+      commit: deee80048ec3e71072229c1d83e1acdfb45d88f4
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: review.md#resolution-of-iteration-2
+      statement: R-002 resolved by committing the reviewer-001/resolution-001 provenance.yml records (content unchanged -- they were correct, only previously uncommitted), adding resolution-001's required scope/targets, and adding manifest.yml's review.iterations[] entries (review-001, review-002) referencing them by id, matching the CHG-0050 precedent shape. Only review-control metadata paths (provenance.yml, review.md, manifest.yml) touched -- no reviewable file (capabilities/, src/, tests/) changed, confirmed via git diff --stat. Resolution Execution distinct from Iteration 2's Reviewer Execution (ad504272a98650142), per C-026's Resolver-independence requirement.
