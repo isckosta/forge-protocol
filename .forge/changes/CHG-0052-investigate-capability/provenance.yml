@@ -1,0 +1,24 @@
+schema: forge/execution-provenance@2
+change: CHG-0052
+records:
+  - id: plan-approval-001
+    role: implementation
+    execution:
+      id: claude-code-implementation-0052
+      context_id: claude-code-session-2026-09-01
+    recorded_at: '2026-09-01T00:00:00Z'
+    revision:
+      id: chg-0052-plan-approval-001
+      immutable_ref:
+        type: git_commit
+        value: cdd088ee47efa600a6acd39d6519fd85b8ad8a93
+      commit: cdd088ee47efa600a6acd39d6519fd85b8ad8a93
+    source:
+      assurance: recorded
+      observed_by: operator
+      reference: plan.md#approval-record
+      content_digest:
+        algorithm: sha256
+        path: plan.md
+        value: 02296a799eec7d6b9971662ba8e49eac6cd5afe8dc5d72fdf45ea6c36ee62221
+      statement: "The user explicitly approved continuation of CHG-0052 to Implementation in the active session on 2026-09-01, via AskUserQuestion, after reviewing the Intent, the Discovery, the Specification (FR-001-FR-006, NFR-001), the Test Design (TD-001-TD-007), and the 4-item Plan summary, selecting \"Aprovar e prosseguir\"."

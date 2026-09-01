@@ -10,6 +10,25 @@ until then.
 
 ## Unreleased
 
+### Investigate Capability
+
+Introduced `investigate`, the first concrete Forge Capability, as
+`capabilities/investigate/CAPABILITY.md` — a disciplined,
+evidence-driven and hypothesis-driven diagnostic competency for bugs,
+regressions, and unexplained behavior, replacing `symptom -> plausible
+guess -> code change` with `problem -> establish facts -> reproduce
+when possible -> gather evidence -> competing hypotheses -> test
+hypotheses -> isolate root cause -> conclusion`. Root cause may
+explicitly remain unestablished (`ROOT CAUSE NOT ESTABLISHED`) when the
+evidence does not support a conclusion; every causal claim preserves the
+`CONFIRMED` / `INFERRED` / `UNKNOWN` distinction. `investigate` is
+diagnostic only — it does not fix the problem it investigates, approve
+Changes, select or redefine Flow, create Gates, or control lifecycle.
+It loads through the existing, unmodified `forge_cli.capabilities`
+loader introduced by `CHG-0047`; `capabilities/README.md`,
+`capabilities/capability.md`, the loader, and the model are unchanged.
+See `.forge/changes/CHG-0052-investigate-capability/`.
+
 ### Review Experience Modes
 
 Added a developer-facing Review Experience Mode layer over the

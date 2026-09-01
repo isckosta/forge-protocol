@@ -9,25 +9,26 @@ flow:
   current: standard
   escalations: []
 state:
-  current: plan
+  current: strict_review
 artifacts:
   intent: active
   discovery: complete
   specification: complete
   test_design: complete
-  plan: pending
-  tdd_evidence: active
-  verification: pending
+  plan: approved
+  tdd_evidence: complete
+  verification: complete
   review: pending
-  documentation: pending
+  documentation: complete
 requirements:
-  total: 0
-  implemented: 0
-  verified: 0
+  total: 6
+  implemented: 6
+  verified: 6
 tdd:
-  status: pending
+  status: compliant
+  cycles: 1
 verification:
-  status: pending
+  status: passed
 review:
   status: pending
   iteration: 0
@@ -38,4 +39,20 @@ review:
   mode: recommended
   iterations: []
 documentation:
-  impact_evaluated: false
+  impact_evaluated: true
+  update_required: true
+  reason: >-
+    Updated CHANGELOG.md (Unreleased entry, "Investigate Capability")
+    announcing the first concrete Forge Capability. No ADR needed (no
+    new architectural decision — ADR-0019 already anticipated this
+    Change and remains accurate). No RFC (no Protocol integer, Schema,
+    or Gate semantics changed).
+decisions:
+  - id: DEC-001
+    class: technical
+    materiality: material
+    status: resolved
+    authority: human
+    owning_artifact: plan
+    discovered_in: plan
+    resolved_via: human_decision
