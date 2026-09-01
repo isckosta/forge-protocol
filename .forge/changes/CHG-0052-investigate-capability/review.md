@@ -10,35 +10,35 @@ status: active
 
 ## Verdict
 
-**PENDING.** Iteration 1: REQUEST CHANGES — R-001 (BLOCKER), resolved.
+**PENDING.** Iteration 1: REQUEST CHANGES — R-001 (BLOCKER), resolved. Iteration 2 (Resolution Verification): REQUEST CHANGES — R-002 (BLOCKER), resolved.
 
 ## Review Summary
 
 | | |
 |---|---|
-| **Iterations** | 1 |
-| **Current Subject** | `2ff4c5402390aad8a114fa5c44d2c2477b4b4760` |
+| **Iterations** | 2 |
+| **Current Subject** | `ae730c297ea0b0cb31f1e1eec37df9cfe0477e94` (pending re-freeze after R-002 fix) |
 | **Open Blockers** | 0 |
 | **Open Majors** | 0 |
 | **Open Minors** | 0 |
-| **Final Iteration** | 1 |
-| **Result** | Pending Resolution Verification |
+| **Final Iteration** | 2 |
+| **Result** | Pending Resolution Verification (Iteration 3) |
 
 ## Current Subject
 
 | | |
 |---|---|
-| **Subject SHA** | `2ff4c5402390aad8a114fa5c44d2c2477b4b4760` |
-| **Frozen** | Yes |
-| **Iteration** | 1 |
+| **Subject SHA** | `ae730c297ea0b0cb31f1e1eec37df9cfe0477e94` |
+| **Frozen** | Yes (Iteration 2 subject; superseded pending R-002 fix freeze) |
+| **Iteration** | 2 |
 
 ## Reviewer Independence
 
-`provenance.yml`'s `reviewer-001` record: fresh agent Execution (`a56241cebb2e58ebd`), isolated Git worktree `/home/isckosta/forge-protocol/.claude/worktrees/agent-a56241cebb2e58ebd`, no shared context with the Implementation Execution that produced the subject commit, per C-026.
+`provenance.yml`'s `reviewer-001` record: fresh agent Execution (`a56241cebb2e58ebd`), isolated Git worktree `/home/isckosta/forge-protocol/.claude/worktrees/agent-a56241cebb2e58ebd`, no shared context with the Implementation Execution that produced the subject commit, per C-026. `reviewer-002` record: fresh agent Execution (`ad504272a98650142`), isolated Git worktree `/home/isckosta/forge-protocol/.claude/worktrees/agent-ad504272a98650142`, no shared context with Iteration 1's Reviewer Execution or with the Resolution Execution under review, per C-026.
 
 ## Open Findings
 
-No open findings — R-001 resolved (see Resolution below); resolved revision pending independent Resolution Verification.
+No open findings — R-001 and R-002 both resolved (see each Iteration's Resolution below); resolved revision pending independent Resolution Verification (Iteration 3).
 
 ## Iteration 1 — REQUEST CHANGES
 
@@ -82,8 +82,32 @@ FAILED tests/contract/test_protocol_contract.py::test_canonical_yaml_instances_s
 
 ## Resolution (of Iteration 1)
 
-R-001 fixed by quoting the offending `notes[]` entry as a proper double-quoted YAML string in `tdd-evidence.yml` (the entry's internal double quotes escaped). Independently re-verified from the working tree after the fix: `python -c "import yaml; ..."` confirms both `notes` entries now parse as `str`; `pytest tests/contract/ -q` → 71 passed; full suite `pytest -q` → **882 passed**, 2 pre-existing unrelated warnings (genuinely reproduced this time); `forge validate` → Forge project is valid. The resolved revision is frozen and referenced by `provenance.yml`'s `resolution-001` record, pending independent Resolution Verification.
+R-001 fixed by quoting the offending `notes[]` entry as a proper double-quoted YAML string in `tdd-evidence.yml` (the entry's internal double quotes escaped). Independently re-verified from the working tree after the fix: `python -c "import yaml; ..."` confirms both `notes` entries now parse as `str`; `pytest tests/contract/ -q` → 71 passed; full suite `pytest -q` → **882 passed**, 2 pre-existing unrelated warnings (genuinely reproduced this time); `forge validate` → Forge project is valid. The resolved revision was frozen at `ae730c297ea0b0cb31f1e1eec37df9cfe0477e94`.
+
+## Iteration 2 — REQUEST CHANGES (Resolution Verification)
+
+**Reviewer**: Independent Reviewer execution (fresh agent invocation, isolated Git worktree at `/home/isckosta/forge-protocol/.claude/worktrees/agent-ad504272a98650142`, no shared context with the Resolution Execution or with Iteration 1's Reviewer Execution), per C-026. Classified as a **Resolution Verification** under C-047: scope bounded to R-001, defects within the Resolution Delta, and Out-of-Scope Mutation.
+
+**Commit reviewed**: `ae730c297ea0b0cb31f1e1eec37df9cfe0477e94` (frozen Resolution revision).
+
+**Resolution Delta inspected**: `git diff 2ff4c5402390aad8a114fa5c44d2c2477b4b4760..ae730c297ea0b0cb31f1e1eec37df9cfe0477e94`.
+
+### R-001: confirmed fixed
+
+Resolution Delta scoped exactly to `.forge/changes/CHG-0052-investigate-capability/{provenance.yml,review.md,tdd-evidence.yml}`. `tdd-evidence.yml`'s fix independently reparsed as valid YAML strings; `pytest tests/contract/ -q` → 71 passed; full suite `pytest -q` → **882 passed, 2 warnings** (matches); `pytest tests/capabilities/ tests/unit/test_adapter_capabilities.py -q` → 53 passed; `forge validate` → PASS. No resolution regression.
+
+### R-002 · BLOCKER — `review.md` cites `provenance.yml` records (`reviewer-001`, `resolution-001`) that did not exist in the reviewed commit, and `manifest.yml` was never updated to record the Iteration
+
+At commit `ae730c29`, the committed `provenance.yml` contained only `plan-approval-001` and `implementation-subject-001` — no `reviewer-001` (role: review) or `resolution-001` (role: resolution) record existed, even though `review.md`'s own Reviewer Independence and Resolution sections asserted them by id. Separately, `manifest.yml`'s `review:` block still read `status: pending, iteration: 0, iterations: []`, contradicting `review.md`'s own Iterations/Final Iteration table. Per `src/forge_cli/merge_readiness/evaluator.py` (MR-018), a passed Review must resolve to admissible `role: review`/`role: resolution` provenance bound to the reviewed/resolved commit via `manifest.yml`'s `review.iterations[]` — this repository's own completed precedent (`CHG-0050`) demonstrates the required shape.
+
+**Root cause**: the `reviewer-001`/`resolution-001` records had been added to the local working tree's `provenance.yml` (by the Resolution Execution, immediately after freezing `ae730c29`) but never committed — an execution-sequencing slip (freeze, then keep editing the just-frozen file without a follow-up commit), not a defect in the records' own content or in the review-control-metadata exemption itself.
+
+**Required Resolution**: `provenance.yml` must contain real, committed `role: review` and `role: resolution` records bound to the correct commits, and `manifest.yml`'s `review.iterations[]` must reference them by id, matching the `CHG-0050` pattern, before Completion.
+
+## Resolution (of Iteration 2)
+
+R-002 fixed by committing the already-drafted `reviewer-001`/`resolution-001` `provenance.yml` records (unchanged content — they were correct, only uncommitted) and by adding `manifest.yml`'s `review.iterations[]` entries (`review-001`, `review-002`) referencing them by id, matching the `CHG-0050` precedent shape. The resolved revision is frozen and referenced by `provenance.yml`'s `resolution-002` record, pending independent Resolution Verification (Iteration 3).
 
 ## Conclusion
 
-Iteration 1 found one BLOCKER (R-001), fixed by a Resolution distinct from the Reviewer's own Execution Context per C-026's Resolver-independence requirement. Completion remains outstanding until an independent Resolution Verification of the frozen resolved revision returns PASS.
+Iteration 1 found R-001 (BLOCKER, fixed). Iteration 2 (Resolution Verification) found R-002 (BLOCKER, fixed) — a provenance-recording completeness defect, not a defect in `capabilities/investigate/CAPABILITY.md` itself. Completion remains outstanding until an independent Resolution Verification of the re-frozen revision returns PASS.
