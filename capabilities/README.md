@@ -1,9 +1,10 @@
 # Forge Capabilities
 
-Status: Foundation (introduced by `CHG-0047`). No concrete Capability exists
-yet — this document defines the abstraction so that the first real
-Capability (`investigate`, in a later Change) has a place to live without
-requiring the foundation to be redesigned.
+Status: Foundation (introduced by `CHG-0047`). The first concrete
+Capability, `investigate` (`capabilities/investigate/CAPABILITY.md`), was
+introduced by `CHG-0052` without requiring this foundation to be
+redesigned — this document defines the abstraction that made that
+possible, and that any further concrete Capability continues to use.
 
 ## What a Forge Capability is
 

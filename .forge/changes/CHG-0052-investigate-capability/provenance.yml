@@ -1,0 +1,207 @@
+schema: forge/execution-provenance@2
+change: CHG-0052
+records:
+  - id: plan-approval-001
+    role: implementation
+    execution:
+      id: claude-code-implementation-0052
+      context_id: claude-code-session-2026-09-01
+    recorded_at: '2026-09-01T00:00:00Z'
+    revision:
+      id: chg-0052-plan-approval-001
+      immutable_ref:
+        type: git_commit
+        value: cdd088ee47efa600a6acd39d6519fd85b8ad8a93
+      commit: cdd088ee47efa600a6acd39d6519fd85b8ad8a93
+    source:
+      assurance: recorded
+      observed_by: operator
+      reference: plan.md#approval-record
+      content_digest:
+        algorithm: sha256
+        path: plan.md
+        value: 12634c8018da5c8518dc27470c6a7473789f3b9e2b4911992f101b7bdc5e4f81
+      statement: "The user explicitly approved continuation of CHG-0052 to Implementation in the active session on 2026-09-01, via AskUserQuestion, after reviewing the Intent, the Discovery, the Specification (FR-001-FR-006, NFR-001), the Test Design (TD-001-TD-007), and the 4-item Plan summary, selecting \"Aprovar e prosseguir\"."
+  - id: verification-001
+    role: implementation
+    execution:
+      id: claude-code-implementation-0052-verification-001
+      context_id: claude-code-session-2026-09-01-verification-001
+    recorded_at: '2026-09-01T00:50:00Z'
+    revision:
+      id: chg-0052-resolution-002
+      immutable_ref:
+        type: git_commit
+        value: deee80048ec3e71072229c1d83e1acdfb45d88f4
+      commit: deee80048ec3e71072229c1d83e1acdfb45d88f4
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: verification.md
+      statement: "verification.md's PASS result (882 passed full suite, forge validate PASS, all six Functional Requirements and NFR-001 verified against the real capabilities/investigate/CAPABILITY.md and the real, unmodified loader) remains accurate against the final passed Review subject, commit deee8004 -- the sole content-bearing commit reached after R-001's fix; nothing under capabilities/, src/, or tests/ changed between the original implementation subject (2ff4c54) and this final subject."
+  - id: verification-002
+    role: implementation
+    execution:
+      id: claude-code-implementation-0052-verification-002
+      context_id: claude-code-session-2026-09-01-verification-002
+    recorded_at: '2026-09-01T01:20:00Z'
+    revision:
+      id: chg-0052-resolution-003
+      immutable_ref:
+        type: git_commit
+        value: 3ad7906b6c0ad7164985f0f4c4f32d8a376b720b
+      commit: 3ad7906b6c0ad7164985f0f4c4f32d8a376b720b
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: verification.md
+      statement: "verification.md's PASS result remains accurate against the new final passed Review subject, commit 3ad7906 (Iteration 4's frozen subject, after R-003's fix) -- independently confirmed (reviewer-004): 882 passed full suite, forge validate PASS, capabilities/investigate/CAPABILITY.md and its tests byte-identical to the original implementation subject (2ff4c54). Only capabilities/README.md's status paragraph and this Change's own Specification/specification-drift documents changed between deee8004 and 3ad7906 -- no Functional Requirement's verified behavior is affected."
+  - id: implementation-subject-001
+    role: implementation
+    execution:
+      id: claude-code-implementation-0052-subject-001
+      context_id: claude-code-session-2026-09-01-subject-001
+    recorded_at: '2026-09-01T00:00:00Z'
+    revision:
+      id: chg-0052-implementation-001
+      immutable_ref:
+        type: git_commit
+        value: 2ff4c5402390aad8a114fa5c44d2c2477b4b4760
+      commit: 2ff4c5402390aad8a114fa5c44d2c2477b4b4760
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: implementation-subject
+      statement: Frozen CHG-0052 implementation subject (immutable per C-026 once committed) -- includes capabilities/investigate/CAPABILITY.md, tests/capabilities/test_investigate_capability.py, CHANGELOG.md, and all CHG-0052 planning/design/verification Artifacts. Reviewable Git workspace confirmed clean before freeze (git status --porcelain empty).
+  - id: reviewer-001
+    role: review
+    execution:
+      id: a56241cebb2e58ebd
+      context_id: independent-review-context-a56241cebb2e58ebd
+    recorded_at: '2026-09-01T00:15:00Z'
+    revision:
+      id: chg-0052-implementation-001
+      immutable_ref:
+        type: git_commit
+        value: 2ff4c5402390aad8a114fa5c44d2c2477b4b4760
+      commit: 2ff4c5402390aad8a114fa5c44d2c2477b4b4760
+    source:
+      assurance: recorded
+      observed_by: operator
+      reference: review.md#iteration-1
+      statement: "Independent Strict Review Iteration 1 (fresh agent execution, isolated Git worktree at .claude/worktrees/agent-a56241cebb2e58ebd, no shared context with the Implementation) returned REQUEST CHANGES against 2ff4c54 -- R-001 (BLOCKER, tdd-evidence.yml's notes[1] was an unquoted \"key: value\"-shaped scalar parsed by YAML as a one-entry mapping, violating protocol/schemas/tdd-evidence.schema.json, and making verification.md's claimed \"882 passed\" false against the actually-committed subject: 881 passed, 1 failed). RED independently reproduced (file moved aside, CapabilityDefinitionError raised, file restored, workspace left clean). Foundation files (loader.py, model.py, capabilities/README.md, capabilities/capability.md) independently confirmed byte-identical to main. FR-001-FR-006/NFR-001 independently checked against actual CAPABILITY.md content and actual test assertions. TD-007 Manual Acceptance performed independently: satisfies. No other finding."
+  - id: resolution-001
+    role: resolution
+    execution:
+      id: claude-code-implementation-0052-resolution-001
+      context_id: claude-code-session-2026-09-01-resolution-001
+    recorded_at: '2026-09-01T00:20:00Z'
+    scope:
+      - .forge/changes/CHG-0052-investigate-capability/tdd-evidence.yml
+    targets: [R-001]
+    revision:
+      id: chg-0052-resolution-001
+      immutable_ref:
+        type: git_commit
+        value: ae730c297ea0b0cb31f1e1eec37df9cfe0477e94
+      commit: ae730c297ea0b0cb31f1e1eec37df9cfe0477e94
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: review.md#resolution-of-iteration-1
+      statement: R-001 resolved by quoting tdd-evidence.yml's cycles[0].notes[1] as a proper double-quoted YAML string. Re-verified from the working tree after the fix -- python -c "import yaml; ..." confirms both notes entries parse as str; pytest tests/contract/ -q -> 71 passed; full suite pytest -q -> 882 passed, 2 pre-existing unrelated warnings; forge validate -> Forge project is valid. Resolution Execution distinct from Iteration 1's Reviewer Execution (a56241cebb2e58ebd), per C-026's Resolver-independence requirement. Reviewable Git workspace confirmed clean before freeze.
+  - id: reviewer-002
+    role: review
+    execution:
+      id: ad504272a98650142
+      context_id: independent-review-context-ad504272a98650142
+    recorded_at: '2026-09-01T00:30:00Z'
+    revision:
+      id: chg-0052-resolution-001
+      immutable_ref:
+        type: git_commit
+        value: ae730c297ea0b0cb31f1e1eec37df9cfe0477e94
+      commit: ae730c297ea0b0cb31f1e1eec37df9cfe0477e94
+    source:
+      assurance: recorded
+      observed_by: operator
+      reference: review.md#iteration-2-resolution-verification
+      statement: "Independent Resolution Verification Iteration 2 (fresh agent execution, isolated Git worktree at .claude/worktrees/agent-ad504272a98650142, no shared context with the Resolution Execution or Iteration 1's Reviewer Execution) returned REQUEST CHANGES against ae730c29 -- R-001 independently confirmed fixed (Resolution Delta scoped exactly to provenance.yml/review.md/tdd-evidence.yml; YAML reparsed correctly; pytest tests/contract/ -q -> 71 passed; full suite pytest -q -> 882 passed, 2 warnings; forge validate PASS; no resolution regression). New finding R-002 (BLOCKER): review.md cited provenance.yml records (reviewer-001, resolution-001) not present in the committed ae730c29 tree, and manifest.yml's review block was never updated to record the Iteration -- an uncommitted-edit sequencing slip, not a defect in capabilities/investigate/CAPABILITY.md."
+  - id: resolution-002
+    role: resolution
+    execution:
+      id: claude-code-implementation-0052-resolution-002
+      context_id: claude-code-session-2026-09-01-resolution-002
+    recorded_at: '2026-09-01T00:35:00Z'
+    scope:
+      - .forge/changes/CHG-0052-investigate-capability/provenance.yml
+      - .forge/changes/CHG-0052-investigate-capability/review.md
+      - .forge/changes/CHG-0052-investigate-capability/manifest.yml
+    targets: [R-002]
+    revision:
+      id: chg-0052-resolution-002
+      immutable_ref:
+        type: git_commit
+        value: deee80048ec3e71072229c1d83e1acdfb45d88f4
+      commit: deee80048ec3e71072229c1d83e1acdfb45d88f4
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: review.md#resolution-of-iteration-2
+      statement: R-002 resolved by committing the reviewer-001/resolution-001 provenance.yml records (content unchanged -- they were correct, only previously uncommitted), adding resolution-001's required scope/targets, and adding manifest.yml's review.iterations[] entries (review-001, review-002) referencing them by id, matching the CHG-0050 precedent shape. Only review-control metadata paths (provenance.yml, review.md, manifest.yml) touched -- no reviewable file (capabilities/, src/, tests/) changed, confirmed via git diff --stat. Resolution Execution distinct from Iteration 2's Reviewer Execution (ad504272a98650142), per C-026's Resolver-independence requirement.
+  - id: reviewer-003
+    role: review
+    execution:
+      id: a5149613f7d9027e4
+      context_id: independent-review-context-a5149613f7d9027e4
+    recorded_at: '2026-09-01T00:45:00Z'
+    revision:
+      id: chg-0052-resolution-002
+      immutable_ref:
+        type: git_commit
+        value: deee80048ec3e71072229c1d83e1acdfb45d88f4
+      commit: deee80048ec3e71072229c1d83e1acdfb45d88f4
+    source:
+      assurance: recorded
+      observed_by: operator
+      reference: review.md#iteration-3-resolution-verification
+      statement: "Independent Resolution Verification Iteration 3 (fresh agent execution, isolated Git worktree at .claude/worktrees/agent-a5149613f7d9027e4, no shared context with any prior Implementation, Resolution, or Reviewer execution) returned PASS against deee8004 (reviewed via its follow-up provenance-recording commit d517e1d0611fbef274918e38b6f1e740b8c2650e, an identical content diff plus the resolution-002 provenance record itself -- review-control metadata only) -- R-002 independently confirmed fixed: provenance.yml's reviewer-001/resolution-001/reviewer-002/resolution-002 records all real, committed, and bound to correct/ancestor commit SHAs (git cat-file -e + git merge-base --is-ancestor); manifest.yml's review.iterations[] entries resolve to real records with status/kind/finding_classes matching review.md's narration. Reviewable-content stability independently confirmed: git diff 2ff4c54..d517e1d -- capabilities/ src/ tests/ empty; capabilities/investigate/CAPABILITY.md and tests/capabilities/test_investigate_capability.py byte-identical to the Iteration 1 subject. forge validate PASS (mechanical C-026 Resolution Delta check independently reproduced by hand: both R-001's and R-002's deltas confined exactly to their declared scope, zero Out-of-Scope Mutation). pytest tests/contract/ -q -> 71 passed; tests/capabilities/ tests/unit/test_adapter_capabilities.py -q -> 53 passed; full suite -q -> 882 passed, 2 pre-existing unrelated warnings. No new finding (no R-003 at that point). Workspace clean throughout."
+  - id: resolution-003
+    role: resolution
+    execution:
+      id: claude-code-implementation-0052-resolution-003
+      context_id: claude-code-session-2026-09-01-resolution-003
+    recorded_at: '2026-09-01T01:00:00Z'
+    scope:
+      - capabilities/README.md
+      - .forge/changes/CHG-0052-investigate-capability/specification.md
+      - .forge/changes/CHG-0052-investigate-capability/specification-drift.md
+    targets: [R-003]
+    revision:
+      id: chg-0052-resolution-003
+      immutable_ref:
+        type: git_commit
+        value: 3ad7906b6c0ad7164985f0f4c4f32d8a376b720b
+      commit: 3ad7906b6c0ad7164985f0f4c4f32d8a376b720b
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: review.md#resolution-of-r-003
+      statement: "R-003 resolved: capabilities/README.md's introductory status paragraph rewritten to state investigate now exists (introduced by this Change), no other line changed. specification.md's FR-006/CON-001/Out of Scope/Compatibility Statement revised (superseded, not deleted) per specification-drift.md to narrow the prohibition to the architectural contract, explicitly permitting this one accuracy correction; capabilities/capability.md untouched. Full suite (882 passed) and forge validate re-verified before freeze. Reviewable Git workspace confirmed clean before freeze."
+  - id: reviewer-004
+    role: review
+    execution:
+      id: a44e69e7d2f371740
+      context_id: independent-review-context-a44e69e7d2f371740
+    recorded_at: '2026-09-01T01:15:00Z'
+    revision:
+      id: chg-0052-resolution-003
+      immutable_ref:
+        type: git_commit
+        value: 3ad7906b6c0ad7164985f0f4c4f32d8a376b720b
+      commit: 3ad7906b6c0ad7164985f0f4c4f32d8a376b720b
+    source:
+      assurance: recorded
+      observed_by: operator
+      reference: review.md#iteration-4-resolution-verification
+      statement: "Independent Resolution Verification Iteration 4 (fresh agent execution, isolated git worktree, no shared context with any prior Implementation, Resolution, or Reviewer execution) returned PASS against 3ad7906 (reviewed via its follow-up provenance-recording commit 9e35588, review-control metadata only) -- R-003 confirmed genuinely resolved: git diff deee8004..HEAD -- capabilities/README.md confined to the introductory status paragraph only, full file read and confirmed accurate (no overclaim/underclaim); git diff deee8004..HEAD -- capabilities/capability.md empty; specification.md's revised FR-006/CON-001/Out of Scope/Compatibility Statement still forbid every original mechanism and still forbid any change to capabilities/capability.md, narrowing only to the one accuracy correction; Resolution Delta (deee8004..3ad7906) confined exactly to its declared scope (capabilities/README.md, specification.md, specification-drift.md) plus exempt metadata; capabilities/investigate/CAPABILITY.md and its tests byte-identical to the original Iteration 1 subject (2ff4c54). forge validate PASS; pytest tests/capabilities/ tests/unit/test_adapter_capabilities.py -q -> 53 passed; tests/contract/ -q -> 71 passed; full suite -q -> 882 passed, 2 pre-existing unrelated warnings. No new finding (no R-004). Workspace clean throughout."
