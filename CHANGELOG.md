@@ -10,6 +10,17 @@ until then.
 
 ## Unreleased
 
+### Fix Capability
+
+Introduced `fix`, the complementary concrete Forge Capability at
+`capabilities/fix/CAPABILITY.md`. It turns a sufficiently understood defect
+into the smallest cause-correcting repair, checks the observed/expected
+behavior, supported cause, and repair boundary before implementation,
+escalates material scope expansion or uncertainty, and requires reproducible
+regression evidence. It does not add a mandatory artifact or redefine Flow,
+TDD, Review, Verification, approval, Gates, lifecycle, or Merge Readiness.
+See `.forge/changes/CHG-0053-fix-capability/`.
+
 ### Investigate Capability
 
 Introduced `investigate`, the first concrete Forge Capability, as

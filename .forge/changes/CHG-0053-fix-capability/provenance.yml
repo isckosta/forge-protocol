@@ -1,0 +1,157 @@
+schema: forge/execution-provenance@2
+change: CHG-0053
+records:
+  - id: plan-approval-001
+    role: implementation
+    execution:
+      id: codex-implementation-0055
+      context_id: codex-session-2026-09-08
+    recorded_at: '2026-09-08T00:00:00Z'
+    revision:
+      id: chg-0055-plan-approval-001
+      immutable_ref:
+        type: content_digest
+        value: a8c6136a0676b2562614d83a4dbcb86ca12444654df60c53f7d655522cf73eba
+    source:
+      assurance: recorded
+      observed_by: operator
+      reference: plan.md#approval-record
+      content_digest:
+        algorithm: sha256
+        path: plan.md
+        value: a8c6136a0676b2562614d83a4dbcb86ca12444654df60c53f7d655522cf73eba
+      statement: >-
+        The human maintainer explicitly instructed continuation in the active
+        chat session on 2026-09-08 with “Prossiga”, after the implementation
+        and verification state was reported. This is the C-077 Plan
+        authorization for the localized CHG-0053 implementation.
+  - id: implementation-subject-001
+    role: implementation
+    execution:
+      id: codex-implementation-0055
+      context_id: codex-session-2026-09-08
+    recorded_at: '2026-09-08T00:10:00Z'
+    revision:
+      id: chg-0055-implementation-001
+      immutable_ref:
+        type: git_commit
+        value: 9e46fc37e6aa7381c522e054b9645a32c2a7467f
+      commit: 9e46fc37e6aa7381c522e054b9645a32c2a7467f
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: verification.md
+      statement: >-
+        CHG-0053 implementation subject frozen at commit
+        9e46fc37e6aa7381c522e054b9645a32c2a7467f. The commit contains the
+        canonical fix Capability, its focused tests, Change Artifacts, and
+        documentation updates; the unrelated projection.py worktree delta is
+        outside the subject.
+  - id: reviewer-001
+    role: review
+    execution:
+      id: codex-review-0055-001
+      context_id: codex-review-session-2026-09-08-001
+    recorded_at: '2026-09-08T00:20:00Z'
+    revision:
+      id: chg-0055-implementation-001
+      immutable_ref:
+        type: git_commit
+        value: 9e46fc37e6aa7381c522e054b9645a32c2a7467f
+      commit: 9e46fc37e6aa7381c522e054b9645a32c2a7467f
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: review.md#iteration-1
+      statement: >-
+        Fresh review execution inspected the frozen commit diff, ran
+        `git diff --check 9e46fc3^ 9e46fc3`, ran the focused capability and
+        contract tests (81 passed), and ran `forge validate` (project valid).
+        The review found no blocker, major, or minor finding. The full-suite
+        wheel-build limitation was confirmed as environmental and remains
+        documented in verification.md.
+  - id: resolution-001
+    role: resolution
+    execution:
+      id: codex-resolution-0055-001
+      context_id: codex-session-2026-09-08-resolution-001
+    recorded_at: '2026-09-08T00:30:00Z'
+    scope:
+      - .forge/changes/CHG-0053-fix-capability/discovery.md
+      - .forge/changes/CHG-0053-fix-capability/intent.md
+      - .forge/changes/CHG-0053-fix-capability/manifest.yml
+      - .forge/changes/CHG-0053-fix-capability/plan.md
+      - .forge/changes/CHG-0053-fix-capability/provenance.yml
+      - .forge/changes/CHG-0053-fix-capability/review.md
+      - .forge/changes/CHG-0053-fix-capability/specification.md
+      - .forge/changes/CHG-0053-fix-capability/tdd-evidence.yml
+      - .forge/changes/CHG-0053-fix-capability/test-design.md
+      - .forge/changes/CHG-0053-fix-capability/verification.md
+      - .forge/changes/CHG-0055-0053-fix-capability/discovery.md
+      - .forge/changes/CHG-0055-0053-fix-capability/intent.md
+      - .forge/changes/CHG-0055-0053-fix-capability/manifest.yml
+      - .forge/changes/CHG-0055-0053-fix-capability/plan.md
+      - .forge/changes/CHG-0055-0053-fix-capability/provenance.yml
+      - .forge/changes/CHG-0055-0053-fix-capability/review.md
+      - .forge/changes/CHG-0055-0053-fix-capability/specification.md
+      - .forge/changes/CHG-0055-0053-fix-capability/tdd-evidence.yml
+      - .forge/changes/CHG-0055-0053-fix-capability/test-design.md
+      - .forge/changes/CHG-0055-0053-fix-capability/verification.md
+      - CHANGELOG.md
+      - capabilities/README.md
+    targets: [MR-006, MR-008, MR-015]
+    revision:
+      id: chg-0053-resolution-001
+      immutable_ref:
+        type: git_commit
+        value: 7e3a50d0f3f993c233fabe1d74fb566fbb07c84b
+      commit: 7e3a50d0f3f993c233fabe1d74fb566fbb07c84b
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: review.md#iteration-2
+      statement: >-
+        Corrected the Change directory identity from CHG-0055-0053 to
+        CHG-0053, refreshed the Plan content digest, and corrected the
+        Verification PASS marker. No capability or product implementation
+        file changed.
+  - id: reviewer-002
+    role: review
+    execution:
+      id: codex-review-0055-002
+      context_id: codex-review-session-2026-09-08-002
+    recorded_at: '2026-09-08T00:35:00Z'
+    revision:
+      id: chg-0053-resolution-001
+      immutable_ref:
+        type: git_commit
+        value: 7e3a50d0f3f993c233fabe1d74fb566fbb07c84b
+      commit: 7e3a50d0f3f993c233fabe1d74fb566fbb07c84b
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: review.md#iteration-2
+      statement: >-
+        Resolution Verification rechecked the corrected path and metadata,
+        focused tests (81 passed), and forge validate (project valid). No new
+        finding was identified.
+  - id: verification-002
+    role: implementation
+    execution:
+      id: codex-verification-0055-002
+      context_id: codex-session-2026-09-08-resolution-001
+    recorded_at: '2026-09-08T00:40:00Z'
+    revision:
+      id: chg-0053-resolution-001
+      immutable_ref:
+        type: git_commit
+        value: 7e3a50d0f3f993c233fabe1d74fb566fbb07c84b
+      commit: 7e3a50d0f3f993c233fabe1d74fb566fbb07c84b
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: verification.md
+      statement: >-
+        Verification for the corrected CHG-0053 subject: focused capability
+        and contract tests passed (81 passed), forge validate passed, and the
+        full-suite wheel-build limitation remains environmental and documented.
