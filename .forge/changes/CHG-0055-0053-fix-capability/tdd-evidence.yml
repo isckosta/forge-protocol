@@ -1,0 +1,25 @@
+schema: forge/tdd-evidence@1
+change: CHG-0055
+status: compliant
+cycle_count: 1
+cycles:
+  - id: TDD-001
+    title: fix Capability definition satisfies the existing contract
+    requirements: [FR-001, FR-002, FR-003, FR-004, FR-005, NFR-001]
+    behavior: >-
+      The canonical fix definition loads through the unchanged generic loader,
+      accepts the requested defect inputs, requires observed/expected/cause/
+      boundary understanding, escalates uncertainty, preserves a minimal
+      cause-oriented repair boundary, detects material scope expansion, and
+      requires reproducible regression evidence without redefining Forge
+      governance.
+    red:
+      command: python -m pytest tests/capabilities/test_fix_capability.py -q
+      result: 27 errors during collection/setup (CapabilityDefinitionError and FileNotFoundError)
+      reason: capabilities/fix/CAPABILITY.md did not exist yet.
+    green:
+      command: python -m pytest tests/capabilities/test_fix_capability.py -q
+      result: 27 passed
+    notes:
+      - The existing loader and model were not changed.
+      - Focused assertions cover all five functional requirements and portability.

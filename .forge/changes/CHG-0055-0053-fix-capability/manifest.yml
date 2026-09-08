@@ -1,0 +1,54 @@
+schema: forge/change@2
+protocol: 2
+change:
+  id: CHG-0055
+  title: Fix Capability
+  kind: feature
+flow:
+  initial: standard
+  current: standard
+  escalations: []
+state:
+  current: verification
+artifacts:
+  intent: complete
+  discovery: complete
+  specification: complete
+  test_design: complete
+  plan: approved
+  tdd_evidence: complete
+  verification: complete
+  review: pending
+  documentation: complete
+requirements:
+  total: 5
+  implemented: 5
+  verified: 5
+tdd:
+  status: compliant
+verification:
+  status: passed
+review:
+  status: pending
+  iteration: 0
+  blockers: 0
+  majors: 0
+  minors: 0
+  observations: 0
+  iterations: []
+documentation:
+  impact_evaluated: true
+  update_required: true
+  reason: >-
+    Updated capabilities/README.md and CHANGELOG.md to document the second
+    concrete Capability and its complementary fix competency. No Protocol,
+    Flow, Gate, or adapter documentation changed.
+decisions:
+  - id: DEC-001
+    class: technical
+    materiality: material
+    status: resolved
+    authority: human
+    owning_artifact: plan
+    discovered_in: plan
+    resolved_via: human_decision
