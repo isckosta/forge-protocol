@@ -21,7 +21,7 @@ tests. No blocker, major, minor, or observation finding was identified.
 | | |
 |---|---|
 | **Iterations** | 1 |
-| **Current Subject** | `9cd985ad17dc0061d01ba65dde4e75e2125430de` |
+| **Current Subject** | `285b2351ca44d28235f788a166fc8e881a096b56` |
 | **Open Blockers** | 0 |
 | **Open Majors** | 0 |
 | **Open Minors** | 0 |
@@ -34,13 +34,13 @@ Reference the frozen subject recorded in provenance.yml by id; do not invent a n
 
 | | |
 |---|---|
-| **Subject SHA** | `9cd985ad17dc0061d01ba65dde4e75e2125430de` |
+| **Subject SHA** | `285b2351ca44d28235f788a166fc8e881a096b56` |
 | **Frozen** | Yes |
 | **Iteration** | 1 |
 
 ## Reviewer Independence
 
-Reviewer provenance: `reviewer-001`. The review inspected the frozen commit
+Reviewer provenance: `reviewer-002`. The review inspected the frozen commit
 in a separate review execution context from the implementation subject.
 
 ## Open Findings
@@ -51,7 +51,7 @@ No open findings.
 
 ## Iteration 1 — PASS
 
-Review checks passed for canonical-source preservation, deterministic catalog
+Resolution verification checks passed for canonical-source preservation, deterministic catalog
 derivation, Codex and Claude native skill projection, publication ownership,
 Harness fallback boundaries, and regression coverage. No finding requires
 resolution.

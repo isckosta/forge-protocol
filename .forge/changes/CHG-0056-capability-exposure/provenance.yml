@@ -44,18 +44,37 @@ records:
         Implementation subject frozen at the commit containing the complete
         Capability catalog, exposure contract, Codex/Claude projections, tests,
         and Change artifacts.
-  - id: reviewer-001
-    role: review
+  - id: implementation-subject-002
+    role: implementation
     execution:
-      id: codex-review-capability-exposure-001
-      context_id: codex-review-session-2026-09-08-001
-    recorded_at: '2026-09-08T02:10:00Z'
+      id: codex-implementation-capability-exposure-002
+      context_id: codex-session-2026-09-08
+    recorded_at: '2026-09-08T02:20:00Z'
     revision:
-      id: chg-0056-implementation-001
+      id: chg-0056-implementation-002
       immutable_ref:
         type: git_commit
-        value: 9cd985ad17dc0061d01ba65dde4e75e2125430de
-      commit: 9cd985ad17dc0061d01ba65dde4e75e2125430de
+        value: 285b2351ca44d28235f788a166fc8e881a096b56
+      commit: 285b2351ca44d28235f788a166fc8e881a096b56
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: verification.md
+      statement: >-
+        Resolution subject frozen at the commit containing the corrected
+        canonical TDD Evidence schema.
+  - id: reviewer-002
+    role: review
+    execution:
+      id: codex-review-capability-exposure-002
+      context_id: codex-review-session-2026-09-08-002
+    recorded_at: '2026-09-08T02:30:00Z'
+    revision:
+      id: chg-0056-implementation-002
+      immutable_ref:
+        type: git_commit
+        value: 285b2351ca44d28235f788a166fc8e881a096b56
+      commit: 285b2351ca44d28235f788a166fc8e881a096b56
     source:
       assurance: recorded
       observed_by: self
