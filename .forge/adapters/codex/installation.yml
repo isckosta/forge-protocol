@@ -9,6 +9,10 @@ protocol:
 publication:
   root: .agents/skills
 generated_artifacts:
+- path: .agents/skills/fix/SKILL.md
+  digest: 58da8de2fbab6c5eff57b7dc78f10e780ce7592fd9297d8097cdb57b3673ea6b
+- path: .agents/skills/fix/references/CAPABILITY.md
+  digest: 09042b803934c59d2acfa60c5a1351f03065678ee656c089c8d360d42c41819a
 - path: .agents/skills/forge/SKILL.md
   digest: 4ff91a64b2412421f5e15d6baf0ec477ffe58b198f247684ca0657c353e63da3
 - path: .agents/skills/forge/references/artifact-structure.md
@@ -23,6 +27,14 @@ generated_artifacts:
   digest: 01beeb2c8ee2c276d1a57f4c11db6d32311585f6f53b94f81360d6862cb9f69e
 - path: .agents/skills/forge/references/flows/standard.yml
   digest: 4f90b95ba77588058cbd13faba6693c9b798c49416fa9dbf336ca72f8a9644ad
+- path: .agents/skills/investigate/SKILL.md
+  digest: 3f46b299bb2837a7000231a0387279a172469440c7b59bacae19e26f9496aa3c
+- path: .agents/skills/investigate/references/CAPABILITY.md
+  digest: 19bd76d73b0a66e93bd73f69622221423eb4b2af57bb5e618728566d9263c1eb
+- path: .agents/skills/qa/SKILL.md
+  digest: ab39f4bcc33a320228ddaa51af2b780895b459c58e57865091909d8673c3a0ea
+- path: .agents/skills/qa/references/CAPABILITY.md
+  digest: c16f1b196d149ee6690c164e9e43d7caf8b13a7b1dea59755b05ba54d1da33c4
 limitations:
 - 'strict-review: capability skills cannot be enforced (FR-009)'
 - 'tdd-red-before-behavior: capability skills cannot be enforced (FR-009)'
