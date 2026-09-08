@@ -10,6 +10,8 @@ until then.
 
 ## Unreleased
 
+## [0.1.0b3] - 2026-09-08
+
 ### QA Capability
 
 Introduced `qa` at `capabilities/qa/CAPABILITY.md`, a Harness-independent
