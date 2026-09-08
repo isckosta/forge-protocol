@@ -15,7 +15,7 @@ records:
     source:
       assurance: recorded
       observed_by: operator
-      reference: plan.md#human-plan-authorization
+      reference: plan.md#approval-record
       content_digest:
         algorithm: sha256
         path: plan.md
