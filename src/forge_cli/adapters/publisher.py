@@ -251,11 +251,30 @@ def _validate_plan_publication_ownership(
     mutate content, but it is still root-confined before publisher preflight
     resolves or inspects its path.
     """
+    migration_delete_paths = {
+        operation.path
+        for operation in plan.operations
+        if operation.intent is OperationIntent.DELETE_GENERATED
+        and any(
+            PurePosixPath(root) in PurePosixPath(operation.path).parents
+            for root in plan.migration_roots
+        )
+    }
     try:
         require_publication_root_ownership(
             record.publication_root,
-            (operation.path for operation in plan.operations),
+            (operation.path for operation in plan.operations if operation.path not in migration_delete_paths),
         )
+        for root in plan.migration_roots:
+            require_publication_root_ownership(
+                root,
+                (
+                    operation.path
+                    for operation in plan.operations
+                    if operation.intent is OperationIntent.DELETE_GENERATED
+                    and PurePosixPath(root) in PurePosixPath(operation.path).parents
+                ),
+            )
     except InvalidAdapterPublicationOwnershipError as error:
         raise UnsafeAdapterPathError(
             f"Adapter plan violates publication ownership: {error}"
@@ -301,7 +320,10 @@ def _validate_prior_record_authorizes_plan(
     if prior_record is not None and (
         prior_record.adapter_id != plan.adapter_id
         or prior_record.harness != next_record.harness
-        or prior_record.publication_root != next_record.publication_root
+        or (
+            prior_record.publication_root != next_record.publication_root
+            and prior_record.publication_root not in plan.migration_roots
+        )
     ):
         raise AdapterPublicationStaleRecordError(
             "Existing installation record identity or publication root does not "

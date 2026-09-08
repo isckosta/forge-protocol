@@ -96,3 +96,13 @@ def test_codex_owned_reserved_path_is_rejected() -> None:
 
     with pytest.raises(ValueError):
         validate_publication_root(".codex/forge")
+
+
+def test_codex_migrates_the_released_nested_forge_root() -> None:
+    assert CodexDriver().publication_root_migrations(
+        ".agents/skills/forge", ".agents/skills"
+    ) == (".agents/skills/forge",)
+
+
+def test_codex_does_not_migrate_unrelated_roots() -> None:
+    assert CodexDriver().publication_root_migrations("other", ".agents/skills") == ()

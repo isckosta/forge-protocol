@@ -669,11 +669,21 @@ class AdapterService:
             raise InvalidAdapterInstallationError(str(error)) from error
         if record is not None:
             require_valid_installation_identity(record, driver)
-            if record.publication_root != target:
+            migration_roots = getattr(
+                driver,
+                "publication_root_migrations",
+                lambda prior_root, next_root: (),
+            )(
+                record.publication_root,
+                target,
+            )
+            if record.publication_root != target and not migration_roots:
                 raise InvalidAdapterInstallationError(
                     "Adapter installation record publication root does not match "
                     "the resolved Adapter target."
                 )
+        else:
+            migration_roots = ()
 
         desired_paths = {artifact.path for artifact in projection.artifacts}
         recorded_paths = (
@@ -717,6 +727,7 @@ class AdapterService:
             repository_state=states,
             additional_limitations=projection.limitations,
             previous_generated=record.generated_artifacts if record is not None else (),
+            migration_roots=migration_roots,
         )
         return _PreparedAdapterPlan(
             driver=driver,

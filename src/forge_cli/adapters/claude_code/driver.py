@@ -38,6 +38,11 @@ class ClaudeCodeDriver:
     def validate_publication_root(self, publication_root: str) -> None:
         validate_publication_root(publication_root)
 
+    def publication_root_migrations(
+        self, prior_root: str, next_root: str
+    ) -> tuple[str, ...]:
+        return ()
+
     def project(self, context: AdapterProjectionContext) -> AdapterProjection:
         bundle = generate_claude_code_skill_bundle(
             contract_content=context.contract_content,

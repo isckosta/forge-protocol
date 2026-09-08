@@ -76,6 +76,7 @@ class AdapterPlan:
     operations: tuple[AdapterOperation, ...]
     limitations: tuple[str, ...]
     conflicts: tuple[str, ...]
+    migration_roots: tuple[str, ...]
 
     def __init__(
         self,
@@ -84,6 +85,7 @@ class AdapterPlan:
         operations: Iterable[AdapterOperation],
         limitations: Iterable[str] = (),
         conflicts: Iterable[str] = (),
+        migration_roots: Iterable[str] = (),
     ) -> None:
         ordered_operations = tuple(
             sorted(
@@ -99,3 +101,4 @@ class AdapterPlan:
         object.__setattr__(self, "operations", ordered_operations)
         object.__setattr__(self, "limitations", tuple(limitations))
         object.__setattr__(self, "conflicts", tuple(conflicts))
+        object.__setattr__(self, "migration_roots", tuple(sorted(set(migration_roots))))

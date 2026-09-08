@@ -9,7 +9,7 @@ from forge_cli.capabilities.model import Capability
 
 
 _INVOCATION_ID = re.compile(r"^[a-z0-9][a-z0-9-]*$")
-_RESERVED_INVOCATION_IDS = frozenset({"forge"})
+_RESERVED_INVOCATION_IDS = frozenset({"forge", "references"})
 
 
 @dataclass(frozen=True)

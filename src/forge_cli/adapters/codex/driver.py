@@ -38,6 +38,13 @@ class CodexDriver:
     def validate_publication_root(self, publication_root: str) -> None:
         validate_publication_root(publication_root)
 
+    def publication_root_migrations(
+        self, prior_root: str, next_root: str
+    ) -> tuple[str, ...]:
+        if prior_root == ".agents/skills/forge" and next_root == ".agents/skills":
+            return (prior_root,)
+        return ()
+
     def project(self, context: AdapterProjectionContext) -> AdapterProjection:
         bundle = generate_codex_skill_bundle(
             contract_content=context.contract_content,
