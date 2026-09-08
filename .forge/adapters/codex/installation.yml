@@ -7,7 +7,7 @@ protocol:
   min: 1
   max_exclusive: 3
 publication:
-  root: .agents/skills/forge
+  root: .agents/skills
 generated_artifacts:
 - path: .agents/skills/forge/SKILL.md
   digest: 4ff91a64b2412421f5e15d6baf0ec477ffe58b198f247684ca0657c353e63da3

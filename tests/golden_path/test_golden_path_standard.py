@@ -91,7 +91,7 @@ def test_readiness_sequence_surfaces_adapter_install_and_health(
 
     install_result = runner.invoke(app, ["adapter", "install", "codex"])
     assert install_result.exit_code == 0, install_result.output
-    assert "codex Adapter installed at .agents/skills/forge." in install_result.stdout
+    assert "codex Adapter installed at .agents/skills." in install_result.stdout
     assert "Open codex in this repository" in install_result.stdout
 
     healthy_doctor = runner.invoke(app, ["doctor"])

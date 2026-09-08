@@ -224,7 +224,8 @@ def install(
         (
             operation.path
             for operation in result.plan.operations
-            if operation.path == "SKILL.md" or operation.path.endswith("/SKILL.md")
+            if operation.path == "SKILL.md"
+            or operation.path.endswith("/forge/SKILL.md")
         ),
         f"{result.target}/SKILL.md",
     )

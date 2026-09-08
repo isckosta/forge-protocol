@@ -46,6 +46,7 @@ class CodexDriver:
             artifact_structure_content=context.artifact_structure_content,
             decision_rules_content=context.decision_rules_content,
             interaction_language=context.interaction_language,
+            capabilities=context.capabilities,
         )
         stages, gates, has_tdd, has_strict_review = _flow_representation(context.flows)
         limitations = _limitations(
@@ -55,7 +56,16 @@ class CodexDriver:
         return AdapterProjection(
             artifacts=tuple(
                 ProjectedArtifact(
-                    path=(PurePosixPath(context.target) / resource.name).as_posix(),
+                    path=(
+                        PurePosixPath(context.target)
+                        / (
+                            resource.name
+                            if not context.capabilities
+                            or resource.name.split("/", 1)[0]
+                            in {capability.id for capability in context.capabilities}
+                            else PurePosixPath("forge") / resource.name
+                        )
+                    ).as_posix(),
                     ownership=OwnershipMode.FORGE_OWNED,
                     content=resource.content,
                 )

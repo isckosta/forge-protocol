@@ -8,7 +8,19 @@ or lifecycle.
 
 from __future__ import annotations
 
-from forge_cli.capabilities.loader import CapabilityDefinitionError, load_capability
+from forge_cli.capabilities.exposure import CapabilityExposure, derive_capability_exposures
+from forge_cli.capabilities.loader import (
+    CapabilityDefinitionError,
+    load_capability,
+    load_capability_catalog,
+)
 from forge_cli.capabilities.model import Capability
 
-__all__ = ["Capability", "CapabilityDefinitionError", "load_capability"]
+__all__ = [
+    "Capability",
+    "CapabilityDefinitionError",
+    "CapabilityExposure",
+    "derive_capability_exposures",
+    "load_capability",
+    "load_capability_catalog",
+]

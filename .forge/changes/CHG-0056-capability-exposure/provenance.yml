@@ -1,0 +1,26 @@
+schema: forge/execution-provenance@2
+change: CHG-0056
+records:
+  - id: plan-approval-001
+    role: implementation
+    execution:
+      id: codex-implementation-capability-exposure-001
+      context_id: codex-session-2026-09-08
+    recorded_at: '2026-09-08T00:00:00Z'
+    revision:
+      id: chg-0056-plan-approval-001
+      immutable_ref:
+        type: content_digest
+        value: 0e4fe43f533d8cfc5f14d1f88ee610e26d295faf53f9beeb167059970e9d3058
+    source:
+      assurance: recorded
+      observed_by: operator
+      reference: plan.md#approval-record
+      content_digest:
+        algorithm: sha256
+        path: plan.md
+        value: 0e4fe43f533d8cfc5f14d1f88ee610e26d295faf53f9beeb167059970e9d3058
+      statement: >-
+        The human maintainer explicitly confirmed “prossiga como está” in the
+        active chat after reviewing and accepting the direct-child native skill
+        layout for Codex and Claude Code.

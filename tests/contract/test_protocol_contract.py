@@ -69,7 +69,7 @@ def test_adapter_installation_v2_schema_requires_publication_root_ownership() ->
         "schema": "forge/adapter-installation@2",
         "adapter": {"id": "codex", "version": "0.1.0", "harness": "codex"},
         "protocol": {"min": 1, "max_exclusive": 2},
-        "publication": {"root": ".agents/skills/forge"},
+        "publication": {"root": ".agents/skills"},
         "generated_artifacts": [],
         "limitations": [],
     }

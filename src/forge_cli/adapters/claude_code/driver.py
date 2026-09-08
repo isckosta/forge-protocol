@@ -46,6 +46,7 @@ class ClaudeCodeDriver:
             artifact_structure_content=context.artifact_structure_content,
             decision_rules_content=context.decision_rules_content,
             interaction_language=context.interaction_language,
+            capabilities=context.capabilities,
         )
         stages, gates, has_tdd, has_strict_review = _flow_representation(context.flows)
         limitations = _limitations(

@@ -66,7 +66,7 @@ def test_configured_target_takes_precedence_over_packaged_evidence() -> None:
 
 def test_codex_driver_exposes_the_packaged_repository_skill_target() -> None:
     """Catch a driver that invents a global/default target instead of packaged evidence."""
-    assert CodexDriver().default_target == ".agents/skills/forge"
+    assert CodexDriver().default_target == ".agents/skills"
 
 
 def test_unsafe_target_shape_is_rejected_before_generic_planning() -> None:

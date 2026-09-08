@@ -5,6 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from hashlib import sha256
 from importlib.resources import files
+import json
 from typing import Iterable
 
 import yaml
@@ -19,6 +20,8 @@ from forge_cli.adapters.review_experience import (
     render_mode_resolution_line,
     render_review_experience_section,
 )
+from forge_cli.capabilities.exposure import derive_capability_exposures
+from forge_cli.capabilities.model import Capability
 
 
 @dataclass(frozen=True)
@@ -64,6 +67,37 @@ def _resource(name: str, content: str) -> CodexProjectionResource:
         content=normalized,
         digest=sha256(normalized.encode("utf-8")).hexdigest(),
     )
+
+
+def _capability_skill_content(capability: Capability) -> str:
+    description = " ".join(capability.purpose.split())
+    return "\n".join((
+        "---",
+        f"name: {capability.id}",
+        f"description: {json.dumps(description, ensure_ascii=False)}",
+        "---",
+        "",
+        f"# Forge capability: {capability.id}",
+        "",
+        "This is a Harness projection of a canonical Forge Capability.",
+        "Read `references/CAPABILITY.md` before acting and follow that definition as the sole source of competency behavior.",
+        "",
+        "The projection does not add lifecycle, gate, approval, or enforcement semantics. Record the capability's outputs and evidence in the repository-native form required by the surrounding work.",
+    ))
+
+
+def _capability_resources(capabilities: tuple[Capability, ...]) -> tuple[CodexProjectionResource, ...]:
+    resources: list[CodexProjectionResource] = []
+    for exposure in derive_capability_exposures(capabilities):
+        capability = exposure.capability
+        resources.extend((
+            _resource(f"{exposure.invocation_id}/SKILL.md", _capability_skill_content(capability)),
+            _resource(
+                f"{exposure.invocation_id}/references/CAPABILITY.md",
+                capability.source_path.read_text(encoding="utf-8"),
+            ),
+        ))
+    return tuple(resources)
 
 
 def _gate_instructions(flows: Iterable[tuple[str, str]], protocol_id: int) -> str:
@@ -201,6 +235,7 @@ def generate_codex_skill_bundle(
     artifact_structure_content: str = "",
     decision_rules_content: str = "",
     interaction_language: str = "",
+    capabilities: tuple[Capability, ...] = (),
 ) -> CodexProjectionBundle:
     """Render only the already-resolved effective Forge inputs for Codex."""
     effective_flows = tuple(flows)
@@ -229,6 +264,7 @@ def generate_codex_skill_bundle(
         *((_resource("references/artifact-structure.md", artifact_structure_content),) if has_artifact_structure else ()),
         *((_resource("references/decision-rules.md", decision_rules_content),) if has_decision_rules else ()),
         *flow_resources,
+        *_capability_resources(capabilities),
     )
     return CodexProjectionBundle(
         adapter_id="codex",
