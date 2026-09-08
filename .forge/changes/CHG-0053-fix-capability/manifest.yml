@@ -1,7 +1,7 @@
 schema: forge/change@2
 protocol: 2
 change:
-  id: CHG-0055
+  id: CHG-0053
   title: Fix Capability
   kind: feature
 flow:

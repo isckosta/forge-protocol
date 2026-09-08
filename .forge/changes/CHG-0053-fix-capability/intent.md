@@ -2,11 +2,11 @@
 forge:
   artifact: intent
   schema: 1
-change: CHG-0055
+change: CHG-0053
 status: active
 ---
 
-# CHG-0055 · 0053 Fix Capability
+# CHG-0053 · Fix Capability
 
 > **Change Intent**
 >
@@ -18,7 +18,7 @@ status: active
 ## Overview
 | | |
 |---|---|
-| **Change** | CHG-0055 |
+| **Change** | CHG-0053 |
 | **Flow** | STANDARD |
 | **Status** | Active |
 

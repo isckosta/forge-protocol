@@ -2,11 +2,11 @@
 forge:
   artifact: plan
   schema: 1
-change: CHG-0055
+change: CHG-0053
 status: approved
 ---
 
-# Plan — CHG-0055 Fix Capability
+# Plan — CHG-0053 Fix Capability
 
 1. **[RED]** Add `tests/capabilities/test_fix_capability.py` covering the
    existing loader, accepted inputs, sufficient-understanding gate, minimal

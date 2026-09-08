@@ -2,11 +2,11 @@
 forge:
   artifact: discovery
   schema: 1
-change: CHG-0055
+change: CHG-0053
 status: complete
 ---
 
-# Discovery — CHG-0055 0053 Fix Capability
+# Discovery — CHG-0053 Fix Capability
 
 ## Executive Summary
 

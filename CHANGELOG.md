@@ -19,7 +19,7 @@ behavior, supported cause, and repair boundary before implementation,
 escalates material scope expansion or uncertainty, and requires reproducible
 regression evidence. It does not add a mandatory artifact or redefine Flow,
 TDD, Review, Verification, approval, Gates, lifecycle, or Merge Readiness.
-See `.forge/changes/CHG-0055-0053-fix-capability/`.
+See `.forge/changes/CHG-0053-fix-capability/`.
 
 ### Investigate Capability
 

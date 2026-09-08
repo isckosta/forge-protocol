@@ -2,11 +2,11 @@
 forge:
   artifact: specification
   schema: 1
-change: CHG-0055
+change: CHG-0053
 status: complete
 ---
 
-# CHG-0055 · Specification
+# CHG-0053 · Specification
 
 > **Change Contract**
 >
@@ -16,7 +16,7 @@ status: complete
 
 | | |
 |---|---|
-| **Change** | CHG-0055 |
+| **Change** | CHG-0053 |
 | **Flow** | STANDARD |
 | **Status** | Complete |
 

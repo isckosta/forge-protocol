@@ -2,11 +2,11 @@
 forge:
   artifact: test_design
   schema: 1
-change: CHG-0055
+change: CHG-0053
 status: complete
 ---
 
-# CHG-0055 · Test Design
+# CHG-0053 · Test Design
 
 > Verification Design
 
@@ -14,7 +14,7 @@ status: complete
 
 | | |
 |---|---|
-| **Change** | CHG-0055 |
+| **Change** | CHG-0053 |
 | **Flow** | STANDARD |
 | **Status** | Complete |
 
