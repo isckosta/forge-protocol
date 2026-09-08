@@ -25,3 +25,48 @@ records:
         chat session on 2026-09-08 with “Prossiga”, after the implementation
         and verification state was reported. This is the C-077 Plan
         authorization for the localized CHG-0055 implementation.
+  - id: implementation-subject-001
+    role: implementation
+    execution:
+      id: codex-implementation-0055
+      context_id: codex-session-2026-09-08
+    recorded_at: '2026-09-08T00:10:00Z'
+    revision:
+      id: chg-0055-implementation-001
+      immutable_ref:
+        type: git_commit
+        value: 9e46fc37e6aa7381c522e054b9645a32c2a7467f
+      commit: 9e46fc37e6aa7381c522e054b9645a32c2a7467f
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: verification.md
+      statement: >-
+        CHG-0055 implementation subject frozen at commit
+        9e46fc37e6aa7381c522e054b9645a32c2a7467f. The commit contains the
+        canonical fix Capability, its focused tests, Change Artifacts, and
+        documentation updates; the unrelated projection.py worktree delta is
+        outside the subject.
+  - id: reviewer-001
+    role: review
+    execution:
+      id: codex-review-0055-001
+      context_id: codex-review-session-2026-09-08-001
+    recorded_at: '2026-09-08T00:20:00Z'
+    revision:
+      id: chg-0055-implementation-001
+      immutable_ref:
+        type: git_commit
+        value: 9e46fc37e6aa7381c522e054b9645a32c2a7467f
+      commit: 9e46fc37e6aa7381c522e054b9645a32c2a7467f
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: review.md#iteration-1
+      statement: >-
+        Fresh review execution inspected the frozen commit diff, ran
+        `git diff --check 9e46fc3^ 9e46fc3`, ran the focused capability and
+        contract tests (81 passed), and ran `forge validate` (project valid).
+        The review found no blocker, major, or minor finding. The full-suite
+        wheel-build limitation was confirmed as environmental and remains
+        documented in verification.md.
