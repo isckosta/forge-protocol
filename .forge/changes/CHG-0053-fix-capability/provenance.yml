@@ -11,7 +11,7 @@ records:
       id: chg-0055-plan-approval-001
       immutable_ref:
         type: content_digest
-        value: d9f20116a5cff528fbe9d49ef4993261c99d4a5770a50ef9f4f91cdf881891ed
+        value: a8c6136a0676b2562614d83a4dbcb86ca12444654df60c53f7d655522cf73eba
     source:
       assurance: recorded
       observed_by: operator
@@ -19,7 +19,7 @@ records:
       content_digest:
         algorithm: sha256
         path: plan.md
-        value: d9f20116a5cff528fbe9d49ef4993261c99d4a5770a50ef9f4f91cdf881891ed
+        value: a8c6136a0676b2562614d83a4dbcb86ca12444654df60c53f7d655522cf73eba
       statement: >-
         The human maintainer explicitly instructed continuation in the active
         chat session on 2026-09-08 with “Prossiga”, after the implementation
@@ -70,3 +70,68 @@ records:
         The review found no blocker, major, or minor finding. The full-suite
         wheel-build limitation was confirmed as environmental and remains
         documented in verification.md.
+  - id: resolution-001
+    role: resolution
+    execution:
+      id: codex-resolution-0055-001
+      context_id: codex-session-2026-09-08-resolution-001
+    recorded_at: '2026-09-08T00:30:00Z'
+    scope:
+      - .forge/changes/CHG-0053-fix-capability/discovery.md
+      - .forge/changes/CHG-0053-fix-capability/intent.md
+      - .forge/changes/CHG-0053-fix-capability/manifest.yml
+      - .forge/changes/CHG-0053-fix-capability/plan.md
+      - .forge/changes/CHG-0053-fix-capability/provenance.yml
+      - .forge/changes/CHG-0053-fix-capability/review.md
+      - .forge/changes/CHG-0053-fix-capability/specification.md
+      - .forge/changes/CHG-0053-fix-capability/tdd-evidence.yml
+      - .forge/changes/CHG-0053-fix-capability/test-design.md
+      - .forge/changes/CHG-0053-fix-capability/verification.md
+      - .forge/changes/CHG-0055-0053-fix-capability/discovery.md
+      - .forge/changes/CHG-0055-0053-fix-capability/intent.md
+      - .forge/changes/CHG-0055-0053-fix-capability/manifest.yml
+      - .forge/changes/CHG-0055-0053-fix-capability/plan.md
+      - .forge/changes/CHG-0055-0053-fix-capability/provenance.yml
+      - .forge/changes/CHG-0055-0053-fix-capability/review.md
+      - .forge/changes/CHG-0055-0053-fix-capability/specification.md
+      - .forge/changes/CHG-0055-0053-fix-capability/tdd-evidence.yml
+      - .forge/changes/CHG-0055-0053-fix-capability/test-design.md
+      - .forge/changes/CHG-0055-0053-fix-capability/verification.md
+      - CHANGELOG.md
+      - capabilities/README.md
+    targets: [MR-006, MR-008, MR-015]
+    revision:
+      id: chg-0053-resolution-001
+      immutable_ref:
+        type: git_commit
+        value: 7e3a50d0f3f993c233fabe1d74fb566fbb07c84b
+      commit: 7e3a50d0f3f993c233fabe1d74fb566fbb07c84b
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: review.md#iteration-2
+      statement: >-
+        Corrected the Change directory identity from CHG-0055-0053 to
+        CHG-0053, refreshed the Plan content digest, and corrected the
+        Verification PASS marker. No capability or product implementation
+        file changed.
+  - id: reviewer-002
+    role: review
+    execution:
+      id: codex-review-0055-002
+      context_id: codex-review-session-2026-09-08-002
+    recorded_at: '2026-09-08T00:35:00Z'
+    revision:
+      id: chg-0053-resolution-001
+      immutable_ref:
+        type: git_commit
+        value: 7e3a50d0f3f993c233fabe1d74fb566fbb07c84b
+      commit: 7e3a50d0f3f993c233fabe1d74fb566fbb07c84b
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: review.md#iteration-2
+      statement: >-
+        Resolution Verification rechecked the corrected path and metadata,
+        focused tests (81 passed), and forge validate (project valid). No new
+        finding was identified.

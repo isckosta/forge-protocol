@@ -18,12 +18,12 @@ Use the values already recorded in manifest.yml: review (iteration, blockers, ma
 
 | | |
 |---|---|
-| **Iterations** | 1 |
-| **Current Subject** | `9e46fc37e6aa7381c522e054b9645a32c2a7467f` |
+| **Iterations** | 2 |
+| **Current Subject** | `7e3a50d0f3f993c233fabe1d74fb566fbb07c84b` |
 | **Open Blockers** | 0 |
 | **Open Majors** | 0 |
 | **Open Minors** | 0 |
-| **Final Iteration** | 1 |
+| **Final Iteration** | 2 |
 | **Result** | PASS |
 
 ## Current Subject
@@ -32,7 +32,7 @@ Reference the frozen subject recorded in provenance.yml by id; do not invent a n
 
 | | |
 |---|---|
-| **Subject SHA** | `9e46fc37e6aa7381c522e054b9645a32c2a7467f` |
+| **Subject SHA** | `7e3a50d0f3f993c233fabe1d74fb566fbb07c84b` |
 | **Frozen** | Yes |
 | **Iteration** | 1 |
 
@@ -61,6 +61,14 @@ passed.
 ## Conclusion
 
 The frozen subject satisfies the declared Change scope and the Review gate.
-No unresolved findings remain. The unrelated unstaged change in
+No unresolved findings remain. Iteration 2 re-verified the corrected
+CHG-0053 path and metadata. The unrelated unstaged change in
 `src/forge_cli/adapters/codex/projection.py` is outside this subject and was
 not included in the review.
+
+## Iteration 2 — PASS
+
+Resolution Verification rechecked the corrected Change directory, manifest
+identity, Plan digest, Verification marker, focused tests, and Forge
+validation against subject `7e3a50d0f3f993c233fabe1d74fb566fbb07c84b`.
+No new finding was identified.
