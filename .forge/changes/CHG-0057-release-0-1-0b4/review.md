@@ -28,7 +28,7 @@ Review found no blocker, major, minor, or observation finding in the metadata-on
 
 ## Current Subject
 
-Reference: `implementation-subject-002` in `provenance.yml`.
+Reference: `resolution-subject-002` in `provenance.yml`.
 
 | | |
 |---|---|
@@ -38,7 +38,7 @@ Reference: `implementation-subject-002` in `provenance.yml`.
 
 ## Reviewer Independence
 
-Reviewer provenance: `reviewer-002`, recorded in a distinct review context.
+Reviewer provenance: `reviewer-003`, recorded in a distinct review context.
 
 ## Open Findings
 
