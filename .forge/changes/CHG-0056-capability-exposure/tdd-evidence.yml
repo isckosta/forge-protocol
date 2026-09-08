@@ -1,31 +1,41 @@
 schema: forge/tdd-evidence@1
 change: CHG-0056
-status: complete
-tests:
+status: compliant
+cycle_count: 3
+cycles:
   - id: TDD-001
-    name: canonical_catalog
-    command: .venv/bin/python -m pytest tests/capabilities/test_catalog.py -q
+    title: Canonical Capability catalog
+    requirements: [REQ-001]
+    behavior: The packaged catalog loads canonical definitions in deterministic order.
     red:
-      observed: true
-      failure_reason: "The catalog loader and packaged resolution did not exist before implementation."
+      command: .venv/bin/python -m pytest tests/capabilities/test_catalog.py -q
+      result: collection failed before catalog implementation
+      reason: The catalog loader and packaged resolution did not exist.
     green:
-      observed: true
-      evidence: "Catalog ordering and canonical source paths pass."
+      command: .venv/bin/python -m pytest tests/capabilities/test_catalog.py -q
+      result: passed
+      reason: Catalog ordering and canonical source paths pass.
   - id: TDD-002
-    name: capability_skill_projection
-    command: .venv/bin/python -m pytest tests/unit/test_capability_exposure_projection.py -q
+    title: Capability skill projection
+    requirements: [REQ-002, REQ-003, REQ-005]
+    behavior: Adapters generate discoverable skill envelopes that reference canonical Capability content.
     red:
-      observed: true
-      failure_reason: "The Codex projection had no Capability resources before implementation."
+      command: .venv/bin/python -m pytest tests/unit/test_capability_exposure_projection.py -q
+      result: failed before projection implementation
+      reason: The Codex and Claude projections had no Capability resources.
     green:
-      observed: true
-      evidence: "Codex generates investigate, fix, and qa skills with canonical references."
+      command: .venv/bin/python -m pytest tests/unit/test_capability_exposure_projection.py -q
+      result: passed
+      reason: Both adapters generate investigate, fix, and qa skills with canonical references.
   - id: TDD-003
-    name: adapter_service_projection
-    command: .venv/bin/python -m pytest tests/integration/test_adapter_service.py -q
+    title: Adapter service catalog propagation
+    requirements: [REQ-003, REQ-004]
+    behavior: Adapter service projections receive the catalog without changing existing workflow ownership semantics.
     red:
-      observed: true
-      failure_reason: "The Adapter projection context did not carry a Capability catalog before implementation."
+      command: .venv/bin/python -m pytest tests/integration/test_adapter_service.py -q
+      result: failed before context implementation
+      reason: AdapterProjectionContext did not carry a Capability catalog.
     green:
-      observed: true
-      evidence: "37 service integration tests pass, including publication planning and ownership."
+      command: .venv/bin/python -m pytest tests/integration/test_adapter_service.py -q
+      result: 37 passed
+      reason: Publication planning and ownership remain valid with derived Capability artifacts.
