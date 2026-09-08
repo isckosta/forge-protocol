@@ -1,0 +1,145 @@
+schema: forge/execution-provenance@2
+change: CHG-0056
+records:
+  - id: plan-approval-001
+    role: implementation
+    execution:
+      id: codex-implementation-capability-exposure-001
+      context_id: codex-session-2026-09-08
+    recorded_at: '2026-09-08T00:00:00Z'
+    revision:
+      id: chg-0056-plan-approval-001
+      immutable_ref:
+        type: content_digest
+        value: 0e4fe43f533d8cfc5f14d1f88ee610e26d295faf53f9beeb167059970e9d3058
+    source:
+      assurance: recorded
+      observed_by: operator
+      reference: plan.md#approval-record
+      content_digest:
+        algorithm: sha256
+        path: plan.md
+        value: 0e4fe43f533d8cfc5f14d1f88ee610e26d295faf53f9beeb167059970e9d3058
+      statement: >-
+        The human maintainer explicitly confirmed “prossiga como está” in the
+        active chat after reviewing and accepting the direct-child native skill
+        layout for Codex and Claude Code.
+  - id: implementation-subject-001
+    role: implementation
+    execution:
+      id: codex-implementation-capability-exposure-001
+      context_id: codex-session-2026-09-08
+    recorded_at: '2026-09-08T02:00:00Z'
+    revision:
+      id: chg-0056-implementation-001
+      immutable_ref:
+        type: git_commit
+        value: 9cd985ad17dc0061d01ba65dde4e75e2125430de
+      commit: 9cd985ad17dc0061d01ba65dde4e75e2125430de
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: verification.md
+      statement: >-
+        Implementation subject frozen at the commit containing the complete
+        Capability catalog, exposure contract, Codex/Claude projections, tests,
+        and Change artifacts.
+  - id: implementation-subject-002
+    role: implementation
+    execution:
+      id: codex-implementation-capability-exposure-002
+      context_id: codex-session-2026-09-08
+    recorded_at: '2026-09-08T02:20:00Z'
+    revision:
+      id: chg-0056-implementation-002
+      immutable_ref:
+        type: git_commit
+        value: 285b2351ca44d28235f788a166fc8e881a096b56
+      commit: 285b2351ca44d28235f788a166fc8e881a096b56
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: verification.md
+      statement: >-
+        Resolution subject frozen at the commit containing the corrected
+        canonical TDD Evidence schema.
+  - id: reviewer-001
+    role: review
+    execution:
+      id: codex-review-capability-exposure-001
+      context_id: codex-review-session-2026-09-08-001
+    recorded_at: '2026-09-08T02:10:00Z'
+    revision:
+      id: chg-0056-implementation-001
+      immutable_ref:
+        type: git_commit
+        value: 9cd985ad17dc0061d01ba65dde4e75e2125430de
+      commit: 9cd985ad17dc0061d01ba65dde4e75e2125430de
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: review.md#iteration-1
+      statement: >-
+        Initial review inspected the frozen implementation subject and found no
+        blocker, major, minor, or observation finding.
+  - id: reviewer-002
+    role: review
+    execution:
+      id: codex-review-capability-exposure-002
+      context_id: codex-review-session-2026-09-08-002
+    recorded_at: '2026-09-08T02:30:00Z'
+    revision:
+      id: chg-0056-implementation-002
+      immutable_ref:
+        type: git_commit
+        value: 285b2351ca44d28235f788a166fc8e881a096b56
+      commit: 285b2351ca44d28235f788a166fc8e881a096b56
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: review.md#iteration-1
+      statement: >-
+        Review inspected the frozen subject and found no blocker, major, minor,
+        or observation finding within the declared Change scope.
+  - id: resolution-subject-003
+    role: resolution
+    execution:
+      id: codex-resolution-capability-exposure-003
+      context_id: codex-resolution-session-2026-09-08-003
+    recorded_at: '2026-09-08T02:40:00Z'
+    revision:
+      id: chg-0056-resolution-003
+      immutable_ref:
+        type: git_commit
+        value: 285b2351ca44d28235f788a166fc8e881a096b56
+      commit: 285b2351ca44d28235f788a166fc8e881a096b56
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: verification.md
+      statement: >-
+        Resolution subject is the isolated TDD Evidence schema correction
+        reviewed for the resolution verification iteration.
+    scope:
+      - .forge/changes/CHG-0056-capability-exposure/tdd-evidence.yml
+    targets:
+      - canonical TDD Evidence schema conformance
+  - id: reviewer-003
+    role: review
+    execution:
+      id: codex-review-capability-exposure-003
+      context_id: codex-review-session-2026-09-08-003
+    recorded_at: '2026-09-08T02:50:00Z'
+    revision:
+      id: chg-0056-resolution-003
+      immutable_ref:
+        type: git_commit
+        value: 285b2351ca44d28235f788a166fc8e881a096b56
+      commit: 285b2351ca44d28235f788a166fc8e881a096b56
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: review.md#iteration-3
+      statement: >-
+        Resolution Verification found no new material finding and confirmed
+        that the TDD Evidence correction remained within scope.

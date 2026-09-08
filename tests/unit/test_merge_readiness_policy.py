@@ -12,6 +12,8 @@ _ADAPTER_GENERATED_PATHS = [
     ".agents/skills/forge/SKILL.md",
     ".agents/skills/forge/references/artifact-structure.md",
     ".agents/skills/forge/references/engineering-contract.md",
+    ".agents/skills/investigate/SKILL.md",
+    ".agents/skills/qa/references/CAPABILITY.md",
     ".forge/adapters/claude-code/installation.yml",
     ".forge/adapters/codex/installation.yml",
 ]

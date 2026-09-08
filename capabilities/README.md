@@ -39,11 +39,10 @@ layers, described below.
 - **Not a Flow stage, a Gate, or a lifecycle.** A Capability does not
   decide when it is needed, does not gate Completion, and does not carry
   approval semantics.
-- **Not a registry, a plugin system, or an executor.** This foundation
-  introduces no mechanism for discovering, composing, scoring, or running
-  Capabilities. A Capability is loaded — deterministically, one
-  definition at a time, given an explicit path — not resolved from a
-  catalog.
+- **Not a registry, a plugin system, or an executor.** The packaged catalog
+  used by Harness Adapters is only a deterministic read-only view over the
+  canonical files. It does not discover, compose, score, or run
+  Capabilities, and it carries no lifecycle or authorization semantics.
 
 ## Responsibilities
 
@@ -79,7 +78,8 @@ A Capability MUST NOT possess or redefine:
 
 These boundaries exist so that adding a Capability is never mistaken for
 extending the Protocol or the Engineering Contract. Registering a
-Capability requires no change to either.
+Capability requires no change to either. Adapters derive native exposure
+from the packaged catalog rather than per-Capability integration code.
 
 ## Relation to Core, Flow, Harness Adapters, and evidence
 
@@ -122,11 +122,11 @@ capabilities/
 Forge — it must conform to the minimal contract defined in
 [`capability.md`](capability.md). A Harness Adapter may later produce an
 adaptation of it (for example
-`.claude/skills/forge-investigate/SKILL.md`), but that adaptation is
+`.claude/skills/investigate/SKILL.md`), but that adaptation is
 derived, not authoritative: if the two ever disagree, `CAPABILITY.md` is
 correct and the Harness projection is stale.
 
 Adding a Capability this way requires no change to the Protocol, the
-Engineering Contract, `pyproject.toml`, or `src/forge_cli/capabilities/`
-itself — the loader in that package already knows how to load any
-definition conforming to the contract, given its path.
+Engineering Contract, or adapter-specific projection code. The packaged
+catalog derives its exposure from every definition conforming to the
+contract.

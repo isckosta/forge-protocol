@@ -9,6 +9,7 @@ from forge_cli.adapters.capabilities import CapabilityLimitation
 from forge_cli.adapters.manifest import AdapterManifest
 from forge_cli.adapters.planner import ProjectedArtifact
 from forge_cli.adapters.validation import AdapterRepresentation
+from forge_cli.capabilities.model import Capability
 
 
 @dataclass(frozen=True)
@@ -20,6 +21,7 @@ class AdapterProjectionContext:
     artifact_structure_content: str = ""
     decision_rules_content: str = ""
     interaction_language: str = ""
+    capabilities: tuple[Capability, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -39,5 +41,9 @@ class HarnessDriver(Protocol):
         raise NotImplementedError
 
     def validate_publication_root(self, publication_root: str) -> None: ...
+
+    def publication_root_migrations(
+        self, prior_root: str, next_root: str
+    ) -> tuple[str, ...]: ...
 
     def project(self, context: AdapterProjectionContext) -> AdapterProjection: ...

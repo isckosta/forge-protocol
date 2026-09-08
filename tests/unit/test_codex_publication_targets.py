@@ -66,7 +66,7 @@ def test_configured_target_takes_precedence_over_packaged_evidence() -> None:
 
 def test_codex_driver_exposes_the_packaged_repository_skill_target() -> None:
     """Catch a driver that invents a global/default target instead of packaged evidence."""
-    assert CodexDriver().default_target == ".agents/skills/forge"
+    assert CodexDriver().default_target == ".agents/skills"
 
 
 def test_unsafe_target_shape_is_rejected_before_generic_planning() -> None:
@@ -96,3 +96,13 @@ def test_codex_owned_reserved_path_is_rejected() -> None:
 
     with pytest.raises(ValueError):
         validate_publication_root(".codex/forge")
+
+
+def test_codex_migrates_the_released_nested_forge_root() -> None:
+    assert CodexDriver().publication_root_migrations(
+        ".agents/skills/forge", ".agents/skills"
+    ) == (".agents/skills/forge",)
+
+
+def test_codex_does_not_migrate_unrelated_roots() -> None:
+    assert CodexDriver().publication_root_migrations("other", ".agents/skills") == ()

@@ -53,6 +53,7 @@ packages = ["src/forge_cli"]
 
 [tool.hatch.build.targets.wheel.force-include]
 "protocol" = "forge_cli/resources/protocol"
+"capabilities" = "forge_cli/resources/capabilities"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

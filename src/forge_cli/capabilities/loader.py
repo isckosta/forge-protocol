@@ -2,8 +2,9 @@
 
 locate -> read -> parse -> normalize -> return Capability model.
 
-No package/fallback resolution, no discovery/enumeration, no registry, and
-no execution: this module loads exactly one definition, given its path.
+The single-definition loader remains the canonical parser. The catalog
+function below is only a deterministic view over packaged definitions; it is
+not an execution registry or lifecycle mechanism.
 """
 
 from __future__ import annotations
@@ -80,6 +81,24 @@ def load_capability(path: Path) -> Capability:
         evidence_expectations=sections["Evidence Expectations"],
         source_path=path,
     )
+
+
+def load_capability_catalog(root: Path) -> tuple[Capability, ...]:
+    """Load every packaged capability in stable id order."""
+    if not root.is_dir():
+        raise CapabilityDefinitionError(f"Capability catalog not found: {root}")
+
+    capabilities: list[Capability] = []
+    seen_ids: set[str] = set()
+    for definition in sorted(root.glob("*/CAPABILITY.md")):
+        capability = load_capability(definition)
+        if capability.id in seen_ids:
+            raise CapabilityDefinitionError(
+                f"Duplicate capability id in catalog: {capability.id}"
+            )
+        seen_ids.add(capability.id)
+        capabilities.append(capability)
+    return tuple(capabilities)
 
 
 def _parse_sections(body: str, path: Path) -> dict[str, str]:

@@ -256,11 +256,23 @@ def main(
     generated_paths = [repository / relative_path for relative_path in artifacts]
     assert all(path.is_file() for path in generated_paths)
     skill_root = repository / ".agents" / "skills" / "forge"
-    assert {
+    workflow_artifacts = {
         ".agents/skills/forge/" + path.relative_to(skill_root).as_posix()
         for path in skill_root.rglob("*")
         if path.is_file()
-    } == set(artifacts)
+    }
+    generated_artifacts = {
+        relative_path for relative_path in artifacts
+        if relative_path.startswith(".agents/skills/forge/")
+    }
+    capability_artifacts = {
+        relative_path for relative_path in artifacts
+        if relative_path.startswith(".agents/skills/")
+        and not relative_path.startswith(".agents/skills/forge/")
+    }
+    assert workflow_artifacts == generated_artifacts
+    assert capability_artifacts
+    assert all((repository / relative_path).is_file() for relative_path in capability_artifacts)
     for relative_path, digest in artifacts.items():
         assert sha256((repository / relative_path).read_bytes()).hexdigest() == digest
 

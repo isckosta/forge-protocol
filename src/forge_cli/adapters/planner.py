@@ -71,6 +71,7 @@ def plan_adapter(
     repository_state: Iterable[RepositoryArtifactState],
     additional_limitations: Iterable[CapabilityLimitation] = (),
     previous_generated: Iterable[GeneratedArtifact] = (),
+    migration_roots: Iterable[str] = (),
 ) -> AdapterPlan:
     """Produce a stable plan from already-resolved Forge and Adapter inputs."""
     require_protocol_compatibility(manifest, effective_configuration.project_protocol)
@@ -202,4 +203,5 @@ def plan_adapter(
         operations=operations,
         limitations=sorted(_limitation_text(item) for item in limitations),
         conflicts=sorted(conflicts),
+        migration_roots=migration_roots,
     )

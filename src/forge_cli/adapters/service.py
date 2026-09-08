@@ -57,6 +57,8 @@ from forge_cli.configuration import (
     load_project_configuration,
 )
 from forge_cli.protocol_resources import resolve_protocol_root
+from forge_cli.capability_resources import resolve_capability_root
+from forge_cli.capabilities.loader import load_capability_catalog
 from forge_cli.protocol_resolution import (
     ProtocolResolutionError,
     resolve_effective_artifact_structure,
@@ -87,6 +89,10 @@ class InvalidAdapterInstallationError(AdapterServiceError):
 
 class AdapterDriftError(AdapterServiceError):
     code = "E_FORGE_ADAPTER_DRIFT"
+
+
+def _canonical_capabilities():
+    return load_capability_catalog(resolve_capability_root())
 
 
 class AdapterPlanConflictError(AdapterServiceError):
@@ -462,6 +468,7 @@ class AdapterService:
                             project_configuration.get("interaction", {}).get("language", "auto")
                         ),
                         target=target,
+                        capabilities=_canonical_capabilities(),
                     )
                 )
             except (AdapterServiceError, ProtocolResolutionError) as error:
@@ -643,6 +650,7 @@ class AdapterService:
                 decision_rules_content=render_decision_rules_reference(),
                 interaction_language=configuration.get("interaction", {}).get("language", "auto"),
                 target=target,
+                capabilities=_canonical_capabilities(),
             )
         )
         try:
@@ -661,11 +669,21 @@ class AdapterService:
             raise InvalidAdapterInstallationError(str(error)) from error
         if record is not None:
             require_valid_installation_identity(record, driver)
-            if record.publication_root != target:
+            migration_roots = getattr(
+                driver,
+                "publication_root_migrations",
+                lambda prior_root, next_root: (),
+            )(
+                record.publication_root,
+                target,
+            )
+            if record.publication_root != target and not migration_roots:
                 raise InvalidAdapterInstallationError(
                     "Adapter installation record publication root does not match "
                     "the resolved Adapter target."
                 )
+        else:
+            migration_roots = ()
 
         desired_paths = {artifact.path for artifact in projection.artifacts}
         recorded_paths = (
@@ -709,6 +727,7 @@ class AdapterService:
             repository_state=states,
             additional_limitations=projection.limitations,
             previous_generated=record.generated_artifacts if record is not None else (),
+            migration_roots=migration_roots,
         )
         return _PreparedAdapterPlan(
             driver=driver,

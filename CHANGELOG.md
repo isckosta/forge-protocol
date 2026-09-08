@@ -10,6 +10,16 @@ until then.
 
 ## Unreleased
 
+### Harness-native Capability exposure
+
+Forge Adapters now derive native skills for canonical Capabilities from the
+packaged catalog. Codex publishes direct repository skills under
+`.agents/skills/<capability>/` for `$<capability>` invocation and native
+discovery; Claude Code receives the equivalent `.claude/skills/<capability>/`
+projection. The canonical `CAPABILITY.md` remains the source of behavior,
+and Harness-neutral consumers retain semantic access when no native surface
+exists. See `.forge/changes/CHG-0056-capability-exposure/`.
+
 ## [0.1.0b3] - 2026-09-08
 
 ### QA Capability

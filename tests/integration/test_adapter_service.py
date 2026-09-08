@@ -150,7 +150,7 @@ def test_plan_is_read_only_and_uses_evidence_target(initialized_project: Path) -
 
     result = _service().plan(initialized_project, "codex")
 
-    assert result.target == ".agents/skills/forge"
+    assert result.target == ".agents/skills"
     assert result.target_source == "evidence"
     assert result.installed_version is None
     assert result.current_version == "0.1.0"
