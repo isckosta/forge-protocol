@@ -57,7 +57,7 @@ def test_claude_code_projection_renders_a_valid_repository_layout() -> None:
     skill = by_path[".claude/skills/forge/SKILL.md"]
     metadata = yaml.safe_load(skill.split("---", 2)[1])
     assert metadata["name"] == "forge"
-    assert metadata["description"] == "Use for Forge-governed engineering Changes in this repository."
+    assert metadata["description"] == "Use in a Forge-enabled repository when the request involves a material software change: implementing or materially changing behavior, fixing a material defect, continuing an existing Forge Change, or explicitly requesting Forge governance. Do not activate for questions, explanations, reading, investigation without a change, trivial operations, or immaterial edits."
     assert metadata["hooks"]["PreToolUse"][0]["matcher"] == "Bash"
     assert "Repository-native Forge state remains authoritative." in skill
 

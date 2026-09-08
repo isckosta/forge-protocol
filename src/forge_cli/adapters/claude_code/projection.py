@@ -196,7 +196,7 @@ def _skill_content(
     return "\n".join((
         "---",
         "name: forge",
-        "description: Use for Forge-governed engineering Changes in this repository.",
+        "description: 'Use in a Forge-enabled repository when the request involves a material software change: implementing or materially changing behavior, fixing a material defect, continuing an existing Forge Change, or explicitly requesting Forge governance. Do not activate for questions, explanations, reading, investigation without a change, trivial operations, or immaterial edits.'",
         *_hook_frontmatter_lines(),
         "---",
         "",

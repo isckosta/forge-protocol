@@ -1,6 +1,6 @@
 ---
 name: forge
-description: Use for Forge-governed engineering Changes in this repository.
+description: 'Use in a Forge-enabled repository when the request involves a material software change: implementing or materially changing behavior, fixing a material defect, continuing an existing Forge Change, or explicitly requesting Forge governance. Do not activate for questions, explanations, reading, investigation without a change, trivial operations, or immaterial edits.'
 hooks:
   PreToolUse:
     - matcher: "Bash"
@@ -128,6 +128,7 @@ This skill registers a `PreToolUse` hook (active once this skill has been invoke
 - RED must fail for the expected reason.
 - Completion requires Verification to pass.
 - Completion requires Review to pass, at the `focused` profile: scoped to the actual diff, the regressions it could introduce, the Requirement(s) it targets, and any material Finding actually observed -- not an unrestricted search for any conceivable rejection ground.
+- This Flow's Review Profile floor is `focused`: `review.mode: recommended` or `fast` resolves to `focused`; `thorough` resolves to `standard`.
 - Completion requires all blocking review threads on any active external review surface to be resolved.
 - Completion requires Documentation Impact to be evaluated.
 - Completion requires TDD compliance or an explicit, recorded exception.
@@ -140,6 +141,7 @@ This skill registers a `PreToolUse` hook (active once this skill has been invoke
 - RED must fail for the expected reason.
 - Completion requires Verification to pass.
 - Completion requires Strict Review to pass.
+- This Flow's Review Profile floor is `strict`: `review.mode: recommended` or `fast` resolves to `strict`; `thorough` resolves to `strict`.
 - Completion requires all blocking review threads on any active external review surface to be resolved.
 - Completion requires Documentation Impact to be evaluated.
 - Completion requires required documentation to be updated.
@@ -153,6 +155,7 @@ This skill registers a `PreToolUse` hook (active once this skill has been invoke
 - RED must fail for the expected reason.
 - Completion requires Verification to pass.
 - Completion requires Review to pass, at the `standard` profile: genuine, evidence-based evaluation of Specification compliance, correctness, and implementation quality -- without the `strict` profile's added obligation to exhaustively search beyond the Change's own declared scope and evidence.
+- This Flow's Review Profile floor is `standard`: `review.mode: recommended` or `fast` resolves to `standard`; `thorough` resolves to `strict`.
 - Completion requires all blocking review threads on any active external review surface to be resolved.
 - Completion requires Documentation Impact to be evaluated.
 - Completion requires required documentation to be updated.
@@ -175,3 +178,9 @@ This skill registers a `PreToolUse` hook (active once this skill has been invoke
 - Reviewer Execution and Context must both differ from the subject. Distinct invented IDs are not evidence.
 - `claimed` is insufficient; `recorded` is repository-native self-recorded evidence and `verified` is stronger observer-backed evidence.
 - After blocking findings are resolved, freeze the new Resolution revision and re-review that concrete revision independently.
+
+### Review Experience Modes
+
+- A Change MAY set `manifest.yml`'s `review.mode` (`recommended` | `fast` | `thorough`, default `recommended`) to select a developer-facing Review Experience Mode -- this never lowers the effective Review Profile below the Flow-derived floor shown above; `thorough` raises it by one rank instead.
+- A Change's Review phase (`manifest.yml`'s `review.current_phase`) is one of: `scanning` (Discovery), `findings_recorded` (Findings), `resolving` (Resolution), `re_reviewing` (Re-review), `converged` (Converged), or `stopped` (Stopped). `stopped` records that the developer ended further processing; it carries no Completion or approval authority.
+- Run `forge change review-status <slug>` for a given Change's live mode, resolved profile, current phase, and outstanding Finding counts.

@@ -10,7 +10,7 @@ publication:
   root: .agents/skills/forge
 generated_artifacts:
 - path: .agents/skills/forge/SKILL.md
-  digest: 2196a5c27b09821b48906bf15256c0ea1880b02ea715eee97108182a9662e094
+  digest: 4ff91a64b2412421f5e15d6baf0ec477ffe58b198f247684ca0657c353e63da3
 - path: .agents/skills/forge/references/artifact-structure.md
   digest: 1ffa101eb46ba6f46793b423489dbbe940c3f7ce36a2ccbf3c46947b8f192c10
 - path: .agents/skills/forge/references/decision-rules.md
