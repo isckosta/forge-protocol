@@ -1,10 +1,10 @@
 # Forge Capabilities
 
 Status: Foundation (introduced by `CHG-0047`). The first concrete
-Capabilities `investigate` and `fix` (`capabilities/*/CAPABILITY.md`) were
-introduced by `CHG-0052` and `CHG-0053` without requiring this foundation to
-be redesigned — this document defines the abstraction that made that
-possible, and that further concrete Capabilities continue to use.
+Capabilities `investigate`, `fix`, and `qa` (`capabilities/*/CAPABILITY.md`)
+were introduced by `CHG-0052`, `CHG-0053`, and `CHG-0055` without requiring
+this foundation to be redesigned — this document defines the abstraction that
+made that possible, and that further concrete Capabilities continue to use.
 
 ## What a Forge Capability is
 

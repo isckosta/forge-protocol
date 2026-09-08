@@ -10,6 +10,19 @@ until then.
 
 ## Unreleased
 
+## [0.1.0b3] - 2026-09-08
+
+### QA Capability
+
+Introduced `qa` at `capabilities/qa/CAPABILITY.md`, a Harness-independent
+competency for exploratory evaluation of executable software. It covers happy
+paths, edge cases, invalid states, errors, relevant combinations, and
+applicable boundaries, and produces findings that separate observed behavior,
+expected behavior, reproduction conditions, evidence, and impact. QA does not
+assume root cause, fix software, or add a Gate, Flow, lifecycle, mandatory
+artifact, executor, registry, or enforcement mechanism. See
+`.forge/changes/CHG-0055-chg-0055-qa-capability/`.
+
 ### Fix Capability
 
 Introduced `fix`, the complementary concrete Forge Capability at
