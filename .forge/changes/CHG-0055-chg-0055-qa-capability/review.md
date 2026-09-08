@@ -20,7 +20,7 @@ blocking, major, or minor issue in the declared scope.
 | | |
 |---|---|
 | **Iterations** | 1 |
-| **Current Subject** | working tree subject |
+| **Current Subject** | `e6319c13814e5246f4a6e7aa9d5a0a81cfb37564` |
 | **Open Blockers** | 0 |
 | **Open Majors** | 0 |
 | **Open Minors** | 0 |
@@ -29,8 +29,9 @@ blocking, major, or minor issue in the declared scope.
 
 ## Current Subject
 
-The subject is the implementation diff on the CHG-0055 branch; no external
-review surface or unresolved finding exists.
+The subject is frozen at `e6319c13814e5246f4a6e7aa9d5a0a81cfb37564`, recorded as
+`implementation-subject-001` in `provenance.yml`; no external review surface
+or unresolved finding exists.
 
 | | |
 |---|---|
@@ -40,9 +41,7 @@ review surface or unresolved finding exists.
 
 ## Reviewer Independence
 
-Review was performed against the focused implementation scope after the
-tests passed. This local prose-only Change does not claim an independent
-external reviewer execution.
+Reviewer provenance: `reviewer-001`, recorded against the frozen subject.
 
 ## Open Findings
 

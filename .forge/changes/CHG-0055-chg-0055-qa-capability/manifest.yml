@@ -34,7 +34,17 @@ review:
   majors: 0
   minors: 0
   observations: 0
-  iterations: []
+  iterations:
+    - id: review-001
+      revision: chg-0055-implementation-001
+      subject_provenance: implementation-subject-001
+      reviewer_provenance: reviewer-001
+      kind: initial_review
+      status: passed
+      profile: standard
+      full_review_required: false
+      new_material_findings: 0
+      finding_classes: []
 documentation:
   impact_evaluated: true
   update_required: true

@@ -40,8 +40,10 @@ exist; GREEN passed after the definition was added.
 
 ## Forge Evidence
 
-`forge validate` and the full test suite are recorded after this artifact is
-updated; they validate repository consistency, not product behavior.
+`forge validate` — exit 0, project valid. `forge doctor` — exit 0, all
+required diagnostics pass; only the repository's existing limitation and
+migration warnings are reported. These commands validate repository
+consistency, not product behavior.
 
 ## Manual Evidence
 
@@ -53,5 +55,7 @@ Record confirmed compatibility impact and any real limitation. Do not pad this s
 
 ## Conclusion
 
-The QA definition satisfies the declared scope and preserves the existing
-loader and governance boundaries.
+`.venv/bin/python -m pytest -q` — exit 0, 966 passed, 2 expected runtime
+warnings from FER failure-isolation tests. `git diff --check` — exit 0. The QA
+definition satisfies the declared scope and preserves the existing loader and
+governance boundaries.

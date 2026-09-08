@@ -1,0 +1,63 @@
+schema: forge/execution-provenance@2
+change: CHG-0055
+records:
+  - id: plan-approval-001
+    role: implementation
+    execution:
+      id: codex-implementation-qa-001
+      context_id: codex-session-2026-09-08
+    recorded_at: '2026-09-08T00:00:00Z'
+    revision:
+      id: chg-0055-plan-approval-001
+      immutable_ref:
+        type: content_digest
+        value: recorded-in-plan
+    source:
+      assurance: recorded
+      observed_by: operator
+      reference: plan.md#human-plan-authorization
+      statement: >-
+        The human maintainer explicitly requested implementation of the QA
+        capability in the active chat on 2026-09-08.
+  - id: implementation-subject-001
+    role: implementation
+    execution:
+      id: codex-implementation-qa-001
+      context_id: codex-session-2026-09-08
+    recorded_at: '2026-09-08T01:00:00Z'
+    revision:
+      id: chg-0055-implementation-001
+      immutable_ref:
+        type: git_commit
+        value: e6319c13814e5246f4a6e7aa9d5a0a81cfb37564
+      commit: e6319c13814e5246f4a6e7aa9d5a0a81cfb37564
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: verification.md
+      statement: >-
+        CHG-0055 implementation subject frozen at commit
+        e6319c13814e5246f4a6e7aa9d5a0a81cfb37564. The commit
+        contains the canonical QA capability, focused tests, Change Artifacts,
+        and documentation updates; the unrelated projection.py worktree delta
+        is outside the subject.
+  - id: reviewer-001
+    role: review
+    execution:
+      id: codex-review-qa-001
+      context_id: codex-review-session-2026-09-08-001
+    recorded_at: '2026-09-08T01:10:00Z'
+    revision:
+      id: chg-0055-implementation-001
+      immutable_ref:
+        type: git_commit
+        value: e6319c13814e5246f4a6e7aa9d5a0a81cfb37564
+      commit: e6319c13814e5246f4a6e7aa9d5a0a81cfb37564
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: review.md#iteration-1
+      statement: >-
+        Focused review inspected the frozen capability definition, tests,
+        documentation, and governance boundaries. No blocker, major, or minor
+        finding was identified.
