@@ -3,7 +3,7 @@ protocol: 2
 change:
   id: CHG-0057
   title: Release 0.1.0b4
-  kind: feature
+  kind: chore
 flow:
   initial: standard
   current: standard
@@ -11,11 +11,11 @@ flow:
 state:
   current: complete
 artifacts:
-  intent: active
-  discovery: pending
-  specification: pending
-  plan: pending
-  verification: pending
+  intent: complete
+  discovery: complete
+  specification: complete
+  plan: complete
+  verification: complete
   review: complete
   documentation: complete
 requirements:
