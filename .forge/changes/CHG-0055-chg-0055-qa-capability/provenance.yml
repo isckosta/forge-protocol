@@ -11,11 +11,15 @@ records:
       id: chg-0055-plan-approval-001
       immutable_ref:
         type: content_digest
-        value: recorded-in-plan
+        value: 1245d042b76cc6ecf06cf7e839af2af80669594309a08e6ed0f4a9a205c30b6c
     source:
       assurance: recorded
       observed_by: operator
       reference: plan.md#human-plan-authorization
+      content_digest:
+        algorithm: sha256
+        path: plan.md
+        value: 1245d042b76cc6ecf06cf7e839af2af80669594309a08e6ed0f4a9a205c30b6c
       statement: >-
         The human maintainer explicitly requested implementation of the QA
         capability in the active chat on 2026-09-08.
