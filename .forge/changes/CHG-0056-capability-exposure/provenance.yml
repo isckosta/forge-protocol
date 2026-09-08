@@ -24,3 +24,42 @@ records:
         The human maintainer explicitly confirmed “prossiga como está” in the
         active chat after reviewing and accepting the direct-child native skill
         layout for Codex and Claude Code.
+  - id: implementation-subject-001
+    role: implementation
+    execution:
+      id: codex-implementation-capability-exposure-001
+      context_id: codex-session-2026-09-08
+    recorded_at: '2026-09-08T02:00:00Z'
+    revision:
+      id: chg-0056-implementation-001
+      immutable_ref:
+        type: git_commit
+        value: 9cd985ad17dc0061d01ba65dde4e75e2125430de
+      commit: 9cd985ad17dc0061d01ba65dde4e75e2125430de
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: verification.md
+      statement: >-
+        Implementation subject frozen at the commit containing the complete
+        Capability catalog, exposure contract, Codex/Claude projections, tests,
+        and Change artifacts.
+  - id: reviewer-001
+    role: review
+    execution:
+      id: codex-review-capability-exposure-001
+      context_id: codex-review-session-2026-09-08-001
+    recorded_at: '2026-09-08T02:10:00Z'
+    revision:
+      id: chg-0056-implementation-001
+      immutable_ref:
+        type: git_commit
+        value: 9cd985ad17dc0061d01ba65dde4e75e2125430de
+      commit: 9cd985ad17dc0061d01ba65dde4e75e2125430de
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: review.md#iteration-1
+      statement: >-
+        Review inspected the frozen subject and found no blocker, major, minor,
+        or observation finding within the declared Change scope.
