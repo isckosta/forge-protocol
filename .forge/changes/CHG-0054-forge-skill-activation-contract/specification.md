@@ -3,7 +3,7 @@ forge:
   artifact: specification
   schema: 1
 change: CHG-0054
-status: pending
+status: complete
 ---
 
 # CHG-0054 · Specification
@@ -18,15 +18,19 @@ status: pending
 |---|---|
 | **Change** | CHG-0054 |
 | **Flow** | STANDARD |
-| **Status** | Draft |
+| **Status** | Complete |
 
 ## Summary
 
-State the expected outcome and the contract boundary in a few sentences.
+The skill description is a pre-load routing contract. It names observable
+material-change signals and explicit exclusions only. Lifecycle obligations,
+Flow selection, and Forge authority remain in the skill body and repository
+state.
 
 ## Classification
 
-Record the selected Flow and the semantic reason for it.
+STANDARD: this is a bounded cross-Harness discovery contract change with no
+Protocol schema or lifecycle semantic change.
 
 ## User Stories
 
@@ -36,25 +40,29 @@ User Stories are optional behavioral context. Include this section only when a m
 
 Each requirement is an independent, verifiable contract. A Requirement without a User Story is valid.
 
-### FR-001 · <requirement title>
+### FR-001 · Observable activation signals
 Stories: <US identifiers, when applicable>
 Origin: <finding reference, when applicable>
 Priority: <priority, when used>
 
 #### Requirement
-Write the normative behavior.
+Each published Forge skill description MUST identify a Forge-enabled repository
+and material behavior implementation/change, material defect correction,
+existing Forge Change continuation, or explicit Forge governance request.
 
 #### Expected Behavior
-Describe important rules and consequences only when they add information.
+It MUST NOT require the Harness to know beforehand that the work is a
+“Forge-governed Change”. It MUST also name the read-only, investigative without
+change, trivial, and immaterial boundaries.
 
 #### Boundary
 State an explicit limit only when the requirement needs one.
 
 #### Acceptance
-AC-001
-Given <initial condition>
-When <action>
-Then <observable result>
+AC-001: Codex and Claude Code publish equivalent positive signals.
+AC-002: Non-change work is explicitly excluded from automatic activation.
+AC-003: The description contains no lifecycle gate or Harness-specific
+authority replacement.
 
 ## Non-functional Requirements
 
@@ -66,16 +74,21 @@ Add CON-xxx entries only when they restrict the solution or Change.
 
 ## Traceability Matrix
 
-Use this as an index across Discovery, User Stories, Requirements, and Acceptance; the relationships on the entities remain authoritative. Omit User Story columns when no Stories apply.
+| Requirement | Acceptance | Evidence |
+|---|---|---|
+| FR-001 | AC-001, AC-002, AC-003 | activation contract unit tests |
 
 ## Compatibility Statement
 
-Describe compatibility with existing behavior, artifacts, Protocol versions, or explicitly state why it is not materially affected.
+Protocol 2 and lifecycle artifacts remain compatible. Only skill discovery
+metadata and generated Adapter outputs change.
 
 ## Specification Gate
 
-Record the evidence that this Specification is complete, internally consistent, and ready for the next Flow stage.
+Specification is complete: one bounded requirement covers the routing contract
+and all acceptance conditions have automated coverage across both projections.
 
 ## Out of Scope
 
-List exclusions and boundaries.
+No Protocol/schema expansion, no Harness-specific algorithm, and no automatic
+Change lifecycle for read-only or immaterial work.

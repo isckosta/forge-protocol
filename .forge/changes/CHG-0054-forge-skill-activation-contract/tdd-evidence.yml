@@ -1,5 +1,17 @@
 schema: forge/tdd-evidence@1
 change: CHG-0054
-status: active
-cycle_count: 0
-cycles: []
+status: compliant
+cycle_count: 1
+cycles:
+  - id: TDD-001
+    title: Observable Forge skill activation contract
+    requirements: [FR-001]
+    behavior: Both Harness projections publish the same non-circular activation description.
+    red:
+      command: .venv/bin/python -m pytest tests/unit/test_forge_skill_activation_contract.py -q
+      result: 22 failed, 1 passed
+      reason: Both projections still emitted the circular `Forge-governed engineering Changes` description.
+    green:
+      command: .venv/bin/python -m pytest tests/unit/test_forge_skill_activation_contract.py -q
+      result: 23 passed
+      reason: The projections now publish the observable positive and negative routing signals.

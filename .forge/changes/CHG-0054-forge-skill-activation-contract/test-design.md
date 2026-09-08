@@ -3,7 +3,7 @@ forge:
   artifact: test_design
   schema: 1
 change: CHG-0054
-status: pending
+status: complete
 ---
 
 # CHG-0054 · Test Design
@@ -16,15 +16,17 @@ status: pending
 |---|---|
 | **Change** | CHG-0054 |
 | **Flow** | STANDARD |
-| **Status** | Draft |
+| **Status** | Complete |
 
 ## Test Strategy
 
-Describe how this Change will be demonstrated before Implementation. Group scenarios into Layers only when that adds clarity (e.g. Domain, API, Persistence, CLI, Harness, Manual Acceptance); a single Layer is valid for a small Change.
+Render both Adapter projections and assert the published front matter as an
+observable discovery contract. Cover exact parity, positive signals, negative
+exclusions, and the material/immaterial boundary.
 
 | Layer | Scope | Method |
 |---|---|---|
-| Layer A | <scope> | Automated |
+| Layer A | Codex and Claude Code skill projections | Automated |
 
 ## Coverage Map
 
@@ -32,32 +34,64 @@ List every Requirement this Change must verify before Implementation, with the S
 
 | Requirement | Scenario | Method |
 |---|---|---|
-| FR-001 | TD-001 | Automated |
+| FR-001 | TD-001, TD-002, TD-003 | Automated |
 
 ## Layer A · <name>
 
-### TD-001 · <Scenario title>
+### TD-001 · Projection parity
 Requirements: FR-001
 Stories: <US identifiers, when applicable>
 Type: <Unit | Integration | Domain Integration | Manual Acceptance>
 Priority: <priority, when used>
 
 #### Purpose
-State the property this scenario proves, not the test's name. A weak Purpose restates the mechanism; a strong one explains the consequence a wrong Implementation would cause.
+Prove that compatible Harnesses receive equivalent activation criteria.
 
 #### Preconditions
 State only the initial state this scenario actually depends on. Omit this section when there is none.
 
 #### Scenario
-Given <initial condition>
-When <action>
-Then <observable result>
+Given equivalent Codex and Claude Code projection inputs
+When each skill is rendered
+Then both descriptions contain the same activation contract.
 
 #### Evidence
-State what observable material will exist to support the result: exit code, persisted row, emitted event, HTTP status, log, snapshot, test result, or manual observation.
+Pytest assertions over the two generated `SKILL.md` resources.
 
 #### Failure Condition
-State what invalidates this scenario as evidence, including a false positive, not only what a failing assertion looks like.
+Any adapter drift or reintroduction of the circular description invalidates it.
+
+### TD-002 · Positive routing signals
+Requirements: FR-001
+Type: Unit
+
+#### Purpose
+Prove material feature/behavior work, material defect fixes, Change
+continuation, and explicit Forge requests are discoverable before load.
+
+#### Scenario
+Given the rendered description
+When each positive signal is inspected
+Then it is present.
+
+#### Evidence
+Parametrized pytest assertions.
+
+### TD-003 · Negative and ambiguous boundary
+Requirements: FR-001
+Type: Unit
+
+#### Purpose
+Prove that read-only, explanatory, investigative-without-change, trivial, and
+immaterial work is not automatically promoted.
+
+#### Scenario
+Given the rendered description
+When non-trigger and materiality boundary terms are inspected
+Then exclusions are explicit and the circular phrase is absent.
+
+#### Evidence
+Parametrized pytest assertions.
 
 #### Boundary
 State what this scenario does not prove, only when it could reasonably be mistaken for proving more. Omit when there is no such risk.
@@ -74,12 +108,13 @@ When TDD applies, RED is valid only when the test fails for the expected behavio
 
 | Requirement | Automated | Manual | Status |
 |---|---|---|---|
-| FR-001 | TD-001 | — | Covered |
+| FR-001 | TD-001, TD-002, TD-003 | — | Covered |
 
 ## Coverage Gaps
 
-State explicitly that no mandatory Requirement remains without a verification strategy, or list each gap. A critical Requirement that cannot be verified is a Specification problem, not an Implementation problem.
+No mandatory Requirement remains without automated coverage.
 
 ## Test Design Gate
 
-Record that every mandatory Requirement has a verification strategy, critical scenarios have a clear Purpose, Failure Conditions are defined, automated and Manual Acceptance are separated, valid RED is defined when TDD applies, and no Requirement remains without known coverage.
+Test Design Gate satisfied; valid RED is the old circular description rather
+than an import, fixture, or infrastructure failure.
