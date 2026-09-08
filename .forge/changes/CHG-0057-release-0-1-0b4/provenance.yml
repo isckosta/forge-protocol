@@ -1,0 +1,37 @@
+schema: forge/execution-provenance@2
+change: CHG-0057
+records:
+  - id: implementation-subject-001
+    role: implementation
+    execution:
+      id: codex-release-implementation-001
+      context_id: codex-release-session-2026-09-08
+    recorded_at: '2026-09-08T22:23:00Z'
+    revision:
+      id: chg-0057-release-implementation-001
+      immutable_ref:
+        type: git_commit
+        value: 80120e0e36a7e293379cb01876a858cf6d1b07db
+      commit: 80120e0e36a7e293379cb01876a858cf6d1b07db
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: CHANGELOG.md
+      statement: Release metadata subject before repository-native completion evidence.
+  - id: reviewer-001
+    role: review
+    execution:
+      id: codex-release-review-001
+      context_id: codex-release-review-session-2026-09-08-001
+    recorded_at: '2026-09-08T22:23:30Z'
+    revision:
+      id: chg-0057-release-implementation-001
+      immutable_ref:
+        type: git_commit
+        value: 80120e0e36a7e293379cb01876a858cf6d1b07db
+      commit: 80120e0e36a7e293379cb01876a858cf6d1b07db
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: review.md#iteration-1
+      statement: Independent review found no release metadata finding.
