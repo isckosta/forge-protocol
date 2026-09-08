@@ -18,12 +18,12 @@ Review found no blocker, major, minor, or observation finding in the metadata-on
 
 | | |
 |---|---|
-| **Iterations** | 1 |
+| **Iterations** | 2 |
 | **Current Subject** | `cee6953803e0c1107fb56632155b6fee5a9eb3d0` |
 | **Open Blockers** | 0 |
 | **Open Majors** | 0 |
 | **Open Minors** | 0 |
-| **Final Iteration** | 1 |
+| **Final Iteration** | 2 |
 | **Result** | PASS |
 
 ## Current Subject
@@ -51,6 +51,11 @@ No open findings.
 
 The version bump and changelog cut match the release checklist and do not alter
 runtime or Protocol behavior. No finding was identified.
+
+## Iteration 2 — PASS
+
+Resolution verification confirmed that the repository-native release evidence
+is complete and that no new finding was introduced.
 
 ## Conclusion
 
