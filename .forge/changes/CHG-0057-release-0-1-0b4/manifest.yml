@@ -37,9 +37,9 @@ review:
   mode: recommended
   iterations:
     - id: review-001
-      revision: chg-0057-release-implementation-001
-      subject_provenance: implementation-subject-001
-      reviewer_provenance: reviewer-001
+      revision: chg-0057-release-implementation-002
+      subject_provenance: implementation-subject-002
+      reviewer_provenance: reviewer-002
       kind: initial_review
       status: passed
       profile: standard

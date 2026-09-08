@@ -35,3 +35,37 @@ records:
       observed_by: self
       reference: review.md#iteration-1
       statement: Independent review found no release metadata finding.
+  - id: implementation-subject-002
+    role: implementation
+    execution:
+      id: codex-release-verification-002
+      context_id: codex-release-session-2026-09-08-002
+    recorded_at: '2026-09-08T22:26:00Z'
+    revision:
+      id: chg-0057-release-implementation-002
+      immutable_ref:
+        type: git_commit
+        value: cee6953803e0c1107fb56632155b6fee5a9eb3d0
+      commit: cee6953803e0c1107fb56632155b6fee5a9eb3d0
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: verification.md
+      statement: Final release Change subject after repository-native evidence was recorded.
+  - id: reviewer-002
+    role: review
+    execution:
+      id: codex-release-review-002
+      context_id: codex-release-review-session-2026-09-08-002
+    recorded_at: '2026-09-08T22:26:30Z'
+    revision:
+      id: chg-0057-release-implementation-002
+      immutable_ref:
+        type: git_commit
+        value: cee6953803e0c1107fb56632155b6fee5a9eb3d0
+      commit: cee6953803e0c1107fb56632155b6fee5a9eb3d0
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: review.md#iteration-1
+      statement: Final review of the release Change found no finding.
