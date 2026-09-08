@@ -30,7 +30,7 @@ verification:
   status: passed
 review:
   status: passed
-  iteration: 2
+  iteration: 3
   blockers: 0
   majors: 0
   minors: 0
@@ -51,6 +51,16 @@ review:
       revision: chg-0056-implementation-002
       subject_provenance: implementation-subject-002
       reviewer_provenance: reviewer-002
+      kind: initial_review
+      status: passed
+      profile: standard
+      full_review_required: false
+      new_material_findings: 0
+      finding_classes: []
+    - id: review-003
+      revision: chg-0056-resolution-003
+      subject_provenance: resolution-subject-003
+      reviewer_provenance: reviewer-003
       kind: resolution_verification
       status: passed
       profile: standard

@@ -20,12 +20,12 @@ tests. No blocker, major, minor, or observation finding was identified.
 
 | | |
 |---|---|
-| **Iterations** | 2 |
+| **Iterations** | 3 |
 | **Current Subject** | `285b2351ca44d28235f788a166fc8e881a096b56` |
 | **Open Blockers** | 0 |
 | **Open Majors** | 0 |
 | **Open Minors** | 0 |
-| **Final Iteration** | 2 |
+| **Final Iteration** | 3 |
 | **Result** | PASS |
 
 ## Current Subject
@@ -36,7 +36,7 @@ Reference the frozen subject recorded in provenance.yml by id; do not invent a n
 |---|---|
 | **Subject SHA** | `285b2351ca44d28235f788a166fc8e881a096b56` |
 | **Frozen** | Yes |
-| **Iteration** | 2 |
+| **Iteration** | 3 |
 
 ## Reviewer Independence
 
@@ -61,6 +61,11 @@ resolution.
 Resolution Verification confirmed that the TDD Evidence schema correction was
 limited to repository-native evidence and did not introduce new findings. The
 corrected subject remains within the declared scope.
+
+## Iteration 3 — PASS
+
+Resolution Verification confirmed the corrected subject and found no new
+material finding.
 
 ## Conclusion
 
