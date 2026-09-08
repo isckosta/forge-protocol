@@ -1,0 +1,38 @@
+schema: forge/execution-provenance@2
+change: CHG-0054
+records:
+  - id: implementation-subject-001
+    role: implementation
+    execution:
+      id: codex-implementation-chg-0054
+      context_id: codex-session-chg-0054
+    recorded_at: '2026-09-08T14:40:00Z'
+    revision:
+      id: chg-0054-implementation-001
+      immutable_ref:
+        type: git_commit
+        value: b89dd7de55683481c53f3bcb2576afdfeda0853e
+      commit: b89dd7de55683481c53f3bcb2576afdfeda0853e
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: implementation-subject
+      statement: Frozen CHG-0054 implementation subject after Adapter regeneration, verification evidence, and generated-artifact drift checks.
+  - id: reviewer-001
+    role: review
+    execution:
+      id: 01a08178-8c95-7c71-bbc2-86218870affa
+      context_id: independent-review-context-01a08178-8c95-7c71-bbc2-86218870affa
+    recorded_at: '2026-09-08T14:48:00Z'
+    revision:
+      id: chg-0054-implementation-001
+      immutable_ref:
+        type: git_commit
+        value: b89dd7de55683481c53f3bcb2576afdfeda0853e
+      commit: b89dd7de55683481c53f3bcb2576afdfeda0853e
+    source:
+      assurance: verified
+      observed_by: harness
+      harness: independent-codex-reviewer
+      reference: review.md#iteration-1
+      statement: Independent Strict Review in a fresh isolated clone returned PASS with no findings. It independently checked routing criteria, Codex/Claude parity, YAML/frontmatter, generated Adapter artifacts, scope, targeted tests, forge validate, both Adapter doctors, git diff check, and exact subject/base binding. Full-suite offline dependency download failure was reproduced as environment-only and bypassed successfully without isolation.
