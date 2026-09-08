@@ -28,7 +28,7 @@ tdd:
   status: compliant
   cycles: 1
 verification:
-  status: pending
+  status: passed
 review:
   status: pending
   iteration: 0
