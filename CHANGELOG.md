@@ -10,6 +10,8 @@ until then.
 
 ## Unreleased
 
+## [0.1.0b4] - 2026-09-08
+
 ### Harness-native Capability exposure
 
 Forge Adapters now derive native skills for canonical Capabilities from the
