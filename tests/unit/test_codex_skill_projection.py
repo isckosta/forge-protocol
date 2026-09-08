@@ -46,7 +46,7 @@ def test_codex_projection_renders_a_valid_repository_skill_layout() -> None:
     metadata = yaml.safe_load(skill.split("---", 2)[1])
     assert metadata == {
         "name": "forge",
-        "description": "Use for Forge-governed engineering Changes in this repository.",
+        "description": "Use in a Forge-enabled repository when the request involves a material software change: implementing or materially changing behavior, fixing a material defect, continuing an existing Forge Change, or explicitly requesting Forge governance. Do not activate for questions, explanations, reading, investigation without a change, trivial operations, or immaterial edits.",
     }
     assert "Repository-native Forge state remains authoritative." in skill
 
