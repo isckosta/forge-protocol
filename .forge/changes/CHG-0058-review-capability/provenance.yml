@@ -11,7 +11,7 @@ records:
       id: chg-0058-plan-approval-001
       immutable_ref:
         type: content_digest
-        value: 58d1ea694b58f19c53bca9f2d1e3f8b3cffa724e34d47f1a250945440771301c
+        value: cc63b41d6e8819854ff3301875de2335bebe0dbc4b0e92ca9643ad9baa00dc66
     source:
       assurance: recorded
       observed_by: operator
@@ -19,7 +19,7 @@ records:
       content_digest:
         algorithm: sha256
         path: plan.md
-        value: 58d1ea694b58f19c53bca9f2d1e3f8b3cffa724e34d47f1a250945440771301c
+        value: cc63b41d6e8819854ff3301875de2335bebe0dbc4b0e92ca9643ad9baa00dc66
       statement: >-
         The human maintainer explicitly requested implementation of the review
         capability in the active chat on 2026-09-08. This authorizes the
@@ -107,3 +107,46 @@ records:
         Independent Resolution Verification returned PASS: all three findings
         were resolved, the full suite passed, Forge validation passed, and no
         regression was found.
+  - id: verification-001
+    role: implementation
+    execution:
+      id: codex-verification-review-0058-001
+      context_id: codex-resolution-context-0058-001
+    recorded_at: '2026-09-08T00:00:00Z'
+    revision:
+      id: chg-0058-resolution-001
+      immutable_ref:
+        type: git_commit
+        value: 85d5bad98f65f8cbbafbea0a24f8f2d60235b939
+      commit: 85d5bad98f65f8cbbafbea0a24f8f2d60235b939
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: verification.md
+      statement: >-
+        Verification is bound to the independently reviewed resolution subject
+        and records the passing contract, focused, full-suite, Forge, and
+        whitespace checks.
+  - id: resolution-002
+    role: resolution
+    execution:
+      id: codex-metadata-resolution-review-0058-002
+      context_id: codex-metadata-resolution-context-0058-002
+    recorded_at: '2026-09-08T00:00:00Z'
+    scope:
+      - .forge/changes/CHG-0058-review-capability/verification.md
+    targets: [MR-006, MR-015]
+    revision:
+      id: chg-0058-resolution-002
+      immutable_ref:
+        type: git_commit
+        value: 85a37dafc1f6b1c4562c1b892adb17f9d9a5b8cc
+      commit: 85a37dafc1f6b1c4562c1b892adb17f9d9a5b8cc
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: review.md#iteration-2
+      statement: >-
+        Metadata-only follow-up records the verification binding and Review
+        evidence after the frozen resolution subject; no capability or test
+        behavior changed.
