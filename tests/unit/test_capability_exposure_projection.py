@@ -20,6 +20,8 @@ def test_codex_projects_each_canonical_capability_as_a_discoverable_skill() -> N
     assert "investigate/references/CAPABILITY.md" in names
     assert "fix/SKILL.md" in names
     assert "qa/SKILL.md" in names
+    assert "review/SKILL.md" in names
+    assert "review/references/CAPABILITY.md" in names
 
     investigate = next(item for item in bundle.resources if item.name == "investigate/SKILL.md")
     assert "references/CAPABILITY.md" in investigate.content
@@ -40,5 +42,7 @@ def test_claude_code_projects_the_same_catalog_without_redefining_behavior() -> 
     names = {resource.name for resource in bundle.resources}
     assert "skills/investigate/SKILL.md" in names
     assert "skills/investigate/references/CAPABILITY.md" in names
+    assert "skills/review/SKILL.md" in names
+    assert "skills/review/references/CAPABILITY.md" in names
     skill = next(item for item in bundle.resources if item.name == "skills/investigate/SKILL.md")
     assert "sole source of competency behavior" in skill.content

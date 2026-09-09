@@ -1,0 +1,21 @@
+schema: forge/tdd-evidence@1
+change: CHG-0058
+status: complete
+cycle_count: 1
+cycles:
+  - id: TDD-001
+    status: compliant
+    red:
+      command: .venv/bin/python -m pytest tests/capabilities/test_review_capability.py -q
+      result: failed
+      evidence: >-
+        33 setup errors from the expected missing-definition failure:
+        CapabilityDefinitionError for capabilities/review/CAPABILITY.md.
+    green:
+      command: .venv/bin/python -m pytest tests/capabilities/test_review_capability.py tests/capabilities/test_catalog.py -q
+      result: passed
+      evidence: 36 passed after the canonical definition and catalog expectation were added.
+    scope: >-
+      Contract conformance, semantic review behavior, evidence-bearing
+      findings, governance boundaries, Harness independence, and generic
+      catalog discovery.

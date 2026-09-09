@@ -11,6 +11,10 @@ publication:
 generated_artifacts:
 - path: .claude/CLAUDE.md
   digest: b100acdfeef2732f61c2e8b6c207cb63de502d2a7eed24bc745f22e1ba7256b7
+- path: .claude/skills/fix/SKILL.md
+  digest: 58da8de2fbab6c5eff57b7dc78f10e780ce7592fd9297d8097cdb57b3673ea6b
+- path: .claude/skills/fix/references/CAPABILITY.md
+  digest: 09042b803934c59d2acfa60c5a1351f03065678ee656c089c8d360d42c41819a
 - path: .claude/skills/forge/SKILL.md
   digest: f4a27e3e0ea6dae492ce0ccb2886096faee908689cb491c3eff475f4ec101c10
 - path: .claude/skills/forge/hooks/check-manifest-edit.sh
@@ -27,6 +31,18 @@ generated_artifacts:
   digest: 01beeb2c8ee2c276d1a57f4c11db6d32311585f6f53b94f81360d6862cb9f69e
 - path: .claude/skills/forge/references/flows/standard.yml
   digest: 4f90b95ba77588058cbd13faba6693c9b798c49416fa9dbf336ca72f8a9644ad
+- path: .claude/skills/investigate/SKILL.md
+  digest: 3f46b299bb2837a7000231a0387279a172469440c7b59bacae19e26f9496aa3c
+- path: .claude/skills/investigate/references/CAPABILITY.md
+  digest: 19bd76d73b0a66e93bd73f69622221423eb4b2af57bb5e618728566d9263c1eb
+- path: .claude/skills/qa/SKILL.md
+  digest: ab39f4bcc33a320228ddaa51af2b780895b459c58e57865091909d8673c3a0ea
+- path: .claude/skills/qa/references/CAPABILITY.md
+  digest: c16f1b196d149ee6690c164e9e43d7caf8b13a7b1dea59755b05ba54d1da33c4
+- path: .claude/skills/review/SKILL.md
+  digest: 14c684c4bdaa7fdcbc055b056f71bd4d892a2b1df5ed42b7a18f9374ee15da9d
+- path: .claude/skills/review/references/CAPABILITY.md
+  digest: 9f0a2ae89f1b708c6ed820c68ed515bb1df62c77c29f08902c46369bc35a7812
 limitations:
 - 'strict-review: capability skills cannot be enforced (FR-004)'
 - 'tdd-red-before-behavior: capability skills cannot be enforced (FR-004)'

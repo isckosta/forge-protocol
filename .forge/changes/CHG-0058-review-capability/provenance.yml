@@ -1,0 +1,26 @@
+schema: forge/execution-provenance@2
+change: CHG-0058
+records:
+  - id: plan-approval-001
+    role: implementation
+    execution:
+      id: codex-implementation-review-0058
+      context_id: codex-session-2026-09-08
+    recorded_at: '2026-09-08T00:00:00Z'
+    revision:
+      id: chg-0058-plan-approval-001
+      immutable_ref:
+        type: content_digest
+        value: 9e3b134565ec0a016f62f13ce2a0117d504c817d3d7320860c1cd7e727ea159d
+    source:
+      assurance: recorded
+      observed_by: operator
+      reference: plan.md#approval-record
+      content_digest:
+        algorithm: sha256
+        path: plan.md
+        value: 9e3b134565ec0a016f62f13ce2a0117d504c817d3d7320860c1cd7e727ea159d
+      statement: >-
+        The human maintainer explicitly requested implementation of the review
+        capability in the active chat on 2026-09-08. This authorizes the
+        localized CHG-0058 Plan to cross into Implementation.

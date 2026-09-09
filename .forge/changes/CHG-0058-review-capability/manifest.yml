@@ -1,0 +1,55 @@
+schema: forge/change@2
+protocol: 2
+change:
+  id: CHG-0058
+  title: Review Capability
+  kind: feature
+flow:
+  initial: standard
+  current: standard
+  escalations: []
+state:
+  current: verification
+artifacts:
+  intent: complete
+  discovery: complete
+  specification: complete
+  test_design: complete
+  plan: approved
+  tdd_evidence: complete
+  verification: complete
+  review: pending
+  documentation: complete
+requirements:
+  total: 5
+  implemented: 5
+  verified: 5
+tdd:
+  status: compliant
+  cycles: 1
+verification:
+  status: passed
+review:
+  status: pending
+  iteration: 0
+  blockers: 0
+  majors: 0
+  minors: 0
+  observations: 0
+  mode: recommended
+  iterations: []
+documentation:
+  impact_evaluated: true
+  update_required: true
+  reason: >-
+    Updated CHANGELOG.md with the canonical Review Capability. No Protocol,
+    Engineering Contract, Flow, schema, or adapter implementation changed.
+decisions:
+  - id: DEC-001
+    class: technical
+    materiality: material
+    status: resolved
+    authority: human
+    owning_artifact: plan
+    discovered_in: plan
+    resolved_via: human_decision
