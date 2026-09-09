@@ -68,7 +68,7 @@ governance boundaries, and focused behavior were sound.
 Resolution Verification independently confirmed:
 
 - `tests/contract/test_protocol_contract.py::test_canonical_yaml_instances_satisfy_their_declared_schemas` — 71 passed;
-- the recorded Plan digest `58d1ea694b58f19c53bca9f2d1e3f8b3cffa724e34d47f1a250945440771301c` matches the frozen `plan.md`;
+- the recorded canonical Plan digest `cc63b41d6e8819854ff3301875de2335bebe0dbc4b0e92ca9643ad9baa00dc66` matches the frozen `plan.md` after excluding Forge approval-marker lines;
 - `git diff --check` passes;
 - focused capability tests — 36 passed;
 - full suite — 1008 passed with two known FER warnings;
