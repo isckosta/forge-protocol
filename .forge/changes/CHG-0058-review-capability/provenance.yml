@@ -171,8 +171,8 @@ records:
       id: chg-0058-boundary-resolution-001
       immutable_ref:
         type: git_commit
-        value: 3286782
-      commit: 3286782
+        value: 32867828e1385854fdf343221dc0fbbf1262c683
+      commit: 32867828e1385854fdf343221dc0fbbf1262c683
     source:
       assurance: recorded
       observed_by: self
