@@ -79,4 +79,3 @@ def test_is_harness_independent_and_not_a_harness_projection(raw_text: str, forb
 def test_review_does_not_select_or_modify_the_effective_profile(raw_text: str) -> None:
     assert "does not select" in raw_text
     assert "does not modify" in raw_text
-
