@@ -10,7 +10,7 @@ status: complete
 
 ## Verdict
 
-**PASS.** Initial Review returned REQUEST CHANGES with two blockers and one
+**PASS**. Initial Review returned REQUEST CHANGES with two blockers and one
 minor finding. Resolution Verification independently confirmed all three
 resolutions and found no regression.
 
