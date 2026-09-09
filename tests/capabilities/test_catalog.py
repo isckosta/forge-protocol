@@ -12,7 +12,7 @@ def test_catalog_is_deterministic_and_contains_all_canonical_capabilities() -> N
 
     catalog = load_capability_catalog(root)
 
-    assert tuple(item.id for item in catalog) == ("fix", "investigate", "qa")
+    assert tuple(item.id for item in catalog) == ("fix", "investigate", "qa", "review")
     assert all(item.source_path.name == "CAPABILITY.md" for item in catalog)
 
 

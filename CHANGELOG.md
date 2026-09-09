@@ -10,6 +10,16 @@ until then.
 
 ## Unreleased
 
+### Review Capability
+
+Introduced `review` at `capabilities/review/CAPABILITY.md`, a
+Harness-independent competency for critical and adversarial analysis of a
+subject against Forge-supplied obligations, context, and effective review
+profile. It reports evidence-bearing findings, materiality or severity where
+applicable, and explicit evidence gaps while leaving Review obligation,
+profile selection, independence, provenance, approval, Gates, and lifecycle
+authority outside the Capability. See `.forge/changes/CHG-0058-review-capability/`.
+
 ## [0.1.0b4] - 2026-09-08
 
 ### Harness-native Capability exposure

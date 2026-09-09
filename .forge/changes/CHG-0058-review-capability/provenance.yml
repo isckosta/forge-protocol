@@ -1,0 +1,205 @@
+schema: forge/execution-provenance@2
+change: CHG-0058
+records:
+  - id: plan-approval-001
+    role: implementation
+    execution:
+      id: codex-implementation-review-0058
+      context_id: codex-session-2026-09-08
+    recorded_at: '2026-09-08T00:00:00Z'
+    revision:
+      id: chg-0058-plan-approval-001
+      immutable_ref:
+        type: content_digest
+        value: cc63b41d6e8819854ff3301875de2335bebe0dbc4b0e92ca9643ad9baa00dc66
+    source:
+      assurance: recorded
+      observed_by: operator
+      reference: plan.md#approval-record
+      content_digest:
+        algorithm: sha256
+        path: plan.md
+        value: cc63b41d6e8819854ff3301875de2335bebe0dbc4b0e92ca9643ad9baa00dc66
+      statement: >-
+        The human maintainer explicitly requested implementation of the review
+        capability in the active chat on 2026-09-08. This authorizes the
+        localized CHG-0058 Plan to cross into Implementation.
+  - id: implementation-subject-001
+    role: implementation
+    execution:
+      id: codex-implementation-review-0058
+      context_id: codex-session-2026-09-08
+    recorded_at: '2026-09-08T00:00:00Z'
+    revision:
+      id: chg-0058-implementation-001
+      immutable_ref:
+        type: git_commit
+        value: 139c5065adaaacd0d73fbd1a50bec25ddf48f44f
+      commit: 139c5065adaaacd0d73fbd1a50bec25ddf48f44f
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: implementation-subject
+      statement: >-
+        Frozen CHG-0058 implementation subject containing the canonical Review
+        Capability, tests, adapter projections, Change artifacts, and
+        documentation.
+  - id: reviewer-001
+    role: review
+    execution:
+      id: 01a0839b-640d-7650-9a32-4817223e2783
+      context_id: independent-review-context-01a0839b-640d-7650-9a32-4817223e2783
+    recorded_at: '2026-09-08T00:00:00Z'
+    revision:
+      id: chg-0058-implementation-001
+      immutable_ref:
+        type: git_commit
+        value: 139c5065adaaacd0d73fbd1a50bec25ddf48f44f
+      commit: 139c5065adaaacd0d73fbd1a50bec25ddf48f44f
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: review.md#iteration-1
+      statement: >-
+        Independent Review returned REQUEST CHANGES with R-001 and R-002 as
+        blockers and R-003 as a minor finding.
+  - id: resolution-001
+    role: resolution
+    execution:
+      id: codex-resolution-review-0058-001
+      context_id: codex-resolution-context-0058-001
+    recorded_at: '2026-09-08T00:00:00Z'
+    scope:
+      - .forge/changes/CHG-0058-review-capability/provenance.yml
+      - .forge/changes/CHG-0058-review-capability/tdd-evidence.yml
+      - tests/capabilities/test_review_capability.py
+    targets: [R-001, R-002, R-003]
+    revision:
+      id: chg-0058-resolution-001
+      immutable_ref:
+        type: git_commit
+        value: 85d5bad98f65f8cbbafbea0a24f8f2d60235b939
+      commit: 85d5bad98f65f8cbbafbea0a24f8f2d60235b939
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: review.md#iteration-2
+      statement: >-
+        Corrected the TDD Evidence schema shape, synchronized the Plan
+        provenance digest, and removed the test whitespace finding.
+  - id: reviewer-002
+    role: review
+    execution:
+      id: 01a083a1-1473-7933-8afa-5faa76c1462d
+      context_id: independent-review-context-01a083a1-1473-7933-8afa-5faa76c1462d
+    recorded_at: '2026-09-08T00:00:00Z'
+    revision:
+      id: chg-0058-resolution-001
+      immutable_ref:
+        type: git_commit
+        value: 85d5bad98f65f8cbbafbea0a24f8f2d60235b939
+      commit: 85d5bad98f65f8cbbafbea0a24f8f2d60235b939
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: review.md#iteration-2
+      statement: >-
+        Independent Resolution Verification returned PASS: all three findings
+        were resolved, the full suite passed, Forge validation passed, and no
+        regression was found.
+  - id: verification-001
+    role: implementation
+    execution:
+      id: codex-verification-review-0058-001
+      context_id: codex-resolution-context-0058-001
+    recorded_at: '2026-09-08T00:00:00Z'
+    revision:
+      id: chg-0058-resolution-001
+      immutable_ref:
+        type: git_commit
+        value: 85d5bad98f65f8cbbafbea0a24f8f2d60235b939
+      commit: 85d5bad98f65f8cbbafbea0a24f8f2d60235b939
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: verification.md
+      statement: >-
+        Verification is bound to the independently reviewed resolution subject
+        and records the passing contract, focused, full-suite, Forge, and
+        whitespace checks.
+  - id: resolution-002
+    role: resolution
+    execution:
+      id: codex-metadata-resolution-review-0058-002
+      context_id: codex-metadata-resolution-context-0058-002
+    recorded_at: '2026-09-08T00:00:00Z'
+    scope:
+      - .forge/changes/CHG-0058-review-capability/verification.md
+    targets: [MR-006, MR-015]
+    revision:
+      id: chg-0058-resolution-002
+      immutable_ref:
+        type: git_commit
+        value: 85a37dafc1f6b1c4562c1b892adb17f9d9a5b8cc
+      commit: 85a37dafc1f6b1c4562c1b892adb17f9d9a5b8cc
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: review.md#iteration-2
+      statement: >-
+        Metadata-only follow-up records the verification binding and Review
+        evidence after the frozen resolution subject; no capability or test
+        behavior changed.
+  - id: resolution-003
+    role: resolution
+    execution:
+      id: codex-boundary-resolution-review-0058-003
+      context_id: codex-boundary-resolution-context-0058-003
+    recorded_at: '2026-09-08T00:00:00Z'
+    scope:
+      - .claude/skills/fix/SKILL.md
+      - .claude/skills/fix/references/CAPABILITY.md
+      - .claude/skills/investigate/SKILL.md
+      - .claude/skills/investigate/references/CAPABILITY.md
+      - .claude/skills/qa/SKILL.md
+      - .claude/skills/qa/references/CAPABILITY.md
+      - .claude/skills/review/SKILL.md
+      - .claude/skills/review/references/CAPABILITY.md
+      - .forge/adapters/claude-code/installation.yml
+    targets: [MR-017]
+    revision:
+      id: chg-0058-boundary-resolution-001
+      immutable_ref:
+        type: git_commit
+        value: 32867828e1385854fdf343221dc0fbbf1262c683
+      commit: 32867828e1385854fdf343221dc0fbbf1262c683
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: review.md#iteration-2
+      statement: >-
+        Removed materialized Claude capability artifacts and their installation
+        entries so this Change exercises the generic projection without
+        carrying harness publication state across the Merge Readiness boundary.
+  - id: resolution-004
+    role: resolution
+    execution:
+      id: codex-review-evidence-resolution-0058-004
+      context_id: codex-review-evidence-resolution-context-0058-004
+    recorded_at: '2026-09-09T00:00:00Z'
+    scope:
+      - .forge/changes/CHG-0058-review-capability/review.md
+    targets: [R-004]
+    revision:
+      id: chg-0058-review-evidence-resolution-001
+      immutable_ref:
+        type: git_commit
+        value: df1eca9b603616430f98241f1ce854f56ee8c5e7
+      commit: df1eca9b603616430f98241f1ce854f56ee8c5e7
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: review.md#iteration-2
+      statement: >-
+        Corrected the Review evidence to cite the canonical Plan digest used by
+        authoritative provenance, including the approval-marker normalization.
