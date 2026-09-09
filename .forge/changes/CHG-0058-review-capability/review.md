@@ -3,54 +3,80 @@ forge:
   artifact: review
   schema: 1
 change: CHG-0058
-status: pending
+status: complete
 ---
 
 # CHG-0058 · Review
 
 ## Verdict
 
-**PENDING**
+**PASS.** Initial Review returned REQUEST CHANGES with two blockers and one
+minor finding. Resolution Verification independently confirmed all three
+resolutions and found no regression.
 
 ## Review Summary
 
-Use the values already recorded in manifest.yml: review (iteration, blockers, majors, minors) — do not hand-count separately.
-
 | | |
 |---|---|
-| **Iterations** | <n> |
-| **Current Subject** | <sha> |
-| **Open Blockers** | <n> |
-| **Open Majors** | <n> |
-| **Open Minors** | <n> |
-| **Final Iteration** | <n> |
-| **Result** | PENDING |
+| **Iterations** | 2 |
+| **Current Subject** | `85d5bad98f65f8cbbafbea0a24f8f2d60235b939` |
+| **Open Blockers** | 0 |
+| **Open Majors** | 0 |
+| **Open Minors** | 0 |
+| **Final Iteration** | 2 |
+| **Result** | PASS |
 
 ## Current Subject
 
-Reference the frozen subject recorded in provenance.yml by id; do not invent a new freeze concept.
+The final Resolution Verification subject is recorded by
+`provenance.yml` as `resolution-001`.
 
 | | |
 |---|---|
-| **Subject SHA** | <sha> |
-| **Frozen** | <Yes/No> |
-| **Iteration** | <n> |
+| **Subject SHA** | `85d5bad98f65f8cbbafbea0a24f8f2d60235b939` |
+| **Frozen** | Yes |
+| **Iteration** | 2 |
 
 ## Reviewer Independence
 
-Reference the reviewer's provenance.yml record by id as evidence of a distinct Execution and Execution Context from the Implementation or Resolution under review — not a bare declaration.
+`reviewer-001` records an independent Review execution for the implementation
+subject `139c5065`. `reviewer-002` records a separate Resolution Verification
+execution for `85d5bad9`; both execution and context identifiers differ from
+the implementation and resolution executions.
 
 ## Open Findings
 
-List only findings still open, using the Rxxx id (no Change-id prefix). Use `No open findings.` instead of an empty table when there are none.
+No open findings.
 
-| Finding | Severity | Status | Iteration |
-|---|---|---|---|
+## Iteration 1 — REQUEST CHANGES
 
-## Iteration 1 — PENDING
+The independent reviewer found:
 
-Record Strict Review findings. Each finding needs a stable Rxxx id, one of BLOCKER, MAJOR, MINOR, or OBSERVATION, evidence (required for BLOCKER and MAJOR), and a Required Resolution stated as the property that must hold — not a prescribed implementation.
+- **R-001 BLOCKER:** `tdd-evidence.yml` did not conform to the canonical TDD
+  Evidence schema; the cycle lacked required `title`/`behavior` and
+  `requirements`, and contained unsupported `status`/`scope` fields.
+- **R-002 BLOCKER:** the Plan approval provenance digest did not match the
+  actual `plan.md` content.
+- **R-003 MINOR:** the focused test ended with an extra blank line, causing
+  `git diff --check` to fail.
+
+The reviewer also confirmed the Capability content, generic projections,
+governance boundaries, and focused behavior were sound.
+
+## Iteration 2 — PASS
+
+Resolution Verification independently confirmed:
+
+- `tests/contract/test_protocol_contract.py::test_canonical_yaml_instances_satisfy_their_declared_schemas` — 71 passed;
+- the recorded Plan digest `58d1ea694b58f19c53bca9f2d1e3f8b3cffa724e34d47f1a250945440771301c` matches the frozen `plan.md`;
+- `git diff --check` passes;
+- focused capability tests — 36 passed;
+- full suite — 1008 passed with two known FER warnings;
+- `forge validate` passes;
+- `capabilities/review/CAPABILITY.md`, other Capabilities, and projections
+  are unchanged outside the declared resolution scope.
 
 ## Conclusion
 
-State the effect of the Verdict. Do not declare Completion while gates later in the Flow remain outstanding.
+The final subject satisfies the declared Change scope. Review passed with no
+open findings; Completion may proceed subject to Pull Request integration.

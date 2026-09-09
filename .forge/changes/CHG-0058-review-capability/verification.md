@@ -36,7 +36,8 @@ Omit this section when Acceptance Coverage already expresses per-Requirement cov
 ## Test Evidence
 
 `TDD-001` records valid RED and GREEN. Focused capability suite plus catalog:
-`.venv/bin/python -m pytest tests/capabilities/ -q` — exit 0, 146 passed.
+`.venv/bin/python -m pytest tests/capabilities/ -q` — exit 0, 146 passed;
+the review-focused and projection-inclusive run passed 148 tests.
 Full suite: `.venv/bin/python -m pytest -q` — exit 0, 1008 passed, 2 existing
 warnings.
 
@@ -56,5 +57,6 @@ Record confirmed compatibility impact and any real limitation. Do not pad this s
 ## Conclusion
 
 The review definition satisfies the declared scope and uses the existing
-generic Capability discovery/projection boundary. Independent Forge Review of
-this Change remains a separate governance step.
+generic Capability discovery/projection boundary. Independent Review passed
+after resolving the TDD Evidence schema, Plan provenance digest, and test
+whitespace findings.
