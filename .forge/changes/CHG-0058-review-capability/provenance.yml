@@ -181,3 +181,25 @@ records:
         Removed materialized Claude capability artifacts and their installation
         entries so this Change exercises the generic projection without
         carrying harness publication state across the Merge Readiness boundary.
+  - id: resolution-004
+    role: resolution
+    execution:
+      id: codex-review-evidence-resolution-0058-004
+      context_id: codex-review-evidence-resolution-context-0058-004
+    recorded_at: '2026-09-09T00:00:00Z'
+    scope:
+      - .forge/changes/CHG-0058-review-capability/review.md
+    targets: [R-004]
+    revision:
+      id: chg-0058-review-evidence-resolution-001
+      immutable_ref:
+        type: git_commit
+        value: df1eca9b603616430f98241f1ce854f56ee8c5e7
+      commit: df1eca9b603616430f98241f1ce854f56ee8c5e7
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: review.md#iteration-2
+      statement: >-
+        Corrected the Review evidence to cite the canonical Plan digest used by
+        authoritative provenance, including the approval-marker normalization.
