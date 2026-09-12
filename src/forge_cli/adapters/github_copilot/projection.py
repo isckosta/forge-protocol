@@ -65,22 +65,61 @@ def _hook_script() -> str:
 set -eu
 
 input=$(cat)
-tool=$(printf '%s' "$input" | jq -r '.toolName // .tool_name // empty')
-args=$(printf '%s' "$input" | jq -r '(.toolArgs // .tool_input // {}) | tostring')
+normalized=$(printf '%s' "$input" | sed \
+  -e 's#\\\\/#/#g' \
+  -e 's#\\\\/#/#g' \
+  -e 's#\\\\/#/#g' \
+  -e 's#\\\\u002[fF]#/#g' \
+  -e 's#\\\\u002[fF]#/#g' \
+  -e 's#\\\\u002[fF]#/#g' \
+  -e 's#\\\\u002[eE]#.#g' \
+  -e 's#\\\\u002[eE]#.#g' \
+  -e 's#\\\\u002[eE]#.#g' \
+  -e 's#\\\\u003[bB]#;#g' \
+  -e 's#\\\\u003[bB]#;#g' \
+  -e 's#\\\\u003[bB]#;#g' \
+  -e 's#\\\\u0026#\\&#g' \
+  -e 's#\\\\u007[cC]#|#g' \
+  -e 's#\\\\u003[cC]#<#g' \
+  -e 's#\\\\u003[eE]#>#g' \
+  -e 's#\\\\u0060#`#g' \
+  -e 's#\\\\u0024#$#g' \
+  -e 's#\\\\u0028#(#g' \
+  -e 's#\\\\u0029#)#g')
+tool=$(printf '%s' "$input" | sed -n \
+  's/.*"toolName"[[:space:]]*:[[:space:]]*"\\([^"]*\\)".*/\\1/p')
+[ -n "$tool" ] || tool=$(printf '%s' "$input" | sed -n \
+  's/.*"tool_name"[[:space:]]*:[[:space:]]*"\\([^"]*\\)".*/\\1/p')
 
-protected='\\.forge/changes/[^[:space:]&|;"]*(manifest\\.yml|provenance\\.yml|review\\.md)'
+change_dir='\\.forge/'
+deny() {
+  printf '%s\n' '{"permissionDecision":"deny","permissionDecisionReason":"Forge review-control metadata must remain repository-native and auditable; use the normal Forge Change workflow."}'
+  exit 0
+}
+printf '%s' "$input" | grep -Eq '\\u[0-9A-Fa-f]{4}' && deny
+printf '%s' "$input" | grep -Eq '\\\\n|\\\\r' && deny
+printf '%s' "$input" | grep -Eq '\\\\' && deny
+printf '%s' "$input" | grep -q "'" && deny
+printf '%s' "$input" | grep -Eq '\\\\[-.]' && deny
+if printf '%s' "$input" | grep -Eq \
+  '"command"[[:space:]]*:[[:space:]]*"[^"]*[][?*{}]'; then
+  deny
+fi
 case "$tool" in
   edit|write|Edit|Write)
-    if printf '%s' "$args" | grep -Eq "$protected"; then
-      printf '%s\n' '{"permissionDecision":"deny","permissionDecisionReason":"Forge review-control metadata must remain repository-native and auditable; use the normal Forge Change workflow."}'
-      exit 0
+    if printf '%s' "$normalized" | grep -Eq "$change_dir"; then
+      deny
     fi
     ;;
   *)
-    if printf '%s' "$args" | grep -Eq \
-      "((sed[[:space:]]+-i|perl[[:space:]]+-i|truncate|>{1,2})[^&|;]*$protected)"; then
-      printf '%s\n' '{"permissionDecision":"deny","permissionDecisionReason":"Forge review-control metadata must remain repository-native and auditable; use the normal Forge Change workflow."}'
-      exit 0
+    if printf '%s' "$normalized" | grep -Eq "$change_dir"; then
+      printf '%s' "$normalized" | grep -Eq '[;&|<>`$()]' && deny
+      printf '%s' "$normalized" | grep -Eiq \
+        '(^|[[:space:]])(--output|-o|--ext-diff)' && deny
+      if ! printf '%s' "$normalized" | grep -Eiq \
+        '"command"[[:space:]]*:[[:space:]]*"git[[:space:]]+(-[^[:space:]]+[[:space:]]+)*(status|diff|show)([[:space:]]|")'; then
+        deny
+      fi
     fi
     ;;
 esac

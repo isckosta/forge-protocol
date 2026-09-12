@@ -24,6 +24,21 @@ def _context() -> AdapterProjectionContext:
     )
 
 
+def _run_hook(script: str, payload: dict[str, object]) -> subprocess.CompletedProcess[str]:
+    script_path = Path(__file__).with_name("forge-review-control.sh")
+    script_path.write_text(script, encoding="utf-8")
+    try:
+        return subprocess.run(
+            ["/bin/sh", str(script_path)],
+            input=json.dumps(payload),
+            text=True,
+            capture_output=True,
+            check=True,
+        )
+    finally:
+        script_path.unlink(missing_ok=True)
+
+
 def test_github_copilot_is_packaged_and_has_official_evidence() -> None:
     descriptor = load_github_copilot_adapter_descriptor()
 
@@ -79,9 +94,8 @@ def test_github_copilot_hook_denies_review_control_metadata() -> None:
         for artifact in projection.artifacts
         if artifact.path.endswith("forge-review-control.sh")
     )
-    assert "manifest\\.yml" in script
-    assert "provenance\\.yml" in script
-    assert "review\\.md" in script
+    assert "\\.forge/" in script
+    assert "jq" not in script
 
 
 def test_github_copilot_hook_allows_read_only_commands() -> None:
@@ -91,21 +105,15 @@ def test_github_copilot_hook_allows_read_only_commands() -> None:
         for artifact in projection.artifacts
         if artifact.path.endswith("forge-review-control.sh")
     )
-    script_path = Path(__file__).with_name("forge-review-control.sh")
-    script_path.write_text(script, encoding="utf-8")
-    try:
-        result = subprocess.run(
-            ["/bin/sh", str(script_path)],
-            input=json.dumps({
-                "toolName": "bash",
-                "toolArgs": {"command": "git status -- .forge/changes/CHG-1/manifest.yml"},
-            }),
-            text=True,
-            capture_output=True,
-            check=True,
-        )
-    finally:
-        script_path.unlink(missing_ok=True)
+    result = _run_hook(
+        script,
+        {
+            "toolName": "bash",
+            "toolArgs": {
+                "command": "git status -- .forge/changes/CHG-1/manifest.yml",
+            },
+        },
+    )
     assert json.loads(result.stdout)["permissionDecision"] == "allow"
 
 
@@ -116,24 +124,110 @@ def test_github_copilot_hook_denies_direct_review_metadata_edits() -> None:
         for artifact in projection.artifacts
         if artifact.path.endswith("forge-review-control.sh")
     )
-    script_path = Path(__file__).with_name("forge-review-control.sh")
-    script_path.write_text(script, encoding="utf-8")
-    try:
-        result = subprocess.run(
-            ["/bin/sh", str(script_path)],
-            input=json.dumps({
-                "toolName": "edit",
-                "toolArgs": {"file_path": ".forge/changes/CHG-1/review.md"},
-            }),
-            text=True,
-            capture_output=True,
-            check=True,
-        )
-    finally:
-        script_path.unlink(missing_ok=True)
+    result = _run_hook(
+        script,
+        {
+            "toolName": "edit",
+            "toolArgs": {"file_path": ".forge/changes/CHG-1/review.md"},
+        },
+    )
     decision = json.loads(result.stdout)
     assert decision["permissionDecision"] == "deny"
     assert decision["permissionDecisionReason"]
+
+
+def test_github_copilot_hook_denies_protected_edit_with_read_only_content() -> None:
+    projection = GitHubCopilotDriver().project(_context())
+    script = next(
+        artifact.content
+        for artifact in projection.artifacts
+        if artifact.path.endswith("forge-review-control.sh")
+    )
+    result = _run_hook(
+        script,
+        {
+            "toolName": "edit",
+            "toolArgs": {
+                "file_path": ".forge/changes/CHG-1/review.md",
+                "content": "category: cat",
+            },
+        },
+    )
+    assert json.loads(result.stdout)["permissionDecision"] == "deny"
+
+
+@pytest.mark.parametrize("command", [
+    "rm .forge/changes/CHG-1/review.md",
+    "mv ./ ./.forge/changes/CHG-1/review.md",
+    "tee ./.forge/changes/CHG-1/provenance.yml",
+    "rm .forge/changes/CHG-1/review.md && git status",
+    "git status; rm .forge/changes/CHG-1/review.md",
+    "rm .forge/changes/CHG-1/*.md",
+    "git add .forge/changes/CHG-1/review.md",
+    r"rm .forge\/changes\/CHG-1\/review.md",
+    r"rm .forge\u002fchanges\u002fCHG-1\u002freview.md",
+    r"git status -- .forge/changes/CHG-1/review.md\u003b rm .forge/changes/CHG-1/review.md",
+    "git diff --output=.forge/changes/CHG-1/review.md",
+    "git diff -o.forge/changes/CHG-1/review.md",
+    r"git diff \--output=\.forge\/changes/CHG-1/review.md",
+    "rm .forge/*/CHG-1/review.md",
+    "rm .forge*/changes/CHG-1/review.md",
+    "rm .f*orge/changes/CHG-1/review.md",
+    "rm {.forge,other}/changes/CHG-1/review.md",
+    "rm .[f]orge/changes/CHG-1/review.md",
+    "rm .forge/changes/CHG-1/revi[ew].md",
+    r"git status -- .forge/changes/CHG-1/review.md\nrm .forge/changes/CHG-1/review.md",
+])
+def test_github_copilot_hook_denies_shell_metadata_mutations(command: str) -> None:
+    projection = GitHubCopilotDriver().project(_context())
+    script = next(
+        artifact.content
+        for artifact in projection.artifacts
+        if artifact.path.endswith("forge-review-control.sh")
+    )
+    result = _run_hook(
+        script,
+        {"toolName": "bash", "toolArgs": {"command": command}},
+    )
+    assert json.loads(result.stdout)["permissionDecision"] == "deny"
+
+
+def test_github_copilot_hook_allows_git_global_options_for_read_only_commands() -> None:
+    projection = GitHubCopilotDriver().project(_context())
+    script = next(
+        artifact.content
+        for artifact in projection.artifacts
+        if artifact.path.endswith("forge-review-control.sh")
+    )
+    result = _run_hook(
+        script,
+        {
+            "toolName": "bash",
+            "toolArgs": {
+                "command": "git --no-pager diff -- .forge/changes/CHG-1/review.md",
+            },
+        },
+    )
+    assert json.loads(result.stdout)["permissionDecision"] == "allow"
+
+
+def test_github_copilot_hook_denies_traversal_to_review_metadata() -> None:
+    projection = GitHubCopilotDriver().project(_context())
+    script = next(
+        artifact.content
+        for artifact in projection.artifacts
+        if artifact.path.endswith("forge-review-control.sh")
+    )
+    result = _run_hook(
+        script,
+        {
+            "toolName": "edit",
+            "toolArgs": {
+                "file_path": "subdir/../.forge/changes/CHG-1/review.md",
+            },
+        },
+    )
+    assert json.loads(result.stdout)["permissionDecision"] == "deny"
 
 
 def test_github_copilot_publication_root_is_fixed_to_github() -> None:
