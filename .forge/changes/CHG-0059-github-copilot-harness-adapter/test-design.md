@@ -155,8 +155,8 @@ infrastructure failure.
 ## Coverage Gaps
 
 No mandatory Requirement remains without a verification strategy. Real Copilot
-surface execution is a limitation, not an unverified claim of universal hook
-coverage.
+surface execution, Windows CLI hook behavior, IDE agent behavior, and code
+review behavior are limitations, not unverified claims of universal coverage.
 
 ## Test Design Gate
 

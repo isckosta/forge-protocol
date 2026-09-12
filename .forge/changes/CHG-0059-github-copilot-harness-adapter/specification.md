@@ -93,15 +93,17 @@ workflow authority.
 Priority: required
 
 #### Requirement
-The Adapter SHALL publish a documented Copilot `preToolUse` hook for review
-control metadata and SHALL distinguish CLI/cloud-agent hook enforcement from
-IDE/code-review surface limitations and Skill guidance.
+The Adapter SHALL publish a documented POSIX Copilot `preToolUse` hook for
+review-control metadata and SHALL distinguish Linux/macOS CLI and cloud-agent
+hook enforcement from Windows CLI, IDE/code-review surface limitations, and
+Skill guidance.
 
 #### Acceptance
 AC-004
 Given hook input for a protected metadata mutation
 When the generated hook executes
-Then it denies the mutation, while read-only Git inspection remains allowed.
+Then it denies the mutation on the supported POSIX hook surfaces, while
+read-only Git inspection remains allowed.
 
 ### FR-005 · Preserve Adapter Core semantics
 Priority: required

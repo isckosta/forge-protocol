@@ -34,7 +34,9 @@ Official GitHub documentation records:
 - project Agent Skills at `.github/skills/<skill-name>/SKILL.md`;
 - repository hooks at `.github/hooks/*.json`;
 - hooks supported by Copilot CLI and Copilot cloud agent, with documented
-  execution differences; and
+  execution differences. This projection supplies a POSIX shell hook for
+  Linux/macOS CLI and cloud-agent execution; it does not claim Windows CLI
+  coverage; and
 - surface-dependent support across IDE agent and code review.
 
 Sources are recorded in the packaged `capabilities.yml` and

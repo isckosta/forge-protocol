@@ -1,6 +1,6 @@
 evidence:
   - capability: agent_roles
-    status: unsupported
+    status: supported
     source: https://docs.github.com/en/copilot/concepts/agents/about-custom-agents
     observed_on: 2026-09-12
   - capability: commands

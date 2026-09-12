@@ -93,9 +93,11 @@ def _surface_limitations() -> str:
 
 The workflow and Capability Skills are guidance and discovery projections; the
 repository-native Forge artifacts remain authoritative. The review-control
-hook is mechanical only where Copilot loads repository hooks: Copilot CLI and
-Copilot cloud agent. IDE agent and Copilot code review support are
-surface-dependent and must not be treated as providing this hook guarantee.
+hook is mechanical only where Copilot loads repository hooks on supported Unix
+surfaces: Copilot CLI on Linux/macOS and Copilot cloud agent. Windows CLI
+requires a PowerShell hook that this Adapter does not generate. IDE agent and
+Copilot code review support are surface-dependent and must not be treated as
+providing this hook guarantee.
 TDD ordering and Strict Review remain represented guidance, not universal
 runtime enforcement.
 """
