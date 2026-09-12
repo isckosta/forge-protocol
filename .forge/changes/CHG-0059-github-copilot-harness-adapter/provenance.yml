@@ -1,0 +1,103 @@
+schema: forge/execution-provenance@2
+change: CHG-0059
+records:
+  - id: plan-approval-001
+    role: implementation
+    execution:
+      id: plan-approval-github-copilot-adapter-001
+      context_id: agent-host-session-16146abb-192d-4e51-b8b6-c802339310da
+    recorded_at: '2026-09-12T18:10:09Z'
+    revision:
+      id: chg-0059-plan-approval-001
+      immutable_ref:
+        type: content_digest
+        value: 9e18d6022bc5163453fb0a8b2815592219c2931f9e6607e11c375037a869ad01
+      description: "Plan approval record for the declared remediation and review scope."
+    source:
+      assurance: recorded
+      observed_by: operator
+      reference: plan.md#approval-record
+      content_digest:
+        algorithm: sha256
+        path: plan.md
+        value: 9e18d6022bc5163453fb0a8b2815592219c2931f9e6607e11c375037a869ad01
+      statement: >-
+        The human maintainer explicitly requested correction of the branch
+        naming and completion of the Forge process in the active chat.
+  - id: implementation-subject-001
+    role: implementation
+    execution:
+      id: implementation-github-copilot-adapter-001
+      context_id: agent-host-session-16146abb-192d-4e51-b8b6-c802339310da
+    recorded_at: '2026-09-12T18:01:17Z'
+    revision:
+      id: chg-0059-implementation-001
+      immutable_ref:
+        type: git_commit
+        value: 8dfc56f3aa91e8f8045bb0fa00a84822c3a40796
+      commit: 8dfc56f3aa91e8f8045bb0fa00a84822c3a40796
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: verification.md
+      statement: >-
+        Initial implementation subject frozen after packaging the Copilot
+        Adapter, projection, registry integration, tests, and Change artifacts.
+  - id: reviewer-001
+    role: review
+    execution:
+      id: independent-code-review-copilot-adapter-001
+      context_id: code-review-agent-copilot-adapter-review
+    recorded_at: '2026-09-12T18:05:00Z'
+    revision:
+      id: chg-0059-implementation-001
+      immutable_ref:
+        type: git_commit
+        value: 8dfc56f3aa91e8f8045bb0fa00a84822c3a40796
+      commit: 8dfc56f3aa91e8f8045bb0fa00a84822c3a40796
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: review.md#iteration-1
+      statement: >-
+        Independent review identified TDD schema non-conformance, an
+        overbroad hook platform claim, and incomplete Change metadata.
+  - id: resolution-subject-002
+    role: resolution
+    execution:
+      id: resolution-github-copilot-adapter-001
+      context_id: agent-host-session-16146abb-192d-4e51-b8b6-c802339310da
+    recorded_at: '2026-09-12T18:08:00Z'
+    revision:
+      id: chg-0059-resolution-002
+      immutable_ref:
+        type: git_commit
+        value: 4d1a6bef43010962340961c8db2a8ae8adf3b38c
+      commit: 4d1a6bef43010962340961c8db2a8ae8adf3b38c
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: verification.md
+      statement: >-
+        Resolution subject corrected TDD evidence, capability evidence,
+        platform limitations, and Change artifacts.
+  - id: reviewer-002
+    role: review
+    execution:
+      id: independent-code-review-copilot-adapter-002
+      context_id: code-review-agent-copilot-adapter-rereview
+    recorded_at: '2026-09-12T18:09:00Z'
+    revision:
+      id: chg-0059-resolution-002
+      immutable_ref:
+        type: git_commit
+        value: 4d1a6bef43010962340961c8db2a8ae8adf3b38c
+      commit: 4d1a6bef43010962340961c8db2a8ae8adf3b38c
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: review.md#iteration-2
+      statement: >-
+        Independent re-review confirmed the prior findings were addressed
+        except for the required deny-response reason and stale manifest
+        metadata, which are being resolved in the next revision.

@@ -72,14 +72,14 @@ protected='\\.forge/changes/[^[:space:]&|;"]*(manifest\\.yml|provenance\\.yml|re
 case "$tool" in
   edit|write|Edit|Write)
     if printf '%s' "$args" | grep -Eq "$protected"; then
-      printf '%s\n' '{"permissionDecision":"deny"}'
+      printf '%s\n' '{"permissionDecision":"deny","permissionDecisionReason":"Forge review-control metadata must remain repository-native and auditable; use the normal Forge Change workflow."}'
       exit 0
     fi
     ;;
   *)
     if printf '%s' "$args" | grep -Eq \
       "((sed[[:space:]]+-i|perl[[:space:]]+-i|truncate|>{1,2})[^&|;]*$protected)"; then
-      printf '%s\n' '{"permissionDecision":"deny"}'
+      printf '%s\n' '{"permissionDecision":"deny","permissionDecisionReason":"Forge review-control metadata must remain repository-native and auditable; use the normal Forge Change workflow."}'
       exit 0
     fi
     ;;

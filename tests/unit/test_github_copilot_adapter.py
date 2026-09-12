@@ -131,7 +131,9 @@ def test_github_copilot_hook_denies_direct_review_metadata_edits() -> None:
         )
     finally:
         script_path.unlink(missing_ok=True)
-    assert json.loads(result.stdout)["permissionDecision"] == "deny"
+    decision = json.loads(result.stdout)
+    assert decision["permissionDecision"] == "deny"
+    assert decision["permissionDecisionReason"]
 
 
 def test_github_copilot_publication_root_is_fixed_to_github() -> None:
