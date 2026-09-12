@@ -1,0 +1,15 @@
+schema: forge/adapter@1
+adapter:
+  id: github-copilot
+  version: 0.1.0
+  harness: github-copilot
+protocol:
+  min: 1
+  max_exclusive: 3
+capabilities:
+  persistent_instructions: true
+  commands: false
+  skills: true
+  hooks: true
+  agent_roles: false
+  generated_files: true

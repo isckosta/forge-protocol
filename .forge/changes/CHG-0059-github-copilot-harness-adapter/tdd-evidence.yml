@@ -1,0 +1,17 @@
+schema: forge/tdd-evidence@1
+change: CHG-0059
+status: compliant
+cycle_count: 1
+cycles:
+  - id: TDD-001
+    title: GitHub Copilot Adapter projection
+    requirements: [FR-001, FR-002, FR-003, FR-004, FR-005]
+    behavior: The packaged Adapter projects deterministic Copilot-native artifacts and preserves Adapter Core boundaries.
+    red:
+      status: passed
+      command: ".venv/bin/python -m pytest -q tests/unit/test_github_copilot_adapter.py"
+      result: "FAILED during collection with ModuleNotFoundError for the missing adapter package."
+    green:
+      status: passed
+      command: ".venv/bin/python -m pytest -q tests/unit/test_github_copilot_adapter.py"
+      result: "7 passed."

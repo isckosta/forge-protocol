@@ -10,6 +10,16 @@ until then.
 
 ## Unreleased
 
+### GitHub Copilot Harness Adapter
+
+Added the packaged `github-copilot` Harness Adapter. It projects the effective
+Forge workflow and canonical Capability skills under `.github/skills/`, emits
+the minimal `.github/copilot-instructions.md` discovery pointer, and publishes
+a repository hook for review-control metadata. The hook is mechanically
+available on Copilot CLI and cloud agent; IDE agent and code review support
+remain surface-dependent and are represented as limitations rather than
+treated as universal enforcement.
+
 ### Review Capability
 
 Introduced `review` at `capabilities/review/CAPABILITY.md`, a
