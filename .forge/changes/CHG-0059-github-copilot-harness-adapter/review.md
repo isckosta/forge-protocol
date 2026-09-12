@@ -16,8 +16,8 @@ status: complete
 
 | | |
 |---|---|
-| **Iterations** | 3 |
-| **Current Subject** | `de0f870f6d8c876afa781421411eb6188b6817c4` |
+| **Iterations** | 4 |
+| **Current Subject** | `b105206b98e270f6259f09edcd89721da16f51c2` |
 | **Open Blockers** | 0 |
 | **Open Majors** | 0 |
 | **Open Minors** | 0 |
@@ -26,12 +26,12 @@ status: complete
 
 ## Current Subject
 
-The final subject is frozen in `provenance.yml` as `final-subject-003` and
-binds to commit `de0f870f6d8c876afa781421411eb6188b6817c4`.
+The final subject is frozen in `provenance.yml` as `hook-hardening-subject-004`
+and binds to commit `b105206b98e270f6259f09edcd89721da16f51c2`.
 
 ## Reviewer Independence
 
-Final reviewer provenance: `reviewer-003`. The independent code-review
+Final reviewer provenance: `reviewer-004`. The independent code-review
 execution inspected the frozen final subject in a distinct review context.
 
 ## Open Findings
@@ -67,3 +67,11 @@ coverage. No high-confidence finding remained.
 Review passed independently against the frozen final subject. The Change is
 complete within its declared scope; Copilot surface limitations remain
 explicit and repository-native Forge state remains authoritative.
+
+## Iteration 4 — PASS
+
+Independent final review of `b105206b98e270f6259f09edcd89721da16f51c2`
+confirmed the review-control hook hardening removes the external `jq`
+dependency, rejects shell mutation and expansion forms, preserves the
+decision response contract, and retains explicit Copilot surface limits.
+No high-confidence finding remained.

@@ -31,7 +31,7 @@ verification:
   status: passed
 review:
   status: passed
-  iteration: 3
+  iteration: 4
   blockers: 0
   majors: 0
   minors: 0
@@ -62,6 +62,16 @@ review:
       revision: chg-0059-final-003
       subject_provenance: final-subject-003
       reviewer_provenance: reviewer-003
+      kind: resolution_verification
+      status: passed
+      profile: standard
+      full_review_required: false
+      new_material_findings: 0
+      finding_classes: []
+    - id: review-004
+      revision: chg-0059-hook-hardening-004
+      subject_provenance: hook-hardening-subject-004
+      reviewer_provenance: reviewer-004
       kind: resolution_verification
       status: passed
       profile: standard
