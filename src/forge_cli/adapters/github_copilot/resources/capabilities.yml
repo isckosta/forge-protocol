@@ -1,0 +1,25 @@
+evidence:
+  - capability: agent_roles
+    status: unsupported
+    source: https://docs.github.com/en/copilot/concepts/agents/about-custom-agents
+    observed_on: 2026-09-12
+  - capability: commands
+    status: unsupported
+    source: https://docs.github.com/en/copilot/reference/customization-cheat-sheet
+    observed_on: 2026-09-12
+  - capability: generated_files
+    status: supported
+    source: https://docs.github.com/en/copilot/reference/customization-cheat-sheet
+    observed_on: 2026-09-12
+  - capability: hooks
+    status: supported
+    source: https://docs.github.com/en/copilot/reference/hooks-reference
+    observed_on: 2026-09-12
+  - capability: persistent_instructions
+    status: supported
+    source: https://docs.github.com/en/copilot/how-tos/configure-custom-instructions/add-repository-instructions
+    observed_on: 2026-09-12
+  - capability: skills
+    status: supported
+    source: https://docs.github.com/en/copilot/concepts/agents/about-agent-skills
+    observed_on: 2026-09-12

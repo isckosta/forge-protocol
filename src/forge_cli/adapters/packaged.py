@@ -4,8 +4,9 @@ from __future__ import annotations
 
 from forge_cli.adapters.claude_code.driver import ClaudeCodeDriver
 from forge_cli.adapters.codex.driver import CodexDriver
+from forge_cli.adapters.github_copilot.driver import GitHubCopilotDriver
 from forge_cli.adapters.registry import AdapterRegistry
 
 
 def build_packaged_registry() -> AdapterRegistry:
-    return AdapterRegistry((CodexDriver(), ClaudeCodeDriver()))
+    return AdapterRegistry((CodexDriver(), ClaudeCodeDriver(), GitHubCopilotDriver()))

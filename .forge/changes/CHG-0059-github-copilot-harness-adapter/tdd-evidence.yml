@@ -1,0 +1,16 @@
+schema: forge/tdd-evidence@1
+change: CHG-0059
+status: compliant
+cycle_count: 1
+cycles:
+  - id: TDD-001
+    red:
+      status: passed
+      command: ".venv/bin/python -m pytest -q tests/unit/test_github_copilot_adapter.py"
+      result: "FAILED during collection with ModuleNotFoundError for the missing adapter package."
+    green:
+      status: passed
+      command: ".venv/bin/python -m pytest -q tests/unit/test_github_copilot_adapter.py"
+      result: "7 passed."
+    requirement: FR-001
+    scope: "Packaged descriptor, deterministic projection, hook behavior, and registry integration."
