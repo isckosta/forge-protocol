@@ -11,7 +11,7 @@ records:
       id: chg-0059-plan-approval-001
       immutable_ref:
         type: content_digest
-        value: 9e18d6022bc5163453fb0a8b2815592219c2931f9e6607e11c375037a869ad01
+        value: 525053da76eff5036d634b4074d5854cacde11c2420232d2f4c4c9164bd595cb
       description: "Plan approval record for the declared remediation and review scope."
     source:
       assurance: recorded
@@ -20,7 +20,7 @@ records:
       content_digest:
         algorithm: sha256
         path: plan.md
-        value: 9e18d6022bc5163453fb0a8b2815592219c2931f9e6607e11c375037a869ad01
+        value: 525053da76eff5036d634b4074d5854cacde11c2420232d2f4c4c9164bd595cb
       statement: >-
         The human maintainer explicitly requested correction of the branch
         naming and completion of the Forge process in the active chat.
@@ -172,6 +172,25 @@ records:
         Resolution hardens review-control enforcement against shell mutation,
         quoting, expansion, traversal, encoded-input, and Git output-option
         bypasses while retaining the documented surface boundary.
+  - id: hook-hardening-verification-004
+    role: implementation
+    execution:
+      id: hook-hardening-verification-github-copilot-004
+      context_id: agent-host-session-16146abb-192d-4e51-b8b6-c802339310da
+    recorded_at: '2026-09-12T19:20:00Z'
+    revision:
+      id: chg-0059-hook-hardening-004
+      immutable_ref:
+        type: git_commit
+        value: b105206b98e270f6259f09edcd89721da16f51c2
+      commit: b105206b98e270f6259f09edcd89721da16f51c2
+    source:
+      assurance: recorded
+      observed_by: self
+      reference: verification.md
+      statement: >-
+        Focused Copilot adapter tests passed after the final hook hardening
+        resolution.
   - id: reviewer-004
     role: review
     execution:
